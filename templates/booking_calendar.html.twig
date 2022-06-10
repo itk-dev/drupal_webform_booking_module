@@ -1,0 +1,19 @@
+{#
+Available variables:
+  - params [
+    - api_endpoint
+    - element_id
+    - rooms
+  ]
+#}
+<div>
+  <div class="form-group">
+    <input type="date" id="booking-date-picker-{{ params.element_id }}">
+  </div>
+  <div class="form-group">
+    <select name="booking-room-select" id="booking-room-select-{{ params.element_id }}">
+      <option value="_empty"> {{ '- Select -'|t }} </option>
+    </select>
+  </div>
+  <div booking-element-id="{{ params.element_id }}" class="booking_calendar" id="calendar-{{ params.element_id }}"></div>
+</div>

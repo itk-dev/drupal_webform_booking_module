@@ -1,0 +1,17 @@
+itkdev_booking.resources_endpoint:
+  path: '/itkdev_booking/resources'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\ResourceImportController::getResources'
+  methods: [GET]
+  requirements:
+    # Free access to call api endpoint. API key handled in the other end.
+    _access: 'TRUE'
+
+itkdev_booking.bookings_endpoint:
+  path: '/itkdev_booking/bookings'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\BookingImportController::getBookings'
+  methods: [GET]
+  requirements:
+    # Free access to call api endpoint. API key handled in the other end.
+    _access: 'TRUE'
