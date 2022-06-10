@@ -6,8 +6,6 @@ Uses node version 14.x
 
 ## Installation
 ```bash
-git clone https://github.com/fullcalendar/fullcalendar-example-projects.git
-cd fullcalendar-example-projects/webpack
 npm install
 ```
 
