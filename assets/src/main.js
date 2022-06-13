@@ -203,12 +203,13 @@ function setResourceDropdown(frontpageUrl, resourceDropdownElement) {
  * Remove resources from array if they have not been selected in the Drupal
  * backend. "this" represents the drupal configuration for the webform element.
  *
+ * @param {object} element : The resource element.
  * @param {number} index : The index of the resource.
  * @param {Array} arr : The array of resources.
  * @returns {boolean} : Whether the resource was selected to be isplayed in the
  *   Drupal backend.
  */
-function filterSelectedResource(index, arr) {
+function filterSelectedResource(element, index, arr) {
   if (this.rooms[arr[index].id] === 0) {
     return false;
   }

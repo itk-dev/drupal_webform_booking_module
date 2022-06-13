@@ -664,7 +664,6 @@ A HORIZONTAL event
   background: var(--fc-neutral-bg-color, rgba(208, 208, 208, 0.3));
 }
 
-
 :root {
   --fc-daygrid-event-dot-width: 8px;
 }
@@ -891,7 +890,6 @@ A HORIZONTAL event
 .fc-direction-rtl .fc-daygrid-event .fc-event-time {
   margin-left: 3px;
 }
-
 
 /*
 A VERTICAL event
@@ -1264,7 +1262,6 @@ A VERTICAL event
   border-top-color: transparent;
   border-bottom-color: transparent;
 }
-
 
 :root {
   --fc-list-event-dot-width: 10px;
