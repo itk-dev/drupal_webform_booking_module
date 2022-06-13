@@ -1,0 +1,7 @@
+booking_calendar:
+  version: 1.x
+  css:
+    theme:
+      assets/dist/main.css: {}
+  js:
+    assets/dist/main.js: {}

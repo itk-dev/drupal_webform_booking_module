@@ -1,0 +1,4 @@
+services:
+  itkdev_booking.booking_helper:
+    class: Drupal\itkdev_booking\Helper\BookingHelper
+    arguments: ["@http_client"]
