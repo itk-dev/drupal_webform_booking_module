@@ -14,6 +14,7 @@ npm install
 npm run build
 npm run watch # continously build
 npm run clean # start fresh
+npm run build-production # build assets that are production ready.
 ```
 
 ## Coding standards
