@@ -1,0 +1,31 @@
+.b-tooltip {
+    border: 2px solid #e1e1e1;
+    display: inline-block;
+    font-size: .875em;
+    padding: 15px;
+    position: absolute;
+    text-align: center;
+    z-index: 999;
+    background-color: #fff;
+    max-width: 400px;
+}
+
+.b-tooltip > img {
+    max-width: 100%;
+    max-height: 360px;
+    user-select: none;
+}
+.b-tooltip > p {
+    text-align: left;
+    margin: 15px 0 10px 0 !important;
+}
+
+span[data-tooltip] {
+    cursor: help;
+    display: block;
+    margin: 0 15px 5px 15px;
+    text-align:center;
+}
+span[data-tooltip]:hover {
+    background-color: #f9f9f9;
+}

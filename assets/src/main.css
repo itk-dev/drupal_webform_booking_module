@@ -9,3 +9,13 @@ body {
   max-width: 900px;
   margin: 0 auto;
 }
+
+.fc-day-today {
+  background: #FFF !important;
+  border: none !important;
+
+}
+
+.fc .fc-timegrid-now-indicator-container {
+  border-right: 1px solid #e9e9e9;
+}

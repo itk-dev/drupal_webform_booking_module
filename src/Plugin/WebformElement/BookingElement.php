@@ -38,6 +38,8 @@ class BookingElement extends Hidden {
   protected function defineDefaultProperties() {
     return [
       'rooms' => [],
+      'enable_booking' => false,
+      'enable_resource_tooltips' => false
     ] + parent::defineDefaultProperties();
   }
 
@@ -80,11 +82,16 @@ class BookingElement extends Hidden {
       '#weight' => -50,
     ];
 
-    $form['element']['rooms_wrapper']['api_endpoint'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('API Endpoint'),
-      '#weight' => -50,
-    ];
+    $form['element']['enable_booking'] = array(
+      '#type' => 'checkbox',
+      '#title' => $this
+        ->t('Enable booking'),
+    );
+    $form['element']['enable_resource_tooltips'] = array(
+      '#type' => 'checkbox',
+      '#title' => $this
+        ->t('Enable resource tooltips'),
+    );
 
     return $form;
   }
@@ -99,6 +106,8 @@ class BookingElement extends Hidden {
       'rooms' => $element['#rooms'],
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license', NULL),
+      'enable_booking' => (isset($element['#enable_booking'])?true:false),
+      'enable_resource_tooltips' => (isset($element['#enable_resource_tooltips'])?true:false)
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_calendar.html.twig', [

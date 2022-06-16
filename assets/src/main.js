@@ -5,8 +5,14 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import "./main.css";
+import "./modal/modal.css";
+import "./tooltip/tooltip.css";
+import Modal from "./modal/modal";
+import Tooltip from "./tooltip/tooltip";
 
+/* eslint no-underscore-dangle: 0 */
 /**
  * Provide a calendar from (https://fullcalendar.io/) with data from Drupal.
  *
@@ -82,10 +88,9 @@ function buildCalendar(
         data
       );
     })
-    .catch(function (error) {
+    .catch(function () {
       // If there's an error, log it.
       // eslint-disable-next-line no-console
-      console.log(error);
     });
 }
 
@@ -135,18 +140,38 @@ function setupCalendar(
       dayGridPlugin,
       timeGridPlugin,
       listPlugin,
+      resourceTimelinePlugin,
     ],
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
+    selectConstraint: "businessHours",
+    businessHours: {
+      startTime: "06:00",
+      endTime: "22:00",
+    },
     initialDate: now.toISOString().split("T")[0],
     navLinks: false,
+    selectable: elementSettings.enable_booking === true,
+    select(selectionInfo) {
+      const modal = new Modal();
+      modal.from = selectionInfo.start;
+      modal.to = selectionInfo.end;
+      modal.resourceId = selectionInfo.resource._resource.id;
+      modal.resourceTitle = selectionInfo.resource._resource.title;
+      modal.buildModal();
+    },
+    selectOverlap: false,
     editable: false,
     dayMaxEvents: true,
     locale: daLocale,
+    resourceLabelDidMount(info) {
+      if (elementSettings.enable_resource_tooltips === true) {
+        renderResourceTooltips(info);
+      }
+    },
     resources: dataFormatted.resources,
     events: dataFormatted.bookings,
   });
-
   calendar.render();
 }
 
@@ -176,6 +201,10 @@ function handleResources(value) {
   return {
     id: value.name,
     title: value.readable_name,
+    capacity: value.capacity,
+    building: value.building,
+    description: value.description,
+    image: value.image,
   };
 }
 
@@ -214,4 +243,24 @@ function filterSelectedResource(element, index, arr) {
     return false;
   }
   return true;
+}
+
+/** @param {object} info : The resouce metadata */
+function renderResourceTooltips(info) {
+  const tooltip = new Tooltip();
+  tooltip.distance = 5;
+  tooltip.delay = 0;
+  tooltip.position = "center bottom";
+
+  const resourceImage = info.resource._resource.extendedProps.image;
+  const resourceDescription = info.resource._resource.extendedProps.description;
+  const resourceTitle = info.resource._resource.id;
+  const resourceCapacity = info.resource._resource.extendedProps.capacity;
+  const questionMark = document.createElement("span");
+  questionMark.innerText = " ( ? ) ";
+  questionMark.dataset.tooltip = `<img src='${resourceImage}' /><p><b>${resourceTitle}</b><br><b>Kapacitet: ${resourceCapacity}</b><br>${resourceDescription}</p>`;
+  questionMark.dataset.position = "center bottom";
+  info.el.appendChild(questionMark);
+
+  tooltip.renderTooltip(tooltip);
 }
