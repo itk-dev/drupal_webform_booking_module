@@ -11,6 +11,7 @@ import "./modal/modal.css";
 import "./tooltip/tooltip.css";
 import Modal from "./modal/modal";
 import Tooltip from "./tooltip/tooltip";
+import { bookingFilterValues, initializeResourceDropdown } from "./filters";
 
 /* eslint no-underscore-dangle: 0 */
 /**
@@ -32,20 +33,40 @@ import Tooltip from "./tooltip/tooltip";
         // distinguish between calendars.
         const elementId = element.getAttribute("booking-element-id");
         const elementSettings = drupalSettings.booking_calendar[elementId];
-        const resourceDropdownElement = document.getElementById(
+        const bookingFilterNodes = document.querySelectorAll(
+          `#booking-filters-${elementId} .booking-filter`
+        );
+        const resourceDropdownNode = document.getElementById(
           `booking-room-select-${elementId}`
         );
         const calendarElement = document.getElementById(
           `calendar-${elementId}`
         );
 
+        initializeResourceDropdown(resourceDropdownNode, elementSettings);
+
         buildCalendar(
           drupalSettings,
           elementSettings,
           elementId,
-          resourceDropdownElement,
-          calendarElement
+          resourceDropdownNode,
+          calendarElement,
+          bookingFilterValues(bookingFilterNodes)
         );
+
+        // Add event listener on all filters.
+        bookingFilterNodes.forEach((bookingFilter) => {
+          bookingFilter.addEventListener("change", () => {
+            buildCalendar(
+              drupalSettings,
+              elementSettings,
+              elementId,
+              resourceDropdownNode,
+              calendarElement,
+              bookingFilterValues(bookingFilterNodes)
+            );
+          });
+        });
       });
     },
   };
@@ -57,15 +78,17 @@ import Tooltip from "./tooltip/tooltip";
  * @param {object} drupalSettings : Settings provided by Drupal.
  * @param {object} elementSettings : Settings related to a specific webform element.
  * @param {string} elementId : Id of the webform element.
- * @param {HTMLElement} resourceDropdownElement : The resource dropdown HTML element.
+ * @param {HTMLElement} resourceDropdownNode : The resource dropdown HTML element.
  * @param {HTMLElement} calendarElement : The calendar HTML element.
+ * @param {object} filters : A list of filters.
  */
 function buildCalendar(
   drupalSettings,
   elementSettings,
   elementId,
-  resourceDropdownElement,
-  calendarElement
+  resourceDropdownNode,
+  calendarElement,
+  filters
 ) {
   Promise.all([
     fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings`),
@@ -83,9 +106,10 @@ function buildCalendar(
         drupalSettings,
         elementSettings,
         elementId,
-        resourceDropdownElement,
+        resourceDropdownNode,
         calendarElement,
-        data
+        data,
+        filters
       );
     })
     .catch(function () {
@@ -100,17 +124,19 @@ function buildCalendar(
  * @param {object} drupalSettings : Settings provided by Drupal
  * @param {object} elementSettings : Settings related to a specific webform element
  * @param {string} elementId : elementId Id of the webform element.
- * @param {HTMLElement} resourceDropdownElement : The resource dropdown HTML element.
+ * @param {HTMLElement} resourceDropdownNode : The resource dropdown HTML element.
  * @param {HTMLElement} calendarElement : The calendar HTML element.
  * @param {Array} data : An array of data from multiple sources.
+ * @param {object} filters : A list of filters.
  */
 function setupCalendar(
   drupalSettings,
   elementSettings,
   elementId,
-  resourceDropdownElement,
+  resourceDropdownNode,
   calendarElement,
-  data
+  data,
+  filters
 ) {
   const now = new Date();
   const dataFormatted = [];
@@ -124,14 +150,17 @@ function setupCalendar(
       case "/v1/resources":
         dataFormatted.resources = response["hydra:member"].map(handleResources);
         dataFormatted.resources = dataFormatted.resources.filter(
-          filterSelectedResource,
+          filterSelectedResourceBackend,
           elementSettings
+        );
+        dataFormatted.resources = dataFormatted.resources.filter(
+          filterSelectedResourceFrontend,
+          filters.resource
         );
         break;
       default:
     }
   });
-
   const calendar = new Calendar(calendarElement, {
     schedulerLicenseKey: elementSettings.license_key,
     plugins: [
@@ -149,7 +178,9 @@ function setupCalendar(
       startTime: "06:00",
       endTime: "22:00",
     },
-    initialDate: now.toISOString().split("T")[0],
+    initialDate: filters.bookingDate
+      ? filters.bookingDate
+      : now.toISOString().split("T")[0],
     navLinks: false,
     selectable: elementSettings.enable_booking === true,
     select(selectionInfo) {
@@ -209,36 +240,16 @@ function handleResources(value) {
 }
 
 /**
- * Defines the contents of the resource dropdown.
- *
- * @param frontpageUrl The URL to the frontpage.
- * @param resourceDropdownElement The dropdown to be populated.
- */
-/*
-function setResourceDropdown(frontpageUrl, resourceDropdownElement) {
-  fetch(`${frontpageUrl}/itkdev_booking/resources`)
-    .then((response) => response.json())
-    .then((resources) => {
-      resources["hydra:member"].forEach((key) => {
-        resourceDropdownElement.options[
-          resourceDropdownElement.options.length
-        ] = new Option(key.readable_name, key.name);
-      });
-    });
-}
-*/
-
-/**
  * Remove resources from array if they have not been selected in the Drupal
  * backend. "this" represents the drupal configuration for the webform element.
  *
  * @param {object} element : The resource element.
  * @param {number} index : The index of the resource.
  * @param {Array} arr : The array of resources.
- * @returns {boolean} : Whether the resource was selected to be isplayed in the
+ * @returns {boolean} : Whether the resource was selected to be displayed in the
  *   Drupal backend.
  */
-function filterSelectedResource(element, index, arr) {
+function filterSelectedResourceBackend(element, index, arr) {
   if (this.rooms[arr[index].id] === 0) {
     return false;
   }
@@ -263,4 +274,21 @@ function renderResourceTooltips(info) {
   info.el.appendChild(questionMark);
 
   tooltip.renderTooltip(tooltip);
+}
+/**
+ * Remove resources from array if they have not been selected in the Drupal
+ * frontend. "this" represents the resource filter value set in resource dropdown.
+ *
+ * @param {object} element : The resource element.
+ * @param {number} index : The index of the resource.
+ * @param {Array} arr : The array of resources.
+ * @returns {boolean} : Whether the resource was selected to be displayed in the
+ *   Drupal frontend.
+ */
+// eslint-disable-next-line no-unused-vars
+function filterSelectedResourceFrontend(element, index, arr) {
+  if (this === null || this === element.id) {
+    return true;
+  }
+  return false;
 }
