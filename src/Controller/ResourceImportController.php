@@ -3,15 +3,42 @@
 namespace Drupal\itkdev_booking\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\itkdev_booking\Helper\BookingHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Drupal\Core\Site\Settings;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Resource import controller.
  */
 class ResourceImportController extends ControllerBase {
+
+  /**
+   * Booking helper
+   *
+   * @var BookingHelper
+   *   A booking helper service.
+   */
+  protected BookingHelper $bookingHelper;
+
+  /**
+   * ResourceImportController constructor.
+   *
+   * @param BookingHelper $bookingHelper
+   *   A booking helper service.
+   */
+  public function __construct(BookingHelper $bookingHelper) {
+    $this->bookingHelper = $bookingHelper;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('itkdev_booking.booking_helper')
+    );
+  }
 
   /**
    * Fetch resources from booking service.
@@ -23,19 +50,7 @@ class ResourceImportController extends ControllerBase {
    *   The payload.
    */
   public function getResources(Request $request) {
-    $bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
-    if ($bookingApiEndpoint) {
-      $json_data = $request->getContent();
-    }
-    else {
-      $json_data = file_get_contents(__DIR__ . '/../../sampleData/resources.json');
-    }
-    $payload = json_decode($json_data, TRUE);
-    if (empty($payload)) {
-      throw new BadRequestHttpException('Invalid or empty payload');
-    }
-
+    $payload = $this->bookingHelper->getResult('v1/resources', $request);
     return new JsonResponse($payload);
   }
-
 }

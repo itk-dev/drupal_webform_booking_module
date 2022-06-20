@@ -84,8 +84,9 @@ function buildCalendar(
   calendarElement,
   filters
 ) {
+  const parameters = new URLSearchParams(filters).toString();
   Promise.all([
-    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings`),
+    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`),
     fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`),
   ])
     .then(function (responses) {
@@ -135,7 +136,6 @@ function setupCalendar(
 ) {
   const now = new Date();
   const dataFormatted = [];
-
   data.forEach(function setData(response) {
     switch (response["@id"]) {
       case "/v1/busy-intervals":
@@ -150,7 +150,7 @@ function setupCalendar(
         );
         dataFormatted.resources = dataFormatted.resources.filter(
           filterSelectedResourceFrontend,
-          filters.resource
+          filters.resources
         );
         break;
       default:
@@ -167,8 +167,8 @@ function setupCalendar(
     ],
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
-    initialDate: filters.bookingDate
-      ? filters.bookingDate
+    initialDate: filters.dateStart
+      ? filters.dateStart
       : now.toISOString().split("T")[0],
     navLinks: false,
     editable: false,
@@ -205,8 +205,8 @@ function handleBusyIntervals(value) {
  */
 function handleResources(value) {
   return {
-    id: value.name,
-    title: value.readable_name,
+    id: value.email,
+    title: value.title,
   };
 }
 
@@ -221,10 +221,7 @@ function handleResources(value) {
  *   Drupal backend.
  */
 function filterSelectedResourceBackend(element, index, arr) {
-  if (this.rooms[arr[index].id] === 0) {
-    return false;
-  }
-  return true;
+  return this.rooms[arr[index].id] !== 0;
 }
 
 /**
@@ -239,8 +236,6 @@ function filterSelectedResourceBackend(element, index, arr) {
  */
 // eslint-disable-next-line no-unused-vars
 function filterSelectedResourceFrontend(element, index, arr) {
-  if (this === null || this === element.id) {
-    return true;
-  }
-  return false;
+  const resources = this.split(',');
+  return resources.length > 1 || this === element.id;
 }
