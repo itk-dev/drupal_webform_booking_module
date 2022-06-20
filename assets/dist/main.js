@@ -21140,7 +21140,7 @@ function bookingFilterValues(bookingFilterElements) {
         break;
       default:
     }
-  });
+  }); 
   return filters;
 }
 
