@@ -17,3 +17,23 @@ Available variables:
   </div>
   <div booking-element-id="{{ params.element_id }}" class="booking_calendar" id="calendar-{{ params.element_id }}"></div>
 </div>
+
+<div id="modalContainer">
+  <div id="modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="booking-close">&times;</span>
+          <h2 id="bookingHeader"></h2>
+        </div>
+        <div class="modal-body">
+          <p id="bookingResourceId"></p> 
+          <p id="bookingResourceTitle"></p>
+          <p id="bookingFrom"></p>
+          <p id="bookingTo"></p>
+        </div>
+        <div class="modal-footer">
+          <button id="bookingSubmit" class="btn btn-primary"></button>
+        </div>
+      </div>
+  </div>
+</div> 
