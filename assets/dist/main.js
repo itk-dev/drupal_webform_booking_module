@@ -15966,6 +15966,2009 @@ var main = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createPlugin)({
 
 /***/ }),
 
+/***/ "./node_modules/@fullcalendar/resource-timeline/main.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@fullcalendar/resource-timeline/main.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ResourceTimelineLane": () => (/* binding */ ResourceTimelineLane),
+/* harmony export */   "ResourceTimelineView": () => (/* binding */ ResourceTimelineView),
+/* harmony export */   "SpreadsheetRow": () => (/* binding */ SpreadsheetRow),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.css */ "./node_modules/@fullcalendar/resource-timeline/main.css");
+/* harmony import */ var _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/common */ "./node_modules/@fullcalendar/common/main.js");
+/* harmony import */ var _fullcalendar_premium_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/premium-common */ "./node_modules/@fullcalendar/premium-common/main.js");
+/* harmony import */ var _fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/timeline */ "./node_modules/@fullcalendar/timeline/main.js");
+/* harmony import */ var _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/resource-common */ "./node_modules/@fullcalendar/resource-common/main.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _fullcalendar_scrollgrid__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/scrollgrid */ "./node_modules/@fullcalendar/scrollgrid/main.js");
+/*!
+FullCalendar Scheduler v5.10.2
+Docs & License: https://fullcalendar.io/scheduler
+(c) 2021 Adam Shaw
+*/
+
+
+
+
+
+
+
+
+
+/*
+Renders the DOM responsible for the subrow expander area,
+as well as the space before it (used to align expanders of similar depths)
+*/
+function ExpanderIcon(_a) {
+    var depth = _a.depth, hasChildren = _a.hasChildren, isExpanded = _a.isExpanded, onExpanderClick = _a.onExpanderClick;
+    var nodes = [];
+    for (var i = 0; i < depth; i += 1) {
+        nodes.push((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: "fc-icon" }));
+    }
+    var iconClassNames = ['fc-icon'];
+    if (hasChildren) {
+        if (isExpanded) {
+            iconClassNames.push('fc-icon-minus-square');
+        }
+        else {
+            iconClassNames.push('fc-icon-plus-square');
+        }
+    }
+    nodes.push((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: 'fc-datagrid-expander' + (hasChildren ? '' : ' fc-datagrid-expander-placeholder'), onClick: onExpanderClick },
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: iconClassNames.join(' ') })));
+    return _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement.apply(void 0, (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__spreadArray)([_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, {}], nodes));
+}
+
+function refineHookProps$1(raw) {
+    return {
+        resource: new _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.ResourceApi(raw.context, raw.resource),
+        fieldValue: raw.fieldValue,
+        view: raw.context.viewApi,
+    };
+}
+
+var SpreadsheetIndividualCellInner = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(SpreadsheetIndividualCellInner, _super);
+    function SpreadsheetIndividualCellInner() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SpreadsheetIndividualCellInner.prototype.render = function () {
+        var props = this.props;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.ContentHook, { hookProps: props.hookProps, content: props.colSpec.cellContent, defaultContent: renderResourceInner }, function (innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: "fc-datagrid-cell-main", ref: innerElRef }, innerContent)); }));
+    };
+    return SpreadsheetIndividualCellInner;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function renderResourceInner(hookProps) {
+    return hookProps.fieldValue || (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, "\u00A0");
+}
+
+// worth making a PureComponent? (because of innerHeight)
+var SpreadsheetIndividualCell = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(SpreadsheetIndividualCell, _super);
+    function SpreadsheetIndividualCell() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.refineHookProps = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoizeObjArg)(refineHookProps$1);
+        _this.normalizeClassNames = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildClassNameNormalizer)();
+        _this.onExpanderClick = function (ev) {
+            var props = _this.props;
+            if (props.hasChildren) {
+                _this.context.dispatch({
+                    type: 'SET_RESOURCE_ENTITY_EXPANDED',
+                    id: props.resource.id,
+                    isExpanded: !props.isExpanded,
+                });
+            }
+        };
+        return _this;
+    }
+    SpreadsheetIndividualCell.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, context = _a.context;
+        var colSpec = props.colSpec;
+        var hookProps = this.refineHookProps({
+            resource: props.resource,
+            fieldValue: props.fieldValue,
+            context: context,
+        });
+        var customClassNames = this.normalizeClassNames(colSpec.cellClassNames, hookProps);
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.MountHook, { hookProps: hookProps, didMount: colSpec.cellDidMount, willUnmount: colSpec.cellWillUnmount }, function (rootElRef) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { ref: rootElRef, role: "gridcell", "data-resource-id": props.resource.id, className: [
+                'fc-datagrid-cell',
+                'fc-resource',
+            ].concat(customClassNames).join(' ') },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-frame", style: { height: props.innerHeight } },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-cushion fc-scrollgrid-sync-inner" },
+                    colSpec.isMain && ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ExpanderIcon, { depth: props.depth, hasChildren: props.hasChildren, isExpanded: props.isExpanded, onExpanderClick: _this.onExpanderClick })),
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(SpreadsheetIndividualCellInner, { hookProps: hookProps, colSpec: colSpec }))))); }));
+    };
+    return SpreadsheetIndividualCell;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+// for VERTICAL cell grouping, in spreadsheet area
+var SpreadsheetGroupCell = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(SpreadsheetGroupCell, _super);
+    function SpreadsheetGroupCell() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SpreadsheetGroupCell.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        var colSpec = props.colSpec;
+        var hookProps = {
+            groupValue: props.fieldValue,
+            view: context.viewApi,
+        };
+        // a grouped cell. no data that is specific to this specific resource
+        // `colSpec` is for the group. a GroupSpec :(
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RenderHook, { hookProps: hookProps, classNames: colSpec.cellClassNames, content: colSpec.cellContent, defaultContent: renderGroupInner, didMount: colSpec.cellDidMount, willUnmount: colSpec.cellWillUnmount }, function (rootElRef, classNames, innerElRef, innerContent) { return (
+        // TODO: make data-attr with group value?
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { ref: rootElRef, role: "gridcell", rowSpan: props.rowSpan, className: ['fc-datagrid-cell', 'fc-resource-group'].concat(classNames).join(' ') },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-frame fc-datagrid-cell-frame-liquid" },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-cushion fc-sticky", ref: innerElRef }, innerContent)))); }));
+    };
+    return SpreadsheetGroupCell;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function renderGroupInner(hookProps) {
+    return hookProps.groupValue || (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, "\u00A0");
+}
+
+var SpreadsheetRow = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(SpreadsheetRow, _super);
+    function SpreadsheetRow() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SpreadsheetRow.prototype.render = function () {
+        var props = this.props;
+        var resource = props.resource, rowSpans = props.rowSpans, depth = props.depth;
+        var resourceFields = (0,_fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.buildResourceFields)(resource); // slightly inefficient. already done up the call stack
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { role: "row" }, props.colSpecs.map(function (colSpec, i) {
+            var rowSpan = rowSpans[i];
+            if (rowSpan === 0) { // not responsible for group-based rows. VRowGroup is
+                return null;
+            }
+            if (rowSpan == null) {
+                rowSpan = 1;
+            }
+            var fieldValue = colSpec.field ? resourceFields[colSpec.field] :
+                (resource.title || (0,_fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.getPublicId)(resource.id));
+            if (rowSpan > 1) {
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(SpreadsheetGroupCell, { key: i, colSpec: colSpec, fieldValue: fieldValue, rowSpan: rowSpan }));
+            }
+            return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(SpreadsheetIndividualCell, { key: i, colSpec: colSpec, resource: resource, fieldValue: fieldValue, depth: depth, hasChildren: props.hasChildren, isExpanded: props.isExpanded, innerHeight: props.innerHeight }));
+        })));
+    };
+    return SpreadsheetRow;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+SpreadsheetRow.addPropsEquality({
+    rowSpans: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isArraysEqual,
+});
+
+// for HORIZONTAL cell grouping, in spreadsheet area
+var SpreadsheetGroupRow = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(SpreadsheetGroupRow, _super);
+    function SpreadsheetGroupRow() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.innerInnerRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.onExpanderClick = function () {
+            var props = _this.props;
+            _this.context.dispatch({
+                type: 'SET_RESOURCE_ENTITY_EXPANDED',
+                id: props.id,
+                isExpanded: !props.isExpanded,
+            });
+        };
+        return _this;
+    }
+    SpreadsheetGroupRow.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, context = _a.context;
+        var hookProps = { groupValue: props.group.value, view: context.viewApi };
+        var spec = props.group.spec;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { role: "row" },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RenderHook, { hookProps: hookProps, classNames: spec.labelClassNames, content: spec.labelContent, defaultContent: renderCellInner, didMount: spec.labelDidMount, willUnmount: spec.labelWillUnmount }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("th", { ref: rootElRef, 
+                // ARIA TODO: not really a columnheader
+                // extremely tedious to make this aria-compliant,
+                // to assign multiple headers to each cell
+                // https://www.w3.org/WAI/tutorials/tables/multi-level/
+                role: "columnheader", scope: "colgroup", colSpan: props.spreadsheetColCnt, className: [
+                    'fc-datagrid-cell',
+                    'fc-resource-group',
+                    context.theme.getClass('tableCellShaded'),
+                ].concat(classNames).join(' ') },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-frame", style: { height: props.innerHeight } },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-cushion fc-scrollgrid-sync-inner", ref: _this.innerInnerRef },
+                        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ExpanderIcon, { depth: 0, hasChildren: true, isExpanded: props.isExpanded, onExpanderClick: _this.onExpanderClick }),
+                        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: "fc-datagrid-cell-main", ref: innerElRef }, innerContent))))); })));
+    };
+    return SpreadsheetGroupRow;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+SpreadsheetGroupRow.addPropsEquality({
+    group: _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.isGroupsEqual,
+});
+function renderCellInner(hookProps) {
+    return hookProps.groupValue || (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, "\u00A0");
+}
+
+var SPREADSHEET_COL_MIN_WIDTH = 20;
+var SpreadsheetHeader = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(SpreadsheetHeader, _super);
+    function SpreadsheetHeader() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.resizerElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RefMap(_this._handleColResizerEl.bind(_this));
+        _this.colDraggings = {};
+        return _this;
+    }
+    SpreadsheetHeader.prototype.render = function () {
+        var _this = this;
+        var _a = this.props, colSpecs = _a.colSpecs, superHeaderRendering = _a.superHeaderRendering, rowInnerHeights = _a.rowInnerHeights;
+        var hookProps = { view: this.context.viewApi };
+        var rowNodes = [];
+        rowInnerHeights = rowInnerHeights.slice(); // copy, because we're gonna pop
+        if (superHeaderRendering) {
+            var rowInnerHeight_1 = rowInnerHeights.shift();
+            rowNodes.push((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { key: "row-super", role: "row" },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RenderHook, { hookProps: hookProps, classNames: superHeaderRendering.headerClassNames, content: superHeaderRendering.headerContent, didMount: superHeaderRendering.headerDidMount, willUnmount: superHeaderRendering.headerWillUnmount }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("th", { ref: rootElRef, role: "columnheader", scope: "colgroup", colSpan: colSpecs.length, className: [
+                        'fc-datagrid-cell',
+                        'fc-datagrid-cell-super',
+                    ].concat(classNames).join(' ') },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-frame", style: { height: rowInnerHeight_1 } },
+                        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-cushion fc-scrollgrid-sync-inner", ref: innerElRef }, innerContent)))); })));
+        }
+        var rowInnerHeight = rowInnerHeights.shift();
+        rowNodes.push((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { key: "row", role: "row" }, colSpecs.map(function (colSpec, i) {
+            var isLastCol = i === (colSpecs.length - 1);
+            // need empty inner div for abs positioning for resizer
+            return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RenderHook, { key: i, hookProps: hookProps, classNames: colSpec.headerClassNames, content: colSpec.headerContent, didMount: colSpec.headerDidMount, willUnmount: colSpec.headerWillUnmount }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("th", { ref: rootElRef, role: "columnheader", className: ['fc-datagrid-cell'].concat(classNames).join(' ') },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-frame", style: { height: rowInnerHeight } },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-cushion fc-scrollgrid-sync-inner" },
+                        colSpec.isMain && ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: "fc-datagrid-expander fc-datagrid-expander-placeholder" },
+                            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: "fc-icon" }))),
+                        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", { className: "fc-datagrid-cell-main", ref: innerElRef }, innerContent)),
+                    !isLastCol &&
+                        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-datagrid-cell-resizer", ref: _this.resizerElRefs.createRef(i) })))); }));
+        })));
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, rowNodes));
+    };
+    SpreadsheetHeader.prototype._handleColResizerEl = function (resizerEl, index) {
+        var colDraggings = this.colDraggings;
+        if (!resizerEl) {
+            var dragging = colDraggings[index];
+            if (dragging) {
+                dragging.destroy();
+                delete colDraggings[index];
+            }
+        }
+        else {
+            var dragging = this.initColResizing(resizerEl, parseInt(index, 10));
+            if (dragging) {
+                colDraggings[index] = dragging;
+            }
+        }
+    };
+    SpreadsheetHeader.prototype.initColResizing = function (resizerEl, index) {
+        var _a = this.context, pluginHooks = _a.pluginHooks, isRtl = _a.isRtl;
+        var onColWidthChange = this.props.onColWidthChange;
+        var ElementDraggingImpl = pluginHooks.elementDraggingImpl;
+        if (ElementDraggingImpl) {
+            var dragging = new ElementDraggingImpl(resizerEl);
+            var startWidth_1; // of just the single column
+            var currentWidths_1; // of all columns
+            dragging.emitter.on('dragstart', function () {
+                var allCells = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.findElements)((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.elementClosest)(resizerEl, 'tr'), 'th');
+                currentWidths_1 = allCells.map(function (cellEl) { return (cellEl.getBoundingClientRect().width); });
+                startWidth_1 = currentWidths_1[index];
+            });
+            dragging.emitter.on('dragmove', function (pev) {
+                currentWidths_1[index] = Math.max(startWidth_1 + pev.deltaX * (isRtl ? -1 : 1), SPREADSHEET_COL_MIN_WIDTH);
+                if (onColWidthChange) {
+                    onColWidthChange(currentWidths_1.slice()); // send a copy since currentWidths continues to be mutated
+                }
+            });
+            dragging.setAutoScrollEnabled(false); // because gets weird with auto-scrolling time area
+            return dragging;
+        }
+        return null;
+    };
+    return SpreadsheetHeader;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var ResourceTimelineLaneMisc = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineLaneMisc, _super);
+    function ResourceTimelineLaneMisc() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ResourceTimelineLaneMisc.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        var hookProps = { resource: new _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.ResourceApi(context, props.resource) }; // just easier to make directly
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.ContentHook, { hookProps: hookProps, content: context.options.resourceLaneContent }, function (innerElRef, innerContent) { return (innerContent && // TODO: test how this would interfere with height
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-lane-misc", ref: innerElRef }, innerContent)); }));
+    };
+    return ResourceTimelineLaneMisc;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var ResourceTimelineLane = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineLane, _super);
+    function ResourceTimelineLane() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.refineHookProps = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoizeObjArg)(refineHookProps);
+        _this.normalizeClassNames = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildClassNameNormalizer)();
+        _this.handleHeightChange = function (innerEl, isStable) {
+            if (_this.props.onHeightChange) {
+                _this.props.onHeightChange(
+                // would want to use own <tr> ref, but not guaranteed to be ready when this fires
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.elementClosest)(innerEl, 'tr'), isStable);
+            }
+        };
+        return _this;
+    }
+    ResourceTimelineLane.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, context = _a.context;
+        var options = context.options;
+        var hookProps = this.refineHookProps({ resource: props.resource, context: context });
+        var customClassNames = this.normalizeClassNames(options.resourceLaneClassNames, hookProps);
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { ref: props.elRef },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.MountHook, { hookProps: hookProps, didMount: options.resourceLaneDidMount, willUnmount: options.resourceLaneWillUnmount }, function (rootElRef) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { ref: rootElRef, className: ['fc-timeline-lane', 'fc-resource'].concat(customClassNames).join(' '), "data-resource-id": props.resource.id },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-lane-frame", style: { height: props.innerHeight } },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ResourceTimelineLaneMisc, { resource: props.resource }),
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.TimelineLane, { dateProfile: props.dateProfile, tDateProfile: props.tDateProfile, nowDate: props.nowDate, todayRange: props.todayRange, nextDayThreshold: props.nextDayThreshold, businessHours: props.businessHours, eventStore: props.eventStore, eventUiBases: props.eventUiBases, dateSelection: props.dateSelection, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, timelineCoords: props.timelineCoords, onHeightChange: _this.handleHeightChange, resourceId: props.resource.id })))); }))); // important NOT to do liquid-height. dont want to shrink height smaller than content
+    };
+    return ResourceTimelineLane;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function refineHookProps(raw) {
+    return {
+        resource: new _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.ResourceApi(raw.context, raw.resource),
+    };
+}
+
+/*
+parallels the SpreadsheetGroupRow
+*/
+var DividerRow = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(DividerRow, _super);
+    function DividerRow() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DividerRow.prototype.render = function () {
+        var _this = this;
+        var props = this.props;
+        var renderingHooks = this.props.renderingHooks;
+        var hookProps = { groupValue: props.groupValue, view: this.context.viewApi };
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { ref: props.elRef },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RenderHook, { hookProps: hookProps, classNames: renderingHooks.laneClassNames, content: renderingHooks.laneContent, didMount: renderingHooks.laneDidMount, willUnmount: renderingHooks.laneWillUnmount }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { ref: rootElRef, className: [
+                    'fc-timeline-lane',
+                    'fc-resource-group',
+                    _this.context.theme.getClass('tableCellShaded'),
+                ].concat(classNames).join(' ') },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { style: { height: props.innerHeight }, ref: innerElRef }, innerContent))); })));
+    };
+    return DividerRow;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var ResourceTimelineLanesBody = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineLanesBody, _super);
+    function ResourceTimelineLanesBody() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ResourceTimelineLanesBody.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        var rowElRefs = props.rowElRefs, innerHeights = props.innerHeights;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tbody", null, props.rowNodes.map(function (node, index) {
+            if (node.group) {
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(DividerRow, { key: node.id, elRef: rowElRefs.createRef(node.id), groupValue: node.group.value, renderingHooks: node.group.spec, innerHeight: innerHeights[index] || '' }));
+            }
+            if (node.resource) {
+                var resource = node.resource;
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ResourceTimelineLane, (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__assign)({ key: node.id, elRef: rowElRefs.createRef(node.id) }, props.splitProps[resource.id], { resource: resource, dateProfile: props.dateProfile, tDateProfile: props.tDateProfile, nowDate: props.nowDate, todayRange: props.todayRange, nextDayThreshold: context.options.nextDayThreshold, businessHours: resource.businessHours || props.fallbackBusinessHours, innerHeight: innerHeights[index] || '', timelineCoords: props.slatCoords, onHeightChange: props.onRowHeightChange })));
+            }
+            return null;
+        })));
+    };
+    return ResourceTimelineLanesBody;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var ResourceTimelineLanes = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineLanes, _super);
+    function ResourceTimelineLanes() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.rootElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.rowElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RefMap();
+        return _this;
+    }
+    ResourceTimelineLanes.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("table", { ref: this.rootElRef, "aria-hidden": true, className: 'fc-scrollgrid-sync-table ' + context.theme.getClass('table'), style: {
+                minWidth: props.tableMinWidth,
+                width: props.clientWidth,
+                height: props.minHeight,
+            } },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ResourceTimelineLanesBody, { rowElRefs: this.rowElRefs, rowNodes: props.rowNodes, dateProfile: props.dateProfile, tDateProfile: props.tDateProfile, nowDate: props.nowDate, todayRange: props.todayRange, splitProps: props.splitProps, fallbackBusinessHours: props.fallbackBusinessHours, slatCoords: props.slatCoords, innerHeights: props.innerHeights, onRowHeightChange: props.onRowHeightChange })));
+    };
+    ResourceTimelineLanes.prototype.componentDidMount = function () {
+        this.updateCoords();
+    };
+    ResourceTimelineLanes.prototype.componentDidUpdate = function () {
+        this.updateCoords();
+    };
+    ResourceTimelineLanes.prototype.componentWillUnmount = function () {
+        if (this.props.onRowCoords) {
+            this.props.onRowCoords(null);
+        }
+    };
+    ResourceTimelineLanes.prototype.updateCoords = function () {
+        var props = this.props;
+        if (props.onRowCoords && props.clientWidth !== null) { // a populated clientWidth means sizing has stabilized
+            this.props.onRowCoords(new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.PositionCache(this.rootElRef.current, collectRowEls(this.rowElRefs.currentMap, props.rowNodes), false, true));
+        }
+    };
+    return ResourceTimelineLanes;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function collectRowEls(elMap, rowNodes) {
+    return rowNodes.map(function (rowNode) { return elMap[rowNode.id]; });
+}
+
+var ResourceTimelineGrid = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineGrid, _super);
+    function ResourceTimelineGrid() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.computeHasResourceBusinessHours = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(computeHasResourceBusinessHours);
+        _this.resourceSplitter = new _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.ResourceSplitter(); // doesn't let it do businessHours tho
+        _this.bgSlicer = new _fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.TimelineLaneSlicer();
+        _this.slatsRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)(); // needed for Hit creation :(
+        _this.state = {
+            slatCoords: null,
+        };
+        _this.handleEl = function (el) {
+            if (el) {
+                _this.context.registerInteractiveComponent(_this, { el: el });
+            }
+            else {
+                _this.context.unregisterInteractiveComponent(_this);
+            }
+        };
+        _this.handleSlatCoords = function (slatCoords) {
+            _this.setState({ slatCoords: slatCoords });
+            if (_this.props.onSlatCoords) {
+                _this.props.onSlatCoords(slatCoords);
+            }
+        };
+        _this.handleRowCoords = function (rowCoords) {
+            _this.rowCoords = rowCoords;
+            if (_this.props.onRowCoords) {
+                _this.props.onRowCoords(rowCoords);
+            }
+        };
+        return _this;
+    }
+    ResourceTimelineGrid.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var dateProfile = props.dateProfile, tDateProfile = props.tDateProfile;
+        var timerUnit = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.greatestDurationDenominator)(tDateProfile.slotDuration).unit;
+        var hasResourceBusinessHours = this.computeHasResourceBusinessHours(props.rowNodes);
+        var splitProps = this.resourceSplitter.splitProps(props);
+        var bgLaneProps = splitProps[''];
+        var bgSlicedProps = this.bgSlicer.sliceProps(bgLaneProps, dateProfile, tDateProfile.isTimeScale ? null : props.nextDayThreshold, context, // wish we didn't need to pass in the rest of these args...
+        dateProfile, context.dateProfileGenerator, tDateProfile, context.dateEnv);
+        // WORKAROUND: make ignore slatCoords when out of sync with dateProfile
+        var slatCoords = state.slatCoords && state.slatCoords.dateProfile === props.dateProfile ? state.slatCoords : null;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: this.handleEl, className: [
+                'fc-timeline-body',
+                props.expandRows ? 'fc-timeline-body-expandrows' : '',
+            ].join(' '), style: { minWidth: props.tableMinWidth } },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.NowTimer, { unit: timerUnit }, function (nowDate, todayRange) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null,
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.TimelineSlats, { ref: _this.slatsRef, dateProfile: dateProfile, tDateProfile: tDateProfile, nowDate: nowDate, todayRange: todayRange, clientWidth: props.clientWidth, tableColGroupNode: props.tableColGroupNode, tableMinWidth: props.tableMinWidth, onCoords: _this.handleSlatCoords, onScrollLeftRequest: props.onScrollLeftRequest }),
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.TimelineLaneBg, { businessHourSegs: hasResourceBusinessHours ? null : bgSlicedProps.businessHourSegs, bgEventSegs: bgSlicedProps.bgEventSegs, timelineCoords: slatCoords, 
+                    // empty array will result in unnecessary rerenders?
+                    eventResizeSegs: (bgSlicedProps.eventResize ? bgSlicedProps.eventResize.segs : []), dateSelectionSegs: bgSlicedProps.dateSelectionSegs, nowDate: nowDate, todayRange: todayRange }),
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ResourceTimelineLanes, { rowNodes: props.rowNodes, dateProfile: dateProfile, tDateProfile: props.tDateProfile, nowDate: nowDate, todayRange: todayRange, splitProps: splitProps, fallbackBusinessHours: hasResourceBusinessHours ? props.businessHours : null, clientWidth: props.clientWidth, minHeight: props.expandRows ? props.clientHeight : '', tableMinWidth: props.tableMinWidth, innerHeights: props.rowInnerHeights, slatCoords: slatCoords, onRowCoords: _this.handleRowCoords, onRowHeightChange: props.onRowHeightChange }),
+                (context.options.nowIndicator && slatCoords && slatCoords.isDateInRange(nowDate)) && ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-now-indicator-container" },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.NowIndicatorRoot, { isAxis: false, date: nowDate }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: rootElRef, className: ['fc-timeline-now-indicator-line'].concat(classNames).join(' '), style: (0,_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.coordToCss)(slatCoords.dateToCoord(nowDate), context.isRtl) }, innerContent)); }))))); })));
+    };
+    // Hit System
+    // ------------------------------------------------------------------------------------------
+    ResourceTimelineGrid.prototype.queryHit = function (positionLeft, positionTop) {
+        var rowCoords = this.rowCoords;
+        var rowIndex = rowCoords.topToIndex(positionTop);
+        if (rowIndex != null) {
+            var resource = this.props.rowNodes[rowIndex].resource;
+            if (resource) { // not a group
+                var slatHit = this.slatsRef.current.positionToHit(positionLeft);
+                if (slatHit) {
+                    return {
+                        dateProfile: this.props.dateProfile,
+                        dateSpan: {
+                            range: slatHit.dateSpan.range,
+                            allDay: slatHit.dateSpan.allDay,
+                            resourceId: resource.id,
+                        },
+                        rect: {
+                            left: slatHit.left,
+                            right: slatHit.right,
+                            top: rowCoords.tops[rowIndex],
+                            bottom: rowCoords.bottoms[rowIndex],
+                        },
+                        dayEl: slatHit.dayEl,
+                        layer: 0,
+                    };
+                }
+            }
+        }
+        return null;
+    };
+    return ResourceTimelineGrid;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.DateComponent));
+function computeHasResourceBusinessHours(rowNodes) {
+    for (var _i = 0, rowNodes_1 = rowNodes; _i < rowNodes_1.length; _i++) {
+        var node = rowNodes_1[_i];
+        var resource = node.resource;
+        if (resource && resource.businessHours) {
+            return true;
+        }
+    }
+    return false;
+}
+
+var MIN_RESOURCE_AREA_WIDTH = 30; // definitely bigger than scrollbars
+// RENAME?
+var ResourceTimelineViewLayout = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineViewLayout, _super);
+    function ResourceTimelineViewLayout() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.scrollGridRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.timeBodyScrollerElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.spreadsheetHeaderChunkElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.rootElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.ensureScrollGridResizeId = 0;
+        _this.state = {
+            resourceAreaWidthOverride: null,
+        };
+        /*
+        ghetto debounce. don't race with ScrollGrid's resizing delay. solves #6140
+        */
+        _this.ensureScrollGridResize = function () {
+            if (_this.ensureScrollGridResizeId) {
+                clearTimeout(_this.ensureScrollGridResizeId);
+            }
+            _this.ensureScrollGridResizeId = setTimeout(function () {
+                _this.scrollGridRef.current.handleSizing(false);
+            }, _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.config.SCROLLGRID_RESIZE_INTERVAL + 1);
+        };
+        return _this;
+    }
+    ResourceTimelineViewLayout.prototype.render = function () {
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var options = context.options;
+        var stickyHeaderDates = !props.forPrint && (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getStickyHeaderDates)(options);
+        var stickyFooterScrollbar = !props.forPrint && (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getStickyFooterScrollbar)(options);
+        var sections = [
+            {
+                type: 'header',
+                key: 'header',
+                syncRowHeights: true,
+                isSticky: stickyHeaderDates,
+                chunks: [
+                    {
+                        key: 'datagrid',
+                        elRef: this.spreadsheetHeaderChunkElRef,
+                        // TODO: allow the content to specify this. have general-purpose 'content' with obj with keys
+                        tableClassName: 'fc-datagrid-header',
+                        rowContent: props.spreadsheetHeaderRows,
+                    },
+                    {
+                        key: 'divider',
+                        outerContent: ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { role: "presentation", className: 'fc-resource-timeline-divider ' + context.theme.getClass('tableCellShaded') })),
+                    },
+                    {
+                        key: 'timeline',
+                        content: props.timeHeaderContent,
+                    },
+                ],
+            },
+            {
+                type: 'body',
+                key: 'body',
+                syncRowHeights: true,
+                liquid: true,
+                expandRows: Boolean(options.expandRows),
+                chunks: [
+                    {
+                        key: 'datagrid',
+                        tableClassName: 'fc-datagrid-body',
+                        rowContent: props.spreadsheetBodyRows,
+                    },
+                    {
+                        key: 'divider',
+                        outerContent: ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { role: "presentation", className: 'fc-resource-timeline-divider ' + context.theme.getClass('tableCellShaded') })),
+                    },
+                    {
+                        key: 'timeline',
+                        scrollerElRef: this.timeBodyScrollerElRef,
+                        content: props.timeBodyContent,
+                    },
+                ],
+            },
+        ];
+        if (stickyFooterScrollbar) {
+            sections.push({
+                type: 'footer',
+                key: 'footer',
+                isSticky: true,
+                chunks: [
+                    {
+                        key: 'datagrid',
+                        content: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.renderScrollShim,
+                    },
+                    {
+                        key: 'divider',
+                        outerContent: ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", { role: "presentation", className: 'fc-resource-timeline-divider ' + context.theme.getClass('tableCellShaded') })),
+                    },
+                    {
+                        key: 'timeline',
+                        content: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.renderScrollShim,
+                    },
+                ],
+            });
+        }
+        var resourceAreaWidth = state.resourceAreaWidthOverride != null
+            ? state.resourceAreaWidthOverride
+            : options.resourceAreaWidth;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_scrollgrid__WEBPACK_IMPORTED_MODULE_5__.ScrollGrid, { ref: this.scrollGridRef, elRef: this.rootElRef, liquid: !props.isHeightAuto && !props.forPrint, collapsibleWidth: false, colGroups: [
+                { cols: props.spreadsheetCols, width: resourceAreaWidth },
+                { cols: [] },
+                { cols: props.timeCols },
+            ], sections: sections }));
+    };
+    ResourceTimelineViewLayout.prototype.forceTimeScroll = function (left) {
+        var scrollGrid = this.scrollGridRef.current;
+        scrollGrid.forceScrollLeft(2, left); // 2 = the time area
+    };
+    ResourceTimelineViewLayout.prototype.forceResourceScroll = function (top) {
+        var scrollGrid = this.scrollGridRef.current;
+        scrollGrid.forceScrollTop(1, top); // 1 = the body
+    };
+    ResourceTimelineViewLayout.prototype.getResourceScroll = function () {
+        var timeBodyScrollerEl = this.timeBodyScrollerElRef.current;
+        return timeBodyScrollerEl.scrollTop;
+    };
+    // Resource Area Resizing
+    // ------------------------------------------------------------------------------------------
+    // NOTE: a callback Ref for the resizer was firing multiple times with same elements (Preact)
+    // that's why we use spreadsheetResizerElRef instead
+    ResourceTimelineViewLayout.prototype.componentDidMount = function () {
+        this.initSpreadsheetResizing();
+    };
+    ResourceTimelineViewLayout.prototype.componentWillUnmount = function () {
+        this.destroySpreadsheetResizing();
+    };
+    ResourceTimelineViewLayout.prototype.initSpreadsheetResizing = function () {
+        var _this = this;
+        var _a = this.context, isRtl = _a.isRtl, pluginHooks = _a.pluginHooks;
+        var ElementDraggingImpl = pluginHooks.elementDraggingImpl;
+        var spreadsheetHeadEl = this.spreadsheetHeaderChunkElRef.current;
+        if (ElementDraggingImpl) {
+            var rootEl_1 = this.rootElRef.current;
+            var dragging = this.spreadsheetResizerDragging = new ElementDraggingImpl(rootEl_1, '.fc-resource-timeline-divider');
+            var dragStartWidth_1;
+            var viewWidth_1;
+            dragging.emitter.on('dragstart', function () {
+                dragStartWidth_1 = spreadsheetHeadEl.getBoundingClientRect().width;
+                viewWidth_1 = rootEl_1.getBoundingClientRect().width;
+            });
+            dragging.emitter.on('dragmove', function (pev) {
+                var newWidth = dragStartWidth_1 + pev.deltaX * (isRtl ? -1 : 1);
+                newWidth = Math.max(newWidth, MIN_RESOURCE_AREA_WIDTH);
+                newWidth = Math.min(newWidth, viewWidth_1 - MIN_RESOURCE_AREA_WIDTH);
+                // scrollgrid will ignore resize requests if there are too many :|
+                _this.setState({
+                    resourceAreaWidthOverride: newWidth,
+                }, _this.ensureScrollGridResize);
+            });
+            dragging.setAutoScrollEnabled(false); // because gets weird with auto-scrolling time area
+        }
+    };
+    ResourceTimelineViewLayout.prototype.destroySpreadsheetResizing = function () {
+        if (this.spreadsheetResizerDragging) {
+            this.spreadsheetResizerDragging.destroy();
+        }
+    };
+    return ResourceTimelineViewLayout;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var ResourceTimelineView = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_6__.__extends)(ResourceTimelineView, _super);
+    function ResourceTimelineView(props, context) {
+        var _this = _super.call(this, props, context) || this;
+        _this.processColOptions = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(processColOptions);
+        _this.buildTimelineDateProfile = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.buildTimelineDateProfile);
+        _this.hasNesting = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(hasNesting);
+        _this.buildRowNodes = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(_fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.buildRowNodes);
+        _this.layoutRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.rowNodes = [];
+        _this.renderedRowNodes = [];
+        _this.buildRowIndex = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(buildRowIndex);
+        _this.handleSlatCoords = function (slatCoords) {
+            _this.setState({ slatCoords: slatCoords });
+        };
+        _this.handleRowCoords = function (rowCoords) {
+            _this.rowCoords = rowCoords;
+            _this.scrollResponder.update(false); // TODO: could eliminate this if rowCoords lived in state
+        };
+        _this.handleMaxCushionWidth = function (slotCushionMaxWidth) {
+            _this.setState({
+                slotCushionMaxWidth: Math.ceil(slotCushionMaxWidth), // for less rerendering TODO: DRY
+            });
+        };
+        // Scrolling
+        // ------------------------------------------------------------------------------------------------------------------
+        // this is useful for scrolling prev/next dates while resource is scrolled down
+        _this.handleScrollLeftRequest = function (scrollLeft) {
+            var layout = _this.layoutRef.current;
+            layout.forceTimeScroll(scrollLeft);
+        };
+        _this.handleScrollRequest = function (request) {
+            var rowCoords = _this.rowCoords;
+            var layout = _this.layoutRef.current;
+            var rowId = request.rowId || request.resourceId;
+            if (rowCoords) {
+                if (rowId) {
+                    var rowIdToIndex = _this.buildRowIndex(_this.renderedRowNodes);
+                    var index = rowIdToIndex[rowId];
+                    if (index != null) {
+                        var scrollTop = (request.fromBottom != null ?
+                            rowCoords.bottoms[index] - request.fromBottom : // pixels from bottom edge
+                            rowCoords.tops[index] // just use top edge
+                        );
+                        layout.forceResourceScroll(scrollTop);
+                    }
+                }
+                return true;
+            }
+            return null;
+        };
+        // Resource INDIVIDUAL-Column Area Resizing
+        // ------------------------------------------------------------------------------------------
+        _this.handleColWidthChange = function (colWidths) {
+            _this.setState({
+                spreadsheetColWidths: colWidths,
+            });
+        };
+        _this.state = {
+            resourceAreaWidth: context.options.resourceAreaWidth,
+            spreadsheetColWidths: [],
+        };
+        return _this;
+    }
+    ResourceTimelineView.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var options = context.options, viewSpec = context.viewSpec;
+        var _b = this.processColOptions(context.options), superHeaderRendering = _b.superHeaderRendering, groupSpecs = _b.groupSpecs, orderSpecs = _b.orderSpecs, isVGrouping = _b.isVGrouping, colSpecs = _b.colSpecs;
+        var tDateProfile = this.buildTimelineDateProfile(props.dateProfile, context.dateEnv, options, context.dateProfileGenerator);
+        var rowNodes = this.rowNodes = this.buildRowNodes(props.resourceStore, groupSpecs, orderSpecs, isVGrouping, props.resourceEntityExpansions, options.resourcesInitiallyExpanded);
+        var extraClassNames = [
+            'fc-resource-timeline',
+            this.hasNesting(rowNodes) ? '' : 'fc-resource-timeline-flat',
+            'fc-timeline',
+            options.eventOverlap === false ? 'fc-timeline-overlap-disabled' : 'fc-timeline-overlap-enabled',
+        ];
+        var slotMinWidth = options.slotMinWidth;
+        var slatCols = (0,_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.buildSlatCols)(tDateProfile, slotMinWidth || this.computeFallbackSlotMinWidth(tDateProfile));
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.ViewRoot, { viewSpec: viewSpec }, function (rootElRef, classNames) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: rootElRef, className: extraClassNames.concat(classNames).join(' ') },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ResourceTimelineViewLayout, { ref: _this.layoutRef, forPrint: props.forPrint, isHeightAuto: props.isHeightAuto, spreadsheetCols: buildSpreadsheetCols(colSpecs, state.spreadsheetColWidths, ''), spreadsheetHeaderRows: function (contentArg) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(SpreadsheetHeader // TODO: rename to SpreadsheetHeaderRows
+                , { superHeaderRendering: superHeaderRendering, colSpecs: colSpecs, onColWidthChange: _this.handleColWidthChange, rowInnerHeights: contentArg.rowSyncHeights })); }, spreadsheetBodyRows: function (contentArg) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, _this.renderSpreadsheetRows(rowNodes, colSpecs, contentArg.rowSyncHeights))); }, timeCols: slatCols, timeHeaderContent: function (contentArg) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__.TimelineHeader, { clientWidth: contentArg.clientWidth, clientHeight: contentArg.clientHeight, tableMinWidth: contentArg.tableMinWidth, tableColGroupNode: contentArg.tableColGroupNode, dateProfile: props.dateProfile, tDateProfile: tDateProfile, slatCoords: state.slatCoords, rowInnerHeights: contentArg.rowSyncHeights, onMaxCushionWidth: slotMinWidth ? null : _this.handleMaxCushionWidth })); }, timeBodyContent: function (contentArg) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(ResourceTimelineGrid, { dateProfile: props.dateProfile, clientWidth: contentArg.clientWidth, clientHeight: contentArg.clientHeight, tableMinWidth: contentArg.tableMinWidth, tableColGroupNode: contentArg.tableColGroupNode, expandRows: contentArg.expandRows, tDateProfile: tDateProfile, rowNodes: rowNodes, businessHours: props.businessHours, dateSelection: props.dateSelection, eventStore: props.eventStore, eventUiBases: props.eventUiBases, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, resourceStore: props.resourceStore, nextDayThreshold: context.options.nextDayThreshold, rowInnerHeights: contentArg.rowSyncHeights, onSlatCoords: _this.handleSlatCoords, onRowCoords: _this.handleRowCoords, onScrollLeftRequest: _this.handleScrollLeftRequest, onRowHeightChange: contentArg.reportRowHeightChange })); } }))); }));
+    };
+    ResourceTimelineView.prototype.renderSpreadsheetRows = function (nodes, colSpecs, rowSyncHeights) {
+        return nodes.map(function (node, index) {
+            if (node.group) {
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(SpreadsheetGroupRow, { key: node.id, id: node.id, spreadsheetColCnt: colSpecs.length, isExpanded: node.isExpanded, group: node.group, innerHeight: rowSyncHeights[index] || '' }));
+            }
+            if (node.resource) {
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(SpreadsheetRow, { key: node.id, colSpecs: colSpecs, rowSpans: node.rowSpans, depth: node.depth, isExpanded: node.isExpanded, hasChildren: node.hasChildren, resource: node.resource, innerHeight: rowSyncHeights[index] || '' }));
+            }
+            return null;
+        });
+    };
+    ResourceTimelineView.prototype.componentDidMount = function () {
+        this.renderedRowNodes = this.rowNodes;
+        this.scrollResponder = this.context.createScrollResponder(this.handleScrollRequest);
+    };
+    ResourceTimelineView.prototype.getSnapshotBeforeUpdate = function () {
+        if (!this.props.forPrint) { // because print-view is always zero?
+            return { resourceScroll: this.queryResourceScroll() };
+        }
+        return {};
+    };
+    ResourceTimelineView.prototype.componentDidUpdate = function (prevProps, prevState, snapshot) {
+        this.renderedRowNodes = this.rowNodes;
+        this.scrollResponder.update(prevProps.dateProfile !== this.props.dateProfile);
+        if (snapshot.resourceScroll) {
+            this.handleScrollRequest(snapshot.resourceScroll); // TODO: this gets triggered too often
+        }
+    };
+    ResourceTimelineView.prototype.componentWillUnmount = function () {
+        this.scrollResponder.detach();
+    };
+    ResourceTimelineView.prototype.computeFallbackSlotMinWidth = function (tDateProfile) {
+        return Math.max(30, ((this.state.slotCushionMaxWidth || 0) / tDateProfile.slotsPerLabel));
+    };
+    ResourceTimelineView.prototype.queryResourceScroll = function () {
+        var _a = this, rowCoords = _a.rowCoords, renderedRowNodes = _a.renderedRowNodes;
+        if (rowCoords) {
+            var layout = this.layoutRef.current;
+            var trBottoms = rowCoords.bottoms;
+            var scrollTop = layout.getResourceScroll();
+            var scroll_1 = {};
+            for (var i = 0; i < trBottoms.length; i += 1) {
+                var rowNode = renderedRowNodes[i];
+                var elBottom = trBottoms[i] - scrollTop; // from the top of the scroller
+                if (elBottom > 0) {
+                    scroll_1.rowId = rowNode.id;
+                    scroll_1.fromBottom = elBottom;
+                    break;
+                }
+            }
+            return scroll_1;
+        }
+        return null;
+    };
+    return ResourceTimelineView;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+ResourceTimelineView.addStateEquality({
+    spreadsheetColWidths: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isArraysEqual,
+});
+function buildRowIndex(rowNodes) {
+    var rowIdToIndex = {};
+    for (var i = 0; i < rowNodes.length; i += 1) {
+        rowIdToIndex[rowNodes[i].id] = i;
+    }
+    return rowIdToIndex;
+}
+function buildSpreadsheetCols(colSpecs, forcedWidths, fallbackWidth) {
+    if (fallbackWidth === void 0) { fallbackWidth = ''; }
+    return colSpecs.map(function (colSpec, i) { return ({
+        className: colSpec.isMain ? 'fc-main-col' : '',
+        width: forcedWidths[i] || colSpec.width || fallbackWidth,
+    }); });
+}
+function hasNesting(nodes) {
+    for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+        var node = nodes_1[_i];
+        if (node.group) {
+            return true;
+        }
+        if (node.resource) {
+            if (node.hasChildren) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+function processColOptions(options) {
+    var allColSpecs = options.resourceAreaColumns || [];
+    var superHeaderRendering = null;
+    if (!allColSpecs.length) {
+        allColSpecs.push({
+            headerClassNames: options.resourceAreaHeaderClassNames,
+            headerContent: options.resourceAreaHeaderContent || 'Resources',
+            headerDidMount: options.resourceAreaHeaderDidMount,
+            headerWillUnmount: options.resourceAreaHeaderWillUnmount,
+        });
+    }
+    else if (options.resourceAreaHeaderContent) { // weird way to determine if content
+        superHeaderRendering = {
+            headerClassNames: options.resourceAreaHeaderClassNames,
+            headerContent: options.resourceAreaHeaderContent,
+            headerDidMount: options.resourceAreaHeaderDidMount,
+            headerWillUnmount: options.resourceAreaHeaderWillUnmount,
+        };
+    }
+    var plainColSpecs = [];
+    var groupColSpecs = []; // part of the colSpecs, but filtered out in order to put first
+    var groupSpecs = [];
+    var isVGrouping = false;
+    for (var _i = 0, allColSpecs_1 = allColSpecs; _i < allColSpecs_1.length; _i++) {
+        var colSpec = allColSpecs_1[_i];
+        if (colSpec.group) {
+            groupColSpecs.push((0,tslib__WEBPACK_IMPORTED_MODULE_6__.__assign)((0,tslib__WEBPACK_IMPORTED_MODULE_6__.__assign)({}, colSpec), { cellClassNames: colSpec.cellClassNames || options.resourceGroupLabelClassNames, cellContent: colSpec.cellContent || options.resourceGroupLabelContent, cellDidMount: colSpec.cellDidMount || options.resourceGroupLabelDidMount, cellWillUnmount: colSpec.cellWillUnmount || options.resourceGroupLaneWillUnmount }));
+        }
+        else {
+            plainColSpecs.push(colSpec);
+        }
+    }
+    // BAD: mutates a user-supplied option
+    var mainColSpec = plainColSpecs[0];
+    mainColSpec.isMain = true;
+    mainColSpec.cellClassNames = mainColSpec.cellClassNames || options.resourceLabelClassNames;
+    mainColSpec.cellContent = mainColSpec.cellContent || options.resourceLabelContent;
+    mainColSpec.cellDidMount = mainColSpec.cellDidMount || options.resourceLabelDidMount;
+    mainColSpec.cellWillUnmount = mainColSpec.cellWillUnmount || options.resourceLabelWillUnmount;
+    if (groupColSpecs.length) {
+        groupSpecs = groupColSpecs;
+        isVGrouping = true;
+    }
+    else {
+        var hGroupField = options.resourceGroupField;
+        if (hGroupField) {
+            groupSpecs.push({
+                field: hGroupField,
+                labelClassNames: options.resourceGroupLabelClassNames,
+                labelContent: options.resourceGroupLabelContent,
+                labelDidMount: options.resourceGroupLabelDidMount,
+                labelWillUnmount: options.resourceGroupLabelWillUnmount,
+                laneClassNames: options.resourceGroupLaneClassNames,
+                laneContent: options.resourceGroupLaneContent,
+                laneDidMount: options.resourceGroupLaneDidMount,
+                laneWillUnmount: options.resourceGroupLaneWillUnmount,
+            });
+        }
+    }
+    var allOrderSpecs = options.resourceOrder || _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__.DEFAULT_RESOURCE_ORDER;
+    var plainOrderSpecs = [];
+    for (var _a = 0, allOrderSpecs_1 = allOrderSpecs; _a < allOrderSpecs_1.length; _a++) {
+        var orderSpec = allOrderSpecs_1[_a];
+        var isGroup = false;
+        for (var _b = 0, groupSpecs_1 = groupSpecs; _b < groupSpecs_1.length; _b++) {
+            var groupSpec = groupSpecs_1[_b];
+            if (groupSpec.field === orderSpec.field) {
+                groupSpec.order = orderSpec.order; // -1, 0, 1
+                isGroup = true;
+                break;
+            }
+        }
+        if (!isGroup) {
+            plainOrderSpecs.push(orderSpec);
+        }
+    }
+    return {
+        superHeaderRendering: superHeaderRendering,
+        isVGrouping: isVGrouping,
+        groupSpecs: groupSpecs,
+        colSpecs: groupColSpecs.concat(plainColSpecs),
+        orderSpecs: plainOrderSpecs,
+    };
+}
+
+var main = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createPlugin)({
+    deps: [
+        _fullcalendar_premium_common__WEBPACK_IMPORTED_MODULE_2__["default"],
+        _fullcalendar_resource_common__WEBPACK_IMPORTED_MODULE_4__["default"],
+        _fullcalendar_timeline__WEBPACK_IMPORTED_MODULE_3__["default"],
+    ],
+    initialView: 'resourceTimelineDay',
+    views: {
+        resourceTimeline: {
+            type: 'timeline',
+            component: ResourceTimelineView,
+            needsResourceData: true,
+            resourceAreaWidth: '30%',
+            resourcesInitiallyExpanded: true,
+            eventResizableFromStart: true, // TODO: not DRY with this same setting in the main timeline config
+        },
+        resourceTimelineDay: {
+            type: 'resourceTimeline',
+            duration: { days: 1 },
+        },
+        resourceTimelineWeek: {
+            type: 'resourceTimeline',
+            duration: { weeks: 1 },
+        },
+        resourceTimelineMonth: {
+            type: 'resourceTimeline',
+            duration: { months: 1 },
+        },
+        resourceTimelineYear: {
+            type: 'resourceTimeline',
+            duration: { years: 1 },
+        },
+    },
+});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (main);
+
+//# sourceMappingURL=main.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@fullcalendar/scrollgrid/main.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@fullcalendar/scrollgrid/main.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ScrollGrid": () => (/* binding */ ScrollGrid),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "setScrollFromLeftEdge": () => (/* binding */ setScrollFromLeftEdge)
+/* harmony export */ });
+/* harmony import */ var _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @fullcalendar/common */ "./node_modules/@fullcalendar/common/main.js");
+/* harmony import */ var _fullcalendar_premium_common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/premium-common */ "./node_modules/@fullcalendar/premium-common/main.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/*!
+FullCalendar Scheduler v5.10.2
+Docs & License: https://fullcalendar.io/scheduler
+(c) 2021 Adam Shaw
+*/
+
+
+
+
+var WHEEL_EVENT_NAMES = 'wheel mousewheel DomMouseScroll MozMousePixelScroll'.split(' ');
+/*
+ALSO, with the ability to disable touch
+*/
+var ScrollListener = /** @class */ (function () {
+    function ScrollListener(el) {
+        var _this = this;
+        this.el = el;
+        this.emitter = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.Emitter();
+        this.isScrolling = false;
+        this.isTouching = false; // user currently has finger down?
+        this.isRecentlyWheeled = false;
+        this.isRecentlyScrolled = false;
+        this.wheelWaiter = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.DelayedRunner(this._handleWheelWaited.bind(this));
+        this.scrollWaiter = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.DelayedRunner(this._handleScrollWaited.bind(this));
+        // Handlers
+        // ----------------------------------------------------------------------------------------------
+        this.handleScroll = function () {
+            _this.startScroll();
+            _this.emitter.trigger('scroll', _this.isRecentlyWheeled, _this.isTouching);
+            _this.isRecentlyScrolled = true;
+            _this.scrollWaiter.request(500);
+        };
+        // will fire *before* the scroll event is fired (might not cause a scroll)
+        this.handleWheel = function () {
+            _this.isRecentlyWheeled = true;
+            _this.wheelWaiter.request(500);
+        };
+        // will fire *before* the scroll event is fired (might not cause a scroll)
+        this.handleTouchStart = function () {
+            _this.isTouching = true;
+        };
+        this.handleTouchEnd = function () {
+            _this.isTouching = false;
+            // if the user ended their touch, and the scroll area wasn't moving,
+            // we consider this to be the end of the scroll.
+            if (!_this.isRecentlyScrolled) {
+                _this.endScroll(); // won't fire if already ended
+            }
+        };
+        el.addEventListener('scroll', this.handleScroll);
+        el.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+        el.addEventListener('touchend', this.handleTouchEnd);
+        for (var _i = 0, WHEEL_EVENT_NAMES_1 = WHEEL_EVENT_NAMES; _i < WHEEL_EVENT_NAMES_1.length; _i++) {
+            var eventName = WHEEL_EVENT_NAMES_1[_i];
+            el.addEventListener(eventName, this.handleWheel);
+        }
+    }
+    ScrollListener.prototype.destroy = function () {
+        var el = this.el;
+        el.removeEventListener('scroll', this.handleScroll);
+        el.removeEventListener('touchstart', this.handleTouchStart, { passive: true });
+        el.removeEventListener('touchend', this.handleTouchEnd);
+        for (var _i = 0, WHEEL_EVENT_NAMES_2 = WHEEL_EVENT_NAMES; _i < WHEEL_EVENT_NAMES_2.length; _i++) {
+            var eventName = WHEEL_EVENT_NAMES_2[_i];
+            el.removeEventListener(eventName, this.handleWheel);
+        }
+    };
+    // Start / Stop
+    // ----------------------------------------------------------------------------------------------
+    ScrollListener.prototype.startScroll = function () {
+        if (!this.isScrolling) {
+            this.isScrolling = true;
+            this.emitter.trigger('scrollStart', this.isRecentlyWheeled, this.isTouching);
+        }
+    };
+    ScrollListener.prototype.endScroll = function () {
+        if (this.isScrolling) {
+            this.emitter.trigger('scrollEnd');
+            this.isScrolling = false;
+            this.isRecentlyScrolled = true;
+            this.isRecentlyWheeled = false;
+            this.scrollWaiter.clear();
+            this.wheelWaiter.clear();
+        }
+    };
+    ScrollListener.prototype._handleScrollWaited = function () {
+        this.isRecentlyScrolled = false;
+        // only end the scroll if not currently touching.
+        // if touching, the scrolling will end later, on touchend.
+        if (!this.isTouching) {
+            this.endScroll(); // won't fire if already ended
+        }
+    };
+    ScrollListener.prototype._handleWheelWaited = function () {
+        this.isRecentlyWheeled = false;
+    };
+    return ScrollListener;
+}());
+
+// TODO: assume the el has no borders?
+function getScrollCanvasOrigin(scrollEl) {
+    var rect = scrollEl.getBoundingClientRect();
+    var edges = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.computeEdges)(scrollEl); // TODO: pass in isRtl?
+    return {
+        left: rect.left + edges.borderLeft + edges.scrollbarLeft - getScrollFromLeftEdge(scrollEl),
+        top: rect.top + edges.borderTop - scrollEl.scrollTop,
+    };
+}
+function getScrollFromLeftEdge(el) {
+    var scrollLeft = el.scrollLeft;
+    var computedStyles = window.getComputedStyle(el); // TODO: pass in isRtl instead?
+    if (computedStyles.direction === 'rtl') {
+        switch (getRtlScrollSystem()) {
+            case 'negative':
+                scrollLeft *= -1; // convert to 'reverse'. fall through...
+            case 'reverse': // scrollLeft is distance between scrollframe's right edge scrollcanvas's right edge
+                scrollLeft = el.scrollWidth - scrollLeft - el.clientWidth;
+        }
+    }
+    return scrollLeft;
+}
+function setScrollFromLeftEdge(el, scrollLeft) {
+    var computedStyles = window.getComputedStyle(el); // TODO: pass in isRtl instead?
+    if (computedStyles.direction === 'rtl') {
+        switch (getRtlScrollSystem()) {
+            case 'reverse':
+                scrollLeft = el.scrollWidth - scrollLeft;
+                break;
+            case 'negative':
+                scrollLeft = -(el.scrollWidth - scrollLeft);
+                break;
+        }
+    }
+    el.scrollLeft = scrollLeft;
+}
+// Horizontal Scroll System Detection
+// ----------------------------------------------------------------------------------------------
+var _rtlScrollSystem;
+function getRtlScrollSystem() {
+    return _rtlScrollSystem || (_rtlScrollSystem = detectRtlScrollSystem());
+}
+function detectRtlScrollSystem() {
+    var el = document.createElement('div');
+    el.style.position = 'absolute';
+    el.style.top = '-1000px';
+    el.style.width = '1px';
+    el.style.height = '1px';
+    el.style.overflow = 'scroll';
+    el.style.direction = 'rtl';
+    el.style.fontSize = '100px';
+    el.innerHTML = 'A';
+    document.body.appendChild(el);
+    var system;
+    if (el.scrollLeft > 0) {
+        system = 'positive'; // scroll is a positive number from the left edge
+    }
+    else {
+        el.scrollLeft = 1;
+        if (el.scrollLeft > 0) {
+            system = 'reverse'; // scroll is a positive number from the right edge
+        }
+        else {
+            system = 'negative'; // scroll is a negative number from the right edge
+        }
+    }
+    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.removeElement)(el);
+    return system;
+}
+
+var IS_MS_EDGE = typeof navigator !== 'undefined' && /Edge/.test(navigator.userAgent); // TODO: what about Chromeum-based Edge?
+var STICKY_SELECTOR = '.fc-sticky';
+/*
+useful beyond the native position:sticky for these reasons:
+- support in IE11
+- nice centering support
+
+REQUIREMENT: fc-sticky elements, if the fc-sticky className is taken away, should NOT have relative or absolute positioning.
+This is because we attach the coords with JS, and the VDOM might take away the fc-sticky class but doesn't know kill the positioning.
+
+TODO: don't query text-align:center. isn't compatible with flexbox centering. instead, check natural X coord within parent container
+*/
+var StickyScrolling = /** @class */ (function () {
+    function StickyScrolling(scrollEl, isRtl) {
+        var _this = this;
+        this.scrollEl = scrollEl;
+        this.isRtl = isRtl;
+        this.usingRelative = null;
+        this.updateSize = function () {
+            var scrollEl = _this.scrollEl;
+            var els = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.findElements)(scrollEl, STICKY_SELECTOR);
+            var elGeoms = _this.queryElGeoms(els);
+            var viewportWidth = scrollEl.clientWidth;
+            var viewportHeight = scrollEl.clientHeight;
+            if (_this.usingRelative) {
+                var elDestinations = _this.computeElDestinations(elGeoms, viewportWidth); // read before prepPositioning
+                assignRelativePositions(els, elGeoms, elDestinations, viewportWidth, viewportHeight);
+            }
+            else {
+                assignStickyPositions(els, elGeoms, viewportWidth);
+            }
+        };
+        this.usingRelative =
+            !getStickySupported() || // IE11
+                // https://stackoverflow.com/questions/56835658/in-microsoft-edge-sticky-positioning-doesnt-work-when-combined-with-dir-rtl
+                (IS_MS_EDGE && isRtl);
+        if (this.usingRelative) {
+            this.listener = new ScrollListener(scrollEl);
+            this.listener.emitter.on('scrollEnd', this.updateSize);
+        }
+    }
+    StickyScrolling.prototype.destroy = function () {
+        if (this.listener) {
+            this.listener.destroy();
+        }
+    };
+    StickyScrolling.prototype.queryElGeoms = function (els) {
+        var _a = this, scrollEl = _a.scrollEl, isRtl = _a.isRtl;
+        var canvasOrigin = getScrollCanvasOrigin(scrollEl);
+        var elGeoms = [];
+        for (var _i = 0, els_1 = els; _i < els_1.length; _i++) {
+            var el = els_1[_i];
+            var parentBound = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.translateRect)((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.computeInnerRect)(el.parentNode, true, true), // weird way to call this!!!
+            -canvasOrigin.left, -canvasOrigin.top);
+            var elRect = el.getBoundingClientRect();
+            var computedStyles = window.getComputedStyle(el);
+            var textAlign = window.getComputedStyle(el.parentNode).textAlign; // ask the parent
+            var naturalBound = null;
+            if (textAlign === 'start') {
+                textAlign = isRtl ? 'right' : 'left';
+            }
+            else if (textAlign === 'end') {
+                textAlign = isRtl ? 'left' : 'right';
+            }
+            if (computedStyles.position !== 'sticky') {
+                naturalBound = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.translateRect)(elRect, -canvasOrigin.left - (parseFloat(computedStyles.left) || 0), // could be 'auto'
+                -canvasOrigin.top - (parseFloat(computedStyles.top) || 0));
+            }
+            elGeoms.push({
+                parentBound: parentBound,
+                naturalBound: naturalBound,
+                elWidth: elRect.width,
+                elHeight: elRect.height,
+                textAlign: textAlign,
+            });
+        }
+        return elGeoms;
+    };
+    // only for IE
+    StickyScrolling.prototype.computeElDestinations = function (elGeoms, viewportWidth) {
+        var scrollEl = this.scrollEl;
+        var viewportTop = scrollEl.scrollTop;
+        var viewportLeft = getScrollFromLeftEdge(scrollEl);
+        var viewportRight = viewportLeft + viewportWidth;
+        return elGeoms.map(function (elGeom) {
+            var elWidth = elGeom.elWidth, elHeight = elGeom.elHeight, parentBound = elGeom.parentBound, naturalBound = elGeom.naturalBound;
+            var destLeft; // relative to canvas topleft
+            var destTop; // "
+            switch (elGeom.textAlign) {
+                case 'left':
+                    destLeft = viewportLeft;
+                    break;
+                case 'right':
+                    destLeft = viewportRight - elWidth;
+                    break;
+                case 'center':
+                    destLeft = (viewportLeft + viewportRight) / 2 - elWidth / 2; /// noooo, use half-width insteadddddddd
+                    break;
+            }
+            destLeft = Math.min(destLeft, parentBound.right - elWidth);
+            destLeft = Math.max(destLeft, parentBound.left);
+            destTop = viewportTop;
+            destTop = Math.min(destTop, parentBound.bottom - elHeight);
+            destTop = Math.max(destTop, naturalBound.top); // better to use natural top for upper bound
+            return { left: destLeft, top: destTop };
+        });
+    };
+    return StickyScrolling;
+}());
+function assignRelativePositions(els, elGeoms, elDestinations, viewportWidth, viewportHeight) {
+    els.forEach(function (el, i) {
+        var _a = elGeoms[i], naturalBound = _a.naturalBound, parentBound = _a.parentBound;
+        var parentWidth = parentBound.right - parentBound.left;
+        var parentHeight = parentBound.bottom - parentBound.bottom;
+        var left;
+        var top;
+        if (parentWidth > viewportWidth ||
+            parentHeight > viewportHeight) {
+            left = elDestinations[i].left - naturalBound.left;
+            top = elDestinations[i].top - naturalBound.top;
+        }
+        else { // if parent container can be completely in view, we don't need stickiness
+            left = '';
+            top = '';
+        }
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.applyStyle)(el, {
+            position: 'relative',
+            left: left,
+            right: -left,
+            top: top,
+        });
+    });
+}
+function assignStickyPositions(els, elGeoms, viewportWidth) {
+    els.forEach(function (el, i) {
+        var _a = elGeoms[i], textAlign = _a.textAlign, elWidth = _a.elWidth, parentBound = _a.parentBound;
+        var parentWidth = parentBound.right - parentBound.left;
+        var left;
+        if (textAlign === 'center' &&
+            parentWidth > viewportWidth) {
+            left = (viewportWidth - elWidth) / 2;
+        }
+        else { // if parent container can be completely in view, we don't need stickiness
+            left = '';
+        }
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.applyStyle)(el, {
+            left: left,
+            right: left,
+            top: 0,
+        });
+    });
+}
+var _isStickySupported;
+function getStickySupported() {
+    if (_isStickySupported == null) {
+        _isStickySupported = computeStickySupported();
+    }
+    return _isStickySupported;
+}
+function computeStickySupported() {
+    var el = document.createElement('div');
+    el.style.position = 'sticky';
+    document.body.appendChild(el);
+    var val = window.getComputedStyle(el).position;
+    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.removeElement)(el);
+    return val === 'sticky';
+}
+
+var ClippedScroller = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__extends)(ClippedScroller, _super);
+    function ClippedScroller() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.elRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createRef)();
+        _this.state = {
+            xScrollbarWidth: 0,
+            yScrollbarWidth: 0,
+        };
+        _this.handleScroller = function (scroller) {
+            _this.scroller = scroller;
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.setRef)(_this.props.scrollerRef, scroller);
+        };
+        _this.handleSizing = function () {
+            var props = _this.props;
+            if (props.overflowY === 'scroll-hidden') {
+                _this.setState({ yScrollbarWidth: _this.scroller.getYScrollbarWidth() });
+            }
+            if (props.overflowX === 'scroll-hidden') {
+                _this.setState({ xScrollbarWidth: _this.scroller.getXScrollbarWidth() });
+            }
+        };
+        return _this;
+    }
+    ClippedScroller.prototype.render = function () {
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var isScrollbarOnLeft = context.isRtl && (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getIsRtlScrollbarOnLeft)();
+        var overcomeLeft = 0;
+        var overcomeRight = 0;
+        var overcomeBottom = 0;
+        if (props.overflowX === 'scroll-hidden') {
+            overcomeBottom = state.xScrollbarWidth;
+        }
+        if (props.overflowY === 'scroll-hidden') {
+            if (state.yScrollbarWidth != null) {
+                if (isScrollbarOnLeft) {
+                    overcomeLeft = state.yScrollbarWidth;
+                }
+                else {
+                    overcomeRight = state.yScrollbarWidth;
+                }
+            }
+        }
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", { ref: this.elRef, className: 'fc-scroller-harness' + (props.liquid ? ' fc-scroller-harness-liquid' : '') },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.Scroller, { ref: this.handleScroller, elRef: this.props.scrollerElRef, overflowX: props.overflowX === 'scroll-hidden' ? 'scroll' : props.overflowX, overflowY: props.overflowY === 'scroll-hidden' ? 'scroll' : props.overflowY, overcomeLeft: overcomeLeft, overcomeRight: overcomeRight, overcomeBottom: overcomeBottom, maxHeight: typeof props.maxHeight === 'number'
+                    ? (props.maxHeight + (props.overflowX === 'scroll-hidden' ? state.xScrollbarWidth : 0))
+                    : '', liquid: props.liquid, liquidIsAbsolute: true }, props.children)));
+    };
+    ClippedScroller.prototype.componentDidMount = function () {
+        this.handleSizing();
+        this.context.addResizeHandler(this.handleSizing);
+    };
+    ClippedScroller.prototype.componentDidUpdate = function (prevProps) {
+        if (!(0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.isPropsEqual)(prevProps, this.props)) { // an external change?
+            this.handleSizing();
+        }
+    };
+    ClippedScroller.prototype.componentWillUnmount = function () {
+        this.context.removeResizeHandler(this.handleSizing);
+    };
+    ClippedScroller.prototype.needsXScrolling = function () {
+        return this.scroller.needsXScrolling();
+    };
+    ClippedScroller.prototype.needsYScrolling = function () {
+        return this.scroller.needsYScrolling();
+    };
+    return ClippedScroller;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.BaseComponent));
+
+var ScrollSyncer = /** @class */ (function () {
+    function ScrollSyncer(isVertical, scrollEls) {
+        var _this = this;
+        this.isVertical = isVertical;
+        this.scrollEls = scrollEls;
+        this.isPaused = false;
+        this.scrollListeners = scrollEls.map(function (el) { return _this.bindScroller(el); });
+    }
+    ScrollSyncer.prototype.destroy = function () {
+        for (var _i = 0, _a = this.scrollListeners; _i < _a.length; _i++) {
+            var scrollListener = _a[_i];
+            scrollListener.destroy();
+        }
+    };
+    ScrollSyncer.prototype.bindScroller = function (el) {
+        var _this = this;
+        var _a = this, scrollEls = _a.scrollEls, isVertical = _a.isVertical;
+        var scrollListener = new ScrollListener(el);
+        var onScroll = function (isWheel, isTouch) {
+            if (!_this.isPaused) {
+                if (!_this.masterEl || (_this.masterEl !== el && (isWheel || isTouch))) {
+                    _this.assignMaster(el);
+                }
+                if (_this.masterEl === el) { // dealing with current
+                    for (var _i = 0, scrollEls_1 = scrollEls; _i < scrollEls_1.length; _i++) {
+                        var otherEl = scrollEls_1[_i];
+                        if (otherEl !== el) {
+                            if (isVertical) {
+                                otherEl.scrollTop = el.scrollTop;
+                            }
+                            else {
+                                otherEl.scrollLeft = el.scrollLeft;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        var onScrollEnd = function () {
+            if (_this.masterEl === el) {
+                _this.masterEl = null;
+            }
+        };
+        scrollListener.emitter.on('scroll', onScroll);
+        scrollListener.emitter.on('scrollEnd', onScrollEnd);
+        return scrollListener;
+    };
+    ScrollSyncer.prototype.assignMaster = function (el) {
+        this.masterEl = el;
+        for (var _i = 0, _a = this.scrollListeners; _i < _a.length; _i++) {
+            var scrollListener = _a[_i];
+            if (scrollListener.el !== el) {
+                scrollListener.endScroll(); // to prevent residual scrolls from reclaiming master
+            }
+        }
+    };
+    /*
+    will normalize the scrollLeft value
+    */
+    ScrollSyncer.prototype.forceScrollLeft = function (scrollLeft) {
+        this.isPaused = true;
+        for (var _i = 0, _a = this.scrollListeners; _i < _a.length; _i++) {
+            var listener = _a[_i];
+            setScrollFromLeftEdge(listener.el, scrollLeft);
+        }
+        this.isPaused = false;
+    };
+    ScrollSyncer.prototype.forceScrollTop = function (top) {
+        this.isPaused = true;
+        for (var _i = 0, _a = this.scrollListeners; _i < _a.length; _i++) {
+            var listener = _a[_i];
+            listener.el.scrollTop = top;
+        }
+        this.isPaused = false;
+    };
+    return ScrollSyncer;
+}());
+
+/*
+TODO: make <ScrollGridSection> subcomponent
+NOTE: doesn't support collapsibleWidth (which is sortof a hack anyway)
+*/
+var ScrollGrid = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__extends)(ScrollGrid, _super);
+    function ScrollGrid() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.compileColGroupStats = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.memoizeArraylike)(compileColGroupStat, isColGroupStatsEqual);
+        _this.renderMicroColGroups = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.memoizeArraylike)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.renderMicroColGroup); // yucky to memoize VNodes, but much more efficient for consumers
+        _this.clippedScrollerRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.RefMap();
+        // doesn't hold non-scrolling els used just for padding
+        _this.scrollerElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.RefMap(_this._handleScrollerEl.bind(_this));
+        _this.chunkElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.RefMap(_this._handleChunkEl.bind(_this));
+        _this.getStickyScrolling = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.memoizeArraylike)(initStickyScrolling, null, destroyStickyScrolling);
+        _this.getScrollSyncersBySection = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.memoizeHashlike)(initScrollSyncer.bind(_this, true), null, destroyScrollSyncer);
+        _this.getScrollSyncersByColumn = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.memoizeHashlike)(initScrollSyncer.bind(_this, false), null, destroyScrollSyncer);
+        _this.stickyScrollings = [];
+        _this.scrollSyncersBySection = {};
+        _this.scrollSyncersByColumn = {};
+        // for row-height-syncing
+        _this.rowUnstableMap = new Map(); // no need to groom. always self-cancels
+        _this.rowInnerMaxHeightMap = new Map();
+        _this.anyRowHeightsChanged = false;
+        _this.recentSizingCnt = 0;
+        _this.state = {
+            shrinkWidths: [],
+            forceYScrollbars: false,
+            forceXScrollbars: false,
+            scrollerClientWidths: {},
+            scrollerClientHeights: {},
+            sectionRowMaxHeights: [],
+        };
+        _this.handleSizing = function (isForcedResize, sectionRowMaxHeightsChanged) {
+            if (!_this.allowSizing()) {
+                return;
+            }
+            if (!sectionRowMaxHeightsChanged) { // something else changed, probably external
+                _this.anyRowHeightsChanged = true;
+            }
+            var otherState = {};
+            // if reacting to self-change of sectionRowMaxHeightsChanged, or not stable, don't do anything
+            if (isForcedResize || (!sectionRowMaxHeightsChanged && !_this.rowUnstableMap.size)) {
+                otherState.sectionRowMaxHeights = _this.computeSectionRowMaxHeights();
+            }
+            _this.setState((0,tslib__WEBPACK_IMPORTED_MODULE_2__.__assign)((0,tslib__WEBPACK_IMPORTED_MODULE_2__.__assign)({ shrinkWidths: _this.computeShrinkWidths() }, _this.computeScrollerDims()), otherState), function () {
+                if (!_this.rowUnstableMap.size) {
+                    _this.updateStickyScrolling(); // needs to happen AFTER final positioning committed to DOM
+                }
+            });
+        };
+        _this.handleRowHeightChange = function (rowEl, isStable) {
+            var _a = _this, rowUnstableMap = _a.rowUnstableMap, rowInnerMaxHeightMap = _a.rowInnerMaxHeightMap;
+            if (!isStable) {
+                rowUnstableMap.set(rowEl, true);
+            }
+            else {
+                rowUnstableMap.delete(rowEl);
+                var innerMaxHeight = getRowInnerMaxHeight(rowEl);
+                if (!rowInnerMaxHeightMap.has(rowEl) || rowInnerMaxHeightMap.get(rowEl) !== innerMaxHeight) {
+                    rowInnerMaxHeightMap.set(rowEl, innerMaxHeight);
+                    _this.anyRowHeightsChanged = true;
+                }
+                if (!rowUnstableMap.size && _this.anyRowHeightsChanged) {
+                    _this.anyRowHeightsChanged = false;
+                    _this.setState({
+                        sectionRowMaxHeights: _this.computeSectionRowMaxHeights(),
+                    });
+                }
+            }
+        };
+        return _this;
+    }
+    ScrollGrid.prototype.render = function () {
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var shrinkWidths = state.shrinkWidths;
+        var colGroupStats = this.compileColGroupStats(props.colGroups.map(function (colGroup) { return [colGroup]; }));
+        var microColGroupNodes = this.renderMicroColGroups(colGroupStats.map(function (stat, i) { return [stat.cols, shrinkWidths[i]]; }));
+        var classNames = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getScrollGridClassNames)(props.liquid, context);
+        var _b = this.getDims(); _b[0]; _b[1];
+        // TODO: make DRY
+        var sectionConfigs = props.sections;
+        var configCnt = sectionConfigs.length;
+        var configI = 0;
+        var currentConfig;
+        var headSectionNodes = [];
+        var bodySectionNodes = [];
+        var footSectionNodes = [];
+        while (configI < configCnt && (currentConfig = sectionConfigs[configI]).type === 'header') {
+            headSectionNodes.push(this.renderSection(currentConfig, configI, colGroupStats, microColGroupNodes, state.sectionRowMaxHeights, true));
+            configI += 1;
+        }
+        while (configI < configCnt && (currentConfig = sectionConfigs[configI]).type === 'body') {
+            bodySectionNodes.push(this.renderSection(currentConfig, configI, colGroupStats, microColGroupNodes, state.sectionRowMaxHeights, false));
+            configI += 1;
+        }
+        while (configI < configCnt && (currentConfig = sectionConfigs[configI]).type === 'footer') {
+            footSectionNodes.push(this.renderSection(currentConfig, configI, colGroupStats, microColGroupNodes, state.sectionRowMaxHeights, true));
+            configI += 1;
+        }
+        var isBuggy = !(0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getCanVGrowWithinCell)(); // see NOTE in SimpleScrollGrid
+        var roleAttrs = { role: 'rowgroup' };
+        return (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)('table', {
+            ref: props.elRef,
+            role: 'grid',
+            className: classNames.join(' '),
+        }, renderMacroColGroup(colGroupStats, shrinkWidths), Boolean(!isBuggy && headSectionNodes.length) && _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement.apply(void 0, (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)(['thead', roleAttrs], headSectionNodes)), Boolean(!isBuggy && bodySectionNodes.length) && _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement.apply(void 0, (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)(['tbody', roleAttrs], bodySectionNodes)), Boolean(!isBuggy && footSectionNodes.length) && _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement.apply(void 0, (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)(['tfoot', roleAttrs], footSectionNodes)), isBuggy && _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement.apply(void 0, (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)((0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)((0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)(['tbody', roleAttrs], headSectionNodes), bodySectionNodes), footSectionNodes)));
+    };
+    ScrollGrid.prototype.renderSection = function (sectionConfig, sectionIndex, colGroupStats, microColGroupNodes, sectionRowMaxHeights, isHeader) {
+        var _this = this;
+        if ('outerContent' in sectionConfig) {
+            return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.Fragment, { key: sectionConfig.key }, sectionConfig.outerContent));
+        }
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)("tr", { key: sectionConfig.key, role: "presentation", className: (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getSectionClassNames)(sectionConfig, this.props.liquid).join(' ') }, sectionConfig.chunks.map(function (chunkConfig, i) { return _this.renderChunk(sectionConfig, sectionIndex, colGroupStats[i], microColGroupNodes[i], chunkConfig, i, (sectionRowMaxHeights[sectionIndex] || [])[i] || [], isHeader); })));
+    };
+    ScrollGrid.prototype.renderChunk = function (sectionConfig, sectionIndex, colGroupStat, microColGroupNode, chunkConfig, chunkIndex, rowHeights, isHeader) {
+        if ('outerContent' in chunkConfig) {
+            return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.Fragment, { key: chunkConfig.key }, chunkConfig.outerContent));
+        }
+        var state = this.state;
+        var scrollerClientWidths = state.scrollerClientWidths, scrollerClientHeights = state.scrollerClientHeights;
+        var _a = this.getDims(), sectionCnt = _a[0], chunksPerSection = _a[1];
+        var index = sectionIndex * chunksPerSection + chunkIndex;
+        var sideScrollIndex = (!this.context.isRtl || (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getIsRtlScrollbarOnLeft)()) ? chunksPerSection - 1 : 0;
+        var isVScrollSide = chunkIndex === sideScrollIndex;
+        var isLastSection = sectionIndex === sectionCnt - 1;
+        var forceXScrollbars = isLastSection && state.forceXScrollbars; // NOOOO can result in `null`
+        var forceYScrollbars = isVScrollSide && state.forceYScrollbars; // NOOOO can result in `null`
+        var allowXScrolling = colGroupStat && colGroupStat.allowXScrolling; // rename?
+        var allowYScrolling = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getAllowYScrolling)(this.props, sectionConfig); // rename? do in section func?
+        var chunkVGrow = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getSectionHasLiquidHeight)(this.props, sectionConfig); // do in section func?
+        var expandRows = sectionConfig.expandRows && chunkVGrow;
+        var tableMinWidth = (colGroupStat && colGroupStat.totalColMinWidth) || '';
+        var content = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.renderChunkContent)(sectionConfig, chunkConfig, {
+            tableColGroupNode: microColGroupNode,
+            tableMinWidth: tableMinWidth,
+            clientWidth: scrollerClientWidths[index] !== undefined ? scrollerClientWidths[index] : null,
+            clientHeight: scrollerClientHeights[index] !== undefined ? scrollerClientHeights[index] : null,
+            expandRows: expandRows,
+            syncRowHeights: Boolean(sectionConfig.syncRowHeights),
+            rowSyncHeights: rowHeights,
+            reportRowHeightChange: this.handleRowHeightChange,
+        }, isHeader);
+        var overflowX = forceXScrollbars ? (isLastSection ? 'scroll' : 'scroll-hidden') :
+            !allowXScrolling ? 'hidden' :
+                (isLastSection ? 'auto' : 'scroll-hidden');
+        var overflowY = forceYScrollbars ? (isVScrollSide ? 'scroll' : 'scroll-hidden') :
+            !allowYScrolling ? 'hidden' :
+                (isVScrollSide ? 'auto' : 'scroll-hidden');
+        // it *could* be possible to reduce DOM wrappers by only doing a ClippedScroller when allowXScrolling or allowYScrolling,
+        // but if these values were to change, the inner components would be unmounted/remounted because of the parent change.
+        content = ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)(ClippedScroller, { ref: this.clippedScrollerRefs.createRef(index), scrollerElRef: this.scrollerElRefs.createRef(index), overflowX: overflowX, overflowY: overflowY, liquid: chunkVGrow, maxHeight: sectionConfig.maxHeight }, content));
+        return (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)(isHeader ? 'th' : 'td', {
+            key: chunkConfig.key,
+            ref: this.chunkElRefs.createRef(index),
+            role: 'presentation',
+        }, content);
+    };
+    ScrollGrid.prototype.componentDidMount = function () {
+        this.updateScrollSyncers();
+        this.handleSizing(false);
+        this.context.addResizeHandler(this.handleSizing);
+    };
+    ScrollGrid.prototype.componentDidUpdate = function (prevProps, prevState) {
+        this.updateScrollSyncers();
+        // TODO: need better solution when state contains non-sizing things
+        this.handleSizing(false, prevState.sectionRowMaxHeights !== this.state.sectionRowMaxHeights);
+    };
+    ScrollGrid.prototype.componentWillUnmount = function () {
+        this.context.removeResizeHandler(this.handleSizing);
+        this.destroyStickyScrolling();
+        this.destroyScrollSyncers();
+    };
+    ScrollGrid.prototype.allowSizing = function () {
+        var now = new Date();
+        if (!this.lastSizingDate ||
+            now.valueOf() > this.lastSizingDate.valueOf() + _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.config.SCROLLGRID_RESIZE_INTERVAL) {
+            this.lastSizingDate = now;
+            this.recentSizingCnt = 0;
+            return true;
+        }
+        return (this.recentSizingCnt += 1) <= 10;
+    };
+    ScrollGrid.prototype.computeShrinkWidths = function () {
+        var _this = this;
+        var colGroupStats = this.compileColGroupStats(this.props.colGroups.map(function (colGroup) { return [colGroup]; }));
+        var _a = this.getDims(), sectionCnt = _a[0], chunksPerSection = _a[1];
+        var cnt = sectionCnt * chunksPerSection;
+        var shrinkWidths = [];
+        colGroupStats.forEach(function (colGroupStat, i) {
+            if (colGroupStat.hasShrinkCol) {
+                var chunkEls = _this.chunkElRefs.collect(i, cnt, chunksPerSection); // in one col
+                shrinkWidths[i] = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.computeShrinkWidth)(chunkEls);
+            }
+        });
+        return shrinkWidths;
+    };
+    // has the side effect of grooming rowInnerMaxHeightMap
+    // TODO: somehow short-circuit if there are no new height changes
+    ScrollGrid.prototype.computeSectionRowMaxHeights = function () {
+        var newHeightMap = new Map();
+        var _a = this.getDims(), sectionCnt = _a[0], chunksPerSection = _a[1];
+        var sectionRowMaxHeights = [];
+        for (var sectionI = 0; sectionI < sectionCnt; sectionI += 1) {
+            var sectionConfig = this.props.sections[sectionI];
+            var assignableHeights = []; // chunk, row
+            if (sectionConfig && sectionConfig.syncRowHeights) {
+                var rowHeightsByChunk = [];
+                for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                    var index = sectionI * chunksPerSection + chunkI;
+                    var rowHeights = [];
+                    var chunkEl = this.chunkElRefs.currentMap[index];
+                    if (chunkEl) {
+                        rowHeights = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.findElements)(chunkEl, '.fc-scrollgrid-sync-table tr').map(function (rowEl) {
+                            var max = getRowInnerMaxHeight(rowEl);
+                            newHeightMap.set(rowEl, max);
+                            return max;
+                        });
+                    }
+                    else {
+                        rowHeights = [];
+                    }
+                    rowHeightsByChunk.push(rowHeights);
+                }
+                var rowCnt = rowHeightsByChunk[0].length;
+                var isEqualRowCnt = true;
+                for (var chunkI = 1; chunkI < chunksPerSection; chunkI += 1) {
+                    var isOuterContent = sectionConfig.chunks[chunkI] && sectionConfig.chunks[chunkI].outerContent !== undefined; // can be null
+                    if (!isOuterContent && rowHeightsByChunk[chunkI].length !== rowCnt) { // skip outer content
+                        isEqualRowCnt = false;
+                        break;
+                    }
+                }
+                if (!isEqualRowCnt) {
+                    var chunkHeightSums = [];
+                    for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                        chunkHeightSums.push(sumNumbers(rowHeightsByChunk[chunkI]) + rowHeightsByChunk[chunkI].length);
+                    }
+                    var maxTotalSum = Math.max.apply(Math, chunkHeightSums);
+                    for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                        var rowInChunkCnt = rowHeightsByChunk[chunkI].length;
+                        var rowInChunkTotalHeight = maxTotalSum - rowInChunkCnt; // subtract border
+                        // height of non-first row. we do this to avoid rounding, because it's unreliable within a table
+                        var rowInChunkHeightOthers = Math.floor(rowInChunkTotalHeight / rowInChunkCnt);
+                        // whatever is leftover goes to the first row
+                        var rowInChunkHeightFirst = rowInChunkTotalHeight - rowInChunkHeightOthers * (rowInChunkCnt - 1);
+                        var rowInChunkHeights = [];
+                        var row = 0;
+                        if (row < rowInChunkCnt) {
+                            rowInChunkHeights.push(rowInChunkHeightFirst);
+                            row += 1;
+                        }
+                        while (row < rowInChunkCnt) {
+                            rowInChunkHeights.push(rowInChunkHeightOthers);
+                            row += 1;
+                        }
+                        assignableHeights.push(rowInChunkHeights);
+                    }
+                }
+                else {
+                    for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                        assignableHeights.push([]);
+                    }
+                    for (var row = 0; row < rowCnt; row += 1) {
+                        var rowHeightsAcrossChunks = [];
+                        for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                            var h = rowHeightsByChunk[chunkI][row];
+                            if (h != null) { // protect against outerContent
+                                rowHeightsAcrossChunks.push(h);
+                            }
+                        }
+                        var maxHeight = Math.max.apply(Math, rowHeightsAcrossChunks);
+                        for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                            assignableHeights[chunkI].push(maxHeight);
+                        }
+                    }
+                }
+            }
+            sectionRowMaxHeights.push(assignableHeights);
+        }
+        this.rowInnerMaxHeightMap = newHeightMap;
+        return sectionRowMaxHeights;
+    };
+    ScrollGrid.prototype.computeScrollerDims = function () {
+        var scrollbarWidth = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getScrollbarWidths)();
+        var _a = this.getDims(), sectionCnt = _a[0], chunksPerSection = _a[1];
+        var sideScrollI = (!this.context.isRtl || (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.getIsRtlScrollbarOnLeft)()) ? chunksPerSection - 1 : 0;
+        var lastSectionI = sectionCnt - 1;
+        var currentScrollers = this.clippedScrollerRefs.currentMap;
+        var scrollerEls = this.scrollerElRefs.currentMap;
+        var forceYScrollbars = false;
+        var forceXScrollbars = false;
+        var scrollerClientWidths = {};
+        var scrollerClientHeights = {};
+        for (var sectionI = 0; sectionI < sectionCnt; sectionI += 1) { // along edge
+            var index = sectionI * chunksPerSection + sideScrollI;
+            var scroller = currentScrollers[index];
+            if (scroller && scroller.needsYScrolling()) {
+                forceYScrollbars = true;
+                break;
+            }
+        }
+        for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) { // along last row
+            var index = lastSectionI * chunksPerSection + chunkI;
+            var scroller = currentScrollers[index];
+            if (scroller && scroller.needsXScrolling()) {
+                forceXScrollbars = true;
+                break;
+            }
+        }
+        for (var sectionI = 0; sectionI < sectionCnt; sectionI += 1) {
+            for (var chunkI = 0; chunkI < chunksPerSection; chunkI += 1) {
+                var index = sectionI * chunksPerSection + chunkI;
+                var scrollerEl = scrollerEls[index];
+                if (scrollerEl) {
+                    // TODO: weird way to get this. need harness b/c doesn't include table borders
+                    var harnessEl = scrollerEl.parentNode;
+                    scrollerClientWidths[index] = Math.floor(harnessEl.getBoundingClientRect().width - ((chunkI === sideScrollI && forceYScrollbars)
+                        ? scrollbarWidth.y // use global because scroller might not have scrollbars yet but will need them in future
+                        : 0));
+                    scrollerClientHeights[index] = Math.floor(harnessEl.getBoundingClientRect().height - ((sectionI === lastSectionI && forceXScrollbars)
+                        ? scrollbarWidth.x // use global because scroller might not have scrollbars yet but will need them in future
+                        : 0));
+                }
+            }
+        }
+        return { forceYScrollbars: forceYScrollbars, forceXScrollbars: forceXScrollbars, scrollerClientWidths: scrollerClientWidths, scrollerClientHeights: scrollerClientHeights };
+    };
+    ScrollGrid.prototype.updateStickyScrolling = function () {
+        var isRtl = this.context.isRtl;
+        var argsByKey = this.scrollerElRefs.getAll().map(function (scrollEl) { return [scrollEl, isRtl]; });
+        var stickyScrollings = this.getStickyScrolling(argsByKey);
+        stickyScrollings.forEach(function (stickyScrolling) { return stickyScrolling.updateSize(); });
+        this.stickyScrollings = stickyScrollings;
+    };
+    ScrollGrid.prototype.destroyStickyScrolling = function () {
+        this.stickyScrollings.forEach(destroyStickyScrolling);
+    };
+    ScrollGrid.prototype.updateScrollSyncers = function () {
+        var _a = this.getDims(), sectionCnt = _a[0], chunksPerSection = _a[1];
+        var cnt = sectionCnt * chunksPerSection;
+        var scrollElsBySection = {};
+        var scrollElsByColumn = {};
+        var scrollElMap = this.scrollerElRefs.currentMap;
+        for (var sectionI = 0; sectionI < sectionCnt; sectionI += 1) {
+            var startIndex = sectionI * chunksPerSection;
+            var endIndex = startIndex + chunksPerSection;
+            scrollElsBySection[sectionI] = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.collectFromHash)(scrollElMap, startIndex, endIndex, 1); // use the filtered
+        }
+        for (var col = 0; col < chunksPerSection; col += 1) {
+            scrollElsByColumn[col] = this.scrollerElRefs.collect(col, cnt, chunksPerSection); // DON'T use the filtered
+        }
+        this.scrollSyncersBySection = this.getScrollSyncersBySection(scrollElsBySection);
+        this.scrollSyncersByColumn = this.getScrollSyncersByColumn(scrollElsByColumn);
+    };
+    ScrollGrid.prototype.destroyScrollSyncers = function () {
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.mapHash)(this.scrollSyncersBySection, destroyScrollSyncer);
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.mapHash)(this.scrollSyncersByColumn, destroyScrollSyncer);
+    };
+    ScrollGrid.prototype.getChunkConfigByIndex = function (index) {
+        var chunksPerSection = this.getDims()[1];
+        var sectionI = Math.floor(index / chunksPerSection);
+        var chunkI = index % chunksPerSection;
+        var sectionConfig = this.props.sections[sectionI];
+        return sectionConfig && sectionConfig.chunks[chunkI];
+    };
+    ScrollGrid.prototype.forceScrollLeft = function (col, scrollLeft) {
+        var scrollSyncer = this.scrollSyncersByColumn[col];
+        if (scrollSyncer) {
+            scrollSyncer.forceScrollLeft(scrollLeft);
+        }
+    };
+    ScrollGrid.prototype.forceScrollTop = function (sectionI, scrollTop) {
+        var scrollSyncer = this.scrollSyncersBySection[sectionI];
+        if (scrollSyncer) {
+            scrollSyncer.forceScrollTop(scrollTop);
+        }
+    };
+    ScrollGrid.prototype._handleChunkEl = function (chunkEl, key) {
+        var chunkConfig = this.getChunkConfigByIndex(parseInt(key, 10));
+        if (chunkConfig) { // null if section disappeared. bad, b/c won't null-set the elRef
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.setRef)(chunkConfig.elRef, chunkEl);
+        }
+    };
+    ScrollGrid.prototype._handleScrollerEl = function (scrollerEl, key) {
+        var chunkConfig = this.getChunkConfigByIndex(parseInt(key, 10));
+        if (chunkConfig) { // null if section disappeared. bad, b/c won't null-set the elRef
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.setRef)(chunkConfig.scrollerElRef, scrollerEl);
+        }
+    };
+    ScrollGrid.prototype.getDims = function () {
+        var sectionCnt = this.props.sections.length;
+        var chunksPerSection = sectionCnt ? this.props.sections[0].chunks.length : 0;
+        return [sectionCnt, chunksPerSection];
+    };
+    return ScrollGrid;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.BaseComponent));
+ScrollGrid.addStateEquality({
+    shrinkWidths: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.isArraysEqual,
+    scrollerClientWidths: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.isPropsEqual,
+    scrollerClientHeights: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.isPropsEqual,
+});
+function sumNumbers(numbers) {
+    var sum = 0;
+    for (var _i = 0, numbers_1 = numbers; _i < numbers_1.length; _i++) {
+        var n = numbers_1[_i];
+        sum += n;
+    }
+    return sum;
+}
+function getRowInnerMaxHeight(rowEl) {
+    var innerHeights = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.findElements)(rowEl, '.fc-scrollgrid-sync-inner').map(getElHeight);
+    if (innerHeights.length) {
+        return Math.max.apply(Math, innerHeights);
+    }
+    return 0;
+}
+function getElHeight(el) {
+    return el.offsetHeight; // better to deal with integers, for rounding, for PureComponent
+}
+function renderMacroColGroup(colGroupStats, shrinkWidths) {
+    var children = colGroupStats.map(function (colGroupStat, i) {
+        var width = colGroupStat.width;
+        if (width === 'shrink') {
+            width = colGroupStat.totalColWidth + (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.sanitizeShrinkWidth)(shrinkWidths[i]) + 1; // +1 for border :(
+        }
+        return ( // eslint-disable-next-line react/jsx-key
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement)("col", { style: { width: width } }));
+    });
+    return _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createElement.apply(void 0, (0,tslib__WEBPACK_IMPORTED_MODULE_2__.__spreadArray)(['colgroup', {}], children));
+}
+function compileColGroupStat(colGroupConfig) {
+    var totalColWidth = sumColProp(colGroupConfig.cols, 'width'); // excludes "shrink"
+    var totalColMinWidth = sumColProp(colGroupConfig.cols, 'minWidth');
+    var hasShrinkCol = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.hasShrinkWidth)(colGroupConfig.cols);
+    var allowXScrolling = colGroupConfig.width !== 'shrink' && Boolean(totalColWidth || totalColMinWidth || hasShrinkCol);
+    return {
+        hasShrinkCol: hasShrinkCol,
+        totalColWidth: totalColWidth,
+        totalColMinWidth: totalColMinWidth,
+        allowXScrolling: allowXScrolling,
+        cols: colGroupConfig.cols,
+        width: colGroupConfig.width,
+    };
+}
+function sumColProp(cols, propName) {
+    var total = 0;
+    for (var _i = 0, cols_1 = cols; _i < cols_1.length; _i++) {
+        var col = cols_1[_i];
+        var val = col[propName];
+        if (typeof val === 'number') {
+            total += val * (col.span || 1);
+        }
+    }
+    return total;
+}
+var COL_GROUP_STAT_EQUALITY = {
+    cols: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.isColPropsEqual,
+};
+function isColGroupStatsEqual(stat0, stat1) {
+    return (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.compareObjs)(stat0, stat1, COL_GROUP_STAT_EQUALITY);
+}
+// for memoizers...
+function initScrollSyncer(isVertical) {
+    var scrollEls = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        scrollEls[_i - 1] = arguments[_i];
+    }
+    return new ScrollSyncer(isVertical, scrollEls);
+}
+function destroyScrollSyncer(scrollSyncer) {
+    scrollSyncer.destroy();
+}
+function initStickyScrolling(scrollEl, isRtl) {
+    return new StickyScrolling(scrollEl, isRtl);
+}
+function destroyStickyScrolling(stickyScrolling) {
+    stickyScrolling.destroy();
+}
+
+var main = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.createPlugin)({
+    deps: [
+        _fullcalendar_premium_common__WEBPACK_IMPORTED_MODULE_1__["default"],
+    ],
+    scrollGridImpl: ScrollGrid,
+});
+_fullcalendar_common__WEBPACK_IMPORTED_MODULE_0__.config.SCROLLGRID_RESIZE_INTERVAL = 500;
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (main);
+
+//# sourceMappingURL=main.js.map
+
+
+/***/ }),
+
 /***/ "./node_modules/@fullcalendar/timegrid/main.js":
 /*!*****************************************************!*\
   !*** ./node_modules/@fullcalendar/timegrid/main.js ***!
@@ -17230,6 +19233,1378 @@ var main = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createPlugin)({
 
 /***/ }),
 
+/***/ "./node_modules/@fullcalendar/timeline/main.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/@fullcalendar/timeline/main.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TimelineCoords": () => (/* binding */ TimelineCoords),
+/* harmony export */   "TimelineHeader": () => (/* binding */ TimelineHeader),
+/* harmony export */   "TimelineHeaderRows": () => (/* binding */ TimelineHeaderRows),
+/* harmony export */   "TimelineLane": () => (/* binding */ TimelineLane),
+/* harmony export */   "TimelineLaneBg": () => (/* binding */ TimelineLaneBg),
+/* harmony export */   "TimelineLaneSlicer": () => (/* binding */ TimelineLaneSlicer),
+/* harmony export */   "TimelineSlats": () => (/* binding */ TimelineSlats),
+/* harmony export */   "TimelineView": () => (/* binding */ TimelineView),
+/* harmony export */   "buildSlatCols": () => (/* binding */ buildSlatCols),
+/* harmony export */   "buildTimelineDateProfile": () => (/* binding */ buildTimelineDateProfile),
+/* harmony export */   "coordToCss": () => (/* binding */ coordToCss),
+/* harmony export */   "coordsToCss": () => (/* binding */ coordsToCss),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./main.css */ "./node_modules/@fullcalendar/timeline/main.css");
+/* harmony import */ var _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/common */ "./node_modules/@fullcalendar/common/main.js");
+/* harmony import */ var _fullcalendar_premium_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/premium-common */ "./node_modules/@fullcalendar/premium-common/main.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _fullcalendar_scrollgrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/scrollgrid */ "./node_modules/@fullcalendar/scrollgrid/main.js");
+/*!
+FullCalendar Scheduler v5.10.2
+Docs & License: https://fullcalendar.io/scheduler
+(c) 2021 Adam Shaw
+*/
+
+
+
+
+
+
+
+var MIN_AUTO_LABELS = 18; // more than `12` months but less that `24` hours
+var MAX_AUTO_SLOTS_PER_LABEL = 6; // allows 6 10-min slots in an hour
+var MAX_AUTO_CELLS = 200; // allows 4-days to have a :30 slot duration
+_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.config.MAX_TIMELINE_SLOTS = 1000;
+// potential nice values for slot-duration and interval-duration
+var STOCK_SUB_DURATIONS = [
+    { years: 1 },
+    { months: 1 },
+    { days: 1 },
+    { hours: 1 },
+    { minutes: 30 },
+    { minutes: 15 },
+    { minutes: 10 },
+    { minutes: 5 },
+    { minutes: 1 },
+    { seconds: 30 },
+    { seconds: 15 },
+    { seconds: 10 },
+    { seconds: 5 },
+    { seconds: 1 },
+    { milliseconds: 500 },
+    { milliseconds: 100 },
+    { milliseconds: 10 },
+    { milliseconds: 1 },
+];
+function buildTimelineDateProfile(dateProfile, dateEnv, allOptions, dateProfileGenerator) {
+    var tDateProfile = {
+        labelInterval: allOptions.slotLabelInterval,
+        slotDuration: allOptions.slotDuration,
+    };
+    validateLabelAndSlot(tDateProfile, dateProfile, dateEnv); // validate after computed grid duration
+    ensureLabelInterval(tDateProfile, dateProfile, dateEnv);
+    ensureSlotDuration(tDateProfile, dateProfile, dateEnv);
+    var input = allOptions.slotLabelFormat;
+    var rawFormats = Array.isArray(input) ? input :
+        (input != null) ? [input] :
+            computeHeaderFormats(tDateProfile, dateProfile, dateEnv, allOptions);
+    tDateProfile.headerFormats = rawFormats.map(function (rawFormat) { return (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createFormatter)(rawFormat); });
+    tDateProfile.isTimeScale = Boolean(tDateProfile.slotDuration.milliseconds);
+    var largeUnit = null;
+    if (!tDateProfile.isTimeScale) {
+        var slotUnit = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.greatestDurationDenominator)(tDateProfile.slotDuration).unit;
+        if (/year|month|week/.test(slotUnit)) {
+            largeUnit = slotUnit;
+        }
+    }
+    tDateProfile.largeUnit = largeUnit;
+    tDateProfile.emphasizeWeeks =
+        (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asCleanDays)(tDateProfile.slotDuration) === 1 &&
+            currentRangeAs('weeks', dateProfile, dateEnv) >= 2 &&
+            !allOptions.businessHours;
+    /*
+    console.log('label interval =', timelineView.labelInterval.humanize())
+    console.log('slot duration =', timelineView.slotDuration.humanize())
+    console.log('header formats =', timelineView.headerFormats)
+    console.log('isTimeScale', timelineView.isTimeScale)
+    console.log('largeUnit', timelineView.largeUnit)
+    */
+    var rawSnapDuration = allOptions.snapDuration;
+    var snapDuration;
+    var snapsPerSlot;
+    if (rawSnapDuration) {
+        snapDuration = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createDuration)(rawSnapDuration);
+        snapsPerSlot = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.wholeDivideDurations)(tDateProfile.slotDuration, snapDuration);
+        // ^ TODO: warning if not whole?
+    }
+    if (snapsPerSlot == null) {
+        snapDuration = tDateProfile.slotDuration;
+        snapsPerSlot = 1;
+    }
+    tDateProfile.snapDuration = snapDuration;
+    tDateProfile.snapsPerSlot = snapsPerSlot;
+    // more...
+    var timeWindowMs = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asRoughMs)(dateProfile.slotMaxTime) - (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asRoughMs)(dateProfile.slotMinTime);
+    // TODO: why not use normalizeRange!?
+    var normalizedStart = normalizeDate(dateProfile.renderRange.start, tDateProfile, dateEnv);
+    var normalizedEnd = normalizeDate(dateProfile.renderRange.end, tDateProfile, dateEnv);
+    // apply slotMinTime/slotMaxTime
+    // TODO: View should be responsible.
+    if (tDateProfile.isTimeScale) {
+        normalizedStart = dateEnv.add(normalizedStart, dateProfile.slotMinTime);
+        normalizedEnd = dateEnv.add((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.addDays)(normalizedEnd, -1), dateProfile.slotMaxTime);
+    }
+    tDateProfile.timeWindowMs = timeWindowMs;
+    tDateProfile.normalizedRange = { start: normalizedStart, end: normalizedEnd };
+    var slotDates = [];
+    var date = normalizedStart;
+    while (date < normalizedEnd) {
+        if (isValidDate(date, tDateProfile, dateProfile, dateProfileGenerator)) {
+            slotDates.push(date);
+        }
+        date = dateEnv.add(date, tDateProfile.slotDuration);
+    }
+    tDateProfile.slotDates = slotDates;
+    // more...
+    var snapIndex = -1;
+    var snapDiff = 0; // index of the diff :(
+    var snapDiffToIndex = [];
+    var snapIndexToDiff = [];
+    date = normalizedStart;
+    while (date < normalizedEnd) {
+        if (isValidDate(date, tDateProfile, dateProfile, dateProfileGenerator)) {
+            snapIndex += 1;
+            snapDiffToIndex.push(snapIndex);
+            snapIndexToDiff.push(snapDiff);
+        }
+        else {
+            snapDiffToIndex.push(snapIndex + 0.5);
+        }
+        date = dateEnv.add(date, tDateProfile.snapDuration);
+        snapDiff += 1;
+    }
+    tDateProfile.snapDiffToIndex = snapDiffToIndex;
+    tDateProfile.snapIndexToDiff = snapIndexToDiff;
+    tDateProfile.snapCnt = snapIndex + 1; // is always one behind
+    tDateProfile.slotCnt = tDateProfile.snapCnt / tDateProfile.snapsPerSlot;
+    // more...
+    tDateProfile.isWeekStarts = buildIsWeekStarts(tDateProfile, dateEnv);
+    tDateProfile.cellRows = buildCellRows(tDateProfile, dateEnv);
+    tDateProfile.slotsPerLabel = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.wholeDivideDurations)(tDateProfile.labelInterval, tDateProfile.slotDuration);
+    return tDateProfile;
+}
+/*
+snaps to appropriate unit
+*/
+function normalizeDate(date, tDateProfile, dateEnv) {
+    var normalDate = date;
+    if (!tDateProfile.isTimeScale) {
+        normalDate = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.startOfDay)(normalDate);
+        if (tDateProfile.largeUnit) {
+            normalDate = dateEnv.startOf(normalDate, tDateProfile.largeUnit);
+        }
+    }
+    return normalDate;
+}
+/*
+snaps to appropriate unit
+*/
+function normalizeRange(range, tDateProfile, dateEnv) {
+    if (!tDateProfile.isTimeScale) {
+        range = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.computeVisibleDayRange)(range);
+        if (tDateProfile.largeUnit) {
+            var dayRange = range; // preserve original result
+            range = {
+                start: dateEnv.startOf(range.start, tDateProfile.largeUnit),
+                end: dateEnv.startOf(range.end, tDateProfile.largeUnit),
+            };
+            // if date is partially through the interval, or is in the same interval as the start,
+            // make the exclusive end be the *next* interval
+            if (range.end.valueOf() !== dayRange.end.valueOf() || range.end <= range.start) {
+                range = {
+                    start: range.start,
+                    end: dateEnv.add(range.end, tDateProfile.slotDuration),
+                };
+            }
+        }
+    }
+    return range;
+}
+function isValidDate(date, tDateProfile, dateProfile, dateProfileGenerator) {
+    if (dateProfileGenerator.isHiddenDay(date)) {
+        return false;
+    }
+    if (tDateProfile.isTimeScale) {
+        // determine if the time is within slotMinTime/slotMaxTime, which may have wacky values
+        var day = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.startOfDay)(date);
+        var timeMs = date.valueOf() - day.valueOf();
+        var ms = timeMs - (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asRoughMs)(dateProfile.slotMinTime); // milliseconds since slotMinTime
+        ms = ((ms % 86400000) + 86400000) % 86400000; // make negative values wrap to 24hr clock
+        return ms < tDateProfile.timeWindowMs; // before the slotMaxTime?
+    }
+    return true;
+}
+function validateLabelAndSlot(tDateProfile, dateProfile, dateEnv) {
+    var currentRange = dateProfile.currentRange;
+    // make sure labelInterval doesn't exceed the max number of cells
+    if (tDateProfile.labelInterval) {
+        var labelCnt = dateEnv.countDurationsBetween(currentRange.start, currentRange.end, tDateProfile.labelInterval);
+        if (labelCnt > _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.config.MAX_TIMELINE_SLOTS) {
+            console.warn('slotLabelInterval results in too many cells');
+            tDateProfile.labelInterval = null;
+        }
+    }
+    // make sure slotDuration doesn't exceed the maximum number of cells
+    if (tDateProfile.slotDuration) {
+        var slotCnt = dateEnv.countDurationsBetween(currentRange.start, currentRange.end, tDateProfile.slotDuration);
+        if (slotCnt > _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.config.MAX_TIMELINE_SLOTS) {
+            console.warn('slotDuration results in too many cells');
+            tDateProfile.slotDuration = null;
+        }
+    }
+    // make sure labelInterval is a multiple of slotDuration
+    if (tDateProfile.labelInterval && tDateProfile.slotDuration) {
+        var slotsPerLabel = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.wholeDivideDurations)(tDateProfile.labelInterval, tDateProfile.slotDuration);
+        if (slotsPerLabel === null || slotsPerLabel < 1) {
+            console.warn('slotLabelInterval must be a multiple of slotDuration');
+            tDateProfile.slotDuration = null;
+        }
+    }
+}
+function ensureLabelInterval(tDateProfile, dateProfile, dateEnv) {
+    var currentRange = dateProfile.currentRange;
+    var labelInterval = tDateProfile.labelInterval;
+    if (!labelInterval) {
+        // compute based off the slot duration
+        // find the largest label interval with an acceptable slots-per-label
+        var input = void 0;
+        if (tDateProfile.slotDuration) {
+            for (var _i = 0, STOCK_SUB_DURATIONS_1 = STOCK_SUB_DURATIONS; _i < STOCK_SUB_DURATIONS_1.length; _i++) {
+                input = STOCK_SUB_DURATIONS_1[_i];
+                var tryLabelInterval = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createDuration)(input);
+                var slotsPerLabel = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.wholeDivideDurations)(tryLabelInterval, tDateProfile.slotDuration);
+                if (slotsPerLabel !== null && slotsPerLabel <= MAX_AUTO_SLOTS_PER_LABEL) {
+                    labelInterval = tryLabelInterval;
+                    break;
+                }
+            }
+            // use the slot duration as a last resort
+            if (!labelInterval) {
+                labelInterval = tDateProfile.slotDuration;
+            }
+            // compute based off the view's duration
+            // find the largest label interval that yields the minimum number of labels
+        }
+        else {
+            for (var _a = 0, STOCK_SUB_DURATIONS_2 = STOCK_SUB_DURATIONS; _a < STOCK_SUB_DURATIONS_2.length; _a++) {
+                input = STOCK_SUB_DURATIONS_2[_a];
+                labelInterval = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createDuration)(input);
+                var labelCnt = dateEnv.countDurationsBetween(currentRange.start, currentRange.end, labelInterval);
+                if (labelCnt >= MIN_AUTO_LABELS) {
+                    break;
+                }
+            }
+        }
+        tDateProfile.labelInterval = labelInterval;
+    }
+    return labelInterval;
+}
+function ensureSlotDuration(tDateProfile, dateProfile, dateEnv) {
+    var currentRange = dateProfile.currentRange;
+    var slotDuration = tDateProfile.slotDuration;
+    if (!slotDuration) {
+        var labelInterval = ensureLabelInterval(tDateProfile, dateProfile, dateEnv); // will compute if necessary
+        // compute based off the label interval
+        // find the largest slot duration that is different from labelInterval, but still acceptable
+        for (var _i = 0, STOCK_SUB_DURATIONS_3 = STOCK_SUB_DURATIONS; _i < STOCK_SUB_DURATIONS_3.length; _i++) {
+            var input = STOCK_SUB_DURATIONS_3[_i];
+            var trySlotDuration = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createDuration)(input);
+            var slotsPerLabel = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.wholeDivideDurations)(labelInterval, trySlotDuration);
+            if (slotsPerLabel !== null && slotsPerLabel > 1 && slotsPerLabel <= MAX_AUTO_SLOTS_PER_LABEL) {
+                slotDuration = trySlotDuration;
+                break;
+            }
+        }
+        // only allow the value if it won't exceed the view's # of slots limit
+        if (slotDuration) {
+            var slotCnt = dateEnv.countDurationsBetween(currentRange.start, currentRange.end, slotDuration);
+            if (slotCnt > MAX_AUTO_CELLS) {
+                slotDuration = null;
+            }
+        }
+        // use the label interval as a last resort
+        if (!slotDuration) {
+            slotDuration = labelInterval;
+        }
+        tDateProfile.slotDuration = slotDuration;
+    }
+    return slotDuration;
+}
+function computeHeaderFormats(tDateProfile, dateProfile, dateEnv, allOptions) {
+    var format1;
+    var format2;
+    var labelInterval = tDateProfile.labelInterval;
+    var unit = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.greatestDurationDenominator)(labelInterval).unit;
+    var weekNumbersVisible = allOptions.weekNumbers;
+    var format0 = (format1 = (format2 = null));
+    // NOTE: weekNumber computation function wont work
+    if ((unit === 'week') && !weekNumbersVisible) {
+        unit = 'day';
+    }
+    switch (unit) {
+        case 'year':
+            format0 = { year: 'numeric' }; // '2015'
+            break;
+        case 'month':
+            if (currentRangeAs('years', dateProfile, dateEnv) > 1) {
+                format0 = { year: 'numeric' }; // '2015'
+            }
+            format1 = { month: 'short' }; // 'Jan'
+            break;
+        case 'week':
+            if (currentRangeAs('years', dateProfile, dateEnv) > 1) {
+                format0 = { year: 'numeric' }; // '2015'
+            }
+            format1 = { week: 'narrow' }; // 'Wk4'
+            break;
+        case 'day':
+            if (currentRangeAs('years', dateProfile, dateEnv) > 1) {
+                format0 = { year: 'numeric', month: 'long' }; // 'January 2014'
+            }
+            else if (currentRangeAs('months', dateProfile, dateEnv) > 1) {
+                format0 = { month: 'long' }; // 'January'
+            }
+            if (weekNumbersVisible) {
+                format1 = { week: 'short' }; // 'Wk 4'
+            }
+            format2 = { weekday: 'narrow', day: 'numeric' }; // 'Su 9'
+            break;
+        case 'hour':
+            if (weekNumbersVisible) {
+                format0 = { week: 'short' }; // 'Wk 4'
+            }
+            if (currentRangeAs('days', dateProfile, dateEnv) > 1) {
+                format1 = { weekday: 'short', day: 'numeric', month: 'numeric', omitCommas: true }; // Sat 4/7
+            }
+            format2 = {
+                hour: 'numeric',
+                minute: '2-digit',
+                omitZeroMinute: true,
+                meridiem: 'short',
+            };
+            break;
+        case 'minute':
+            // sufficiently large number of different minute cells?
+            if (((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asRoughMinutes)(labelInterval) / 60) >= MAX_AUTO_SLOTS_PER_LABEL) {
+                format0 = {
+                    hour: 'numeric',
+                    meridiem: 'short',
+                };
+                format1 = function (params) { return (':' + (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.padStart)(params.date.minute, 2) // ':30'
+                ); };
+            }
+            else {
+                format0 = {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    meridiem: 'short',
+                };
+            }
+            break;
+        case 'second':
+            // sufficiently large number of different second cells?
+            if (((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asRoughSeconds)(labelInterval) / 60) >= MAX_AUTO_SLOTS_PER_LABEL) {
+                format0 = { hour: 'numeric', minute: '2-digit', meridiem: 'lowercase' }; // '8:30 PM'
+                format1 = function (params) { return (':' + (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.padStart)(params.date.second, 2) // ':30'
+                ); };
+            }
+            else {
+                format0 = { hour: 'numeric', minute: '2-digit', second: '2-digit', meridiem: 'lowercase' }; // '8:30:45 PM'
+            }
+            break;
+        case 'millisecond':
+            format0 = { hour: 'numeric', minute: '2-digit', second: '2-digit', meridiem: 'lowercase' }; // '8:30:45 PM'
+            format1 = function (params) { return ('.' + (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.padStart)(params.millisecond, 3)); };
+            break;
+    }
+    return [].concat(format0 || [], format1 || [], format2 || []);
+}
+// Compute the number of the give units in the "current" range.
+// Won't go more precise than days.
+// Will return `0` if there's not a clean whole interval.
+function currentRangeAs(unit, dateProfile, dateEnv) {
+    var range = dateProfile.currentRange;
+    var res = null;
+    if (unit === 'years') {
+        res = dateEnv.diffWholeYears(range.start, range.end);
+    }
+    else if (unit === 'months') {
+        res = dateEnv.diffWholeMonths(range.start, range.end);
+    }
+    else if (unit === 'weeks') {
+        res = dateEnv.diffWholeMonths(range.start, range.end);
+    }
+    else if (unit === 'days') {
+        res = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.diffWholeDays)(range.start, range.end);
+    }
+    return res || 0;
+}
+function buildIsWeekStarts(tDateProfile, dateEnv) {
+    var slotDates = tDateProfile.slotDates, emphasizeWeeks = tDateProfile.emphasizeWeeks;
+    var prevWeekNumber = null;
+    var isWeekStarts = [];
+    for (var _i = 0, slotDates_1 = slotDates; _i < slotDates_1.length; _i++) {
+        var slotDate = slotDates_1[_i];
+        var weekNumber = dateEnv.computeWeekNumber(slotDate);
+        var isWeekStart = emphasizeWeeks && (prevWeekNumber !== null) && (prevWeekNumber !== weekNumber);
+        prevWeekNumber = weekNumber;
+        isWeekStarts.push(isWeekStart);
+    }
+    return isWeekStarts;
+}
+function buildCellRows(tDateProfile, dateEnv) {
+    var slotDates = tDateProfile.slotDates;
+    var formats = tDateProfile.headerFormats;
+    var cellRows = formats.map(function () { return []; }); // indexed by row,col
+    var slotAsDays = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.asCleanDays)(tDateProfile.slotDuration);
+    var guessedSlotUnit = slotAsDays === 7 ? 'week' :
+        slotAsDays === 1 ? 'day' :
+            null;
+    // specifically for navclicks
+    var rowUnitsFromFormats = formats.map(function (format) { return (format.getLargestUnit ? format.getLargestUnit() : null); });
+    // builds cellRows and slotCells
+    for (var i = 0; i < slotDates.length; i += 1) {
+        var date = slotDates[i];
+        var isWeekStart = tDateProfile.isWeekStarts[i];
+        for (var row = 0; row < formats.length; row += 1) {
+            var format = formats[row];
+            var rowCells = cellRows[row];
+            var leadingCell = rowCells[rowCells.length - 1];
+            var isLastRow = row === formats.length - 1;
+            var isSuperRow = formats.length > 1 && !isLastRow; // more than one row and not the last
+            var newCell = null;
+            var rowUnit = rowUnitsFromFormats[row] || (isLastRow ? guessedSlotUnit : null);
+            if (isSuperRow) {
+                var text = dateEnv.format(date, format);
+                if (!leadingCell || (leadingCell.text !== text)) {
+                    newCell = buildCellObject(date, text, rowUnit);
+                }
+                else {
+                    leadingCell.colspan += 1;
+                }
+            }
+            else if (!leadingCell ||
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isInt)(dateEnv.countDurationsBetween(tDateProfile.normalizedRange.start, date, tDateProfile.labelInterval))) {
+                var text = dateEnv.format(date, format);
+                newCell = buildCellObject(date, text, rowUnit);
+            }
+            else {
+                leadingCell.colspan += 1;
+            }
+            if (newCell) {
+                newCell.weekStart = isWeekStart;
+                rowCells.push(newCell);
+            }
+        }
+    }
+    return cellRows;
+}
+function buildCellObject(date, text, rowUnit) {
+    return { date: date, text: text, rowUnit: rowUnit, colspan: 1, isWeekStart: false };
+}
+
+var TimelineHeaderThInner = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineHeaderThInner, _super);
+    function TimelineHeaderThInner() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineHeaderThInner.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.ContentHook, { hookProps: props.hookProps, content: context.options.slotLabelContent, defaultContent: renderInnerContent }, function (innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("a", (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ ref: innerElRef, className: 'fc-timeline-slot-cushion fc-scrollgrid-sync-inner' + (props.isSticky ? ' fc-sticky' : '') }, props.navLinkAttrs), innerContent)); }));
+    };
+    return TimelineHeaderThInner;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function renderInnerContent(props) {
+    return props.text;
+}
+function refineHookProps(input) {
+    return {
+        level: input.level,
+        date: input.dateEnv.toDate(input.dateMarker),
+        view: input.viewApi,
+        text: input.text,
+    };
+}
+
+var TimelineHeaderTh = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineHeaderTh, _super);
+    function TimelineHeaderTh() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.refineHookProps = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoizeObjArg)(refineHookProps);
+        _this.normalizeClassNames = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildClassNameNormalizer)();
+        _this.buildCellNavLinkAttrs = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(buildCellNavLinkAttrs);
+        return _this;
+    }
+    TimelineHeaderTh.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, context = _a.context;
+        var dateEnv = context.dateEnv, options = context.options;
+        var cell = props.cell, dateProfile = props.dateProfile, tDateProfile = props.tDateProfile;
+        // the cell.rowUnit is f'd
+        // giving 'month' for a 3-day view
+        // workaround: to infer day, do NOT time
+        var dateMeta = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getDateMeta)(cell.date, props.todayRange, props.nowDate, dateProfile);
+        var classNames = ['fc-timeline-slot', 'fc-timeline-slot-label'].concat(cell.rowUnit === 'time' // TODO: so slot classnames for week/month/bigger. see note above about rowUnit
+            ? (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getSlotClassNames)(dateMeta, context.theme)
+            : (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getDayClassNames)(dateMeta, context.theme));
+        if (cell.isWeekStart) {
+            classNames.push('fc-timeline-slot-em');
+        }
+        var hookProps = this.refineHookProps({
+            level: props.rowLevel,
+            dateMarker: cell.date,
+            text: cell.text,
+            dateEnv: context.dateEnv,
+            viewApi: context.viewApi,
+        });
+        var customClassNames = this.normalizeClassNames(options.slotLabelClassNames, hookProps);
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.MountHook, { hookProps: hookProps, didMount: options.slotLabelDidMount, willUnmount: options.slotLabelWillUnmount }, function (rootElRef) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("th", { ref: rootElRef, className: classNames.concat(customClassNames).join(' '), "data-date": dateEnv.formatIso(cell.date, { omitTime: !tDateProfile.isTimeScale, omitTimeZoneOffset: true }), colSpan: cell.colspan },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-slot-frame", style: { height: props.rowInnerHeight } },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineHeaderThInner, { hookProps: hookProps, isSticky: props.isSticky, navLinkAttrs: _this.buildCellNavLinkAttrs(context, cell.date, cell.rowUnit) })))); }));
+    };
+    return TimelineHeaderTh;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function buildCellNavLinkAttrs(context, cellDate, rowUnit) {
+    return (rowUnit && rowUnit !== 'time')
+        ? (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildNavLinkAttrs)(context, cellDate, rowUnit)
+        : {};
+}
+
+var TimelineHeaderRows = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineHeaderRows, _super);
+    function TimelineHeaderRows() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineHeaderRows.prototype.render = function () {
+        var _a = this.props, dateProfile = _a.dateProfile, tDateProfile = _a.tDateProfile, rowInnerHeights = _a.rowInnerHeights, todayRange = _a.todayRange, nowDate = _a.nowDate;
+        var cellRows = tDateProfile.cellRows;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, cellRows.map(function (rowCells, rowLevel) {
+            var isLast = rowLevel === cellRows.length - 1;
+            var isChrono = tDateProfile.isTimeScale && isLast; // the final row, with times?
+            var classNames = [
+                'fc-timeline-header-row',
+                isChrono ? 'fc-timeline-header-row-chrono' : '',
+            ];
+            return ( // eslint-disable-next-line react/no-array-index-key
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", { key: rowLevel, className: classNames.join(' ') }, rowCells.map(function (cell) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineHeaderTh, { key: cell.date.toISOString(), cell: cell, rowLevel: rowLevel, dateProfile: dateProfile, tDateProfile: tDateProfile, todayRange: todayRange, nowDate: nowDate, rowInnerHeight: rowInnerHeights && rowInnerHeights[rowLevel], isSticky: !isLast })); })));
+        })));
+    };
+    return TimelineHeaderRows;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineCoords = /** @class */ (function () {
+    function TimelineCoords(slatRootEl, // okay to expose?
+    slatEls, dateProfile, tDateProfile, dateEnv, isRtl) {
+        this.slatRootEl = slatRootEl;
+        this.dateProfile = dateProfile;
+        this.tDateProfile = tDateProfile;
+        this.dateEnv = dateEnv;
+        this.isRtl = isRtl;
+        this.outerCoordCache = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.PositionCache(slatRootEl, slatEls, true, // isHorizontal
+        false);
+        // for the inner divs within the slats
+        // used for event rendering and scrollTime, to disregard slat border
+        this.innerCoordCache = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.PositionCache(slatRootEl, (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.findDirectChildren)(slatEls, 'div'), true, // isHorizontal
+        false);
+    }
+    TimelineCoords.prototype.isDateInRange = function (date) {
+        return (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.rangeContainsMarker)(this.dateProfile.currentRange, date);
+    };
+    // results range from negative width of area to 0
+    TimelineCoords.prototype.dateToCoord = function (date) {
+        var tDateProfile = this.tDateProfile;
+        var snapCoverage = this.computeDateSnapCoverage(date);
+        var slotCoverage = snapCoverage / tDateProfile.snapsPerSlot;
+        var slotIndex = Math.floor(slotCoverage);
+        slotIndex = Math.min(slotIndex, tDateProfile.slotCnt - 1);
+        var partial = slotCoverage - slotIndex;
+        var _a = this, innerCoordCache = _a.innerCoordCache, outerCoordCache = _a.outerCoordCache;
+        if (this.isRtl) {
+            return outerCoordCache.originClientRect.width - (outerCoordCache.rights[slotIndex] -
+                (innerCoordCache.getWidth(slotIndex) * partial));
+        }
+        return (outerCoordCache.lefts[slotIndex] +
+            (innerCoordCache.getWidth(slotIndex) * partial));
+    };
+    TimelineCoords.prototype.rangeToCoords = function (range) {
+        return {
+            start: this.dateToCoord(range.start),
+            end: this.dateToCoord(range.end),
+        };
+    };
+    TimelineCoords.prototype.durationToCoord = function (duration) {
+        var _a = this, dateProfile = _a.dateProfile, tDateProfile = _a.tDateProfile, dateEnv = _a.dateEnv, isRtl = _a.isRtl;
+        var coord = 0;
+        if (dateProfile) {
+            var date = dateEnv.add(dateProfile.activeRange.start, duration);
+            if (!tDateProfile.isTimeScale) {
+                date = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.startOfDay)(date);
+            }
+            coord = this.dateToCoord(date);
+            // hack to overcome the left borders of non-first slat
+            if (!isRtl && coord) {
+                coord += 1;
+            }
+        }
+        return coord;
+    };
+    TimelineCoords.prototype.coordFromLeft = function (coord) {
+        if (this.isRtl) {
+            return this.outerCoordCache.originClientRect.width - coord;
+        }
+        return coord;
+    };
+    // returned value is between 0 and the number of snaps
+    TimelineCoords.prototype.computeDateSnapCoverage = function (date) {
+        return computeDateSnapCoverage(date, this.tDateProfile, this.dateEnv);
+    };
+    return TimelineCoords;
+}());
+// returned value is between 0 and the number of snaps
+function computeDateSnapCoverage(date, tDateProfile, dateEnv) {
+    var snapDiff = dateEnv.countDurationsBetween(tDateProfile.normalizedRange.start, date, tDateProfile.snapDuration);
+    if (snapDiff < 0) {
+        return 0;
+    }
+    if (snapDiff >= tDateProfile.snapDiffToIndex.length) {
+        return tDateProfile.snapCnt;
+    }
+    var snapDiffInt = Math.floor(snapDiff);
+    var snapCoverage = tDateProfile.snapDiffToIndex[snapDiffInt];
+    if ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isInt)(snapCoverage)) { // not an in-between value
+        snapCoverage += snapDiff - snapDiffInt; // add the remainder
+    }
+    else {
+        // a fractional value, meaning the date is not visible
+        // always round up in this case. works for start AND end dates in a range.
+        snapCoverage = Math.ceil(snapCoverage);
+    }
+    return snapCoverage;
+}
+function coordToCss(hcoord, isRtl) {
+    if (hcoord === null) {
+        return { left: '', right: '' };
+    }
+    if (isRtl) {
+        return { right: hcoord, left: '' };
+    }
+    return { left: hcoord, right: '' };
+}
+function coordsToCss(hcoords, isRtl) {
+    if (!hcoords) {
+        return { left: '', right: '' };
+    }
+    if (isRtl) {
+        return { right: hcoords.start, left: -hcoords.end };
+    }
+    return { left: hcoords.start, right: -hcoords.end };
+}
+
+var TimelineHeader = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineHeader, _super);
+    function TimelineHeader() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.rootElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        return _this;
+    }
+    TimelineHeader.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, context = _a.context;
+        // TODO: very repetitive
+        // TODO: make part of tDateProfile?
+        var timerUnit = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.greatestDurationDenominator)(props.tDateProfile.slotDuration).unit;
+        // WORKAROUND: make ignore slatCoords when out of sync with dateProfile
+        var slatCoords = props.slatCoords && props.slatCoords.dateProfile === props.dateProfile ? props.slatCoords : null;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.NowTimer, { unit: timerUnit }, function (nowDate, todayRange) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-header", ref: _this.rootElRef },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("table", { "aria-hidden": true, className: "fc-scrollgrid-sync-table", style: { minWidth: props.tableMinWidth, width: props.clientWidth } },
+                props.tableColGroupNode,
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tbody", null,
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineHeaderRows, { dateProfile: props.dateProfile, tDateProfile: props.tDateProfile, nowDate: nowDate, todayRange: todayRange, rowInnerHeights: props.rowInnerHeights }))),
+            context.options.nowIndicator && (
+            // need to have a container regardless of whether the current view has a visible now indicator
+            // because apparently removal of the element resets the scroll for some reasons (issue #5351).
+            // this issue doesn't happen for the timeline body however (
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-now-indicator-container" }, (slatCoords && slatCoords.isDateInRange(nowDate)) && ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.NowIndicatorRoot, { isAxis: true, date: nowDate }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: rootElRef, className: ['fc-timeline-now-indicator-arrow'].concat(classNames).join(' '), style: coordToCss(slatCoords.dateToCoord(nowDate), context.isRtl) }, innerContent)); })))))); }));
+    };
+    TimelineHeader.prototype.componentDidMount = function () {
+        this.updateSize();
+    };
+    TimelineHeader.prototype.componentDidUpdate = function () {
+        this.updateSize();
+    };
+    TimelineHeader.prototype.updateSize = function () {
+        if (this.props.onMaxCushionWidth) {
+            this.props.onMaxCushionWidth(this.computeMaxCushionWidth());
+        }
+    };
+    TimelineHeader.prototype.computeMaxCushionWidth = function () {
+        return Math.max.apply(Math, (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.findElements)(this.rootElRef.current, '.fc-timeline-header-row:last-child .fc-timeline-slot-cushion').map(function (el) { return el.getBoundingClientRect().width; }));
+    };
+    return TimelineHeader;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineSlatCell = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineSlatCell, _super);
+    function TimelineSlatCell() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineSlatCell.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        var dateEnv = context.dateEnv, options = context.options, theme = context.theme;
+        var date = props.date, tDateProfile = props.tDateProfile, isEm = props.isEm;
+        var dateMeta = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getDateMeta)(props.date, props.todayRange, props.nowDate, props.dateProfile);
+        var classNames = ['fc-timeline-slot', 'fc-timeline-slot-lane'];
+        var dataAttrs = { 'data-date': dateEnv.formatIso(date, { omitTimeZoneOffset: true, omitTime: !tDateProfile.isTimeScale }) };
+        var hookProps = (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)((0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ date: dateEnv.toDate(props.date) }, dateMeta), { view: context.viewApi });
+        if (isEm) {
+            classNames.push('fc-timeline-slot-em');
+        }
+        if (tDateProfile.isTimeScale) {
+            classNames.push((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isInt)(dateEnv.countDurationsBetween(tDateProfile.normalizedRange.start, props.date, tDateProfile.labelInterval)) ?
+                'fc-timeline-slot-major' :
+                'fc-timeline-slot-minor');
+        }
+        classNames.push.apply(classNames, (props.isDay
+            ? (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getDayClassNames)(dateMeta, theme)
+            : (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getSlotClassNames)(dateMeta, theme)));
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RenderHook, { hookProps: hookProps, classNames: options.slotLaneClassNames, content: options.slotLaneContent, didMount: options.slotLaneDidMount, willUnmount: options.slotLaneWillUnmount, elRef: props.elRef }, function (rootElRef, customClassNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("td", (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ ref: rootElRef, className: classNames.concat(customClassNames).join(' ') }, dataAttrs),
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: innerElRef }, innerContent))); }));
+    };
+    return TimelineSlatCell;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineSlatsBody = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineSlatsBody, _super);
+    function TimelineSlatsBody() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineSlatsBody.prototype.render = function () {
+        var props = this.props;
+        var tDateProfile = props.tDateProfile, cellElRefs = props.cellElRefs;
+        var slotDates = tDateProfile.slotDates, isWeekStarts = tDateProfile.isWeekStarts;
+        var isDay = !tDateProfile.isTimeScale && !tDateProfile.largeUnit;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tbody", null,
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("tr", null, slotDates.map(function (slotDate, i) {
+                var key = slotDate.toISOString();
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineSlatCell, { key: key, elRef: cellElRefs.createRef(key), date: slotDate, dateProfile: props.dateProfile, tDateProfile: tDateProfile, nowDate: props.nowDate, todayRange: props.todayRange, isEm: isWeekStarts[i], isDay: isDay }));
+            }))));
+    };
+    return TimelineSlatsBody;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineSlats = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineSlats, _super);
+    function TimelineSlats() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.rootElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.cellElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RefMap();
+        _this.handleScrollRequest = function (request) {
+            var onScrollLeftRequest = _this.props.onScrollLeftRequest;
+            var coords = _this.coords;
+            if (onScrollLeftRequest && coords) {
+                if (request.time) {
+                    var scrollLeft = coords.coordFromLeft(coords.durationToCoord(request.time));
+                    onScrollLeftRequest(scrollLeft);
+                }
+                return true;
+            }
+            return null; // best?
+        };
+        return _this;
+    }
+    TimelineSlats.prototype.render = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-slots", ref: this.rootElRef },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("table", { "aria-hidden": true, className: context.theme.getClass('table'), style: {
+                    minWidth: props.tableMinWidth,
+                    width: props.clientWidth,
+                } },
+                props.tableColGroupNode,
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineSlatsBody, { cellElRefs: this.cellElRefs, dateProfile: props.dateProfile, tDateProfile: props.tDateProfile, nowDate: props.nowDate, todayRange: props.todayRange }))));
+    };
+    TimelineSlats.prototype.componentDidMount = function () {
+        this.updateSizing();
+        this.scrollResponder = this.context.createScrollResponder(this.handleScrollRequest);
+    };
+    TimelineSlats.prototype.componentDidUpdate = function (prevProps) {
+        this.updateSizing();
+        this.scrollResponder.update(prevProps.dateProfile !== this.props.dateProfile);
+    };
+    TimelineSlats.prototype.componentWillUnmount = function () {
+        this.scrollResponder.detach();
+        if (this.props.onCoords) {
+            this.props.onCoords(null);
+        }
+    };
+    TimelineSlats.prototype.updateSizing = function () {
+        var _a = this, props = _a.props, context = _a.context;
+        if (props.clientWidth !== null && // is sizing stable?
+            this.scrollResponder
+        // ^it's possible to have clientWidth immediately after mount (when returning from print view), but w/o scrollResponder
+        ) {
+            var rootEl = this.rootElRef.current;
+            if (rootEl.offsetWidth) { // not hidden by css
+                this.coords = new TimelineCoords(this.rootElRef.current, collectCellEls(this.cellElRefs.currentMap, props.tDateProfile.slotDates), props.dateProfile, props.tDateProfile, context.dateEnv, context.isRtl);
+                if (props.onCoords) {
+                    props.onCoords(this.coords);
+                }
+                this.scrollResponder.update(false); // TODO: wouldn't have to do this if coords were in state
+            }
+        }
+    };
+    TimelineSlats.prototype.positionToHit = function (leftPosition) {
+        var outerCoordCache = this.coords.outerCoordCache;
+        var _a = this.context, dateEnv = _a.dateEnv, isRtl = _a.isRtl;
+        var tDateProfile = this.props.tDateProfile;
+        var slatIndex = outerCoordCache.leftToIndex(leftPosition);
+        if (slatIndex != null) {
+            // somewhat similar to what TimeGrid does. consolidate?
+            var slatWidth = outerCoordCache.getWidth(slatIndex);
+            var partial = isRtl ?
+                (outerCoordCache.rights[slatIndex] - leftPosition) / slatWidth :
+                (leftPosition - outerCoordCache.lefts[slatIndex]) / slatWidth;
+            var localSnapIndex = Math.floor(partial * tDateProfile.snapsPerSlot);
+            var start = dateEnv.add(tDateProfile.slotDates[slatIndex], (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.multiplyDuration)(tDateProfile.snapDuration, localSnapIndex));
+            var end = dateEnv.add(start, tDateProfile.snapDuration);
+            return {
+                dateSpan: {
+                    range: { start: start, end: end },
+                    allDay: !this.props.tDateProfile.isTimeScale,
+                },
+                dayEl: this.cellElRefs.currentMap[slatIndex],
+                left: outerCoordCache.lefts[slatIndex],
+                right: outerCoordCache.rights[slatIndex],
+            };
+        }
+        return null;
+    };
+    return TimelineSlats;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+function collectCellEls(elMap, slotDates) {
+    return slotDates.map(function (slotDate) {
+        var key = slotDate.toISOString();
+        return elMap[key];
+    });
+}
+
+function computeSegHCoords(segs, minWidth, timelineCoords) {
+    var hcoords = [];
+    if (timelineCoords) {
+        for (var _i = 0, segs_1 = segs; _i < segs_1.length; _i++) {
+            var seg = segs_1[_i];
+            var res = timelineCoords.rangeToCoords(seg);
+            var start = Math.round(res.start); // for barely-overlapping collisions
+            var end = Math.round(res.end); //
+            if (end - start < minWidth) {
+                end = start + minWidth;
+            }
+            hcoords.push({ start: start, end: end });
+        }
+    }
+    return hcoords;
+}
+function computeFgSegPlacements(segs, segHCoords, // might not have for every seg
+eventInstanceHeights, // might not have for every seg
+moreLinkHeights, // might not have for every more-link
+strictOrder, maxStackCnt) {
+    var segInputs = [];
+    var crudePlacements = []; // when we don't know dims
+    for (var i = 0; i < segs.length; i += 1) {
+        var seg = segs[i];
+        var instanceId = seg.eventRange.instance.instanceId;
+        var height = eventInstanceHeights[instanceId];
+        var hcoords = segHCoords[i];
+        if (height && hcoords) {
+            segInputs.push({
+                index: i,
+                span: hcoords,
+                thickness: height,
+            });
+        }
+        else {
+            crudePlacements.push({
+                seg: seg,
+                hcoords: hcoords,
+                top: null,
+            });
+        }
+    }
+    var hierarchy = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.SegHierarchy();
+    if (strictOrder != null) {
+        hierarchy.strictOrder = strictOrder;
+    }
+    if (maxStackCnt != null) {
+        hierarchy.maxStackCnt = maxStackCnt;
+    }
+    var hiddenEntries = hierarchy.addSegs(segInputs);
+    var hiddenPlacements = hiddenEntries.map(function (entry) { return ({
+        seg: segs[entry.index],
+        hcoords: entry.span,
+        top: null,
+    }); });
+    var hiddenGroups = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.groupIntersectingEntries)(hiddenEntries);
+    var moreLinkInputs = [];
+    var moreLinkCrudePlacements = [];
+    var extractSeg = function (entry) { return segs[entry.index]; };
+    for (var i = 0; i < hiddenGroups.length; i += 1) {
+        var hiddenGroup = hiddenGroups[i];
+        var sortedSegs = hiddenGroup.entries.map(extractSeg);
+        var height = moreLinkHeights[(0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildIsoString)((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.computeEarliestSegStart)(sortedSegs))]; // not optimal :(
+        if (height != null) {
+            // NOTE: the hiddenGroup's spanStart/spanEnd are already computed by rangeToCoords. computed during input.
+            moreLinkInputs.push({
+                index: segs.length + i,
+                thickness: height,
+                span: hiddenGroup.span,
+            });
+        }
+        else {
+            moreLinkCrudePlacements.push({
+                seg: sortedSegs,
+                hcoords: hiddenGroup.span,
+                top: null,
+            });
+        }
+    }
+    // add more-links into the hierarchy, but don't limit
+    hierarchy.maxStackCnt = -1;
+    hierarchy.addSegs(moreLinkInputs);
+    var visibleRects = hierarchy.toRects();
+    var visiblePlacements = [];
+    var maxHeight = 0;
+    for (var _i = 0, visibleRects_1 = visibleRects; _i < visibleRects_1.length; _i++) {
+        var rect = visibleRects_1[_i];
+        var segIndex = rect.index;
+        visiblePlacements.push({
+            seg: segIndex < segs.length
+                ? segs[segIndex] // a real seg
+                : hiddenGroups[segIndex - segs.length].entries.map(extractSeg),
+            hcoords: rect.span,
+            top: rect.levelCoord,
+        });
+        maxHeight = Math.max(maxHeight, rect.levelCoord + rect.thickness);
+    }
+    return [
+        visiblePlacements.concat(crudePlacements, hiddenPlacements, moreLinkCrudePlacements),
+        maxHeight,
+    ];
+}
+
+var TimelineLaneBg = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineLaneBg, _super);
+    function TimelineLaneBg() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineLaneBg.prototype.render = function () {
+        var props = this.props;
+        var highlightSeg = [].concat(props.eventResizeSegs, props.dateSelectionSegs);
+        return props.timelineCoords && ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-bg" },
+            this.renderSegs(props.businessHourSegs || [], props.timelineCoords, 'non-business'),
+            this.renderSegs(props.bgEventSegs || [], props.timelineCoords, 'bg-event'),
+            this.renderSegs(highlightSeg, props.timelineCoords, 'highlight')));
+    };
+    TimelineLaneBg.prototype.renderSegs = function (segs, timelineCoords, fillType) {
+        var _a = this.props, todayRange = _a.todayRange, nowDate = _a.nowDate;
+        var isRtl = this.context.isRtl;
+        var segHCoords = computeSegHCoords(segs, 0, timelineCoords);
+        var children = segs.map(function (seg, i) {
+            var hcoords = segHCoords[i];
+            var hStyle = coordsToCss(hcoords, isRtl);
+            return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { key: (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildEventRangeKey)(seg.eventRange), className: "fc-timeline-bg-harness", style: hStyle }, fillType === 'bg-event' ?
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BgEvent, (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ seg: seg }, (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getSegMeta)(seg, todayRange, nowDate))) :
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.renderFill)(fillType)));
+        });
+        return (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, children);
+    };
+    return TimelineLaneBg;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineLaneSlicer = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineLaneSlicer, _super);
+    function TimelineLaneSlicer() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineLaneSlicer.prototype.sliceRange = function (origRange, dateProfile, dateProfileGenerator, tDateProfile, dateEnv) {
+        var normalRange = normalizeRange(origRange, tDateProfile, dateEnv);
+        var segs = [];
+        // protect against when the span is entirely in an invalid date region
+        if (computeDateSnapCoverage(normalRange.start, tDateProfile, dateEnv)
+            < computeDateSnapCoverage(normalRange.end, tDateProfile, dateEnv)) {
+            // intersect the footprint's range with the grid's range
+            var slicedRange = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.intersectRanges)(normalRange, tDateProfile.normalizedRange);
+            if (slicedRange) {
+                segs.push({
+                    start: slicedRange.start,
+                    end: slicedRange.end,
+                    isStart: slicedRange.start.valueOf() === normalRange.start.valueOf()
+                        && isValidDate(slicedRange.start, tDateProfile, dateProfile, dateProfileGenerator),
+                    isEnd: slicedRange.end.valueOf() === normalRange.end.valueOf()
+                        && isValidDate((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.addMs)(slicedRange.end, -1), tDateProfile, dateProfile, dateProfileGenerator),
+                });
+            }
+        }
+        return segs;
+    };
+    return TimelineLaneSlicer;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Slicer));
+
+var DEFAULT_TIME_FORMAT = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createFormatter)({
+    hour: 'numeric',
+    minute: '2-digit',
+    omitZeroMinute: true,
+    meridiem: 'narrow',
+});
+var TimelineEvent = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineEvent, _super);
+    function TimelineEvent() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TimelineEvent.prototype.render = function () {
+        var props = this.props;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.StandardEvent, (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({}, props, { extraClassNames: ['fc-timeline-event', 'fc-h-event'], defaultTimeFormat: DEFAULT_TIME_FORMAT, defaultDisplayEventTime: !props.isTimeScale })));
+    };
+    return TimelineEvent;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineLaneMoreLink = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineLaneMoreLink, _super);
+    function TimelineLaneMoreLink() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.rootElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        return _this;
+    }
+    TimelineLaneMoreLink.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, context = _a.context;
+        var hiddenSegs = props.hiddenSegs, elRef = props.elRef, placement = props.placement, resourceId = props.resourceId;
+        var top = placement.top, hcoords = placement.hcoords;
+        var isVisible = hcoords && top !== null;
+        var hStyle = coordsToCss(hcoords, context.isRtl);
+        var extraDateSpan = resourceId ? { resourceId: resourceId } : {};
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.MoreLinkRoot, { allDayDate: null, moreCnt: hiddenSegs.length, allSegs: hiddenSegs, hiddenSegs: hiddenSegs, alignmentElRef: this.rootElRef, dateProfile: props.dateProfile, todayRange: props.todayRange, extraDateSpan: extraDateSpan, popoverContent: function () { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, hiddenSegs.map(function (seg) {
+                var instanceId = seg.eventRange.instance.instanceId;
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { key: instanceId, style: { visibility: props.isForcedInvisible[instanceId] ? 'hidden' : '' } },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineEvent, (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ isTimeScale: props.isTimeScale, seg: seg, isDragging: false, isResizing: false, isDateSelecting: false, isSelected: instanceId === props.eventSelection }, (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getSegMeta)(seg, props.todayRange, props.nowDate)))));
+            }))); } }, function (rootElRef, classNames, innerElRef, innerContent, handleClick, title, isExpanded, popoverId) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("a", { ref: function (el) {
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.setRef)(rootElRef, el); // for MoreLinkRoot
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.setRef)(elRef, el); // for props props
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.setRef)(_this.rootElRef, el); // for this component
+            }, className: ['fc-timeline-more-link'].concat(classNames).join(' '), style: (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ visibility: isVisible ? '' : 'hidden', top: top || 0 }, hStyle), onClick: handleClick, title: title, "aria-expanded": isExpanded, "aria-controls": popoverId },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: innerElRef, className: "fc-timeline-more-link-inner fc-sticky" }, innerContent))); }));
+    };
+    return TimelineLaneMoreLink;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+
+var TimelineLane = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineLane, _super);
+    function TimelineLane() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.slicer = new TimelineLaneSlicer();
+        _this.sortEventSegs = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.sortEventSegs);
+        _this.harnessElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RefMap();
+        _this.moreElRefs = new _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.RefMap();
+        _this.innerElRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        // TODO: memoize event positioning
+        _this.state = {
+            eventInstanceHeights: {},
+            moreLinkHeights: {},
+        };
+        return _this;
+    }
+    TimelineLane.prototype.render = function () {
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var options = context.options;
+        var dateProfile = props.dateProfile, tDateProfile = props.tDateProfile;
+        var slicedProps = this.slicer.sliceProps(props, dateProfile, tDateProfile.isTimeScale ? null : props.nextDayThreshold, context, // wish we didn't have to pass in the rest of the args...
+        dateProfile, context.dateProfileGenerator, tDateProfile, context.dateEnv);
+        var mirrorSegs = (slicedProps.eventDrag ? slicedProps.eventDrag.segs : null) ||
+            (slicedProps.eventResize ? slicedProps.eventResize.segs : null) ||
+            [];
+        var fgSegs = this.sortEventSegs(slicedProps.fgEventSegs, options.eventOrder);
+        var fgSegHCoords = computeSegHCoords(fgSegs, options.eventMinWidth, props.timelineCoords);
+        var _b = computeFgSegPlacements(fgSegs, fgSegHCoords, state.eventInstanceHeights, state.moreLinkHeights, options.eventOrderStrict, options.eventMaxStack), fgPlacements = _b[0], fgHeight = _b[1];
+        var isForcedInvisible = // TODO: more convenient
+         (slicedProps.eventDrag ? slicedProps.eventDrag.affectedInstances : null) ||
+            (slicedProps.eventResize ? slicedProps.eventResize.affectedInstances : null) ||
+            {};
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null,
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineLaneBg, { businessHourSegs: slicedProps.businessHourSegs, bgEventSegs: slicedProps.bgEventSegs, timelineCoords: props.timelineCoords, eventResizeSegs: slicedProps.eventResize ? slicedProps.eventResize.segs : [] /* bad new empty array? */, dateSelectionSegs: slicedProps.dateSelectionSegs, nowDate: props.nowDate, todayRange: props.todayRange }),
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-events fc-scrollgrid-sync-inner", ref: this.innerElRef, style: { height: fgHeight } },
+                this.renderFgSegs(fgPlacements, isForcedInvisible, false, false, false),
+                this.renderFgSegs(buildMirrorPlacements(mirrorSegs, props.timelineCoords, fgPlacements), {}, Boolean(slicedProps.eventDrag), Boolean(slicedProps.eventResize), false))));
+    };
+    TimelineLane.prototype.componentDidMount = function () {
+        this.updateSize();
+    };
+    TimelineLane.prototype.componentDidUpdate = function (prevProps, prevState) {
+        if (prevProps.eventStore !== this.props.eventStore || // external thing changed?
+            prevProps.timelineCoords !== this.props.timelineCoords || // external thing changed?
+            prevState.moreLinkHeights !== this.state.moreLinkHeights // HACK. see addStateEquality
+        ) {
+            this.updateSize();
+        }
+    };
+    TimelineLane.prototype.updateSize = function () {
+        var _this = this;
+        var props = this.props;
+        var timelineCoords = props.timelineCoords;
+        if (props.onHeightChange) {
+            props.onHeightChange(this.innerElRef.current, false);
+        }
+        if (timelineCoords) {
+            this.setState({
+                eventInstanceHeights: (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.mapHash)(this.harnessElRefs.currentMap, function (harnessEl) { return (Math.round(harnessEl.getBoundingClientRect().height)); }),
+                moreLinkHeights: (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.mapHash)(this.moreElRefs.currentMap, function (moreEl) { return (Math.round(moreEl.getBoundingClientRect().height)); }),
+            }, function () {
+                if (props.onHeightChange) {
+                    props.onHeightChange(_this.innerElRef.current, true);
+                }
+            });
+        }
+    };
+    TimelineLane.prototype.renderFgSegs = function (segPlacements, isForcedInvisible, isDragging, isResizing, isDateSelecting) {
+        var _a = this, harnessElRefs = _a.harnessElRefs, moreElRefs = _a.moreElRefs, props = _a.props, context = _a.context;
+        var isMirror = isDragging || isResizing || isDateSelecting;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, segPlacements.map(function (segPlacement) {
+            var seg = segPlacement.seg, hcoords = segPlacement.hcoords, top = segPlacement.top;
+            if (Array.isArray(seg)) { // a more-link
+                var isoStr = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.buildIsoString)((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.computeEarliestSegStart)(seg));
+                return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineLaneMoreLink, { key: 'm:' + isoStr /* "m" for "more" */, elRef: moreElRefs.createRef(isoStr), hiddenSegs: seg, placement: segPlacement, dateProfile: props.dateProfile, nowDate: props.nowDate, todayRange: props.todayRange, isTimeScale: props.tDateProfile.isTimeScale, eventSelection: props.eventSelection, resourceId: props.resourceId, isForcedInvisible: isForcedInvisible }));
+            }
+            var instanceId = seg.eventRange.instance.instanceId;
+            var isVisible = isMirror || Boolean(!isForcedInvisible[instanceId] && hcoords && top !== null);
+            var hStyle = coordsToCss(hcoords, context.isRtl);
+            return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { key: 'e:' + instanceId /* "e" for "event" */, ref: isMirror ? null : harnessElRefs.createRef(instanceId), className: "fc-timeline-event-harness", style: (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ visibility: isVisible ? '' : 'hidden', top: top || 0 }, hStyle) },
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineEvent, (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({ isTimeScale: props.tDateProfile.isTimeScale, seg: seg, isDragging: isDragging, isResizing: isResizing, isDateSelecting: isDateSelecting, isSelected: instanceId === props.eventSelection /* TODO: bad for mirror? */ }, (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getSegMeta)(seg, props.todayRange, props.nowDate)))));
+        })));
+    };
+    return TimelineLane;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.BaseComponent));
+TimelineLane.addStateEquality({
+    eventInstanceHeights: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isPropsEqual,
+    moreLinkHeights: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.isPropsEqual,
+});
+function buildMirrorPlacements(mirrorSegs, timelineCoords, fgPlacements) {
+    if (!mirrorSegs.length || !timelineCoords) {
+        return [];
+    }
+    var topsByInstanceId = buildAbsoluteTopHash(fgPlacements); // TODO: cache this at first render?
+    return mirrorSegs.map(function (seg) { return ({
+        seg: seg,
+        hcoords: timelineCoords.rangeToCoords(seg),
+        top: topsByInstanceId[seg.eventRange.instance.instanceId],
+    }); });
+}
+function buildAbsoluteTopHash(placements) {
+    var topsByInstanceId = {};
+    for (var _i = 0, placements_1 = placements; _i < placements_1.length; _i++) {
+        var placement = placements_1[_i];
+        var seg = placement.seg;
+        if (!Array.isArray(seg)) { // doesn't represent a more-link
+            topsByInstanceId[seg.eventRange.instance.instanceId] = placement.top;
+        }
+    }
+    return topsByInstanceId;
+}
+
+var TimelineGrid = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineGrid, _super);
+    function TimelineGrid() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.slatsRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.state = {
+            coords: null,
+        };
+        _this.handeEl = function (el) {
+            if (el) {
+                _this.context.registerInteractiveComponent(_this, { el: el });
+            }
+            else {
+                _this.context.unregisterInteractiveComponent(_this);
+            }
+        };
+        _this.handleCoords = function (coords) {
+            _this.setState({ coords: coords });
+            if (_this.props.onSlatCoords) {
+                _this.props.onSlatCoords(coords);
+            }
+        };
+        return _this;
+    }
+    TimelineGrid.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var options = context.options;
+        var dateProfile = props.dateProfile, tDateProfile = props.tDateProfile;
+        var timerUnit = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.greatestDurationDenominator)(tDateProfile.slotDuration).unit;
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-body", ref: this.handeEl, style: {
+                minWidth: props.tableMinWidth,
+                height: props.clientHeight,
+                width: props.clientWidth,
+            } },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.NowTimer, { unit: timerUnit }, function (nowDate, todayRange) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.Fragment, null,
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineSlats, { ref: _this.slatsRef, dateProfile: dateProfile, tDateProfile: tDateProfile, nowDate: nowDate, todayRange: todayRange, clientWidth: props.clientWidth, tableColGroupNode: props.tableColGroupNode, tableMinWidth: props.tableMinWidth, onCoords: _this.handleCoords, onScrollLeftRequest: props.onScrollLeftRequest }),
+                (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineLane, { dateProfile: dateProfile, tDateProfile: props.tDateProfile, nowDate: nowDate, todayRange: todayRange, nextDayThreshold: options.nextDayThreshold, businessHours: props.businessHours, eventStore: props.eventStore, eventUiBases: props.eventUiBases, dateSelection: props.dateSelection, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, timelineCoords: state.coords }),
+                (options.nowIndicator && state.coords && state.coords.isDateInRange(nowDate)) && ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { className: "fc-timeline-now-indicator-container" },
+                    (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.NowIndicatorRoot, { isAxis: false, date: nowDate }, function (rootElRef, classNames, innerElRef, innerContent) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: rootElRef, className: ['fc-timeline-now-indicator-line'].concat(classNames).join(' '), style: coordToCss(state.coords.dateToCoord(nowDate), context.isRtl) }, innerContent)); }))))); })));
+    };
+    // Hit System
+    // ------------------------------------------------------------------------------------------
+    TimelineGrid.prototype.queryHit = function (positionLeft, positionTop, elWidth, elHeight) {
+        var slats = this.slatsRef.current;
+        var slatHit = slats.positionToHit(positionLeft);
+        if (slatHit) {
+            return {
+                dateProfile: this.props.dateProfile,
+                dateSpan: slatHit.dateSpan,
+                rect: {
+                    left: slatHit.left,
+                    right: slatHit.right,
+                    top: 0,
+                    bottom: elHeight,
+                },
+                dayEl: slatHit.dayEl,
+                layer: 0,
+            };
+        }
+        return null;
+    };
+    return TimelineGrid;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.DateComponent));
+
+var TimelineView = /** @class */ (function (_super) {
+    (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__extends)(TimelineView, _super);
+    function TimelineView() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.buildTimelineDateProfile = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.memoize)(buildTimelineDateProfile);
+        _this.scrollGridRef = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createRef)();
+        _this.state = {
+            slatCoords: null,
+            slotCushionMaxWidth: null,
+        };
+        _this.handleSlatCoords = function (slatCoords) {
+            _this.setState({ slatCoords: slatCoords });
+        };
+        _this.handleScrollLeftRequest = function (scrollLeft) {
+            var scrollGrid = _this.scrollGridRef.current;
+            scrollGrid.forceScrollLeft(0, scrollLeft);
+        };
+        _this.handleMaxCushionWidth = function (slotCushionMaxWidth) {
+            _this.setState({
+                slotCushionMaxWidth: Math.ceil(slotCushionMaxWidth), // for less rerendering TODO: DRY
+            });
+        };
+        return _this;
+    }
+    TimelineView.prototype.render = function () {
+        var _this = this;
+        var _a = this, props = _a.props, state = _a.state, context = _a.context;
+        var options = context.options;
+        var stickyHeaderDates = !props.forPrint && (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getStickyHeaderDates)(options);
+        var stickyFooterScrollbar = !props.forPrint && (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.getStickyFooterScrollbar)(options);
+        var tDateProfile = this.buildTimelineDateProfile(props.dateProfile, context.dateEnv, options, context.dateProfileGenerator);
+        var extraClassNames = [
+            'fc-timeline',
+            options.eventOverlap === false ? 'fc-timeline-overlap-disabled' : '',
+        ];
+        var slotMinWidth = options.slotMinWidth;
+        var slatCols = buildSlatCols(tDateProfile, slotMinWidth || this.computeFallbackSlotMinWidth(tDateProfile));
+        var sections = [
+            {
+                type: 'header',
+                key: 'header',
+                isSticky: stickyHeaderDates,
+                chunks: [{
+                        key: 'timeline',
+                        content: function (contentArg) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineHeader, { dateProfile: props.dateProfile, clientWidth: contentArg.clientWidth, clientHeight: contentArg.clientHeight, tableMinWidth: contentArg.tableMinWidth, tableColGroupNode: contentArg.tableColGroupNode, tDateProfile: tDateProfile, slatCoords: state.slatCoords, onMaxCushionWidth: slotMinWidth ? null : _this.handleMaxCushionWidth })); },
+                    }],
+            },
+            {
+                type: 'body',
+                key: 'body',
+                liquid: true,
+                chunks: [{
+                        key: 'timeline',
+                        content: function (contentArg) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(TimelineGrid, (0,tslib__WEBPACK_IMPORTED_MODULE_4__.__assign)({}, props, { clientWidth: contentArg.clientWidth, clientHeight: contentArg.clientHeight, tableMinWidth: contentArg.tableMinWidth, tableColGroupNode: contentArg.tableColGroupNode, tDateProfile: tDateProfile, onSlatCoords: _this.handleSlatCoords, onScrollLeftRequest: _this.handleScrollLeftRequest }))); },
+                    }],
+            },
+        ];
+        if (stickyFooterScrollbar) {
+            sections.push({
+                type: 'footer',
+                key: 'footer',
+                isSticky: true,
+                chunks: [{
+                        key: 'timeline',
+                        content: _fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.renderScrollShim,
+                    }],
+            });
+        }
+        return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.ViewRoot, { viewSpec: context.viewSpec }, function (rootElRef, classNames) { return ((0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", { ref: rootElRef, className: extraClassNames.concat(classNames).join(' ') },
+            (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createElement)(_fullcalendar_scrollgrid__WEBPACK_IMPORTED_MODULE_3__.ScrollGrid, { ref: _this.scrollGridRef, liquid: !props.isHeightAuto && !props.forPrint, collapsibleWidth: false, colGroups: [
+                    { cols: slatCols },
+                ], sections: sections }))); }));
+    };
+    TimelineView.prototype.computeFallbackSlotMinWidth = function (tDateProfile) {
+        return Math.max(30, ((this.state.slotCushionMaxWidth || 0) / tDateProfile.slotsPerLabel));
+    };
+    return TimelineView;
+}(_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.DateComponent));
+function buildSlatCols(tDateProfile, slotMinWidth) {
+    return [{
+            span: tDateProfile.slotCnt,
+            minWidth: slotMinWidth || 1, // needs to be a non-zero number to trigger horizontal scrollbars!??????
+        }];
+}
+
+var main = (0,_fullcalendar_common__WEBPACK_IMPORTED_MODULE_1__.createPlugin)({
+    deps: [
+        _fullcalendar_premium_common__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ],
+    initialView: 'timelineDay',
+    views: {
+        timeline: {
+            component: TimelineView,
+            usesMinMaxTime: true,
+            eventResizableFromStart: true, // how is this consumed for TimelineView tho?
+        },
+        timelineDay: {
+            type: 'timeline',
+            duration: { days: 1 },
+        },
+        timelineWeek: {
+            type: 'timeline',
+            duration: { weeks: 1 },
+        },
+        timelineMonth: {
+            type: 'timeline',
+            duration: { months: 1 },
+        },
+        timelineYear: {
+            type: 'timeline',
+            duration: { years: 1 },
+        },
+    },
+});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (main);
+
+//# sourceMappingURL=main.js.map
+
+
+/***/ }),
+
 /***/ "./node_modules/@fullcalendar/common/main.css":
 /*!****************************************************!*\
   !*** ./node_modules/@fullcalendar/common/main.css ***!
@@ -17266,9 +20641,33 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/@fullcalendar/resource-timeline/main.css":
+/*!***************************************************************!*\
+  !*** ./node_modules/@fullcalendar/resource-timeline/main.css ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
 /***/ "./node_modules/@fullcalendar/timegrid/main.css":
 /*!******************************************************!*\
   !*** ./node_modules/@fullcalendar/timegrid/main.css ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./node_modules/@fullcalendar/timeline/main.css":
+/*!******************************************************!*\
+  !*** ./node_modules/@fullcalendar/timeline/main.css ***!
   \******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -17282,6 +20681,30 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./src/main.css ***!
   \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/modal/modal.css":
+/*!*****************************!*\
+  !*** ./src/modal/modal.css ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/tooltip/tooltip.css":
+/*!*********************************!*\
+  !*** ./src/tooltip/tooltip.css ***!
+  \*********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -17761,6 +21184,206 @@ function initializeResourceDropdown(
 }
 
 
+/***/ }),
+
+/***/ "./src/modal/modal.js":
+/*!****************************!*\
+  !*** ./src/modal/modal.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Modal)
+/* harmony export */ });
+/** Class representing a modal */
+class Modal {
+  /**
+   * @param {string} from - Start-time
+   * @param {string} to - End-time
+   * @param {string} resourceId - Resouce identifier
+   * @param {string} resourceTitle - Resource title
+   */
+  constructor(from, to, resourceId, resourceTitle) {
+    this.from = from;
+    this.to = to;
+    this.resourceId = resourceId;
+    this.resourceTitle = resourceTitle;
+  }
+
+  buildModal() {
+    document.getElementById("bookingHeader").innerHTML = `${Drupal.t(
+      "Booking submit"
+    )} - ${this.resourceTitle}`;
+    document.getElementById("bookingResourceId").innerHTML = `<b>${Drupal.t(
+      "Room ID"
+    )}:</b> ${this.resourceId}`;
+    document.getElementById("bookingResourceTitle").innerHTML = `<b>${Drupal.t(
+      "Room title"
+    )}:</b> ${this.resourceTitle}`;
+    document.getElementById("bookingFrom").innerHTML = `<b>${Drupal.t(
+      "From"
+    )}:</b> ${this.from}`;
+    document.getElementById("bookingTo").innerHTML = `<b>${Drupal.t(
+      "To"
+    )}:</b> ${this.to}`;
+    document.getElementById("bookingSubmit").innerHTML = `<b>${Drupal.t(
+      "Booking submit"
+    )}</b>`;
+
+    const modal = document.getElementById("modal");
+
+    if (modal.classList.contains("open")) {
+      modal.classList.remove("open");
+    } else {
+      modal.classList.add("open");
+    }
+
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.classList.contains("booking-close")) {
+        modal.classList.remove("open");
+      }
+    });
+
+    window.onclick = function (event) {
+      if (event.target === modal) {
+        if (modal.classList.contains("open")) {
+          modal.classList.remove("open");
+          modal.classList.add("closing");
+          setTimeout(function () {
+            modal.classList.remove("closing");
+          }, 300);
+        } else {
+          modal.classList.add("open");
+        }
+      }
+    };
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/tooltip/tooltip.js":
+/*!********************************!*\
+  !*** ./src/tooltip/tooltip.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Tooltip)
+/* harmony export */ });
+/** Class representing a tooltip */
+class Tooltip {
+  /**
+   * @param {number} delay - Delay in ms until tooltip is hidden
+   * @param {number} distance - Distance in px from parent to tooltip
+   */
+  constructor(delay, distance) {
+    this.delay = delay;
+    this.distance = distance;
+  }
+
+  /** @param {object} self - Instance of the tooltip class */
+  renderTooltip(self) {
+    document.body.addEventListener("mouseover", function (e) {
+      if (!e.target.hasAttribute("data-tooltip")) return;
+      const tooltip = document.createElement("div");
+      tooltip.className = "b-tooltip";
+      tooltip.innerHTML = e.target.getAttribute("data-tooltip");
+      document.body.appendChild(tooltip);
+
+      const pos = e.target.getAttribute("data-position") || "center top";
+      const posHorizontal = pos.split(" ")[0];
+      const posVertical = pos.split(" ")[1];
+      positionAt(e.target, tooltip, posHorizontal, posVertical, self);
+    });
+    document.body.addEventListener("mouseout", function (e) {
+      if (e.target.hasAttribute("data-tooltip")) {
+        setTimeout(function () {
+          try {
+            document.body.removeChild(
+              document.querySelector(".b-tooltip:not(.hovered)")
+            );
+          } catch (error) {
+            throw new Error(error);
+          }
+        }, this.delay);
+      }
+    });
+  }
+}
+/**
+ * Positions the tooltip
+ *
+ * @param {object} parent - Tooltip parent
+ * @param {object} tooltip - Tooltip
+ * @param {string} posHorizontal - Left/right/center
+ * @param {string} posVertical - Center/bottom/top
+ * @param {object} self - Instance of the tooltip class
+ */
+function positionAt(parent, tooltip, posHorizontal, posVertical, self) {
+  const parentCoords = parent.getBoundingClientRect();
+
+  let left;
+  let top;
+  switch (posHorizontal) {
+    case "left":
+      left =
+        parseInt(parentCoords.left, 10) - self.distance - tooltip.offsetWidth;
+      if (parseInt(parentCoords.left, 10) - tooltip.offsetWidth < 0) {
+        left = self.distance;
+      }
+      break;
+
+    case "right":
+      left = parentCoords.right + self.distance;
+      if (
+        parseInt(parentCoords.right, 10) + tooltip.offsetWidth >
+        document.documentElement.clientWidth
+      ) {
+        left =
+          document.documentElement.clientWidth -
+          tooltip.offsetWidth -
+          self.distance;
+      }
+      break;
+
+    case "center":
+    default:
+      left =
+        parseInt(parentCoords.left, 10) +
+        (parent.offsetWidth - tooltip.offsetWidth) / 2;
+  }
+
+  switch (posVertical) {
+    case "center":
+      top =
+        (parseInt(parentCoords.top, 10) + parseInt(parentCoords.bottom, 10)) /
+          2 -
+        tooltip.offsetHeight / 2;
+      break;
+
+    case "bottom":
+      top = parseInt(parentCoords.bottom, 10) + self.distance;
+      break;
+
+    case "top":
+    default:
+      top =
+        parseInt(parentCoords.top, 10) - tooltip.offsetHeight - self.distance;
+  }
+
+  left = left < 0 ? parseInt(parentCoords.left, 10) : left;
+  top = top < 0 ? parseInt(parentCoords.bottom, 10) + self.distance : top;
+
+  tooltip.style.left = `${left}px`;
+
+  tooltip.style.top = `${top + window.pageYOffset}px`;
+}
+
+
 /***/ })
 
 /******/ 	});
@@ -17833,8 +21456,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
 /* harmony import */ var _fullcalendar_core_locales_da__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/core/locales/da */ "./node_modules/@fullcalendar/core/locales/da.js");
 /* harmony import */ var _fullcalendar_resource_timegrid__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fullcalendar/resource-timegrid */ "./node_modules/@fullcalendar/resource-timegrid/main.js");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
-/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./filters */ "./src/filters.js");
+/* harmony import */ var _fullcalendar_resource_timeline__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @fullcalendar/resource-timeline */ "./node_modules/@fullcalendar/resource-timeline/main.js");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
+/* harmony import */ var _modal_modal_css__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modal/modal.css */ "./src/modal/modal.css");
+/* harmony import */ var _tooltip_tooltip_css__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./tooltip/tooltip.css */ "./src/tooltip/tooltip.css");
+/* harmony import */ var _modal_modal__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modal/modal */ "./src/modal/modal.js");
+/* harmony import */ var _tooltip_tooltip__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./tooltip/tooltip */ "./src/tooltip/tooltip.js");
+/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./filters */ "./src/filters.js");
 
 
 
@@ -17845,6 +21473,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+/* eslint no-underscore-dangle: 0 */
 /**
  * Provide a calendar from (https://fullcalendar.io/) with data from Drupal.
  *
@@ -17874,7 +21508,7 @@ __webpack_require__.r(__webpack_exports__);
           `calendar-${elementId}`
         );
 
-        (0,_filters__WEBPACK_IMPORTED_MODULE_8__.initializeResourceDropdown)(resourceDropdownNode, elementSettings);
+        (0,_filters__WEBPACK_IMPORTED_MODULE_13__.initializeResourceDropdown)(resourceDropdownNode, elementSettings);
 
         buildCalendar(
           drupalSettings,
@@ -17882,7 +21516,7 @@ __webpack_require__.r(__webpack_exports__);
           elementId,
           resourceDropdownNode,
           calendarElement,
-          (0,_filters__WEBPACK_IMPORTED_MODULE_8__.bookingFilterValues)(bookingFilterNodes)
+          (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes)
         );
 
         // Add event listener on all filters.
@@ -17894,7 +21528,7 @@ __webpack_require__.r(__webpack_exports__);
               elementId,
               resourceDropdownNode,
               calendarElement,
-              (0,_filters__WEBPACK_IMPORTED_MODULE_8__.bookingFilterValues)(bookingFilterNodes)
+              (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes)
             );
           });
         });
@@ -17944,10 +21578,9 @@ function buildCalendar(
         filters
       );
     })
-    .catch(function (error) {
+    .catch(function () {
       // If there's an error, log it.
       // eslint-disable-next-line no-console
-      console.log(error);
     });
 }
 
@@ -18001,20 +21634,41 @@ function setupCalendar(
       _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"],
       _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"],
       _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"],
+      _fullcalendar_resource_timeline__WEBPACK_IMPORTED_MODULE_7__["default"],
     ],
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
     initialDate: filters.dateStart
-      ? filters.dateStart
-      : now.toISOString().split("T")[0],
+      ? filters.dateStart : now.toISOString().split("T")[0],
+
+    selectConstraint: "businessHours",
+    businessHours: {
+      startTime: "06:00",
+      endTime: "22:00",
+    },
     navLinks: false,
+    selectable: elementSettings.enable_booking === true,
+    select(selectionInfo) {
+      const modal = new _modal_modal__WEBPACK_IMPORTED_MODULE_11__["default"]();
+      modal.from = selectionInfo.start;
+      modal.to = selectionInfo.end;
+      modal.resourceId = selectionInfo.resource._resource.id;
+      modal.resourceTitle = selectionInfo.resource._resource.title;
+      modal.drupal = Drupal;
+      modal.buildModal();
+    },
+    selectOverlap: false,
     editable: false,
     dayMaxEvents: true,
     locale: _fullcalendar_core_locales_da__WEBPACK_IMPORTED_MODULE_5__["default"],
+    resourceLabelDidMount(info) {
+      if (elementSettings.enable_resource_tooltips === true) {
+        renderResourceTooltips(info);
+      }
+    },
     resources: dataFormatted.resources,
     events: dataFormatted.bookings,
   });
-
   calendar.render();
 }
 
@@ -18044,6 +21698,10 @@ function handleResources(value) {
   return {
     id: value.email,
     title: value.title,
+    capacity: value.capacity,
+    building: value.building,
+    description: value.description,
+    image: value.image,
   };
 }
 
@@ -18061,6 +21719,25 @@ function filterSelectedResourceBackend(element, index, arr) {
   return this.rooms[element.id] !== 0;
 }
 
+/** @param {object} info : The resouce metadata */
+function renderResourceTooltips(info) {
+  const tooltip = new _tooltip_tooltip__WEBPACK_IMPORTED_MODULE_12__["default"]();
+  tooltip.distance = 5;
+  tooltip.delay = 0;
+  tooltip.position = "center bottom";
+
+  const resourceImage = info.resource._resource.extendedProps.image;
+  const resourceDescription = info.resource._resource.extendedProps.description;
+  const resourceTitle = info.resource._resource.id;
+  const resourceCapacity = info.resource._resource.extendedProps.capacity;
+  const questionMark = document.createElement("span");
+  questionMark.innerText = " ( ? ) ";
+  questionMark.dataset.tooltip = `<img src='${resourceImage}' /><p><b>${resourceTitle}</b><br><b>Kapacitet: ${resourceCapacity}</b><br>${resourceDescription}</p>`;
+  questionMark.dataset.position = "center bottom";
+  info.el.appendChild(questionMark);
+
+  tooltip.renderTooltip(tooltip);
+}
 /**
  * Remove resources from array if they have not been selected in the Drupal
  * frontend. "this" represents the resource filter value set in resource dropdown.

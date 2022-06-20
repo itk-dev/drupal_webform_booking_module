@@ -9,3 +9,13 @@ body {
   max-width: 900px;
   margin: 0 auto;
 }
+
+.fc .fc-daygrid-day.fc-day-today {
+  /* Using specific selector for overwriting plugin standards */
+  background: #FFF;
+  border: none;
+}
+
+.fc .fc-timegrid-now-indicator-container {
+  border-right: 1px solid #e9e9e9;
+}

@@ -5,9 +5,15 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import "./main.css";
+import "./modal/modal.css";
+import "./tooltip/tooltip.css";
+import Modal from "./modal/modal";
+import Tooltip from "./tooltip/tooltip";
 import { bookingFilterValues, initializeResourceDropdown } from "./filters";
 
+/* eslint no-underscore-dangle: 0 */
 /**
  * Provide a calendar from (https://fullcalendar.io/) with data from Drupal.
  *
@@ -107,10 +113,9 @@ function buildCalendar(
         filters
       );
     })
-    .catch(function (error) {
+    .catch(function () {
       // If there's an error, log it.
       // eslint-disable-next-line no-console
-      console.log(error);
     });
 }
 
@@ -164,20 +169,41 @@ function setupCalendar(
       dayGridPlugin,
       timeGridPlugin,
       listPlugin,
+      resourceTimelinePlugin,
     ],
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
     initialDate: filters.dateStart
-      ? filters.dateStart
-      : now.toISOString().split("T")[0],
+      ? filters.dateStart : now.toISOString().split("T")[0],
+
+    selectConstraint: "businessHours",
+    businessHours: {
+      startTime: "06:00",
+      endTime: "22:00",
+    },
     navLinks: false,
+    selectable: elementSettings.enable_booking === true,
+    select(selectionInfo) {
+      const modal = new Modal();
+      modal.from = selectionInfo.start;
+      modal.to = selectionInfo.end;
+      modal.resourceId = selectionInfo.resource._resource.id;
+      modal.resourceTitle = selectionInfo.resource._resource.title;
+      modal.drupal = Drupal;
+      modal.buildModal();
+    },
+    selectOverlap: false,
     editable: false,
     dayMaxEvents: true,
     locale: daLocale,
+    resourceLabelDidMount(info) {
+      if (elementSettings.enable_resource_tooltips === true) {
+        renderResourceTooltips(info);
+      }
+    },
     resources: dataFormatted.resources,
     events: dataFormatted.bookings,
   });
-
   calendar.render();
 }
 
@@ -207,6 +233,10 @@ function handleResources(value) {
   return {
     id: value.email,
     title: value.title,
+    capacity: value.capacity,
+    building: value.building,
+    description: value.description,
+    image: value.image,
   };
 }
 
@@ -224,6 +254,25 @@ function filterSelectedResourceBackend(element, index, arr) {
   return this.rooms[element.id] !== 0;
 }
 
+/** @param {object} info : The resouce metadata */
+function renderResourceTooltips(info) {
+  const tooltip = new Tooltip();
+  tooltip.distance = 5;
+  tooltip.delay = 0;
+  tooltip.position = "center bottom";
+
+  const resourceImage = info.resource._resource.extendedProps.image;
+  const resourceDescription = info.resource._resource.extendedProps.description;
+  const resourceTitle = info.resource._resource.id;
+  const resourceCapacity = info.resource._resource.extendedProps.capacity;
+  const questionMark = document.createElement("span");
+  questionMark.innerText = " ( ? ) ";
+  questionMark.dataset.tooltip = `<img src='${resourceImage}' /><p><b>${resourceTitle}</b><br><b>Kapacitet: ${resourceCapacity}</b><br>${resourceDescription}</p>`;
+  questionMark.dataset.position = "center bottom";
+  info.el.appendChild(questionMark);
+
+  tooltip.renderTooltip(tooltip);
+}
 /**
  * Remove resources from array if they have not been selected in the Drupal
  * frontend. "this" represents the resource filter value set in resource dropdown.
