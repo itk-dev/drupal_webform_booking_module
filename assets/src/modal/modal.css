@@ -19,15 +19,15 @@
     display: block;
 }
 
-#modalClose {
+span.booking-close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
 
-#modalClose:hover,
-#modalClose:focus {
+span.booking-close:hover,
+span.booking-close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;

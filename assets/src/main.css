@@ -10,10 +10,10 @@ body {
   margin: 0 auto;
 }
 
-.fc-day-today {
-  background: #FFF !important;
-  border: none !important;
-
+.fc .fc-daygrid-day.fc-day-today {
+  /* Using specific selector for overwriting plugin standards */
+  background: #FFF;
+  border: none;
 }
 
 .fc .fc-timegrid-now-indicator-container {

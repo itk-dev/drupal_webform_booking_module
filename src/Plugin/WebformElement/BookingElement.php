@@ -20,12 +20,14 @@ use Drupal\Core\Url;
  *   category = @Translation("Advanced elements"),
  * )
  */
-class BookingElement extends Hidden {
+class BookingElement extends Hidden
+{
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition)
+  {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->extensionList = $container->get('extension.list.module');
     $instance->bookingHelper = $container->get('itkdev_booking.booking_helper');
@@ -35,7 +37,8 @@ class BookingElement extends Hidden {
   /**
    * {@inheritdoc}
    */
-  protected function defineDefaultProperties() {
+  protected function defineDefaultProperties()
+  {
     return [
       'rooms' => [],
       'enable_booking' => false,
@@ -46,14 +49,16 @@ class BookingElement extends Hidden {
   /**
    * {@inheritdoc}
    */
-  public function preview() {
+  public function preview()
+  {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getTestValues(array $element, WebformInterface $webform, array $options = []) {
+  public function getTestValues(array $element, WebformInterface $webform, array $options = [])
+  {
     // Hidden elements should never get a test value.
     return NULL;
   }
@@ -61,7 +66,8 @@ class BookingElement extends Hidden {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
+  public function form(array $form, FormStateInterface $form_state)
+  {
     $form = parent::form($form, $form_state);
 
     $form['element']['rooms_wrapper'] = [
@@ -99,15 +105,16 @@ class BookingElement extends Hidden {
   /**
    * {@inheritdoc}
    */
-  public function alterForm(array &$element, array &$form, FormStateInterface $form_state) {
+  public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
+  {
     $params = [
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint', NULL),
       'element_id' => $element['#webform_key'],
       'rooms' => $element['#rooms'],
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license', NULL),
-      'enable_booking' => (isset($element['#enable_booking'])?true:false),
-      'enable_resource_tooltips' => (isset($element['#enable_resource_tooltips'])?true:false)
+      'enable_booking' => (isset($element['#enable_booking'])),
+      'enable_resource_tooltips' => (isset($element['#enable_booking']))
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_calendar.html.twig', [
@@ -122,5 +129,4 @@ class BookingElement extends Hidden {
       $form['elements'][$element['#webform_key']]['#prefix'] = $prefix;
     }
   }
-
 }

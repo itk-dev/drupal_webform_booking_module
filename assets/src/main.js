@@ -140,7 +140,6 @@ function setupCalendar(
 ) {
   const now = new Date();
   const dataFormatted = [];
-
   data.forEach(function setData(response) {
     switch (response["@id"]) {
       case "/v1/busy-intervals":
@@ -189,6 +188,7 @@ function setupCalendar(
       modal.to = selectionInfo.end;
       modal.resourceId = selectionInfo.resource._resource.id;
       modal.resourceTitle = selectionInfo.resource._resource.title;
+      modal.drupal = Drupal;
       modal.buildModal();
     },
     selectOverlap: false,

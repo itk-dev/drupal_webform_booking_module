@@ -14,19 +14,24 @@ export default class Modal {
   }
 
   buildModal() {
-    document.getElementById(
-      "bookingHeader"
-    ).innerHTML = `Opret booking - ${this.resourceTitle}`;
-    document.getElementById(
-      "bookingResourceId"
-    ).innerHTML = `<b>Lokale ID:</b> ${this.resourceId}`;
-    document.getElementById(
-      "bookingResourceTitle"
-    ).innerHTML = `<b>Lokale titel:</b> ${this.resourceTitle}`;
-    document.getElementById(
-      "bookingFrom"
-    ).innerHTML = `<b>Fra:</b> ${this.from}`;
-    document.getElementById("bookingTo").innerHTML = `<b>Til:</b> ${this.to}`;
+    document.getElementById("bookingHeader").innerHTML = `${Drupal.t(
+      "Booking submit"
+    )} - ${this.resourceTitle}`;
+    document.getElementById("bookingResourceId").innerHTML = `<b>${Drupal.t(
+      "Room ID"
+    )}:</b> ${this.resourceId}`;
+    document.getElementById("bookingResourceTitle").innerHTML = `<b>${Drupal.t(
+      "Room title"
+    )}:</b> ${this.resourceTitle}`;
+    document.getElementById("bookingFrom").innerHTML = `<b>${Drupal.t(
+      "From"
+    )}:</b> ${this.from}`;
+    document.getElementById("bookingTo").innerHTML = `<b>${Drupal.t(
+      "To"
+    )}:</b> ${this.to}`;
+    document.getElementById("bookingSubmit").innerHTML = `<b>${Drupal.t(
+      "Booking submit"
+    )}</b>`;
 
     const modal = document.getElementById("modal");
 
@@ -37,7 +42,7 @@ export default class Modal {
     }
 
     document.addEventListener("click", function (e) {
-      if (e.target && e.target.id === "bookingClose") {
+      if (e.target && e.target.classList.contains("booking-close")) {
         modal.classList.remove("open");
       }
     });

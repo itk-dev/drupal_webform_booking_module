@@ -10,22 +10,24 @@
     max-width: 400px;
 }
 
-.b-tooltip > img {
+.b-tooltip>img {
     max-width: 100%;
     max-height: 360px;
     user-select: none;
 }
-.b-tooltip > p {
+
+.b-tooltip>p {
     text-align: left;
-    margin: 15px 0 10px 0 !important;
+    margin: 15px 0 10px 0;
 }
 
 span[data-tooltip] {
     cursor: help;
     display: block;
     margin: 0 15px 5px 15px;
-    text-align:center;
+    text-align: center;
 }
+
 span[data-tooltip]:hover {
     background-color: #f9f9f9;
 }
