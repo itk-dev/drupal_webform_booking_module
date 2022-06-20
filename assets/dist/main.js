@@ -18058,7 +18058,7 @@ function handleResources(value) {
  *   Drupal backend.
  */
 function filterSelectedResourceBackend(element, index, arr) {
-  return this.rooms[arr[index].id] !== 0;
+  return this.rooms[element.id] !== 0;
 }
 
 /**
