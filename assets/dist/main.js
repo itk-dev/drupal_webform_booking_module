@@ -21126,21 +21126,42 @@ __webpack_require__.r(__webpack_exports__);
  */
 function bookingFilterValues(bookingFilterElements) {
   const filters = {};
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-date-picker-booking":
-        filters.bookingDate = bookingFilter.value;
-        break;
       case "booking-room-select-booking":
         if (bookingFilter.value === "_empty") {
-          filters.resource = null;
-        } else {
-          filters.resource = bookingFilter.value;
+          filters.resources ='';
+          Object.keys(bookingFilter.options).forEach((key) => {
+            if (bookingFilter.options[key].value !== "_empty") {
+              filters.resources += bookingFilter.options[key].value + ',';
+            }
+          });
+          filters.resources = filters.resources.slice(0, -1);
+        }
+        else {
+          filters.resources = bookingFilter.value;
+        }
+        break;
+      case "booking-date-picker-booking":
+        if (bookingFilter.value) {
+          const selectedDate = new Date(bookingFilter.value);
+          const dayAfter = new Date(selectedDate);
+          dayAfter.setDate(selectedDate.getDate() + 1);
+          filters.dateStart = selectedDate.toISOString().split("T")[0];
+          filters.dateEnd = dayAfter.toISOString().split("T")[0]
+        }
+        else {
+          filters.dateStart = now.toISOString().split("T")[0];
+          filters.dateEnd = tomorrow.toISOString().split("T")[0]
         }
         break;
       default:
     }
-  }); 
+  });
   return filters;
 }
 
@@ -21534,8 +21555,9 @@ function buildCalendar(
   calendarElement,
   filters
 ) {
+  const parameters = new URLSearchParams(filters).toString();
   Promise.all([
-    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings`),
+    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`),
     fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`),
   ])
     .then(function (responses) {
@@ -21598,7 +21620,7 @@ function setupCalendar(
         );
         dataFormatted.resources = dataFormatted.resources.filter(
           filterSelectedResourceFrontend,
-          filters.resource
+          filters.resources
         );
         break;
       default:
@@ -21616,14 +21638,14 @@ function setupCalendar(
     ],
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
+    initialDate: filters.dateStart
+      ? filters.dateStart : now.toISOString().split("T")[0],
+
     selectConstraint: "businessHours",
     businessHours: {
       startTime: "06:00",
       endTime: "22:00",
     },
-    initialDate: filters.bookingDate
-      ? filters.bookingDate
-      : now.toISOString().split("T")[0],
     navLinks: false,
     selectable: elementSettings.enable_booking === true,
     select(selectionInfo) {
@@ -21674,8 +21696,8 @@ function handleBusyIntervals(value) {
  */
 function handleResources(value) {
   return {
-    id: value.name,
-    title: value.readable_name,
+    id: value.email,
+    title: value.title,
     capacity: value.capacity,
     building: value.building,
     description: value.description,
@@ -21694,10 +21716,7 @@ function handleResources(value) {
  *   Drupal backend.
  */
 function filterSelectedResourceBackend(element, index, arr) {
-  if (this.rooms[arr[index].id] === 0) {
-    return false;
-  }
-  return true;
+  return this.rooms[element.id] !== 0;
 }
 
 /** @param {object} info : The resouce metadata */
@@ -21731,10 +21750,8 @@ function renderResourceTooltips(info) {
  */
 // eslint-disable-next-line no-unused-vars
 function filterSelectedResourceFrontend(element, index, arr) {
-  if (this === null || this === element.id) {
-    return true;
-  }
-  return false;
+  const resources = this.split(',');
+  return resources.length > 1 || this === element.id;
 }
 
 })();
