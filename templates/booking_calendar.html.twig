@@ -6,12 +6,12 @@ Available variables:
     - rooms
   ]
 #}
-<div>
+<div id="booking-filters-{{ params.element_id }}">
   <div class="form-group">
-    <input type="date" id="booking-date-picker-{{ params.element_id }}">
+    <input type="date" class="booking-filter" id="booking-date-picker-{{ params.element_id }}">
   </div>
   <div class="form-group">
-    <select name="booking-room-select" id="booking-room-select-{{ params.element_id }}">
+    <select name="booking-room-select" class="booking-filter" id="booking-room-select-{{ params.element_id }}">
       <option value="_empty"> {{ '- Select -'|t }} </option>
     </select>
   </div>

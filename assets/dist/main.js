@@ -17682,6 +17682,85 @@ function __classPrivateFieldIn(state, receiver) {
 }
 
 
+/***/ }),
+
+/***/ "./src/filters.js":
+/*!************************!*\
+  !*** ./src/filters.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "bookingFilterValues": () => (/* binding */ bookingFilterValues),
+/* harmony export */   "initializeResourceDropdown": () => (/* binding */ initializeResourceDropdown)
+/* harmony export */ });
+/**
+ * Add filter values from booking filters.
+ *
+ * @param {NodeList} bookingFilterElements : A list of nodes.
+ * @returns {{ object }} : A list of filters and their current values.
+ */
+function bookingFilterValues(bookingFilterElements) {
+  const filters = {};
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+
+  bookingFilterElements.forEach((bookingFilter) => {
+    switch (bookingFilter.getAttribute("id")) {
+      case "booking-room-select-booking":
+        if (bookingFilter.value === "_empty") {
+          filters.resources ='';
+          Object.keys(bookingFilter.options).forEach((key) => {
+            if (bookingFilter.options[key].value !== "_empty") {
+              filters.resources += bookingFilter.options[key].value + ',';
+            }
+          });
+          filters.resources = filters.resources.slice(0, -1);
+        }
+        else {
+          filters.resources = bookingFilter.value;
+        }
+        break;
+      case "booking-date-picker-booking":
+        if (bookingFilter.value) {
+          const selectedDate = new Date(bookingFilter.value);
+          const dayAfter = new Date(selectedDate);
+          dayAfter.setDate(selectedDate.getDate() + 1);
+          filters.dateStart = selectedDate.toISOString().split("T")[0];
+          filters.dateEnd = dayAfter.toISOString().split("T")[0]
+        }
+        else {
+          filters.dateStart = now.toISOString().split("T")[0];
+          filters.dateEnd = tomorrow.toISOString().split("T")[0]
+        }
+        break;
+      default:
+    }
+  });
+  return filters;
+}
+
+/**
+ * Add resources to resource dropdown, defined by drupal config.
+ *
+ * @param {HTMLElement} resourceDropdownNode : A list of nodes.
+ * @param {object} drupalSettings : Settings provided by Drupal
+ */
+function initializeResourceDropdown(
+  resourceDropdownNode,
+  drupalSettings
+) {
+  Object.keys(drupalSettings.rooms).forEach((key) => {
+    if (drupalSettings.rooms[key] !== 0) {
+      resourceDropdownNode.options[resourceDropdownNode.options.length] =
+        new Option(drupalSettings.rooms[key], key);
+    }
+  });
+}
+
+
 /***/ })
 
 /******/ 	});
@@ -17755,6 +17834,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_core_locales_da__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/core/locales/da */ "./node_modules/@fullcalendar/core/locales/da.js");
 /* harmony import */ var _fullcalendar_resource_timegrid__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fullcalendar/resource-timegrid */ "./node_modules/@fullcalendar/resource-timegrid/main.js");
 /* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
+/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./filters */ "./src/filters.js");
+
 
 
 
@@ -17783,20 +17864,40 @@ __webpack_require__.r(__webpack_exports__);
         // distinguish between calendars.
         const elementId = element.getAttribute("booking-element-id");
         const elementSettings = drupalSettings.booking_calendar[elementId];
-        const resourceDropdownElement = document.getElementById(
+        const bookingFilterNodes = document.querySelectorAll(
+          `#booking-filters-${elementId} .booking-filter`
+        );
+        const resourceDropdownNode = document.getElementById(
           `booking-room-select-${elementId}`
         );
         const calendarElement = document.getElementById(
           `calendar-${elementId}`
         );
 
+        (0,_filters__WEBPACK_IMPORTED_MODULE_8__.initializeResourceDropdown)(resourceDropdownNode, elementSettings);
+
         buildCalendar(
           drupalSettings,
           elementSettings,
           elementId,
-          resourceDropdownElement,
-          calendarElement
+          resourceDropdownNode,
+          calendarElement,
+          (0,_filters__WEBPACK_IMPORTED_MODULE_8__.bookingFilterValues)(bookingFilterNodes)
         );
+
+        // Add event listener on all filters.
+        bookingFilterNodes.forEach((bookingFilter) => {
+          bookingFilter.addEventListener("change", () => {
+            buildCalendar(
+              drupalSettings,
+              elementSettings,
+              elementId,
+              resourceDropdownNode,
+              calendarElement,
+              (0,_filters__WEBPACK_IMPORTED_MODULE_8__.bookingFilterValues)(bookingFilterNodes)
+            );
+          });
+        });
       });
     },
   };
@@ -17808,18 +17909,21 @@ __webpack_require__.r(__webpack_exports__);
  * @param {object} drupalSettings : Settings provided by Drupal.
  * @param {object} elementSettings : Settings related to a specific webform element.
  * @param {string} elementId : Id of the webform element.
- * @param {HTMLElement} resourceDropdownElement : The resource dropdown HTML element.
+ * @param {HTMLElement} resourceDropdownNode : The resource dropdown HTML element.
  * @param {HTMLElement} calendarElement : The calendar HTML element.
+ * @param {object} filters : A list of filters.
  */
 function buildCalendar(
   drupalSettings,
   elementSettings,
   elementId,
-  resourceDropdownElement,
-  calendarElement
+  resourceDropdownNode,
+  calendarElement,
+  filters
 ) {
+  const parameters = new URLSearchParams(filters).toString();
   Promise.all([
-    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings`),
+    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`),
     fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`),
   ])
     .then(function (responses) {
@@ -17834,9 +17938,10 @@ function buildCalendar(
         drupalSettings,
         elementSettings,
         elementId,
-        resourceDropdownElement,
+        resourceDropdownNode,
         calendarElement,
-        data
+        data,
+        filters
       );
     })
     .catch(function (error) {
@@ -17852,21 +17957,22 @@ function buildCalendar(
  * @param {object} drupalSettings : Settings provided by Drupal
  * @param {object} elementSettings : Settings related to a specific webform element
  * @param {string} elementId : elementId Id of the webform element.
- * @param {HTMLElement} resourceDropdownElement : The resource dropdown HTML element.
+ * @param {HTMLElement} resourceDropdownNode : The resource dropdown HTML element.
  * @param {HTMLElement} calendarElement : The calendar HTML element.
  * @param {Array} data : An array of data from multiple sources.
+ * @param {object} filters : A list of filters.
  */
 function setupCalendar(
   drupalSettings,
   elementSettings,
   elementId,
-  resourceDropdownElement,
+  resourceDropdownNode,
   calendarElement,
-  data
+  data,
+  filters
 ) {
   const now = new Date();
   const dataFormatted = [];
-
   data.forEach(function setData(response) {
     switch (response["@id"]) {
       case "/v1/busy-intervals":
@@ -17876,14 +17982,17 @@ function setupCalendar(
       case "/v1/resources":
         dataFormatted.resources = response["hydra:member"].map(handleResources);
         dataFormatted.resources = dataFormatted.resources.filter(
-          filterSelectedResource,
+          filterSelectedResourceBackend,
           elementSettings
+        );
+        dataFormatted.resources = dataFormatted.resources.filter(
+          filterSelectedResourceFrontend,
+          filters.resources
         );
         break;
       default:
     }
   });
-
   const calendar = new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__.Calendar(calendarElement, {
     schedulerLicenseKey: elementSettings.license_key,
     plugins: [
@@ -17895,7 +18004,9 @@ function setupCalendar(
     ],
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
-    initialDate: now.toISOString().split("T")[0],
+    initialDate: filters.dateStart
+      ? filters.dateStart
+      : now.toISOString().split("T")[0],
     navLinks: false,
     editable: false,
     dayMaxEvents: true,
@@ -17931,30 +18042,10 @@ function handleBusyIntervals(value) {
  */
 function handleResources(value) {
   return {
-    id: value.name,
-    title: value.readable_name,
+    id: value.email,
+    title: value.title,
   };
 }
-
-/**
- * Defines the contents of the resource dropdown.
- *
- * @param frontpageUrl The URL to the frontpage.
- * @param resourceDropdownElement The dropdown to be populated.
- */
-/*
-function setResourceDropdown(frontpageUrl, resourceDropdownElement) {
-  fetch(`${frontpageUrl}/itkdev_booking/resources`)
-    .then((response) => response.json())
-    .then((resources) => {
-      resources["hydra:member"].forEach((key) => {
-        resourceDropdownElement.options[
-          resourceDropdownElement.options.length
-        ] = new Option(key.readable_name, key.name);
-      });
-    });
-}
-*/
 
 /**
  * Remove resources from array if they have not been selected in the Drupal
@@ -17963,14 +18054,27 @@ function setResourceDropdown(frontpageUrl, resourceDropdownElement) {
  * @param {object} element : The resource element.
  * @param {number} index : The index of the resource.
  * @param {Array} arr : The array of resources.
- * @returns {boolean} : Whether the resource was selected to be isplayed in the
+ * @returns {boolean} : Whether the resource was selected to be displayed in the
  *   Drupal backend.
  */
-function filterSelectedResource(element, index, arr) {
-  if (this.rooms[arr[index].id] === 0) {
-    return false;
-  }
-  return true;
+function filterSelectedResourceBackend(element, index, arr) {
+  return this.rooms[element.id] !== 0;
+}
+
+/**
+ * Remove resources from array if they have not been selected in the Drupal
+ * frontend. "this" represents the resource filter value set in resource dropdown.
+ *
+ * @param {object} element : The resource element.
+ * @param {number} index : The index of the resource.
+ * @param {Array} arr : The array of resources.
+ * @returns {boolean} : Whether the resource was selected to be displayed in the
+ *   Drupal frontend.
+ */
+// eslint-disable-next-line no-unused-vars
+function filterSelectedResourceFrontend(element, index, arr) {
+  const resources = this.split(',');
+  return resources.length > 1 || this === element.id;
 }
 
 })();

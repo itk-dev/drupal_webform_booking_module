@@ -1,47 +1,40 @@
 {
-  "@context": "/contexts/Resources",
+  "@context": "/contexts/Resource",
   "@id": "/v1/resources",
   "@type": "hydra:Collection",
   "hydra:member": [
     {
-      "@id": "/v1/resources/01G4HMQ7G156ZAY081CW0AD61l",
-      "@type": "Resources",
-      "id": "01G4HMQ7G156ZAY081CW0AD61l",
-      "name": "DOKK1-Lokale-Test1@aarhus.dk",
-      "readable_name": "DOKK1-Lokale-Test1",
-      "open_start": "",
-      "open_end": ""
+      "@id": "/v1/resources/6",
+      "@type": "Resource",
+      "id": 6,
+      "title": "Dokk1 testlokale 1",
+      "capacity": 10,
+      "email": "dokk1-lokale-test1@aarhus.dk"
     },
     {
-      "@id": "/v1/busy-intervals/01G4HMQ7G156ZAY081CW0AD61k",
-      "@type": "Resources",
-      "id": "01G4HMQ7G156ZAY081CW0AD61k",
-      "name": "dokk1-lokale-test2@aarhus.dk",
-      "readable_name": "dokk1-lokale-test2",
-      "open_start": "",
-      "open_end": ""
+      "@id": "/v1/resources/7",
+      "@type": "Resource",
+      "id": 7,
+      "title": "Dokk1 testlokale 2",
+      "capacity": 40,
+      "email": "dokk1-lokale-test2@aarhus.dk"
     },
     {
-      "@id": "/v1/busy-intervals/01G4HMQ7G156ZAY081CW0AD61j",
-      "@type": "Resources",
-      "id": "01G4HMQ7G156ZAY081CW0AD61j",
-      "name": "MSO-rolator-test1@aarhus.dk",
-      "readable_name": "MSO-rolator-test1",
-      "open_start": "",
-      "open_end": ""
+      "@id": "/v1/resources/8",
+      "@type": "Resource",
+      "id": 8,
+      "title": "MSO bil test1",
+      "capacity": 5,
+      "email": "MSO-bil-test1@aarhus.dk"
     },
     {
-      "@id": "/v1/busy-intervals/01G4HMQ7G156ZAY081CW0AD61h",
-      "@type": "Resources",
-      "id": "01G4HMQ7G156ZAY081CW0AD61h",
-      "name": "MSO-bil-test1@aarhus.dk",
-      "readable_name": "MSO-bil-test1",
-      "open_start": "",
-      "open_end": ""
+      "@id": "/v1/resources/9",
+      "@type": "Resource",
+      "id": 9,
+      "title": "MSO rolator test 1",
+      "capacity": 1,
+      "email": "mso-rolator-test1@aarhus.dk"
     }
   ],
-  "hydra:view": {
-    "@id": "/v1/resources?id=DOKK1-Lokale-Test1%40aarhus.dk,dokk1-lokale-test2%40aarhus.dk,MSO-rolator-test1%40aarhus.dk,MSO-bil-test1%40aarhus.dk,",
-    "@type": "hydra:PartialCollectionView"
-  }
+  "hydra:totalItems": 4
 }

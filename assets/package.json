@@ -6,6 +6,7 @@
   "author": "Adam Shaw <arshaw@arshaw.com> (http://arshaw.com/)",
   "scripts": {
     "build": "webpack",
+    "build-production": "webpack --mode=production",
     "watch": "webpack --watch",
     "clean": "rm -rf dist",
     "lint:js": "./node_modules/.bin/eslint --env browser,node --ext .js --ext .jsx ./src",
