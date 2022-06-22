@@ -11,7 +11,11 @@ import "./modal/modal.css";
 import "./tooltip/tooltip.css";
 import Modal from "./modal/modal";
 import Tooltip from "./tooltip/tooltip";
-import { bookingFilterValues, initializeResourceDropdown } from "./filters";
+import {
+  bookingFilterValues,
+  initializeResourceDropdown,
+  calendarApplyFilters,
+} from "./filters";
 
 /* eslint no-underscore-dangle: 0 */
 /**
@@ -44,29 +48,14 @@ import { bookingFilterValues, initializeResourceDropdown } from "./filters";
         );
 
         initializeResourceDropdown(resourceDropdownNode, elementSettings);
-
         buildCalendar(
           drupalSettings,
           elementSettings,
           elementId,
           resourceDropdownNode,
           calendarElement,
-          bookingFilterValues(bookingFilterNodes)
+          bookingFilterNodes
         );
-
-        // Add event listener on all filters.
-        bookingFilterNodes.forEach((bookingFilter) => {
-          bookingFilter.addEventListener("change", () => {
-            buildCalendar(
-              drupalSettings,
-              elementSettings,
-              elementId,
-              resourceDropdownNode,
-              calendarElement,
-              bookingFilterValues(bookingFilterNodes)
-            );
-          });
-        });
       });
     },
   };
@@ -80,7 +69,7 @@ import { bookingFilterValues, initializeResourceDropdown } from "./filters";
  * @param {string} elementId : Id of the webform element.
  * @param {HTMLElement} resourceDropdownNode : The resource dropdown HTML element.
  * @param {HTMLElement} calendarElement : The calendar HTML element.
- * @param {object} filters : A list of filters.
+ * @param {object} bookingFilterNodes : A list of filter nodes.
  */
 function buildCalendar(
   drupalSettings,
@@ -88,35 +77,18 @@ function buildCalendar(
   elementId,
   resourceDropdownNode,
   calendarElement,
-  filters
+  bookingFilterNodes
 ) {
-  const parameters = new URLSearchParams(filters).toString();
-  Promise.all([
-    fetch(`${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`),
-    fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`),
-  ])
-    .then(function (responses) {
-      return Promise.all(
-        responses.map(function (response) {
-          return response.json();
-        })
-      );
-    })
-    .then(function (data) {
-      setupCalendar(
-        drupalSettings,
-        elementSettings,
-        elementId,
-        resourceDropdownNode,
-        calendarElement,
-        data,
-        filters
-      );
-    })
-    .catch(function () {
-      // If there's an error, log it.
-      // eslint-disable-next-line no-console
-    });
+  const calendar = setupCalendar(
+    drupalSettings,
+    elementSettings,
+    elementId,
+    resourceDropdownNode,
+    calendarElement,
+    bookingFilterNodes
+  );
+
+  applyEventListeners(calendar, bookingFilterNodes, elementSettings);
 }
 
 /**
@@ -127,8 +99,8 @@ function buildCalendar(
  * @param {string} elementId : elementId Id of the webform element.
  * @param {HTMLElement} resourceDropdownNode : The resource dropdown HTML element.
  * @param {HTMLElement} calendarElement : The calendar HTML element.
- * @param {Array} data : An array of data from multiple sources.
- * @param {object} filters : A list of filters.
+ * @param {object} bookingFilterNodes : A list of filter nodes.
+ * @returns {Calendar} The rendered calendar object
  */
 function setupCalendar(
   drupalSettings,
@@ -136,31 +108,10 @@ function setupCalendar(
   elementId,
   resourceDropdownNode,
   calendarElement,
-  data,
-  filters
+  bookingFilterNodes
 ) {
   const now = new Date();
-  const dataFormatted = [];
-  data.forEach(function setData(response) {
-    switch (response["@id"]) {
-      case "/v1/busy-intervals":
-        dataFormatted.bookings =
-          response["hydra:member"].map(handleBusyIntervals);
-        break;
-      case "/v1/resources":
-        dataFormatted.resources = response["hydra:member"].map(handleResources);
-        dataFormatted.resources = dataFormatted.resources.filter(
-          filterSelectedResourceBackend,
-          elementSettings
-        );
-        dataFormatted.resources = dataFormatted.resources.filter(
-          filterSelectedResourceFrontend,
-          filters.resources
-        );
-        break;
-      default:
-    }
-  });
+  const filters = bookingFilterValues(bookingFilterNodes);
   const calendar = new Calendar(calendarElement, {
     schedulerLicenseKey: elementSettings.license_key,
     plugins: [
@@ -174,7 +125,8 @@ function setupCalendar(
     initialView: "resourceTimeGridDay",
     duration: "days: 3",
     initialDate: filters.dateStart
-      ? filters.dateStart : now.toISOString().split("T")[0],
+      ? filters.dateStart
+      : now.toISOString().split("T")[0],
 
     selectConstraint: "businessHours",
     businessHours: {
@@ -201,10 +153,44 @@ function setupCalendar(
         renderResourceTooltips(info);
       }
     },
-    resources: dataFormatted.resources,
-    events: dataFormatted.bookings,
+    // eslint-disable-next-line no-unused-vars
+    resources(info, successCallback, failureCallback) {
+      const resourceFilters = bookingFilterValues(bookingFilterNodes);
+      fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`)
+        .then((response) => response.json())
+        .then((data) =>
+          successCallback(handleData(data, resourceFilters, elementSettings))
+        );
+    },
+    // eslint-disable-next-line no-unused-vars
+    events(info, successCallback, failureCallback) {
+      const eventFilters = initFilters(info, elementSettings);
+      const parameters = new URLSearchParams(eventFilters).toString();
+      fetch(
+        `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
+      )
+        .then((response) => response.json())
+        .then((data) =>
+          successCallback(handleData(data, eventFilters, elementSettings))
+        );
+    },
+    datesSet(info) {
+      // This is called fairly often. Use with care. https://fullcalendar.io/docs/datesSet
+      // Change date select to match calendar date.
+      const calendarDate = new Date(
+        Date.UTC(
+          info.start.getFullYear(),
+          info.start.getMonth(),
+          info.start.getDate()
+        )
+      );
+      document.getElementById("booking-date-picker-booking").valueAsDate =
+        calendarDate;
+    },
   });
   calendar.render();
+
+  return calendar;
 }
 
 /**
@@ -250,21 +236,34 @@ function handleResources(value) {
  * @returns {boolean} : Whether the resource was selected to be displayed in the
  *   Drupal backend.
  */
+// eslint-disable-next-line no-unused-vars
 function filterSelectedResourceBackend(element, index, arr) {
   return this.rooms[element.id] !== 0;
 }
 
-/** @param {object} info : The resouce metadata */
+/**
+ * Render the resource tooltips.
+ *
+ * @param {object} info : The resource metadata
+ */
 function renderResourceTooltips(info) {
   const tooltip = new Tooltip();
   tooltip.distance = 5;
   tooltip.delay = 0;
   tooltip.position = "center bottom";
 
-  const resourceImage = info.resource._resource.extendedProps.image;
-  const resourceDescription = info.resource._resource.extendedProps.description;
-  const resourceTitle = info.resource._resource.id;
-  const resourceCapacity = info.resource._resource.extendedProps.capacity;
+  const resourceImage = info.resource._resource.extendedProps.image
+    ? info.resource._resource.extendedProps.image
+    : "";
+  const resourceDescription = info.resource._resource.extendedProps.description
+    ? info.resource._resource.extendedProps.description
+    : "";
+  const resourceTitle = info.resource._resource.id
+    ? info.resource._resource.id
+    : "";
+  const resourceCapacity = info.resource._resource.extendedProps.capacity
+    ? info.resource._resource.extendedProps.capacity
+    : "";
   const questionMark = document.createElement("span");
   questionMark.innerText = " ( ? ) ";
   questionMark.dataset.tooltip = `<img src='${resourceImage}' /><p><b>${resourceTitle}</b><br><b>Kapacitet: ${resourceCapacity}</b><br>${resourceDescription}</p>`;
@@ -273,6 +272,7 @@ function renderResourceTooltips(info) {
 
   tooltip.renderTooltip(tooltip);
 }
+
 /**
  * Remove resources from array if they have not been selected in the Drupal
  * frontend. "this" represents the resource filter value set in resource dropdown.
@@ -285,6 +285,73 @@ function renderResourceTooltips(info) {
  */
 // eslint-disable-next-line no-unused-vars
 function filterSelectedResourceFrontend(element, index, arr) {
-  const resources = this.split(',');
+  const resources = this.split(",");
   return resources.length > 1 || this === element.id;
+}
+
+/**
+ * Add event listeners for external events (Input filters etc.).
+ *
+ * @param {object} calendar : The calendar object.
+ * @param {object} bookingFilterNodes : A list of filter nodes.
+ */
+function applyEventListeners(calendar, bookingFilterNodes) {
+  // Add event listener on all filters.
+  bookingFilterNodes.forEach((bookingFilter) => {
+    bookingFilter.addEventListener("change", () => {
+      calendarApplyFilters(calendar, bookingFilterNodes);
+    });
+  });
+}
+
+/**
+ * Prepare json data source for display.
+ *
+ * @param {object} data : A data source.
+ * @param {object} filters : A list of filters.
+ * @param {object} elementSettings : Settings related to a specific webform element.
+ * @returns {any} : The data filtered and delivered in a way the calendar understands.
+ */
+function handleData(data, filters, elementSettings) {
+  const dataFormatted = [];
+  switch (data["@id"]) {
+    case "/v1/busy-intervals":
+      dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
+      break;
+    case "/v1/resources":
+      dataFormatted.data = data["hydra:member"].map(handleResources);
+      dataFormatted.data = dataFormatted.data.filter(
+        filterSelectedResourceBackend,
+        elementSettings
+      );
+      dataFormatted.data = dataFormatted.data.filter(
+        filterSelectedResourceFrontend,
+        filters.resources
+      );
+      break;
+    default:
+  }
+  return dataFormatted.data;
+}
+
+/**
+ * Initialize filters when new data is fetched.
+ *
+ * @param {object} info : Calendar state information.
+ * @param {object} drupalSettings : Drupal settings added to this js.
+ * @returns {{ dateStart: any; resources: string; dateEnd: any }} Readable filter values.
+ */
+function initFilters(info, drupalSettings) {
+  let resources = "";
+  Object.keys(drupalSettings.rooms).forEach((key) => {
+    if (drupalSettings.rooms[key] !== 0) {
+      resources += `${key},`;
+    }
+  });
+  resources = resources.slice(0, -1);
+  return {
+    dateStart: info.startStr,
+    dateEnd: info.endStr,
+    resources,
+  };
 }
