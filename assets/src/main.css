@@ -10,12 +10,59 @@ body {
   margin: 0 auto;
 }
 
+#calendar-booking {
+  user-select: none;
+}
+
+.fc .fc-timegrid-col.fc-day-today,
 .fc .fc-daygrid-day.fc-day-today {
-  /* Using specific selector for overwriting plugin standards */
+  /* Using specific selector here for overwriting plugin standards */
   background: #FFF;
   border: none;
 }
 
+.fc a.fc-timegrid-event {
+  border-radius: 0;
+}
+
+html body .fc div.fc-event-time {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 20px;
+  line-height: 20px;
+  width: 100%;
+  margin: auto auto auto auto;
+  text-align: center;
+}
+
+.fc-timegrid-event-short .fc-event-time:after {
+  content: '';
+}
+
 .fc .fc-timegrid-now-indicator-container {
   border-right: 1px solid #e9e9e9;
+}
+
+span.loader {
+  display: none;
+}
+
+span.loader.showing {
+  display: inline-block;
+  animation: rotateloader 1.3s ease infinite;
+  height: 50px;
+  width: 50px;
+}
+
+@keyframes rotateloader {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
