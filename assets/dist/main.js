@@ -21552,7 +21552,7 @@ __webpack_require__.r(__webpack_exports__);
         );
 
         (0,_filters__WEBPACK_IMPORTED_MODULE_13__.initializeResourceDropdown)(resourceDropdownNode, elementSettings);
-        buildCalendar(
+        setupCalendar(
           drupalSettings,
           elementSettings,
           elementId,
@@ -21575,25 +21575,25 @@ __webpack_require__.r(__webpack_exports__);
  * @param {HTMLElement} calendarElement : The calendar HTML element.
  * @param {object} bookingFilterNodes : A list of filter nodes.
  */
-function buildCalendar(
-  drupalSettings,
-  elementSettings,
-  elementId,
-  resourceDropdownNode,
-  calendarElement,
-  bookingFilterNodes
-) {
-  const calendar = setupCalendar(
-    drupalSettings,
-    elementSettings,
-    elementId,
-    resourceDropdownNode,
-    calendarElement,
-    bookingFilterNodes
-  );
+// function buildCalendar(
+//   drupalSettings,
+//   elementSettings,
+//   elementId,
+//   resourceDropdownNode,
+//   calendarElement,
+//   bookingFilterNodes
+// ) {
+//   const calendar = setupCalendar(
+//     drupalSettings,
+//     elementSettings,
+//     elementId,
+//     resourceDropdownNode,
+//     calendarElement,
+//     bookingFilterNodes
+//   );
 
-  applyEventListeners(calendar, bookingFilterNodes, elementSettings);
-}
+//   applyEventListeners(calendar, bookingFilterNodes, elementSettings);
+// }
 
 /**
  * Create calendar.
@@ -21614,6 +21614,7 @@ function setupCalendar(
   calendarElement,
   bookingFilterNodes
 ) {
+  console.log(elementSettings);
   const now = new Date();
   const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
   const startHour = new Date().getHours() - 1; // The hour for the calendar to scroll to, to always show relevant bookings at first glance.
@@ -21630,7 +21631,8 @@ function setupCalendar(
     height: 850,
     selectMirror: true,
     scrollTime: `${startHour}:00:00`,
-    initialView: "resourceTimeGridDay",
+    // initialView: "resourceTimeGridDay",
+    initialView: "resourceTimelineDay",
     duration: "days: 3",
     initialDate: filters.dateStart
       ? filters.dateStart
@@ -21698,14 +21700,14 @@ function setupCalendar(
     },
     loading(bool) {
       if (bool) {
-        return false;
+        document.getElementsByClassName("loader")[0].classList.add("showing");
+      } else {
+        document.getElementsByClassName("loader")[0].classList.remove("showing");
       }
-      document.getElementsByClassName("loader")[0].classList.remove("showing");
     }
   });
   calendar.render();
-
-  return calendar;
+  applyEventListeners(calendar, bookingFilterNodes, elementSettings);
 }
 
 /**
@@ -21770,7 +21772,6 @@ function renderResourceTooltips(info) {
   const tooltip = new _tooltip_tooltip__WEBPACK_IMPORTED_MODULE_12__["default"]();
   tooltip.distance = 5;
   tooltip.delay = 0;
-  tooltip.position = "center bottom";
 
   const resourceImage = info.resource._resource.extendedProps.image
     ? info.resource._resource.extendedProps.image
@@ -21787,8 +21788,9 @@ function renderResourceTooltips(info) {
   const questionMark = document.createElement("span");
   questionMark.innerText = " ( ? ) ";
   questionMark.dataset.tooltip = `<img src='${resourceImage}' /><p><b>${resourceTitle}</b><br><b>Kapacitet: ${resourceCapacity}</b><br>${resourceDescription}</p>`;
-  questionMark.dataset.position = "center bottom";
-  info.el.appendChild(questionMark);
+  questionMark.dataset.position = "right bottom";
+
+  info.el.firstChild.firstChild.appendChild(questionMark);
 
   tooltip.renderTooltip(tooltip);
 }
