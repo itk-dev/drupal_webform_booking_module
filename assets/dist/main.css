@@ -1846,15 +1846,42 @@ html body .fc div.fc-event-time {
   border-right: 1px solid #e9e9e9;
 }
 
-span.loader {
+div.loader {
   display: none;
 }
 
-span.loader.showing {
+div.loader.showing {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  z-index: 999;
+  background-color: rgba(255,255,255,0.9);
+  pointer-events: none;
+}
+div.loader.showing > img {
+  margin: auto;
   display: inline-block;
-  animation: rotateloader 1.3s ease infinite;
+  animation: rotateloader 1.3s linear infinite;
   height: 50px;
   width: 50px;
+}
+
+div.fc-resourceTimelineDay-view  a.fc-timeline-slot-cushion {
+  text-decoration: none;
+  color: #000;
+  font-weight: 400;
+}
+div.fc-resourceTimelineDay-view div.fc-highlight {
+  display: block;
+  border: 1px solid #3788d8;
+  border: 1px solid var(--fc-event-border-color, #3788d8);
+  background-color: #3788d8;
+  background-color: var(--fc-event-bg-color, #3788d8);
 }
 
 @keyframes rotateloader {
@@ -1924,7 +1951,7 @@ span.booking-close:focus {
     margin: auto;
     padding: 0;
     border: 1px solid #888;
-    width: 80%;
+    max-width: 800px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     animation: animateModalIn .3s ease;
 }
@@ -1990,14 +2017,25 @@ span.booking-close:focus {
     margin: 15px 0 10px 0;
 }
 
-span[data-tooltip] {
+div.fc-resourceTimeGridDay-view span[data-tooltip] {
     cursor: help;
     display: block;
     margin: 0 15px 5px 15px;
     text-align: center;
 }
 
-span[data-tooltip]:hover {
+div.fc-resourceTimeGridDay-view span[data-tooltip]:hover {
+    background-color: #f9f9f9;
+}
+div.fc-resourceTimelineDay-view span[data-tooltip] {
+    cursor: help;
+    display: inline-block;
+    margin: 0 15px 5px 15px;
+    float: right;
+    text-align: center;
+}
+
+div.fc-resourceTimelineDay-viewspan[data-tooltip]:hover {
     background-color: #f9f9f9;
 }
 

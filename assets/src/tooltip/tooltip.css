@@ -21,13 +21,24 @@
     margin: 15px 0 10px 0;
 }
 
-span[data-tooltip] {
+div.fc-resourceTimeGridDay-view span[data-tooltip] {
     cursor: help;
     display: block;
     margin: 0 15px 5px 15px;
     text-align: center;
 }
 
-span[data-tooltip]:hover {
+div.fc-resourceTimeGridDay-view span[data-tooltip]:hover {
+    background-color: #f9f9f9;
+}
+div.fc-resourceTimelineDay-view span[data-tooltip] {
+    cursor: help;
+    display: inline-block;
+    margin: 0 15px 5px 15px;
+    float: right;
+    text-align: center;
+}
+
+div.fc-resourceTimelineDay-viewspan[data-tooltip]:hover {
     background-color: #f9f9f9;
 }
