@@ -126,6 +126,7 @@ function setupCalendar(
     selectConstraint: "businessHours",
     nowIndicator: true,
     navLinks: false,
+    slotDuration: '00:15:00',
     validRange(nowDate) {
       return {
         start: nowDate,
@@ -142,7 +143,14 @@ function setupCalendar(
       initModal(selectionInfo, window.calendar);
       return;
     },
+    slotMinTime: "07:00:00",
+    slotMaxTime: "21:00:00",
+    slotLabelFormat: {
+      hour: '2-digit',
+      minute: '2-digit'
+    },
     selectOverlap: false,
+    nextDayThreshold: '21:00:00',
     editable: false,
     dayMaxEvents: true,
     locale: daLocale,
