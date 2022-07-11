@@ -60,6 +60,7 @@ import {
     },
   };
 })(Drupal, drupalSettings, once);
+
 /**
  * Create calendar.
  *
@@ -190,7 +191,7 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      document.getElementById("booking-date-picker-booking").valueAsDate =
+      document.getElementById("booking-date-picker-booking_calendar").valueAsDate =
         calendarDate;
     },
     loading(bool) {

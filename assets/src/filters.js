@@ -11,7 +11,7 @@ export function bookingFilterValues(bookingFilterElements) {
   tomorrow.setDate(now.getDate() + 1);
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-room-select-booking":
+      case "booking-room-select-booking_calendar":
         // If no selection use all rooms.
         if (bookingFilter.value === "_empty") {
           filters.resources = "";
@@ -25,7 +25,7 @@ export function bookingFilterValues(bookingFilterElements) {
           filters.resources = bookingFilter.value;
         }
         break;
-      case "booking-date-picker-booking":
+      case "booking-date-picker-booking_calendar":
         if (bookingFilter.value) {
           const selectedDate = new Date(bookingFilter.value);
           const dayAfter = new Date(selectedDate);

@@ -21132,7 +21132,7 @@ function bookingFilterValues(bookingFilterElements) {
   tomorrow.setDate(now.getDate() + 1);
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-room-select-booking":
+      case "booking-room-select-booking_calendar":
         // If no selection use all rooms.
         if (bookingFilter.value === "_empty") {
           filters.resources = "";
@@ -21146,7 +21146,7 @@ function bookingFilterValues(bookingFilterElements) {
           filters.resources = bookingFilter.value;
         }
         break;
-      case "booking-date-picker-booking":
+      case "booking-date-picker-booking_calendar":
         if (bookingFilter.value) {
           const selectedDate = new Date(bookingFilter.value);
           const dayAfter = new Date(selectedDate);
@@ -21564,6 +21564,7 @@ __webpack_require__.r(__webpack_exports__);
     },
   };
 })(Drupal, drupalSettings, once);
+
 /**
  * Create calendar.
  *
@@ -21694,7 +21695,7 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      document.getElementById("booking-date-picker-booking").valueAsDate =
+      document.getElementById("booking-date-picker-booking_calendar").valueAsDate =
         calendarDate;
     },
     loading(bool) {

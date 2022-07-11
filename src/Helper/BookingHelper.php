@@ -35,6 +35,13 @@ class BookingHelper {
   protected string $bookingApiKey;
 
   /**
+   * Whether we use a secure connection
+   *
+   * @var string|mixed
+   */
+  protected string $bookingApiAllowInsecureConnection;
+
+  /**
    * BookingHelper constructor.
    *
    * @param \GuzzleHttp\ClientInterface $guzzleClient
@@ -43,6 +50,7 @@ class BookingHelper {
   public function __construct(ClientInterface $guzzleClient) {
     $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
     $this->httpClient = $guzzleClient;
   }
 
@@ -53,12 +61,16 @@ class BookingHelper {
    */
   public function getResources() {
     $url = Url::fromRoute('itkdev_booking.resources_endpoint', [], ['absolute' => TRUE])->toString();
-    $client = new Client();
+    $clientConfig = [];
+    if ($this->bookingApiAllowInsecureConnection) {
+      $clientConfig['verify'] = false;
+    }
+    $client = new Client($clientConfig);
     try {
       $response = $client->get($url);
 
     } catch (RequestException $e) {
-      // Exception is logged
+      \Drupal::logger('itkdev_booking')->error($e);
     }
 
     return json_decode($response->getBody(), TRUE);
@@ -99,7 +111,11 @@ class BookingHelper {
    */
   private function getData($apiEndpoint, $queryString) {
     $response = [];
-    $client = new Client();
+    $clientConfig = [];
+    if ($this->bookingApiAllowInsecureConnection) {
+      $clientConfig['verify'] = false;
+    }
+    $client = new Client($clientConfig);
     try {
       $response = $client->get(
           $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
@@ -110,6 +126,7 @@ class BookingHelper {
 
     } catch (RequestException $e) {
       // Exception is logged.
+      \Drupal::logger('itkdev_booking')->error($e);
     }
     return $response;
   }

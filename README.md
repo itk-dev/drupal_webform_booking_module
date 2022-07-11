@@ -12,3 +12,8 @@ $settings['itkdev_booking_api_endpoint'] = [INSERT ENDPOINT IN QUOTES];
 $settings['itkdev_booking_api_key'] = [INSERT API KEY IN QUOTES];
 $settings['itkdev_booking_fullcalendar_license'] = [INSERT FULLCALENDAR LICENSE KEY IN QUOTES];
 ```
+
+If you need to connect to the booking service through an insecure connection add this:
+```php
+$settings['itkdev_booking_api_allow_insecure_connection'] = TRUE;
+```
