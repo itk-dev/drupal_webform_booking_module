@@ -70,9 +70,7 @@ let elementSettings;
 /**
  * Provide an overview of user bookings with data from Drupal.
  *
- * @param {object} Drupal : A Drupal object.
  * @param {object} drupalSettings : Drupal settings added to this js.
- * @param {Function} once : Use once function globally.
  */
 (function (drupalSettings) {
   elementSettings = drupalSettings.user_bookings[elementId];
@@ -81,38 +79,35 @@ let elementSettings;
     .then((data) => handleData(data));
 })(drupalSettings);
 
-/** @param data */
-function handleData(data) {
+/** @param {object} bookingData : Data object retrieved from api endpoint */
+function handleData(bookingData) {
   let dataFormatted = [];
-  dataFormatted = data["hydra:member"];
+  dataFormatted = bookingData["hydra:member"];
   dataFormatted.forEach(function (value, index) {
     let { hitId } = value;
     hitId = btoa(hitId);
-    try {
-      fetch(
-        `${elementSettings.front_page_url}/itkdev_booking/booking-details/${hitId}`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          dataFormatted[index].displayName =
-            data["hydra:member"][0].displayName;
-          dataFormatted[index].eventBody = data["hydra:member"][0].body;
-          appendElementToBookingContainer(dataFormatted[index]);
-        });
-    } catch (e) {
-      console.log(e);
-    }
+    fetch(
+      `${elementSettings.front_page_url}/itkdev_booking/booking-details/${hitId}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        dataFormatted[index].displayName = data["hydra:member"][0].displayName;
+        dataFormatted[index].eventBody = data["hydra:member"][0].body;
+        appendElementToBookingContainer(dataFormatted[index]);
+      });
   });
 }
 
-/** @param data */
+/** @param {object} data : Formatted data object retrieved from api endpoint */
 function appendElementToBookingContainer(data) {
   const bookingContainer = element.querySelector(`div.bookings-${elementId}`);
   const loaderPresent = element.querySelector("div.loader") !== null;
   if (loaderPresent) {
     bookingContainer.innerHTML = "";
   }
-
+  if (data.start === null || data.end === null) {
+    return false;
+  }
   const startDate = new Date(data.start).toLocaleDateString("da-dk", {
     weekday: "short",
     year: "numeric",
@@ -140,9 +135,7 @@ function appendElementToBookingContainer(data) {
   deleteButton.innerText = "Slet booking";
   deleteButton.onclick = function (e) {
     e.preventDefault();
-    if (confirm("Er du sikker på at du vil slette denne booking?") == true) {
-      removeBooking(data.id);
-    }
+    // removeBooking(data.id);
   };
 
   const location = document.createElement("span");
@@ -172,8 +165,9 @@ function appendElementToBookingContainer(data) {
   bookingContainer.append(container);
 }
 
-/** @param id */
-function removeBooking(id) {
+
+/** @param {string} id : unique id of the booking to be removed */
+/* function removeBooking(id) {
   const params = {
     param1: "test1",
     param2: "test2",
@@ -195,13 +189,13 @@ function removeBooking(id) {
 
   document.querySelector(`div[data-id='${id}']`).remove();
 
-  return false;
-}
+  return;
+} */
 
-/** @param id */
-function editBooking(id) {
+/** @param {string} id : id of the booking to be edited */
+/* function editBooking(id) {
   alert(`edit booking - ${id}`);
-}
+} */
 
 })();
 
