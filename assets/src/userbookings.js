@@ -102,7 +102,6 @@ function appendElementToBookingContainer(data) {
   bookingContainer.append(container);
 }
 
-
 /** @param {string} id : unique id of the booking to be removed */
 /* function removeBooking(id) {
   const params = {
