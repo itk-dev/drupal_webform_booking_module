@@ -32,10 +32,11 @@ Git clone https://github.com/itk-dev/os2forms_selvbetjening
 
 Follow the steps in https://github.com/itk-dev/os2forms_selvbetjening/blob/develop/README.md
 
-### 2. Git clone drupal_webform_booking_module into `web/modules/custom`.
+### 2. Git clone drupal_webform_booking_module into `web/modules/custom` and enable module.
 
-https://github.com/itk-dev/drupal_webform_booking_module
-
+```
+git clone https://github.com/itk-dev/drupal_webform_booking_module itkdev_booking
+```
 ```
 itkdev-docker-compose drush pm:enable itkdev_booking
 ```
@@ -60,7 +61,7 @@ Git clone: https://github.com/itk-dev/book_aarhus
 
 Follow the readme: https://github.com/itk-dev/book_aarhus/blob/develop/README.md
 
-When you create an ApiKeyUser with the following command:
+Create an ApiKeyUser with the following command:
 
 ```
 docker compose exec phpfpm bin/console app:auth:create-apikey
@@ -85,7 +86,7 @@ SERVICE_ENDPOINT is found by running:
 docker ps
 ```
 
-Find the internal name of the "bookaarhus" nginx container. Something like `bookaarhus-phpfpm-1` and append `.frontend`.
+Find the internal name of the "bookaarhus" nginx container. Something like `bookaarhus-nginx-1` and append `.frontend`.
 
 Eg.
 
