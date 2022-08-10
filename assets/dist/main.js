@@ -21180,12 +21180,14 @@ function initializeResourceDropdown(
   resourceDropdownNode,
   drupalSettings
 ) {
-  Object.keys(drupalSettings.rooms).forEach((key) => {
-    if (drupalSettings.rooms[key] !== 0) {
-      resourceDropdownNode.options[resourceDropdownNode.options.length] =
-        new Option(drupalSettings.rooms[key], key);
-    }
-  });
+  if (drupalSettings.rooms !== null) {
+    Object.keys(drupalSettings.rooms).forEach((key) => {
+      if (drupalSettings.rooms[key] !== 0) {
+        resourceDropdownNode.options[resourceDropdownNode.options.length] =
+          new Option(drupalSettings.rooms[key], key);
+      }
+    });
+  }
 }
 
 /**
@@ -21329,7 +21331,7 @@ class Tooltip {
   }
 
   /** @param {object} self - Instance of the tooltip class */
-  renderTooltip(self) {
+  renderTooltip = (self) => {
     document.body.addEventListener("mouseover", function (e) {
       if (!e.target.hasAttribute("data-tooltip")) return;
       const tooltip = document.createElement("div");
@@ -21357,6 +21359,9 @@ class Tooltip {
     });
   }
 }
+
+
+
 /**
  * Positions the tooltip
  *
@@ -21404,7 +21409,7 @@ function positionAt(parent, tooltip, posHorizontal, posVertical, self) {
     case "center":
       top =
         (parseInt(parentCoords.top, 10) + parseInt(parentCoords.bottom, 10)) /
-          2 -
+        2 -
         tooltip.offsetHeight / 2;
       break;
 
@@ -21630,7 +21635,7 @@ function setupCalendar(
     selectConstraint: "businessHours",
     nowIndicator: true,
     navLinks: false,
-    slotDuration: '00:15:00',
+    slotDuration: "00:15:00",
     validRange(nowDate) {
       return {
         start: nowDate,
@@ -21644,17 +21649,16 @@ function setupCalendar(
         window.calendar.unselect();
         return false;
       }
-      initModal(selectionInfo, window.calendar);
-      return;
+      return initModal(selectionInfo, window.calendar);
     },
     slotMinTime: "07:00:00",
     slotMaxTime: "21:00:00",
     slotLabelFormat: {
-      hour: '2-digit',
-      minute: '2-digit'
+      hour: "2-digit",
+      minute: "2-digit",
     },
     selectOverlap: false,
-    nextDayThreshold: '21:00:00',
+    nextDayThreshold: "21:00:00",
     editable: false,
     dayMaxEvents: true,
     locale: _fullcalendar_core_locales_da__WEBPACK_IMPORTED_MODULE_5__["default"],
@@ -21673,17 +21677,17 @@ function setupCalendar(
         );
     },
     // eslint-disable-next-line no-unused-vars
-    events(info, successCallback, failureCallback) {
-      const eventFilters = initFilters(info, elementSettings);
-      const parameters = new URLSearchParams(eventFilters).toString();
-      fetch(
-        `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
-      )
-        .then((response) => response.json())
-        .then((data) =>
-          successCallback(handleData(data, eventFilters, elementSettings))
-        );
-    },
+    // events(info, successCallback, failureCallback) {
+    //   const eventFilters = initFilters(info, elementSettings);
+    //   const parameters = new URLSearchParams(eventFilters).toString();
+    //   fetch(
+    //     `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
+    //   )
+    //     .then((response) => response.json())
+    //     .then((data) =>
+    //       successCallback(handleData(data, eventFilters, elementSettings))
+    //     );
+    // },
     datesSet(info) {
       // This is called fairly often. Use with care. https://fullcalendar.io/docs/datesSet
       // Change date select to match calendar date.
@@ -21694,8 +21698,10 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      document.getElementById("booking-date-picker-booking").valueAsDate =
-        calendarDate;
+      const dateElem = document.getElementById("booking-date-picker-booking");
+      if (dateElem !== null) {
+        dateElem.valueAsDate = calendarDate;
+      }
     },
     loading(bool) {
       if (bool) {
@@ -21792,7 +21798,7 @@ function renderResourceTooltips(info) {
   const questionMark = document.createElement("span");
   questionMark.innerText = " ( ? ) ";
   questionMark.dataset.tooltip = `<img src='${resourceImage}' /><p><b>${resourceTitle}</b><br><b>Kapacitet: ${resourceCapacity}</b><br>${resourceDescription}</p>`;
-  questionMark.dataset.position = "right bottom";
+  questionMark.dataset.position = "center bottom";
 
   info.el.firstChild.firstChild.appendChild(questionMark);
 
@@ -21810,10 +21816,10 @@ function renderResourceTooltips(info) {
  *   Drupal frontend.
  */
 // eslint-disable-next-line no-unused-vars
-function filterSelectedResourceFrontend(element, index, arr) {
-  const resources = this.split(",");
-  return resources.length > 1 || this === element.id;
-}
+// function filterSelectedResourceFrontend(element, index, arr) {
+//   const resources = this.split(",");
+//   return resources.length > 1 || this === element.id;
+// }
 
 /**
  * Add event listeners for external events (Input filters etc.).
@@ -21850,10 +21856,10 @@ function handleData(data, filters, elementSettings) {
         filterSelectedResourceBackend,
         elementSettings
       );
-      dataFormatted.data = dataFormatted.data.filter(
-        filterSelectedResourceFrontend,
-        filters.resources
-      );
+      // dataFormatted.data = dataFormatted.data.filter(
+      //   filterSelectedResourceFrontend,
+      //   filters.resources
+      // );
       break;
     default:
   }
@@ -21867,20 +21873,23 @@ function handleData(data, filters, elementSettings) {
  * @param {object} drupalSettings : Drupal settings added to this js.
  * @returns {{ dateStart: any; resources: string; dateEnd: any }} Readable filter values.
  */
-function initFilters(info, drupalSettings) {
-  let resources = "";
-  Object.keys(drupalSettings.rooms).forEach((key) => {
-    if (drupalSettings.rooms[key] !== 0) {
-      resources += `${key},`;
-    }
-  });
-  resources = resources.slice(0, -1);
-  return {
-    dateStart: info.startStr,
-    dateEnd: info.endStr,
-    resources,
-  };
-}
+// function initFilters(info, drupalSettings) {
+//   let resources = "";
+//   if (drupalSettings.rooms != null) {
+//     Object.keys(drupalSettings.rooms).forEach((key) => {
+//       if (drupalSettings.rooms[key] !== 0) {
+//         resources += `${key},`;
+//       }
+//     });
+//   }
+
+//   resources = resources.slice(0, -1);
+//   return {
+//     dateStart: info.startStr,
+//     dateEnd: info.endStr,
+//     resources,
+//   };
+// }
 /**
  * @param {object} s : The selection event info
  * @param {object} cal : The calendar instance
