@@ -42,7 +42,9 @@ function appendElementToBookingContainer(data) {
   if (loaderPresent) {
     bookingContainer.innerHTML = "";
   }
-
+  if (data.start === null || data.end === null) {
+    return false;
+  }
   const startDate = new Date(data.start).toLocaleDateString("da-dk", {
     weekday: "short",
     year: "numeric",
@@ -99,6 +101,7 @@ function appendElementToBookingContainer(data) {
   container.append(buttonContainer);
   bookingContainer.append(container);
 }
+
 
 /** @param {string} id : unique id of the booking to be removed */
 /* function removeBooking(id) {
