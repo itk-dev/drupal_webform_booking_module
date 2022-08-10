@@ -1893,6 +1893,7 @@ div.fc-resourceTimelineDay-view div.fc-highlight {
     transform: rotate(360deg);
   }
 }
+
 .modal {
     display: none;
     position: fixed;

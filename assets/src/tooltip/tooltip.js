@@ -10,7 +10,7 @@ export default class Tooltip {
   }
 
   /** @param {object} self - Instance of the tooltip class */
-  renderTooltip(self) {
+  renderTooltip = (self) => {
     document.body.addEventListener("mouseover", function (e) {
       if (!e.target.hasAttribute("data-tooltip")) return;
       const tooltip = document.createElement("div");
@@ -38,6 +38,9 @@ export default class Tooltip {
     });
   }
 }
+
+
+
 /**
  * Positions the tooltip
  *
@@ -85,7 +88,7 @@ function positionAt(parent, tooltip, posHorizontal, posVertical, self) {
     case "center":
       top =
         (parseInt(parentCoords.top, 10) + parseInt(parentCoords.bottom, 10)) /
-          2 -
+        2 -
         tooltip.offsetHeight / 2;
       break;
 

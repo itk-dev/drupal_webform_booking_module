@@ -1,0 +1,1 @@
+{"version":3,"file":"userbooking.css","mappings":";;AAEA;IACI,qCAAqC;AACzC,C","sources":["webpack://@fullcalendar-example-projects/webpack/src/userbookings.css"],"sourcesContent":["\n\nbody {\n    background-color:aliceblue !important;\n}"],"names":[],"sourceRoot":""}
