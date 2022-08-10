@@ -59,13 +59,12 @@ class BookingHelper {
    *
    * @return mixed
    */
-  public function getResources() {
-    $url = Url::fromRoute('itkdev_booking.resources_endpoint', [], ['absolute' => TRUE])->toString();
-    $clientConfig = [];
-    if ($this->bookingApiAllowInsecureConnection) {
-      $clientConfig['verify'] = false;
-    }
-    $client = new Client($clientConfig);
+
+  public function getResources()
+  {
+    /*
+    $response = [];
+    $client = new Client();
     try {
       $response = $client->get($url);
 
@@ -74,6 +73,10 @@ class BookingHelper {
     }
 
     return json_decode($response->getBody(), TRUE);
+    */
+
+    $request = new Request(['page' => 1]);
+    return $this->getResult('v1/resources', $request);
   }
 
   /**
@@ -90,7 +93,8 @@ class BookingHelper {
    */
   public function getResult(string $apiEndpoint, Request $request) {
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      $response = $this->getData($apiEndpoint, $request->getQueryString());
+      $queryString = http_build_query($request->query->all());
+      $response = $this->getData($apiEndpoint, $queryString);
       return json_decode($response->getBody(), TRUE);
     }
     else {

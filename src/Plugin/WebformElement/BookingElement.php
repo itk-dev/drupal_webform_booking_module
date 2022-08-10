@@ -78,13 +78,13 @@ class BookingElement extends Hidden
 
     $options = [];
     $resources = $this->bookingHelper->getResources();
+
     foreach ($resources['hydra:member'] as $resource) {
       $options[$resource['email']] = $resource['title'];
     }
     $form['element']['rooms_wrapper']['rooms'] = [
       '#type' => 'checkboxes',
       '#options' => $options,
-      '#description' => !$resources ? $this->t('Using test data while API endpoint is not set. Define $settings["itkdev_booking_api_endpoint"] in settings.php') : '',
       '#weight' => -50,
     ];
 
