@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Booking helper.
  */
-class BookingHelper {
+class BookingHelper
+{
   /**
    * Guzzle Http Client.
    *
@@ -40,7 +41,8 @@ class BookingHelper {
    * @param \GuzzleHttp\ClientInterface $guzzleClient
    *   The http client.
    */
-  public function __construct(ClientInterface $guzzleClient) {
+  public function __construct(ClientInterface $guzzleClient)
+  {
     $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
     $this->httpClient = $guzzleClient;
@@ -51,17 +53,22 @@ class BookingHelper {
    *
    * @return mixed
    */
-  public function getResources() {
-    $url = Url::fromRoute('itkdev_booking.resources_endpoint', [], ['absolute' => TRUE])->toString();
+  public function getResources()
+  {
+    $response = [];
     $client = new Client();
     try {
-      $response = $client->get($url);
-
+      $response = $client->get(
+        $this->bookingApiEndpoint . "v1/resources",
+        ['headers' => [
+          'accept' => 'application/ld+json',
+          'Authorization' => 'Apikey ' . $this->bookingApiKey
+        ]]
+      );
     } catch (RequestException $e) {
-      // Exception is logged
+      // Exception is logged.
     }
-
-    return json_decode($response->getBody(), TRUE);
+    return $response;
   }
 
   /**
@@ -76,12 +83,12 @@ class BookingHelper {
    * @return mixed
    *   Decoded json data as array.
    */
-  public function getResult(string $apiEndpoint, Request $request) {
+  public function getResult(string $apiEndpoint, Request $request)
+  {
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
       $response = $this->getData($apiEndpoint, $request->getQueryString());
       return json_decode($response->getBody(), TRUE);
-    }
-    else {
+    } else {
       $response = $this->getSampleData($apiEndpoint);
       return json_decode($response, TRUE);
     }
@@ -97,17 +104,19 @@ class BookingHelper {
    * @return array|\Psr\Http\Message\ResponseInterface
    *   The api response.
    */
-  private function getData($apiEndpoint, $queryString) {
+  private function getData($apiEndpoint, $queryString)
+  {
     $response = [];
     $client = new Client();
     try {
+
       $response = $client->get(
-          $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
+        $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
         ['headers' => [
           'accept' => 'application/ld+json',
           'Authorization' => 'Apikey ' . $this->bookingApiKey
-        ]]);
-
+        ]]
+      );
     } catch (RequestException $e) {
       // Exception is logged.
     }
@@ -122,7 +131,8 @@ class BookingHelper {
    * @return false|string
    *   The sample data requested.
    */
-  private function getSampleData($apiEndpoint) {
+  private function getSampleData($apiEndpoint)
+  {
     switch ($apiEndpoint) {
       case 'v1/busy-intervals':
         return file_get_contents(__DIR__ . '/../../sampleData/busy-intervals.json');
@@ -130,5 +140,4 @@ class BookingHelper {
         return file_get_contents(__DIR__ . '/../../sampleData/resources.json');
     }
   }
-
 }
