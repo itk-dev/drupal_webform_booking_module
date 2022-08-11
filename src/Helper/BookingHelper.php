@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Booking helper.
  */
-class BookingHelper {
+class BookingHelper
+{
   /**
    * Guzzle Http Client.
    *
@@ -47,7 +48,8 @@ class BookingHelper {
    * @param \GuzzleHttp\ClientInterface $guzzleClient
    *   The http client.
    */
-  public function __construct(ClientInterface $guzzleClient) {
+  public function __construct(ClientInterface $guzzleClient)
+  {
     $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
     $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
@@ -59,21 +61,10 @@ class BookingHelper {
    *
    * @return mixed
    */
-  public function getResources() {
-    $url = Url::fromRoute('itkdev_booking.resources_endpoint', [], ['absolute' => TRUE])->toString();
-    $clientConfig = [];
-    if ($this->bookingApiAllowInsecureConnection) {
-      $clientConfig['verify'] = false;
-    }
-    $client = new Client($clientConfig);
-    try {
-      $response = $client->get($url);
-
-    } catch (RequestException $e) {
-      \Drupal::logger('itkdev_booking')->error($e);
-    }
-
-    return json_decode($response->getBody(), TRUE);
+  public function getResources()
+  {
+    $request = new Request(['page' => 1]);
+    return $this->getResult('v1/resources', $request);
   }
 
   /**
@@ -88,12 +79,13 @@ class BookingHelper {
    * @return mixed
    *   Decoded json data as array.
    */
-  public function getResult(string $apiEndpoint, Request $request) {
+  public function getResult(string $apiEndpoint, Request $request)
+  {
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      $response = $this->getData($apiEndpoint, $request->getQueryString());
+      $queryString = http_build_query($request->query->all());
+      $response = $this->getData($apiEndpoint, $queryString);
       return json_decode($response->getBody(), TRUE);
-    }
-    else {
+    } else {
       $response = $this->getSampleData($apiEndpoint);
       return json_decode($response, TRUE);
     }
@@ -109,7 +101,8 @@ class BookingHelper {
    * @return array|\Psr\Http\Message\ResponseInterface
    *   The api response.
    */
-  private function getData($apiEndpoint, $queryString) {
+  private function getData($apiEndpoint, $queryString)
+  {
     $response = [];
     $clientConfig = [];
     if ($this->bookingApiAllowInsecureConnection) {
@@ -117,13 +110,14 @@ class BookingHelper {
     }
     $client = new Client($clientConfig);
     try {
+
       $response = $client->get(
-          $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
+        $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
         ['headers' => [
           'accept' => 'application/ld+json',
           'Authorization' => 'Apikey ' . $this->bookingApiKey
-        ]]);
-
+        ]]
+      );
     } catch (RequestException $e) {
       // Exception is logged.
       \Drupal::logger('itkdev_booking')->error($e);
@@ -139,7 +133,8 @@ class BookingHelper {
    * @return false|string
    *   The sample data requested.
    */
-  private function getSampleData($apiEndpoint) {
+  private function getSampleData($apiEndpoint)
+  {
     switch ($apiEndpoint) {
       case 'v1/busy-intervals':
         return file_get_contents(__DIR__ . '/../../sampleData/busy-intervals.json');
@@ -147,5 +142,4 @@ class BookingHelper {
         return file_get_contents(__DIR__ . '/../../sampleData/resources.json');
     }
   }
-
 }

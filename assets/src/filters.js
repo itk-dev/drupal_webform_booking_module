@@ -59,12 +59,14 @@ export function initializeResourceDropdown(
   resourceDropdownNode,
   drupalSettings
 ) {
-  Object.keys(drupalSettings.rooms).forEach((key) => {
-    if (drupalSettings.rooms[key] !== 0) {
-      resourceDropdownNode.options[resourceDropdownNode.options.length] =
-        new Option(drupalSettings.rooms[key], key);
-    }
-  });
+  if (drupalSettings.rooms !== null) {
+    Object.keys(drupalSettings.rooms).forEach((key) => {
+      if (drupalSettings.rooms[key] !== 0) {
+        resourceDropdownNode.options[resourceDropdownNode.options.length] =
+          new Option(drupalSettings.rooms[key], key);
+      }
+    });
+  }
 }
 
 /**
