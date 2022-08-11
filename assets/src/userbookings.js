@@ -42,7 +42,9 @@ function appendElementToBookingContainer(data) {
   if (loaderPresent) {
     bookingContainer.innerHTML = "";
   }
-
+  if (data.start === null || data.end === null) {
+    return false;
+  }
   const startDate = new Date(data.start).toLocaleDateString("da-dk", {
     weekday: "short",
     year: "numeric",
