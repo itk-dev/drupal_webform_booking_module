@@ -60,6 +60,7 @@ import {
     },
   };
 })(Drupal, drupalSettings, once);
+
 /**
  * Create calendar.
  *
@@ -405,8 +406,8 @@ function initModal(s, cal) {
  * @returns {object} - Date object representing the current datetime, rounded up
  *   to the next half an hour.
  */
-function roundToNearest30(date = new Date()) {
-  const minutes = 30;
+function roundToNearest15(date = new Date()) {
+  const minutes = 15;
   const ms = 1000 * 60 * minutes;
 
   return new Date(Math.ceil(date.getTime() / ms) * ms);
@@ -428,13 +429,13 @@ function businessHoursOrNearestHalfHour(businessStartHour) {
       ? `0${businessStartHour}:00`
       : `${businessStartHour}:00`;
   const currentClosestHalfAnHourFormatted = `${
-    roundToNearest30(new Date()).getHours().toString().length === 1
-      ? `0${roundToNearest30(new Date()).getHours()}`
-      : roundToNearest30(new Date()).getHours()
+    roundToNearest15(new Date()).getHours().toString().length === 1
+      ? `0${roundToNearest15(new Date()).getHours()}`
+      : roundToNearest15(new Date()).getHours()
   }:${
-    roundToNearest30(new Date()).getMinutes().toString().length === 1
-      ? `0${roundToNearest30(new Date()).getMinutes()}`
-      : roundToNearest30(new Date()).getMinutes()
+    roundToNearest15(new Date()).getMinutes().toString().length === 1
+      ? `0${roundToNearest15(new Date()).getMinutes()}`
+      : roundToNearest15(new Date()).getMinutes()
   }`;
 
   if (today !== calendarDate) {

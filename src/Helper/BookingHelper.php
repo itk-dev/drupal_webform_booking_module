@@ -36,6 +36,13 @@ class BookingHelper
   protected string $bookingApiKey;
 
   /**
+   * Whether we use a secure connection
+   *
+   * @var string|mixed
+   */
+  protected string $bookingApiAllowInsecureConnection;
+
+  /**
    * BookingHelper constructor.
    *
    * @param \GuzzleHttp\ClientInterface $guzzleClient
@@ -45,6 +52,7 @@ class BookingHelper
   {
     $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
     $this->httpClient = $guzzleClient;
   }
 
@@ -55,20 +63,8 @@ class BookingHelper
    */
   public function getResources()
   {
-    $response = [];
-    $client = new Client();
-    try {
-      $response = $client->get(
-        $this->bookingApiEndpoint . "v1/resources",
-        ['headers' => [
-          'accept' => 'application/ld+json',
-          'Authorization' => 'Apikey ' . $this->bookingApiKey
-        ]]
-      );
-    } catch (RequestException $e) {
-      // Exception is logged.
-    }
-    return $response;
+    $request = new Request(['page' => 1]);
+    return $this->getResult('v1/resources', $request);
   }
 
   /**
@@ -86,7 +82,8 @@ class BookingHelper
   public function getResult(string $apiEndpoint, Request $request)
   {
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      $response = $this->getData($apiEndpoint, $request->getQueryString());
+      $queryString = http_build_query($request->query->all());
+      $response = $this->getData($apiEndpoint, $queryString);
       return json_decode($response->getBody(), TRUE);
     } else {
       $response = $this->getSampleData($apiEndpoint);
@@ -107,7 +104,11 @@ class BookingHelper
   private function getData($apiEndpoint, $queryString)
   {
     $response = [];
-    $client = new Client();
+    $clientConfig = [];
+    if ($this->bookingApiAllowInsecureConnection) {
+      $clientConfig['verify'] = false;
+    }
+    $client = new Client($clientConfig);
     try {
 
       $response = $client->get(
@@ -119,6 +120,7 @@ class BookingHelper
       );
     } catch (RequestException $e) {
       // Exception is logged.
+      \Drupal::logger('itkdev_booking')->error($e);
     }
     return $response;
   }
