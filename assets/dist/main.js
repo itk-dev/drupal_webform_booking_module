@@ -21125,14 +21125,14 @@ __webpack_require__.r(__webpack_exports__);
  * @param {NodeList} bookingFilterElements : A list of nodes.
  * @returns {{ object }} : A list of filters and their current values.
  */
-function bookingFilterValues(bookingFilterElements) {
+function bookingFilterValues(bookingFilterElements, elementSettings) {
   const filters = {};
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-room-select-booking_calendar":
+      case "booking-room-select-" + elementSettings.element_id:
         // If no selection use all rooms.
         if (bookingFilter.value === "_empty") {
           filters.resources = "";
@@ -21146,7 +21146,7 @@ function bookingFilterValues(bookingFilterElements) {
           filters.resources = bookingFilter.value;
         }
         break;
-      case "booking-date-picker-booking_calendar":
+      case "booking-date-picker-" + elementSettings.element_id:
         if (bookingFilter.value) {
           const selectedDate = new Date(bookingFilter.value);
           const dayAfter = new Date(selectedDate);
@@ -21196,8 +21196,8 @@ function initializeResourceDropdown(
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
  */
-function calendarApplyFilters(calendar, bookingFilterNodes) {
-  const filters = bookingFilterValues(bookingFilterNodes);
+function calendarApplyFilters(calendar, bookingFilterNodes, elementSettings) {
+  const filters = bookingFilterValues(bookingFilterNodes, elementSettings);
   applyDateFilter(calendar, filters);
   calendar.refetchResources();
 }
@@ -21231,23 +21231,29 @@ class Modal {
   /**
    * @param {string} from - Start-time
    * @param {string} to - End-time
-   * @param {string} date - Date of selection
    * @param {string} resourceId - Resouce identifier
    * @param {string} resourceTitle - Resource title
    * @param {object} calendarInstance - Instance of the calendar object
    */
-  constructor(from, to, date, resourceId, resourceTitle, calendarInstance) {
+  constructor(from, to,  resourceId, resourceTitle, calendarInstance) {
     this.from = from;
     this.to = to;
-    this.date = date;
     this.resourceId = resourceId;
     this.resourceTitle = resourceTitle;
     this.calendarInstance = calendarInstance;
   }
 
   buildModal() {
+    let date = `${this.from.getDate()}/${this.from.getMonth() + 1}-${this.from.getFullYear()}`;
+    let from = `${(this.from.getHours() < 10 ? "0" : "") + this.from.getHours()}:${
+      this.from.getMinutes() < 10 ? "0" : ""
+    }${this.from.getMinutes()}`;
+    let to = `${(this.to.getHours() < 10 ? "0" : "") + this.to.getHours()}:${
+      this.to.getMinutes() < 10 ? "0" : ""
+    }${this.to.getMinutes()}`;
+
     document.getElementById("bookingHeader").innerHTML = `${Drupal.t(
-      "Booking submit"
+      "Booking confirmation"
     )} - ${this.resourceTitle}`;
     document.getElementById("bookingResourceId").innerHTML = `<b>${Drupal.t(
       "Room ID"
@@ -21257,16 +21263,13 @@ class Modal {
     )}:</b> ${this.resourceTitle}`;
     document.getElementById("bookingResourceTitle").innerHTML = `<b>${Drupal.t(
       "Date"
-    )}:</b> ${this.date}`;
+    )}:</b> ${date}`;
     document.getElementById("bookingFrom").innerHTML = `<b>${Drupal.t(
       "Timeframe"
-    )}:</b> ${this.from} - ${this.to}`;
+    )}:</b> ${from} - ${to}`;
     // document.getElementById("bookingTo").innerHTML = `<b>${Drupal.t(
     //   "To"
     // )}:</b> ${this.to} `;
-    document.getElementById("bookingSubmit").innerHTML = `<b>${Drupal.t(
-      "Booking submit"
-    )}</b>`;
 
     const modal = document.getElementById("modal");
     const self = this;
@@ -21283,6 +21286,12 @@ class Modal {
       }
       if (e.target.classList.contains("booking-close")) {
         self.closeModal();
+        if (e.target.classList.contains("calendar-add-selection")) {
+          self.addSelection();
+        }
+        else {
+          self.calendarInstance.unselect();
+        }
       }
     });
     document.addEventListener("keyup", function (e) {
@@ -21293,16 +21302,40 @@ class Modal {
   }
 
   closeModal() {
-    const self = this;
     const modal = document.getElementById("modal");
     if (modal.classList.contains("open")) {
       modal.classList.remove("open");
       modal.classList.add("closing");
-      self.calendarInstance.unselect();
+      //self.calendarInstance.unselect();
       setTimeout(function () {
         modal.classList.remove("closing");
       }, 200);
     }
+  }
+
+  addSelection() {
+    const self = this;
+    // Y-m-d\TH:i:sO
+console.log(self.from.toISOString());
+    // Get booking element for the drupal form field.
+    let formFieldId = self.calendarInstance.el.getAttribute('booking-element-id');
+    let titleElement = document.getElementById('booking-title-' + formFieldId);
+
+    const booking = {
+      subject: titleElement.value,
+      resourceEmail: self.resourceId,
+      startTime: self.from,
+      endTime: self.to,
+      userId: '',
+    };
+
+    let elements = document.getElementsByName(formFieldId);
+    elements.forEach((element) => {
+      if(element instanceof HTMLInputElement && element.getAttribute('type') === 'hidden') {
+        element.setAttribute('value', JSON.stringify(booking));
+      }
+    });
+
   }
 }
 
@@ -21589,7 +21622,7 @@ function setupCalendar(
   bookingFilterNodes
 ) {
   const now = new Date();
-  const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
+  const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes, elementSettings);
   const startHour = new Date().getHours() - 1; // The hour for the calendar to scroll to, to always show relevant bookings at first glance.
   window.calendar = new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__.Calendar(calendarElement, {
     schedulerLicenseKey: elementSettings.license_key,
@@ -21670,7 +21703,7 @@ function setupCalendar(
     },
     // eslint-disable-next-line no-unused-vars
     resources(info, successCallback, failureCallback) {
-      const resourceFilters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
+      const resourceFilters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes, elementSettings);
       fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`)
         .then((response) => response.json())
         .then((data) =>
@@ -21678,17 +21711,17 @@ function setupCalendar(
         );
     },
     // eslint-disable-next-line no-unused-vars
-    // events(info, successCallback, failureCallback) {
-    //   const eventFilters = initFilters(info, elementSettings);
-    //   const parameters = new URLSearchParams(eventFilters).toString();
-    //   fetch(
-    //     `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
-    //   )
-    //     .then((response) => response.json())
-    //     .then((data) =>
-    //       successCallback(handleData(data, eventFilters, elementSettings))
-    //     );
-    // },
+    events(info, successCallback, failureCallback) {
+      const eventFilters = initFilters(info, elementSettings);
+      const parameters = new URLSearchParams(eventFilters).toString();
+      fetch(
+        `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
+      )
+        .then((response) => response.json())
+        .then((data) =>
+          successCallback(handleData(data, eventFilters, elementSettings))
+        );
+    },
     datesSet(info) {
       // This is called fairly often. Use with care. https://fullcalendar.io/docs/datesSet
       // Change date select to match calendar date.
@@ -21699,7 +21732,7 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      const dateElem = document.getElementById("booking-date-picker-booking");
+      const dateElem = document.getElementById("booking-date-picker-" + elementSettings.element_id);
       if (dateElem !== null) {
         dateElem.valueAsDate = calendarDate;
       }
@@ -21817,10 +21850,10 @@ function renderResourceTooltips(info) {
  *   Drupal frontend.
  */
 // eslint-disable-next-line no-unused-vars
-// function filterSelectedResourceFrontend(element, index, arr) {
-//   const resources = this.split(",");
-//   return resources.length > 1 || this === element.id;
-// }
+function filterSelectedResourceFrontend(element, index, arr) {
+  const resources = this.split(",");
+  return resources.length > 1 || this === element.id;
+}
 
 /**
  * Add event listeners for external events (Input filters etc.).
@@ -21828,11 +21861,11 @@ function renderResourceTooltips(info) {
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
  */
-function applyEventListeners(calendar, bookingFilterNodes) {
+function applyEventListeners(calendar, bookingFilterNodes, elementSettings) {
   // Add event listener on all filters.
   bookingFilterNodes.forEach((bookingFilter) => {
     bookingFilter.addEventListener("change", () => {
-      (0,_filters__WEBPACK_IMPORTED_MODULE_13__.calendarApplyFilters)(calendar, bookingFilterNodes);
+      (0,_filters__WEBPACK_IMPORTED_MODULE_13__.calendarApplyFilters)(calendar, bookingFilterNodes, elementSettings);
     });
   });
 }
@@ -21852,15 +21885,16 @@ function handleData(data, filters, elementSettings) {
       dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
       break;
     case "/v1/resources":
+      console.log(filters);
       dataFormatted.data = data["hydra:member"].map(handleResources);
       dataFormatted.data = dataFormatted.data.filter(
         filterSelectedResourceBackend,
         elementSettings
       );
-      // dataFormatted.data = dataFormatted.data.filter(
-      //   filterSelectedResourceFrontend,
-      //   filters.resources
-      // );
+      dataFormatted.data = dataFormatted.data.filter(
+        filterSelectedResourceFrontend,
+        filters.resources
+      );
       break;
     default:
   }
@@ -21874,23 +21908,23 @@ function handleData(data, filters, elementSettings) {
  * @param {object} drupalSettings : Drupal settings added to this js.
  * @returns {{ dateStart: any; resources: string; dateEnd: any }} Readable filter values.
  */
-// function initFilters(info, drupalSettings) {
-//   let resources = "";
-//   if (drupalSettings.rooms != null) {
-//     Object.keys(drupalSettings.rooms).forEach((key) => {
-//       if (drupalSettings.rooms[key] !== 0) {
-//         resources += `${key},`;
-//       }
-//     });
-//   }
+function initFilters(info, drupalSettings) {
+  let resources = "";
+  if (drupalSettings.rooms != null) {
+    Object.keys(drupalSettings.rooms).forEach((key) => {
+      if (drupalSettings.rooms[key] !== 0) {
+        resources += `${key},`;
+      }
+    });
+  }
 
-//   resources = resources.slice(0, -1);
-//   return {
-//     dateStart: info.startStr,
-//     dateEnd: info.endStr,
-//     resources,
-//   };
-// }
+  resources = resources.slice(0, -1);
+  return {
+    dateStart: info.startStr,
+    dateEnd: info.endStr,
+    resources,
+  };
+}
 /**
  * @param {object} s : The selection event info
  * @param {object} cal : The calendar instance
@@ -21898,18 +21932,14 @@ function handleData(data, filters, elementSettings) {
 function initModal(s, cal) {
   const modal = new _modal_modal__WEBPACK_IMPORTED_MODULE_11__["default"]();
   modal.calendarInstance = cal;
-  modal.date = `${s.start.getDate()}/${s.start.getMonth()}-${s.start.getFullYear()}`;
-  modal.from = `${(s.start.getHours() < 10 ? "0" : "") + s.start.getHours()}:${
-    s.start.getMinutes() < 10 ? "0" : ""
-  }${s.start.getMinutes()}`;
-  modal.to = `${(s.end.getHours() < 10 ? "0" : "") + s.end.getHours()}:${
-    s.end.getMinutes() < 10 ? "0" : ""
-  }${s.end.getMinutes()}`;
+  modal.from = s.start;
+  modal.to = s.end;
   modal.resourceId = s.resource._resource.id;
   modal.resourceTitle = s.resource._resource.title;
   modal.drupal = Drupal;
   modal.buildModal();
 }
+
 /**
  * @param {object} date - Date object
  * @returns {object} - Date object representing the current datetime, rounded up

@@ -7,6 +7,11 @@ Available variables:
     - rooms
   ]
 #}
+<div class="form-group">
+  <label for="booking-title-{{ params.element_id }}">{{ 'Booking title'|t }}</label>
+  <input type="text" class="form-control" id="booking-title-{{ params.element_id }}" aria-describedby="bookingTitleHelp">
+  <small id="bookingTitleHelp" class="form-text text-muted">{{ 'Note! The booking title may be displayed outside rooms in public.'|t }}</small>
+</div>
 <div id="booking-filters-{{ params.element_id }}">
   <div class="form-group">
     <input type="date" class="booking-filter" id="booking-date-picker-{{ params.element_id }}">
@@ -21,21 +26,21 @@ Available variables:
 </div>
 
 <div id="modalContainer">
-  <div id="modal" class="modal">
+  <div id="modal" class="modal booking-close">
       <div class="modal-content">
         <div class="modal-header">
           <span class="booking-close">&times;</span>
           <h2 id="bookingHeader"></h2>
         </div>
         <div class="modal-body">
-          <p id="bookingResourceId"></p> 
+          <p id="bookingResourceId"></p>
           <p id="bookingResourceTitle"></p>
           <p id="bookingFrom"></p>
           <p id="bookingTo"></p>
         </div>
         <div class="modal-footer">
-          <button id="bookingSubmit" class="btn btn-primary"></button>
+          <div id="bookingConfirm" class="booking-close calendar-add-selection btn btn-primary">{{ 'Confirm booking'|t }}</div>
         </div>
       </div>
   </div>
-</div> 
+</div>

@@ -3,23 +3,29 @@ export default class Modal {
   /**
    * @param {string} from - Start-time
    * @param {string} to - End-time
-   * @param {string} date - Date of selection
    * @param {string} resourceId - Resouce identifier
    * @param {string} resourceTitle - Resource title
    * @param {object} calendarInstance - Instance of the calendar object
    */
-  constructor(from, to, date, resourceId, resourceTitle, calendarInstance) {
+  constructor(from, to,  resourceId, resourceTitle, calendarInstance) {
     this.from = from;
     this.to = to;
-    this.date = date;
     this.resourceId = resourceId;
     this.resourceTitle = resourceTitle;
     this.calendarInstance = calendarInstance;
   }
 
   buildModal() {
+    let date = `${this.from.getDate()}/${this.from.getMonth() + 1}-${this.from.getFullYear()}`;
+    let from = `${(this.from.getHours() < 10 ? "0" : "") + this.from.getHours()}:${
+      this.from.getMinutes() < 10 ? "0" : ""
+    }${this.from.getMinutes()}`;
+    let to = `${(this.to.getHours() < 10 ? "0" : "") + this.to.getHours()}:${
+      this.to.getMinutes() < 10 ? "0" : ""
+    }${this.to.getMinutes()}`;
+
     document.getElementById("bookingHeader").innerHTML = `${Drupal.t(
-      "Booking submit"
+      "Booking confirmation"
     )} - ${this.resourceTitle}`;
     document.getElementById("bookingResourceId").innerHTML = `<b>${Drupal.t(
       "Room ID"
@@ -29,16 +35,13 @@ export default class Modal {
     )}:</b> ${this.resourceTitle}`;
     document.getElementById("bookingResourceTitle").innerHTML = `<b>${Drupal.t(
       "Date"
-    )}:</b> ${this.date}`;
+    )}:</b> ${date}`;
     document.getElementById("bookingFrom").innerHTML = `<b>${Drupal.t(
       "Timeframe"
-    )}:</b> ${this.from} - ${this.to}`;
+    )}:</b> ${from} - ${to}`;
     // document.getElementById("bookingTo").innerHTML = `<b>${Drupal.t(
     //   "To"
     // )}:</b> ${this.to} `;
-    document.getElementById("bookingSubmit").innerHTML = `<b>${Drupal.t(
-      "Booking submit"
-    )}</b>`;
 
     const modal = document.getElementById("modal");
     const self = this;
@@ -55,6 +58,12 @@ export default class Modal {
       }
       if (e.target.classList.contains("booking-close")) {
         self.closeModal();
+        if (e.target.classList.contains("calendar-add-selection")) {
+          self.addSelection();
+        }
+        else {
+          self.calendarInstance.unselect();
+        }
       }
     });
     document.addEventListener("keyup", function (e) {
@@ -65,15 +74,39 @@ export default class Modal {
   }
 
   closeModal() {
-    const self = this;
     const modal = document.getElementById("modal");
     if (modal.classList.contains("open")) {
       modal.classList.remove("open");
       modal.classList.add("closing");
-      self.calendarInstance.unselect();
+      //self.calendarInstance.unselect();
       setTimeout(function () {
         modal.classList.remove("closing");
       }, 200);
     }
+  }
+
+  addSelection() {
+    const self = this;
+    // Y-m-d\TH:i:sO
+console.log(self.from.toISOString());
+    // Get booking element for the drupal form field.
+    let formFieldId = self.calendarInstance.el.getAttribute('booking-element-id');
+    let titleElement = document.getElementById('booking-title-' + formFieldId);
+
+    const booking = {
+      subject: titleElement.value,
+      resourceEmail: self.resourceId,
+      startTime: self.from,
+      endTime: self.to,
+      userId: '',
+    };
+
+    let elements = document.getElementsByName(formFieldId);
+    elements.forEach((element) => {
+      if(element instanceof HTMLInputElement && element.getAttribute('type') === 'hidden') {
+        element.setAttribute('value', JSON.stringify(booking));
+      }
+    });
+
   }
 }
