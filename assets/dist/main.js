@@ -21125,14 +21125,14 @@ __webpack_require__.r(__webpack_exports__);
  * @param {NodeList} bookingFilterElements : A list of nodes.
  * @returns {{ object }} : A list of filters and their current values.
  */
-function bookingFilterValues(bookingFilterElements) {
+function bookingFilterValues(bookingFilterElements, elementSettings) {
   const filters = {};
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-room-select-booking_calendar":
+      case "booking-room-select-" + elementSettings.element_id:
         // If no selection use all rooms.
         if (bookingFilter.value === "_empty") {
           filters.resources = "";
@@ -21146,7 +21146,7 @@ function bookingFilterValues(bookingFilterElements) {
           filters.resources = bookingFilter.value;
         }
         break;
-      case "booking-date-picker-booking_calendar":
+      case "booking-date-picker-" + elementSettings.element_id:
         if (bookingFilter.value) {
           const selectedDate = new Date(bookingFilter.value);
           const dayAfter = new Date(selectedDate);
@@ -21196,8 +21196,8 @@ function initializeResourceDropdown(
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
  */
-function calendarApplyFilters(calendar, bookingFilterNodes) {
-  const filters = bookingFilterValues(bookingFilterNodes);
+function calendarApplyFilters(calendar, bookingFilterNodes, elementSettings) {
+  const filters = bookingFilterValues(bookingFilterNodes, elementSettings);
   applyDateFilter(calendar, filters);
   calendar.refetchResources();
 }
@@ -21622,7 +21622,7 @@ function setupCalendar(
   bookingFilterNodes
 ) {
   const now = new Date();
-  const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
+  const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes, elementSettings);
   const startHour = new Date().getHours() - 1; // The hour for the calendar to scroll to, to always show relevant bookings at first glance.
   window.calendar = new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__.Calendar(calendarElement, {
     schedulerLicenseKey: elementSettings.license_key,
@@ -21703,7 +21703,7 @@ function setupCalendar(
     },
     // eslint-disable-next-line no-unused-vars
     resources(info, successCallback, failureCallback) {
-      const resourceFilters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
+      const resourceFilters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes, elementSettings);
       fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`)
         .then((response) => response.json())
         .then((data) =>
@@ -21711,17 +21711,17 @@ function setupCalendar(
         );
     },
     // eslint-disable-next-line no-unused-vars
-    // events(info, successCallback, failureCallback) {
-    //   const eventFilters = initFilters(info, elementSettings);
-    //   const parameters = new URLSearchParams(eventFilters).toString();
-    //   fetch(
-    //     `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
-    //   )
-    //     .then((response) => response.json())
-    //     .then((data) =>
-    //       successCallback(handleData(data, eventFilters, elementSettings))
-    //     );
-    // },
+    events(info, successCallback, failureCallback) {
+      const eventFilters = initFilters(info, elementSettings);
+      const parameters = new URLSearchParams(eventFilters).toString();
+      fetch(
+        `${elementSettings.front_page_url}/itkdev_booking/bookings?${parameters}`
+      )
+        .then((response) => response.json())
+        .then((data) =>
+          successCallback(handleData(data, eventFilters, elementSettings))
+        );
+    },
     datesSet(info) {
       // This is called fairly often. Use with care. https://fullcalendar.io/docs/datesSet
       // Change date select to match calendar date.
@@ -21732,7 +21732,7 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      const dateElem = document.getElementById("booking-date-picker-booking");
+      const dateElem = document.getElementById("booking-date-picker-" + elementSettings.element_id);
       if (dateElem !== null) {
         dateElem.valueAsDate = calendarDate;
       }
@@ -21850,10 +21850,10 @@ function renderResourceTooltips(info) {
  *   Drupal frontend.
  */
 // eslint-disable-next-line no-unused-vars
-// function filterSelectedResourceFrontend(element, index, arr) {
-//   const resources = this.split(",");
-//   return resources.length > 1 || this === element.id;
-// }
+function filterSelectedResourceFrontend(element, index, arr) {
+  const resources = this.split(",");
+  return resources.length > 1 || this === element.id;
+}
 
 /**
  * Add event listeners for external events (Input filters etc.).
@@ -21861,11 +21861,11 @@ function renderResourceTooltips(info) {
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
  */
-function applyEventListeners(calendar, bookingFilterNodes) {
+function applyEventListeners(calendar, bookingFilterNodes, elementSettings) {
   // Add event listener on all filters.
   bookingFilterNodes.forEach((bookingFilter) => {
     bookingFilter.addEventListener("change", () => {
-      (0,_filters__WEBPACK_IMPORTED_MODULE_13__.calendarApplyFilters)(calendar, bookingFilterNodes);
+      (0,_filters__WEBPACK_IMPORTED_MODULE_13__.calendarApplyFilters)(calendar, bookingFilterNodes, elementSettings);
     });
   });
 }
@@ -21885,15 +21885,16 @@ function handleData(data, filters, elementSettings) {
       dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
       break;
     case "/v1/resources":
+      console.log(filters);
       dataFormatted.data = data["hydra:member"].map(handleResources);
       dataFormatted.data = dataFormatted.data.filter(
         filterSelectedResourceBackend,
         elementSettings
       );
-      // dataFormatted.data = dataFormatted.data.filter(
-      //   filterSelectedResourceFrontend,
-      //   filters.resources
-      // );
+      dataFormatted.data = dataFormatted.data.filter(
+        filterSelectedResourceFrontend,
+        filters.resources
+      );
       break;
     default:
   }
@@ -21907,23 +21908,23 @@ function handleData(data, filters, elementSettings) {
  * @param {object} drupalSettings : Drupal settings added to this js.
  * @returns {{ dateStart: any; resources: string; dateEnd: any }} Readable filter values.
  */
-// function initFilters(info, drupalSettings) {
-//   let resources = "";
-//   if (drupalSettings.rooms != null) {
-//     Object.keys(drupalSettings.rooms).forEach((key) => {
-//       if (drupalSettings.rooms[key] !== 0) {
-//         resources += `${key},`;
-//       }
-//     });
-//   }
+function initFilters(info, drupalSettings) {
+  let resources = "";
+  if (drupalSettings.rooms != null) {
+    Object.keys(drupalSettings.rooms).forEach((key) => {
+      if (drupalSettings.rooms[key] !== 0) {
+        resources += `${key},`;
+      }
+    });
+  }
 
-//   resources = resources.slice(0, -1);
-//   return {
-//     dateStart: info.startStr,
-//     dateEnd: info.endStr,
-//     resources,
-//   };
-// }
+  resources = resources.slice(0, -1);
+  return {
+    dateStart: info.startStr,
+    dateEnd: info.endStr,
+    resources,
+  };
+}
 /**
  * @param {object} s : The selection event info
  * @param {object} cal : The calendar instance
