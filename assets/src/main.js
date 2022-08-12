@@ -390,18 +390,14 @@ function initFilters(info, drupalSettings) {
 function initModal(s, cal) {
   const modal = new Modal();
   modal.calendarInstance = cal;
-  modal.date = `${s.start.getDate()}/${s.start.getMonth()}-${s.start.getFullYear()}`;
-  modal.from = `${(s.start.getHours() < 10 ? "0" : "") + s.start.getHours()}:${
-    s.start.getMinutes() < 10 ? "0" : ""
-  }${s.start.getMinutes()}`;
-  modal.to = `${(s.end.getHours() < 10 ? "0" : "") + s.end.getHours()}:${
-    s.end.getMinutes() < 10 ? "0" : ""
-  }${s.end.getMinutes()}`;
+  modal.from = s.start;
+  modal.to = s.end;
   modal.resourceId = s.resource._resource.id;
   modal.resourceTitle = s.resource._resource.title;
   modal.drupal = Drupal;
   modal.buildModal();
 }
+
 /**
  * @param {object} date - Date object
  * @returns {object} - Date object representing the current datetime, rounded up
