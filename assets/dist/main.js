@@ -21267,9 +21267,6 @@ class Modal {
     document.getElementById("bookingFrom").innerHTML = `<b>${Drupal.t(
       "Timeframe"
     )}:</b> ${from} - ${to}`;
-    // document.getElementById("bookingTo").innerHTML = `<b>${Drupal.t(
-    //   "To"
-    // )}:</b> ${this.to} `;
 
     const modal = document.getElementById("modal");
     const self = this;
@@ -21291,6 +21288,7 @@ class Modal {
         }
         else {
           self.calendarInstance.unselect();
+          self.clearValues();
         }
       }
     });
@@ -21306,7 +21304,6 @@ class Modal {
     if (modal.classList.contains("open")) {
       modal.classList.remove("open");
       modal.classList.add("closing");
-      //self.calendarInstance.unselect();
       setTimeout(function () {
         modal.classList.remove("closing");
       }, 200);
@@ -21314,19 +21311,23 @@ class Modal {
   }
 
   addSelection() {
+    // @todo move booking title and author out of modal, and set hidden element on submit instead.
     const self = this;
-    // Y-m-d\TH:i:sO
-console.log(self.from.toISOString());
     // Get booking element for the drupal form field.
     let formFieldId = self.calendarInstance.el.getAttribute('booking-element-id');
     let titleElement = document.getElementById('booking-title-' + formFieldId);
+    let authorNameElement = document.getElementById('booking-author-' + formFieldId);
+    let authorEmailElement = document.getElementById('booking-email-' + formFieldId);
 
     const booking = {
       subject: titleElement.value,
       resourceEmail: self.resourceId,
-      startTime: self.from,
-      endTime: self.to,
-      userId: '',
+      startTime: self.from.toISOString(),
+      endTime: self.to.toISOString(),
+      authorName: authorNameElement.value,
+      authorEmail: authorEmailElement.value,
+      userId: '1111aaaa11',
+      formElement: 'booking_element'
     };
 
     let elements = document.getElementsByName(formFieldId);
@@ -21336,6 +21337,17 @@ console.log(self.from.toISOString());
       }
     });
 
+  }
+
+  clearValues() {
+    const self = this;
+    let formFieldId = self.calendarInstance.el.getAttribute('booking-element-id');
+    let elements = document.getElementsByName(formFieldId);
+    elements.forEach((element) => {
+      if(element instanceof HTMLInputElement && element.getAttribute('type') === 'hidden') {
+        element.setAttribute('value', '');
+      }
+    });
   }
 }
 
