@@ -122,9 +122,60 @@ class BookingElement extends Hidden
     ]);
 
     if ('booking_element' == $element['#type']) {
+      $defaultValue = [
+        'subject' => '',
+        'resourceEmail' => '',
+        'startTime' => '',
+        'endTime' => '',
+        'authorName' => '',
+        'authorEmail' => '',
+        'userId' => '1111aaaa11',
+        'formElement' => 'booking_element'
+      ];
       $form['#attached']['library'][] = 'itkdev_booking/booking_calendar';
       $form['#attached']['drupalSettings']['booking_calendar'][$element['#webform_key']] = $params;
       $form['elements'][$element['#webform_key']]['#prefix'] = $prefix;
+      $form['elements'][$element['#webform_key']]['#default_value'] = json_encode($defaultValue);
+      $form['#validate'][] = [$this, 'validateBooking'];
+    }
+  }
+
+  /**
+   * Validate booking data in hidden field.
+   *
+   * @param $form
+   *   The form to validate.
+   * @param FormStateInterface $form_state
+   *   The state of the form.
+   */
+  public function validateBooking(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+    $elements = $form['elements'];
+    foreach ($elements as $key => $form_element) {
+      if (is_array($form_element) && isset($form_element['#type']) && 'booking_element' === $form_element['#type']) {
+        $bookingValues = json_decode($form_state->getValues()[$key], TRUE);
+        foreach ($bookingValues as $bookingKey => $bookingValue) {
+          if (empty($bookingValue)) {
+            switch ($bookingKey) {
+              case 'subject':
+                $form_state->setError($form, t('Error in "Booking title"'));
+                break;
+              case 'authorName':
+                $form_state->setError($form, t('Error in "Your Name"'));
+                break;
+              case 'authorEmail':
+                $form_state->setError($form, t('Error in "Your email"'));
+                break;
+              case 'resourceEmail':
+              case 'startTime':
+              case 'endTime':
+                $form_state->setError($form, t('Error in booking selection'));
+                break;
+              default:
+                $form_state->setError($form, t('Error in form. Please reload page and try again.'));
+            }
+          }
+        }
+      }
     }
   }
 }
