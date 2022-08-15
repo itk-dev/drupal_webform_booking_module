@@ -1,3 +1,5 @@
+import validateHiddenInput from "../validation";
+
 /** Class representing a modal */
 export default class Modal {
   /**
@@ -7,7 +9,7 @@ export default class Modal {
    * @param {string} resourceTitle - Resource title
    * @param {object} calendarInstance - Instance of the calendar object
    */
-  constructor(from, to,  resourceId, resourceTitle, calendarInstance) {
+  constructor(from, to, resourceId, resourceTitle, calendarInstance) {
     this.from = from;
     this.to = to;
     this.resourceId = resourceId;
@@ -16,11 +18,13 @@ export default class Modal {
   }
 
   buildModal() {
-    let date = `${this.from.getDate()}/${this.from.getMonth() + 1}-${this.from.getFullYear()}`;
-    let from = `${(this.from.getHours() < 10 ? "0" : "") + this.from.getHours()}:${
-      this.from.getMinutes() < 10 ? "0" : ""
-    }${this.from.getMinutes()}`;
-    let to = `${(this.to.getHours() < 10 ? "0" : "") + this.to.getHours()}:${
+    const date = `${this.from.getDate()}/${
+      this.from.getMonth() + 1
+    }-${this.from.getFullYear()}`;
+    const from = `${
+      (this.from.getHours() < 10 ? "0" : "") + this.from.getHours()
+    }:${this.from.getMinutes() < 10 ? "0" : ""}${this.from.getMinutes()}`;
+    const to = `${(this.to.getHours() < 10 ? "0" : "") + this.to.getHours()}:${
       this.to.getMinutes() < 10 ? "0" : ""
     }${this.to.getMinutes()}`;
 
@@ -51,74 +55,75 @@ export default class Modal {
 
     document.addEventListener("click", function (e) {
       if (e.target === modal) {
-        self.closeModal();
+        closeModal();
       }
       if (e.target.classList.contains("booking-close")) {
-        self.closeModal();
+        closeModal();
+        // Only add selection to input field if active element contains the right class.
         if (e.target.classList.contains("calendar-add-selection")) {
-          self.addSelection();
-        }
-        else {
+          self.setSelection();
+        } else {
           self.calendarInstance.unselect();
-          self.clearValues();
+          self.setSelection(true);
         }
       }
     });
     document.addEventListener("keyup", function (e) {
       if (e.key === "Escape" || e.keyCode === 27) {
-        self.closeModal();
+        closeModal();
       }
     });
   }
 
-  closeModal() {
-    const modal = document.getElementById("modal");
-    if (modal.classList.contains("open")) {
-      modal.classList.remove("open");
-      modal.classList.add("closing");
-      setTimeout(function () {
-        modal.classList.remove("closing");
-      }, 200);
-    }
-  }
-
-  addSelection() {
-    // @todo move booking title and author out of modal, and set hidden element on submit instead.
+  /**
+   * Add booking info to hidden input field.
+   *
+   * @param {boolean} clear : Whether we clear input field or populate it.
+   */
+  setSelection(clear = false) {
     const self = this;
     // Get booking element for the drupal form field.
-    let formFieldId = self.calendarInstance.el.getAttribute('booking-element-id');
-    let titleElement = document.getElementById('booking-title-' + formFieldId);
-    let authorNameElement = document.getElementById('booking-author-' + formFieldId);
-    let authorEmailElement = document.getElementById('booking-email-' + formFieldId);
+    const formFieldId =
+      self.calendarInstance.el.getAttribute("booking-element-id");
 
-    const booking = {
-      subject: titleElement.value,
-      resourceEmail: self.resourceId,
-      startTime: self.from.toISOString(),
-      endTime: self.to.toISOString(),
-      authorName: authorNameElement.value,
-      authorEmail: authorEmailElement.value,
-      userId: '1111aaaa11',
-      formElement: 'booking_element'
-    };
+    const booking = clear
+      ? {
+          resourceEmail: "",
+          startTime: "",
+          endTime: "",
+        }
+      : {
+          resourceEmail: self.resourceId,
+          startTime: self.from.toISOString(),
+          endTime: self.to.toISOString(),
+        };
 
-    let elements = document.getElementsByName(formFieldId);
+    const elements = document.getElementsByName(formFieldId);
     elements.forEach((element) => {
-      if(element instanceof HTMLInputElement && element.getAttribute('type') === 'hidden') {
-        element.setAttribute('value', JSON.stringify(booking));
+      if (
+        element instanceof HTMLInputElement &&
+        element.getAttribute("type") === "hidden"
+      ) {
+        const inputValue = JSON.parse(element.value);
+        Object.keys(booking).forEach((key) => {
+          inputValue[key] = booking[key];
+        });
+
+        element.setAttribute("value", JSON.stringify(inputValue));
+        validateHiddenInput(inputValue);
       }
     });
-
   }
+}
 
-  clearValues() {
-    const self = this;
-    let formFieldId = self.calendarInstance.el.getAttribute('booking-element-id');
-    let elements = document.getElementsByName(formFieldId);
-    elements.forEach((element) => {
-      if(element instanceof HTMLInputElement && element.getAttribute('type') === 'hidden') {
-        element.setAttribute('value', '');
-      }
-    });
+/** Close modal box. */
+function closeModal() {
+  const modal = document.getElementById("modal");
+  if (modal.classList.contains("open")) {
+    modal.classList.remove("open");
+    modal.classList.add("closing");
+    setTimeout(function () {
+      modal.classList.remove("closing");
+    }, 200);
   }
 }

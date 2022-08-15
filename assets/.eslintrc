@@ -4,12 +4,13 @@
     "airbnb-base",
     "prettier",
     "plugin:jsdoc/recommended",
-    "plugin:prettier/recommended",
+    "plugin:prettier/recommended"
   ],
   "root": true,
   "ignorePatterns": ["*.yml"],
   "parserOptions": {
     "sourceType": "module",
+    "ecmaVersion": 2020,
     "allowImportExportEverywhere": true
   },
   "rules": {

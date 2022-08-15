@@ -39,8 +39,6 @@ export default class Tooltip {
   }
 }
 
-
-
 /**
  * Positions the tooltip
  *

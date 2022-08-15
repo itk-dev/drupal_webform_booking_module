@@ -16,6 +16,7 @@ import {
   initializeResourceDropdown,
   calendarApplyFilters,
 } from "./filters";
+import validateHiddenInput from "./validation";
 
 /* eslint no-underscore-dangle: 0 */
 /**
@@ -48,6 +49,7 @@ import {
         );
 
         initializeResourceDropdown(resourceDropdownNode, elementSettings);
+        resetBookingInput(elementSettings);
         setupCalendar(
           drupalSettings,
           elementSettings,
@@ -161,7 +163,10 @@ function setupCalendar(
     },
     // eslint-disable-next-line no-unused-vars
     resources(info, successCallback, failureCallback) {
-      const resourceFilters = bookingFilterValues(bookingFilterNodes, elementSettings);
+      const resourceFilters = bookingFilterValues(
+        bookingFilterNodes,
+        elementSettings
+      );
       fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`)
         .then((response) => response.json())
         .then((data) =>
@@ -190,7 +195,9 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      const dateElem = document.getElementById("booking-date-picker-" + elementSettings.element_id);
+      const dateElem = document.getElementById(
+        `booking-date-picker-${elementSettings.element_id}`
+      );
       if (dateElem !== null) {
         dateElem.valueAsDate = calendarDate;
       }
@@ -318,12 +325,31 @@ function filterSelectedResourceFrontend(element, index, arr) {
  *
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
+ * @param {object} elementSettings : Settings related to a specific webform element.
  */
 function applyEventListeners(calendar, bookingFilterNodes, elementSettings) {
   // Add event listener on all filters.
   bookingFilterNodes.forEach((bookingFilter) => {
     bookingFilter.addEventListener("change", () => {
       calendarApplyFilters(calendar, bookingFilterNodes, elementSettings);
+    });
+  });
+
+  const bookingFields = {
+    bookingAuthorElement: document.getElementById(
+      `booking-author-${elementSettings.element_id}`
+    ),
+    bookingEmailElement: document.getElementById(
+      `booking-email-${elementSettings.element_id}`
+    ),
+    bookingTitleElement: document.getElementById(
+      `booking-title-${elementSettings.element_id}`
+    ),
+  };
+
+  Object.keys(bookingFields).forEach((key) => {
+    bookingFields[key].addEventListener("change", () => {
+      updateHiddenInput(bookingFields[key], elementSettings);
     });
   });
 }
@@ -343,7 +369,6 @@ function handleData(data, filters, elementSettings) {
       dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
       break;
     case "/v1/resources":
-      console.log(filters);
       dataFormatted.data = data["hydra:member"].map(handleResources);
       dataFormatted.data = dataFormatted.data.filter(
         filterSelectedResourceBackend,
@@ -384,6 +409,8 @@ function initFilters(info, drupalSettings) {
   };
 }
 /**
+ * Initialize calendar modal.
+ *
  * @param {object} s : The selection event info
  * @param {object} cal : The calendar instance
  */
@@ -399,6 +426,8 @@ function initModal(s, cal) {
 }
 
 /**
+ * Round to nearest 15 minutes.
+ *
  * @param {object} date - Date object
  * @returns {object} - Date object representing the current datetime, rounded up
  *   to the next half an hour.
@@ -411,6 +440,8 @@ function roundToNearest15(date = new Date()) {
 }
 
 /**
+ * Round business hours to nearest half hour.
+ *
  * @param {number} businessStartHour - The hour the resource is available from
  * @returns {string} : formatted date to represent the start of when the
  *   resource is available from, either direct resourcedata or the current time
@@ -442,4 +473,55 @@ function businessHoursOrNearestHalfHour(businessStartHour) {
     return currentClosestHalfAnHourFormatted;
   }
   return businessStartHourFormatted;
+}
+
+/**
+ * Update the hidden input field.
+ *
+ * @param {HTMLElement} changedElement : The html element that was just changed.
+ * @param {object} elementSettings : Settings related to a specific webform element.
+ */
+function updateHiddenInput(changedElement, elementSettings) {
+  // Get all booking elements.
+  const elements = document.getElementsByName(elementSettings.element_id);
+  elements.forEach((element) => {
+    if (
+      element instanceof HTMLInputElement &&
+      element.getAttribute("type") === "hidden"
+    ) {
+      const inputValue = JSON.parse(element.value);
+      switch (changedElement.id) {
+        case `booking-author-${elementSettings.element_id}`:
+          inputValue.authorName = changedElement.value;
+          break;
+        case `booking-email-${elementSettings.element_id}`:
+          inputValue.authorEmail = changedElement.value;
+          break;
+        case `booking-title-${elementSettings.element_id}`:
+          inputValue.subject = changedElement.value;
+          break;
+        default:
+          break;
+      }
+
+      element.setAttribute("value", JSON.stringify(inputValue));
+      validateHiddenInput(inputValue);
+    }
+  });
+}
+
+/**
+ * Reset booking input fields and disable form submit.
+ *
+ * @param {object} elementSettings : Settings related to a specific webform element.
+ */
+function resetBookingInput(elementSettings) {
+  document.getElementById("edit-submit").disabled = true;
+  document.getElementById(
+    `booking-author-${elementSettings.element_id}`
+  ).value = "";
+  document.getElementById(`booking-email-${elementSettings.element_id}`).value =
+    "";
+  document.getElementById(`booking-title-${elementSettings.element_id}`).value =
+    "";
 }
