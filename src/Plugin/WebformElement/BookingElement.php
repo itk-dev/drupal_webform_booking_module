@@ -138,6 +138,18 @@ class BookingElement extends Hidden
       $form['elements'][$element['#webform_key']]['#default_value'] = json_encode($defaultValue);
       $form['#validate'][] = [$this, 'validateBooking'];
     }
+
+    // Remove form element from submission edit form and add as display values instead.
+    // We cannot allow booking submissions to be changed from default os2form setup.
+    if (substr_compare($form_state->getBuildInfo()['form_id'], 'edit_form', -strlen('edit_form')) === 0) {
+      $form['elements'][$element['#webform_key']]['#access'] = FALSE;
+      $submissionValue = $form['information']['#webform_submission']->getElementData($element['#webform_key']);
+      $form[$element['#webform_key'] . '_value'] = [
+        '#type' => 'item',
+        '#title' => $element['#webform_key'],
+        '#markup' => '<div>' . $submissionValue . '</div>',
+      ];
+    }
   }
 
   /**
