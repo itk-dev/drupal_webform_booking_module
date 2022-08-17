@@ -2,16 +2,17 @@
  * Add filter values from booking filters.
  *
  * @param {NodeList} bookingFilterElements : A list of nodes.
+ * @param {object} elementSettings : The elements settings.
  * @returns {{ object }} : A list of filters and their current values.
  */
-export function bookingFilterValues(bookingFilterElements) {
+export function bookingFilterValues(bookingFilterElements, elementSettings) {
   const filters = {};
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-room-select-booking":
+      case `booking-room-select-${elementSettings.element_id}`:
         // If no selection use all rooms.
         if (bookingFilter.value === "_empty") {
           filters.resources = "";
@@ -25,7 +26,7 @@ export function bookingFilterValues(bookingFilterElements) {
           filters.resources = bookingFilter.value;
         }
         break;
-      case "booking-date-picker-booking":
+      case `booking-date-picker-${elementSettings.element_id}`:
         if (bookingFilter.value) {
           const selectedDate = new Date(bookingFilter.value);
           const dayAfter = new Date(selectedDate);
@@ -74,9 +75,14 @@ export function initializeResourceDropdown(
  *
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
+ * @param {object} elementSettings : The elements settings.
  */
-export function calendarApplyFilters(calendar, bookingFilterNodes) {
-  const filters = bookingFilterValues(bookingFilterNodes);
+export function calendarApplyFilters(
+  calendar,
+  bookingFilterNodes,
+  elementSettings
+) {
+  const filters = bookingFilterValues(bookingFilterNodes, elementSettings);
   applyDateFilter(calendar, filters);
   calendar.refetchResources();
 }

@@ -21123,16 +21123,17 @@ __webpack_require__.r(__webpack_exports__);
  * Add filter values from booking filters.
  *
  * @param {NodeList} bookingFilterElements : A list of nodes.
+ * @param {object} elementSettings : The elements settings.
  * @returns {{ object }} : A list of filters and their current values.
  */
-function bookingFilterValues(bookingFilterElements) {
+function bookingFilterValues(bookingFilterElements, elementSettings) {
   const filters = {};
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
   bookingFilterElements.forEach((bookingFilter) => {
     switch (bookingFilter.getAttribute("id")) {
-      case "booking-room-select-booking":
+      case `booking-room-select-${elementSettings.element_id}`:
         // If no selection use all rooms.
         if (bookingFilter.value === "_empty") {
           filters.resources = "";
@@ -21146,7 +21147,7 @@ function bookingFilterValues(bookingFilterElements) {
           filters.resources = bookingFilter.value;
         }
         break;
-      case "booking-date-picker-booking":
+      case `booking-date-picker-${elementSettings.element_id}`:
         if (bookingFilter.value) {
           const selectedDate = new Date(bookingFilter.value);
           const dayAfter = new Date(selectedDate);
@@ -21195,9 +21196,14 @@ function initializeResourceDropdown(
  *
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
+ * @param {object} elementSettings : The elements settings.
  */
-function calendarApplyFilters(calendar, bookingFilterNodes) {
-  const filters = bookingFilterValues(bookingFilterNodes);
+function calendarApplyFilters(
+  calendar,
+  bookingFilterNodes,
+  elementSettings
+) {
+  const filters = bookingFilterValues(bookingFilterNodes, elementSettings);
   applyDateFilter(calendar, filters);
   calendar.refetchResources();
 }
@@ -21226,28 +21232,39 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Modal)
 /* harmony export */ });
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../validation */ "./src/validation.js");
+
+
 /** Class representing a modal */
 class Modal {
   /**
    * @param {string} from - Start-time
    * @param {string} to - End-time
-   * @param {string} date - Date of selection
    * @param {string} resourceId - Resouce identifier
    * @param {string} resourceTitle - Resource title
    * @param {object} calendarInstance - Instance of the calendar object
    */
-  constructor(from, to, date, resourceId, resourceTitle, calendarInstance) {
+  constructor(from, to, resourceId, resourceTitle, calendarInstance) {
     this.from = from;
     this.to = to;
-    this.date = date;
     this.resourceId = resourceId;
     this.resourceTitle = resourceTitle;
     this.calendarInstance = calendarInstance;
   }
 
   buildModal() {
+    const date = `${this.from.getDate()}/${
+      this.from.getMonth() + 1
+    }-${this.from.getFullYear()}`;
+    const from = `${
+      (this.from.getHours() < 10 ? "0" : "") + this.from.getHours()
+    }:${this.from.getMinutes() < 10 ? "0" : ""}${this.from.getMinutes()}`;
+    const to = `${(this.to.getHours() < 10 ? "0" : "") + this.to.getHours()}:${
+      this.to.getMinutes() < 10 ? "0" : ""
+    }${this.to.getMinutes()}`;
+
     document.getElementById("bookingHeader").innerHTML = `${Drupal.t(
-      "Booking submit"
+      "Booking confirmation"
     )} - ${this.resourceTitle}`;
     document.getElementById("bookingResourceId").innerHTML = `<b>${Drupal.t(
       "Room ID"
@@ -21257,16 +21274,10 @@ class Modal {
     )}:</b> ${this.resourceTitle}`;
     document.getElementById("bookingResourceTitle").innerHTML = `<b>${Drupal.t(
       "Date"
-    )}:</b> ${this.date}`;
+    )}:</b> ${date}`;
     document.getElementById("bookingFrom").innerHTML = `<b>${Drupal.t(
       "Timeframe"
-    )}:</b> ${this.from} - ${this.to}`;
-    // document.getElementById("bookingTo").innerHTML = `<b>${Drupal.t(
-    //   "To"
-    // )}:</b> ${this.to} `;
-    document.getElementById("bookingSubmit").innerHTML = `<b>${Drupal.t(
-      "Booking submit"
-    )}</b>`;
+    )}:</b> ${from} - ${to}`;
 
     const modal = document.getElementById("modal");
     const self = this;
@@ -21279,30 +21290,76 @@ class Modal {
 
     document.addEventListener("click", function (e) {
       if (e.target === modal) {
-        self.closeModal();
+        closeModal();
       }
       if (e.target.classList.contains("booking-close")) {
-        self.closeModal();
+        closeModal();
+        // Only add selection to input field if active element contains the right class.
+        if (e.target.classList.contains("calendar-add-selection")) {
+          self.setSelection();
+        } else {
+          self.calendarInstance.unselect();
+          self.setSelection(true);
+        }
       }
     });
     document.addEventListener("keyup", function (e) {
       if (e.key === "Escape" || e.keyCode === 27) {
-        self.closeModal();
+        closeModal();
       }
     });
   }
 
-  closeModal() {
+  /**
+   * Add booking info to hidden input field.
+   *
+   * @param {boolean} clear : Whether we clear input field or populate it.
+   */
+  setSelection(clear = false) {
     const self = this;
-    const modal = document.getElementById("modal");
-    if (modal.classList.contains("open")) {
-      modal.classList.remove("open");
-      modal.classList.add("closing");
-      self.calendarInstance.unselect();
-      setTimeout(function () {
-        modal.classList.remove("closing");
-      }, 200);
-    }
+    // Get booking element for the drupal form field.
+    const formFieldId =
+      self.calendarInstance.el.getAttribute("booking-element-id");
+
+    const booking = clear
+      ? {
+          resourceEmail: "",
+          startTime: "",
+          endTime: "",
+        }
+      : {
+          resourceEmail: self.resourceId,
+          startTime: self.from.toISOString(),
+          endTime: self.to.toISOString(),
+        };
+
+    const elements = document.getElementsByName(formFieldId);
+    elements.forEach((element) => {
+      if (
+        element instanceof HTMLInputElement &&
+        element.getAttribute("type") === "hidden"
+      ) {
+        const inputValue = JSON.parse(element.value);
+        Object.keys(booking).forEach((key) => {
+          inputValue[key] = booking[key];
+        });
+
+        element.setAttribute("value", JSON.stringify(inputValue));
+        (0,_validation__WEBPACK_IMPORTED_MODULE_0__["default"])(inputValue);
+      }
+    });
+  }
+}
+
+/** Close modal box. */
+function closeModal() {
+  const modal = document.getElementById("modal");
+  if (modal.classList.contains("open")) {
+    modal.classList.remove("open");
+    modal.classList.add("closing");
+    setTimeout(function () {
+      modal.classList.remove("closing");
+    }, 200);
   }
 }
 
@@ -21359,8 +21416,6 @@ class Tooltip {
     });
   }
 }
-
-
 
 /**
  * Positions the tooltip
@@ -21429,6 +21484,36 @@ function positionAt(parent, tooltip, posHorizontal, posVertical, self) {
   tooltip.style.left = `${left}px`;
 
   tooltip.style.top = `${top + window.pageYOffset}px`;
+}
+
+
+/***/ }),
+
+/***/ "./src/validation.js":
+/*!***************************!*\
+  !*** ./src/validation.js ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ validateHiddenInput)
+/* harmony export */ });
+/**
+ * Validate that all fields are populated before allowing submission.
+ *
+ * @param {object} inputValue : The hidden input field values.
+ */
+function validateHiddenInput(inputValue) {
+  const submitInput = document.getElementById("edit-submit");
+  let valid = true;
+  Object.keys(inputValue).forEach((key) => {
+    if (!inputValue[key]) {
+      valid = false;
+    }
+  });
+
+  submitInput.disabled = valid !== true;
 }
 
 
@@ -21511,6 +21596,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modal_modal__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modal/modal */ "./src/modal/modal.js");
 /* harmony import */ var _tooltip_tooltip__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./tooltip/tooltip */ "./src/tooltip/tooltip.js");
 /* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./filters */ "./src/filters.js");
+/* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./validation */ "./src/validation.js");
+
 
 
 
@@ -21557,6 +21644,7 @@ __webpack_require__.r(__webpack_exports__);
         );
 
         (0,_filters__WEBPACK_IMPORTED_MODULE_13__.initializeResourceDropdown)(resourceDropdownNode, elementSettings);
+        resetBookingInput(elementSettings);
         setupCalendar(
           drupalSettings,
           elementSettings,
@@ -21569,6 +21657,7 @@ __webpack_require__.r(__webpack_exports__);
     },
   };
 })(Drupal, drupalSettings, once);
+
 /**
  * Create calendar.
  *
@@ -21588,7 +21677,7 @@ function setupCalendar(
   bookingFilterNodes
 ) {
   const now = new Date();
-  const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
+  const filters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes, elementSettings);
   const startHour = new Date().getHours() - 1; // The hour for the calendar to scroll to, to always show relevant bookings at first glance.
   window.calendar = new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__.Calendar(calendarElement, {
     schedulerLicenseKey: elementSettings.license_key,
@@ -21669,8 +21758,10 @@ function setupCalendar(
     },
     // eslint-disable-next-line no-unused-vars
     resources(info, successCallback, failureCallback) {
-      const resourceFilters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(bookingFilterNodes);
-      console.log(resourceFilters);
+      const resourceFilters = (0,_filters__WEBPACK_IMPORTED_MODULE_13__.bookingFilterValues)(
+        bookingFilterNodes,
+        elementSettings
+      );
       fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`)
         .then((response) => response.json())
         .then((data) =>
@@ -21699,7 +21790,9 @@ function setupCalendar(
           info.start.getDate()
         )
       );
-      const dateElem = document.getElementById("booking-date-picker-booking");
+      const dateElem = document.getElementById(
+        `booking-date-picker-${elementSettings.element_id}`
+      );
       if (dateElem !== null) {
         dateElem.valueAsDate = calendarDate;
       }
@@ -21827,12 +21920,31 @@ function filterSelectedResourceFrontend(element, index, arr) {
  *
  * @param {object} calendar : The calendar object.
  * @param {object} bookingFilterNodes : A list of filter nodes.
+ * @param {object} elementSettings : Settings related to a specific webform element.
  */
-function applyEventListeners(calendar, bookingFilterNodes) {
+function applyEventListeners(calendar, bookingFilterNodes, elementSettings) {
   // Add event listener on all filters.
   bookingFilterNodes.forEach((bookingFilter) => {
     bookingFilter.addEventListener("change", () => {
-      (0,_filters__WEBPACK_IMPORTED_MODULE_13__.calendarApplyFilters)(calendar, bookingFilterNodes);
+      (0,_filters__WEBPACK_IMPORTED_MODULE_13__.calendarApplyFilters)(calendar, bookingFilterNodes, elementSettings);
+    });
+  });
+
+  const bookingFields = {
+    bookingAuthorElement: document.getElementById(
+      `booking-author-${elementSettings.element_id}`
+    ),
+    bookingEmailElement: document.getElementById(
+      `booking-email-${elementSettings.element_id}`
+    ),
+    bookingTitleElement: document.getElementById(
+      `booking-title-${elementSettings.element_id}`
+    ),
+  };
+
+  Object.keys(bookingFields).forEach((key) => {
+    bookingFields[key].addEventListener("change", () => {
+      updateHiddenInput(bookingFields[key], elementSettings);
     });
   });
 }
@@ -21857,7 +21969,6 @@ function handleData(data, filters, elementSettings) {
         filterSelectedResourceBackend,
         elementSettings
       );
-      console.log(filters.resources);
       dataFormatted.data = dataFormatted.data.filter(
         filterSelectedResourceFrontend,
         filters.resources
@@ -21893,37 +22004,39 @@ function initFilters(info, drupalSettings) {
   };
 }
 /**
+ * Initialize calendar modal.
+ *
  * @param {object} s : The selection event info
  * @param {object} cal : The calendar instance
  */
 function initModal(s, cal) {
   const modal = new _modal_modal__WEBPACK_IMPORTED_MODULE_11__["default"]();
   modal.calendarInstance = cal;
-  modal.date = `${s.start.getDate()}/${s.start.getMonth()}-${s.start.getFullYear()}`;
-  modal.from = `${(s.start.getHours() < 10 ? "0" : "") + s.start.getHours()}:${
-    s.start.getMinutes() < 10 ? "0" : ""
-  }${s.start.getMinutes()}`;
-  modal.to = `${(s.end.getHours() < 10 ? "0" : "") + s.end.getHours()}:${
-    s.end.getMinutes() < 10 ? "0" : ""
-  }${s.end.getMinutes()}`;
+  modal.from = s.start;
+  modal.to = s.end;
   modal.resourceId = s.resource._resource.id;
   modal.resourceTitle = s.resource._resource.title;
   modal.drupal = Drupal;
   modal.buildModal();
 }
+
 /**
+ * Round to nearest 15 minutes.
+ *
  * @param {object} date - Date object
  * @returns {object} - Date object representing the current datetime, rounded up
  *   to the next half an hour.
  */
-function roundToNearest30(date = new Date()) {
-  const minutes = 30;
+function roundToNearest15(date = new Date()) {
+  const minutes = 15;
   const ms = 1000 * 60 * minutes;
 
   return new Date(Math.ceil(date.getTime() / ms) * ms);
 }
 
 /**
+ * Round business hours to nearest half hour.
+ *
  * @param {number} businessStartHour - The hour the resource is available from
  * @returns {string} : formatted date to represent the start of when the
  *   resource is available from, either direct resourcedata or the current time
@@ -21939,13 +22052,13 @@ function businessHoursOrNearestHalfHour(businessStartHour) {
       ? `0${businessStartHour}:00`
       : `${businessStartHour}:00`;
   const currentClosestHalfAnHourFormatted = `${
-    roundToNearest30(new Date()).getHours().toString().length === 1
-      ? `0${roundToNearest30(new Date()).getHours()}`
-      : roundToNearest30(new Date()).getHours()
+    roundToNearest15(new Date()).getHours().toString().length === 1
+      ? `0${roundToNearest15(new Date()).getHours()}`
+      : roundToNearest15(new Date()).getHours()
   }:${
-    roundToNearest30(new Date()).getMinutes().toString().length === 1
-      ? `0${roundToNearest30(new Date()).getMinutes()}`
-      : roundToNearest30(new Date()).getMinutes()
+    roundToNearest15(new Date()).getMinutes().toString().length === 1
+      ? `0${roundToNearest15(new Date()).getMinutes()}`
+      : roundToNearest15(new Date()).getMinutes()
   }`;
 
   if (today !== calendarDate) {
@@ -21955,6 +22068,57 @@ function businessHoursOrNearestHalfHour(businessStartHour) {
     return currentClosestHalfAnHourFormatted;
   }
   return businessStartHourFormatted;
+}
+
+/**
+ * Update the hidden input field.
+ *
+ * @param {HTMLElement} changedElement : The html element that was just changed.
+ * @param {object} elementSettings : Settings related to a specific webform element.
+ */
+function updateHiddenInput(changedElement, elementSettings) {
+  // Get all booking elements.
+  const elements = document.getElementsByName(elementSettings.element_id);
+  elements.forEach((element) => {
+    if (
+      element instanceof HTMLInputElement &&
+      element.getAttribute("type") === "hidden"
+    ) {
+      const inputValue = JSON.parse(element.value);
+      switch (changedElement.id) {
+        case `booking-author-${elementSettings.element_id}`:
+          inputValue.authorName = changedElement.value;
+          break;
+        case `booking-email-${elementSettings.element_id}`:
+          inputValue.authorEmail = changedElement.value;
+          break;
+        case `booking-title-${elementSettings.element_id}`:
+          inputValue.subject = changedElement.value;
+          break;
+        default:
+          break;
+      }
+
+      element.setAttribute("value", JSON.stringify(inputValue));
+      (0,_validation__WEBPACK_IMPORTED_MODULE_14__["default"])(inputValue);
+    }
+  });
+}
+
+/**
+ * Reset booking input fields and disable form submit.
+ *
+ * @param {object} elementSettings : Settings related to a specific webform element.
+ */
+function resetBookingInput(elementSettings) {
+  document.getElementById("edit-submit").disabled = true;
+  document.getElementById(
+    `booking-author-${elementSettings.element_id}`
+  ).value = "";
+  document.getElementById(`booking-email-${elementSettings.element_id}`).value =
+    "";
+  document.getElementById(`booking-title-${elementSettings.element_id}`).value =
+    "";
 }
 
 })();
