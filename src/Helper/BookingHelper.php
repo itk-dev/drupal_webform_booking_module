@@ -43,8 +43,11 @@ class BookingHelper
    */
   public function __construct(ClientInterface $guzzleClient)
   {
-    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
-    $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    // $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
+    // $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    $this->bookingApiEndpoint = "https://stgbookaarhus.adm.aarhuskommune.dk/";
+    $this->bookingApiKey = "8f8dbb047163321ee125ea504fda17d6352711e920f7ac286895d85b02bdaacbdd8419af2839025a288d194e983b6f772bbb2f0b7af9ee98719f57df0f4e2c8f";
+
     $this->httpClient = $guzzleClient;
   }
 
@@ -106,10 +109,13 @@ class BookingHelper
    */
   private function getData($apiEndpoint, $queryString)
   {
+
     $response = [];
     $client = new Client();
+    // if ($apiEndpoint == "v1/busy-intervals") {
+    //   die(print('<pre>' . print_r($this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString, true) . '</pre>'));
+    // }
     try {
-
       $response = $client->get(
         $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
         ['headers' => [

@@ -82,12 +82,17 @@ class UserBookingsHelper
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
       switch ($apiEndpoint) {
         case "v1/user-bookings":
-          $response = $this->getData($apiEndpoint."?userId=1", $request->getQueryString());
+          $response = $this->getData($apiEndpoint . "?userId= ", $request->getQueryString());
           return json_decode($response->getBody(), TRUE);
           break;
         case "v1/booking-details":
           $hitId = base64_decode($request->attributes->get('hitid'));
           $response = $this->getBookingDetails($apiEndpoint, $hitId);
+          return json_decode($response->getBody(), TRUE);
+          break;
+        case "v1/booking-deletes":
+          $hitId = base64_decode($request->attributes->get('hitid'));
+          $response = $this->DeleteUserBooking($apiEndpoint, $hitId);
           return json_decode($response->getBody(), TRUE);
           break;
         default:
@@ -112,37 +117,19 @@ class UserBookingsHelper
    * @return mixed
    *   Decoded json data as array.
    */
-  public function sendRequest(string $apiEndpoint, Request $request, $queryString)
+  public function DeleteUserBooking(string $apiEndpoint, string $queryString)
   {
-    $fields = json_decode($request->getContent());
-    $param1 = $fields->param1;
-    $param2 = $fields->param2;
+    $response = [];
+    $client = new Client();
+    $response = $client->get(
+      $this->bookingApiEndpoint . $apiEndpoint . '?bookingId=' . $queryString,
+      ['headers' => [
+        'accept' => 'application/ld+json',
+        'Authorization' => 'Apikey ' . $this->bookingApiKey
+      ]]
+    );
 
-
-    return $param1;
-    // $response = [];
-    // $client = new Client();
-    // try {
-    //   $response = $client->get(
-    //       $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
-    //     ['headers' => [
-    //       'accept' => 'application/ld+json',
-    //       'Authorization' => 'Apikey ' . $this->bookingApiKey
-    //     ]]);
-
-    // } catch (RequestException $e) {
-    //   // Exception is logged.
-    // }
-    // return $response;
-
-    // if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-    //   $response = $this->getData($apiEndpoint, $request->getQueryString());
-    //   return json_decode($response->getBody(), TRUE);
-    // }
-    // else {
-    //   $response = $this->getSampleData($apiEndpoint);
-    //   return json_decode($response, TRUE);
-    // }
+    return $response;
   }
 
   /**

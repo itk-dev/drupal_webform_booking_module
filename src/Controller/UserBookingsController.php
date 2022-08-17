@@ -79,7 +79,7 @@ class UserBookingsController extends ControllerBase {
    *   The payload.
    */
   public function DeleteUserBooking(Request $request) {
-    $payload = $this->bookingHelper->sendRequest("v1/user-bookings", $request);
+    $payload = $this->bookingHelper->getResult("v1/booking-deletes", $request);
     return new JsonResponse($payload);
   }
 }

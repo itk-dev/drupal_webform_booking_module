@@ -20,6 +20,7 @@ let elementSettings;
 function handleData(bookingData) {
   let dataFormatted = [];
   dataFormatted = bookingData["hydra:member"];
+  let count = 0;
   dataFormatted.forEach(function (value, index) {
     let { hitId } = value;
     hitId = btoa(hitId);
@@ -30,7 +31,20 @@ function handleData(bookingData) {
       .then((data) => {
         dataFormatted[index].displayName = data["hydra:member"][0].displayName;
         dataFormatted[index].eventBody = data["hydra:member"][0].body;
-        appendElementToBookingContainer(dataFormatted[index]);
+      }).finally(() => {
+        count++;
+
+        if (count === dataFormatted.length) {
+          let dataFormattedSorted = dataFormatted.sort(function compare(a, b) {
+            var dateA = new Date(a.start);
+            var dateB = new Date(b.start);
+            return dateA - dateB;
+          });
+
+          dataFormattedSorted.forEach(function (value, index) {
+            appendElementToBookingContainer(dataFormattedSorted[index]);
+          })
+        }
       });
   });
 }
@@ -69,10 +83,11 @@ function appendElementToBookingContainer(data) {
   const deleteButton = document.createElement("button");
   deleteButton.classList.add("btn");
   deleteButton.classList.add("btn-danger");
+  deleteButton.setAttribute('data-id', data.hitId);
   deleteButton.innerText = "Slet booking";
   deleteButton.onclick = function (e) {
     e.preventDefault();
-    // removeBooking(data.id);
+    removeBooking(data.hitId, data.id);
   };
 
   const location = document.createElement("span");
@@ -103,32 +118,27 @@ function appendElementToBookingContainer(data) {
 }
 
 /** @param {string} id : unique id of the booking to be removed */
-/* function removeBooking(id) {
-  const params = {
-    param1: "test1",
-    param2: "test2",
-  };
-  const options = {
-    method: "POST",
-    body: JSON.stringify(params),
-  };
-  fetch(
-    `${elementSettings.front_page_url}/itkdev_booking/remove-booking`,
-    options
-  )
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (myJson) {
-      console.log(myJson);
-    });
+function removeBooking(hitId, id) {
+  hitId = btoa(hitId);
+  if (confirm("Er du sikker på at du ønsker at slette denne booking?") === true) {
+    document.querySelector(`div[data-id='${id}'] > div.button-container > button`).innerText = "Sletter booking...";
+    fetch(
+      `${elementSettings.front_page_url}/itkdev_booking/booking-deletes/` + hitId
+    )
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (myJson) {
+        document.querySelector(`div[data-id='${id}']`).remove();
+      });
+  }
 
-  document.querySelector(`div[data-id='${id}']`).remove();
 
   return;
-} */
+}
 
 /** @param {string} id : id of the booking to be edited */
 /* function editBooking(id) {
   alert(`edit booking - ${id}`);
 } */
+
