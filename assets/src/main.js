@@ -161,7 +161,6 @@ function setupCalendar(
     // eslint-disable-next-line no-unused-vars
     resources(info, successCallback, failureCallback) {
       const resourceFilters = bookingFilterValues(bookingFilterNodes);
-      console.log(resourceFilters);
       fetch(`${elementSettings.front_page_url}/itkdev_booking/resources`)
         .then((response) => response.json())
         .then((data) =>
@@ -348,7 +347,6 @@ function handleData(data, filters, elementSettings) {
         filterSelectedResourceBackend,
         elementSettings
       );
-      console.log(filters.resources);
       dataFormatted.data = dataFormatted.data.filter(
         filterSelectedResourceFrontend,
         filters.resources

@@ -31,25 +31,32 @@ function handleData(bookingData) {
       .then((data) => {
         dataFormatted[index].displayName = data["hydra:member"][0].displayName;
         dataFormatted[index].eventBody = data["hydra:member"][0].body;
-      }).finally(() => {
-        count++;
+      })
+      .finally(() => {
+        count += 1;
 
         if (count === dataFormatted.length) {
-          let dataFormattedSorted = dataFormatted.sort(function compare(a, b) {
-            var dateA = new Date(a.start);
-            var dateB = new Date(b.start);
+          const dataFormattedSorted = dataFormatted.sort(function compare(
+            a,
+            b
+          ) {
+            const dateA = new Date(a.start);
+            const dateB = new Date(b.start);
             return dateA - dateB;
           });
 
-          dataFormattedSorted.forEach(function (value, index) {
-            appendElementToBookingContainer(dataFormattedSorted[index]);
-          })
+          dataFormattedSorted.forEach(function (v, i) {
+            appendElementToBookingContainer(dataFormattedSorted[i]);
+          });
         }
       });
   });
 }
 
-/** @param {object} data : Formatted data object retrieved from api endpoint */
+/**
+ * @param {object} data : Formatted and sorted data object retrieved from api endpoint
+ * @returns
+ */
 function appendElementToBookingContainer(data) {
   const bookingContainer = element.querySelector(`div.bookings-${elementId}`);
   const loaderPresent = element.querySelector("div.loader") !== null;
@@ -83,7 +90,7 @@ function appendElementToBookingContainer(data) {
   const deleteButton = document.createElement("button");
   deleteButton.classList.add("btn");
   deleteButton.classList.add("btn-danger");
-  deleteButton.setAttribute('data-id', data.hitId);
+  deleteButton.setAttribute("data-id", data.hitId);
   deleteButton.innerText = "Slet booking";
   deleteButton.onclick = function (e) {
     e.preventDefault();
@@ -117,28 +124,32 @@ function appendElementToBookingContainer(data) {
   bookingContainer.append(container);
 }
 
-/** @param {string} id : unique id of the booking to be removed */
+/**
+ * @param {string} hitId : hitId of the booking to be removed (API)
+ * @param {string} id : unique id of the booking to be removed (DOM)
+ */
 function removeBooking(hitId, id) {
   hitId = btoa(hitId);
-  if (confirm("Er du sikker på at du ønsker at slette denne booking?") === true) {
-    document.querySelector(`div[data-id='${id}'] > div.button-container > button`).innerText = "Sletter booking...";
+  if (
+    window.confirm("Er du sikker på at du ønsker at slette denne booking?") ===
+    true
+  ) {
+    document.querySelector(
+      `div[data-id='${id}'] > div.button-container > button`
+    ).innerText = "Sletter booking...";
     fetch(
-      `${elementSettings.front_page_url}/itkdev_booking/booking-deletes/` + hitId
+      `${elementSettings.front_page_url}/itkdev_booking/booking-deletes/${hitId}`
     )
       .then(function (response) {
         return response.json();
       })
-      .then(function (myJson) {
+      .then(function () {
         document.querySelector(`div[data-id='${id}']`).remove();
       });
   }
-
-
-  return;
 }
 
 /** @param {string} id : id of the booking to be edited */
 /* function editBooking(id) {
   alert(`edit booking - ${id}`);
 } */
-
