@@ -1,4 +1,6 @@
-{{ attach_library('itkdev_booking/booking_calendar') }}
+{{ attach_library('itkdev_booking/booking_app') }}
+<div id="react-booking-app"></div>
+
 {#
 Available variables:
   - params [
@@ -7,6 +9,8 @@ Available variables:
     - rooms
   ]
 #}
+{#
+{{ attach_library('itkdev_booking/booking_calendar') }}
 <div class="form-group">
   <label for="booking-author-{{ params.element_id }}">{{ 'Your Name'|t }}</label>
   <input type="text" class="form-control" id="booking-author-{{ params.element_id }}" required aria-describedby="bookingAuthorHelp">
@@ -52,3 +56,4 @@ Available variables:
       </div>
   </div>
 </div>
+#}

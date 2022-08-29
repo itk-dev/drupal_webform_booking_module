@@ -13,3 +13,11 @@ user_bookings:
       assets/dist/userbookings.css: {}
   js:
     assets/dist/userbookings.js: {}
+
+booking_app:
+  version: 1.x
+  css:
+    theme:
+      assets/dist/main.css: {}
+  js:
+    assets/dist/main.js: {}
