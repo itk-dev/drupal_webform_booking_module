@@ -21,3 +21,7 @@ booking_app:
       assets/dist/main.css: {}
   js:
     assets/dist/main.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

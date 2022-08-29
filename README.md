@@ -8,8 +8,10 @@ The booking app is a react app (CRA). A docker compose setup has been supplied t
 ease develop of the app.
 
 ```shell
-docker-compose up -d
-open http://$(docker-compose port nginx 80)
+itkdev-docker-compose run node npm install
+
+itkdev-docker-compose up -d
+itkdev-docker-compose open
 ```
 
 To build the code for use in the drupal module

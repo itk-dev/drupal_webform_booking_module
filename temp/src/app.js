@@ -9,6 +9,8 @@ function App() {
 
   useEffect(() => {
     setPage("calendar");
+
+    console.log(REACT_BOOKING_APP_SETTINGS);
   }, []);
 
   const onCalendarChange = (param) => {

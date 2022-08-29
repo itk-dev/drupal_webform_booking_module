@@ -1,4 +1,19 @@
+<script>
+  var REACT_BOOKING_APP_SETTINGS = null;
+
+  (function (Drupal, drupalSettings, once) {
+    Drupal.behaviors.myBehavior = {
+      attach: function (context, settings) {
+        once('myBehavior', 'html', context).forEach( function (element) {
+          REACT_BOOKING_APP_SETTINGS = settings;
+        })
+      }
+    }
+  } (Drupal, drupalSettings, once));
+</script>
+
 {{ attach_library('itkdev_booking/booking_app') }}
+
 <div id="react-booking-app"></div>
 
 {#
