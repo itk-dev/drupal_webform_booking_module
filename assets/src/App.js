@@ -11,6 +11,10 @@ function App() {
     setPage("calendar");
   }, []);
 
+  const onCalendarChange = (param) => {
+    console.log("onCalendarChange", param);
+  }
+
   return (
     <div className="App">
       <input value={email} onChange={({target}) => setEmail(target.value)} />
@@ -18,7 +22,7 @@ function App() {
 
       <div>EMAIL: {email}</div>
       {page === 'calendar' && (
-        <Calendar location={location} />
+        <Calendar location={location} onCalendarChange={onCalendarChange} />
       )}
       {page === 'fisk' && (
         <div>FISK</div>
