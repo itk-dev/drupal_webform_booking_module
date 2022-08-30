@@ -3,6 +3,7 @@ import Calendar from "./components/calendar";
 import {useEffect, useState} from "react";
 
 function App() {
+  const [config, setConfig] = useState(null);
   const [email, setEmail] = useState('');
   const [location, setLocation] = useState('DOKK1');
   const [page, setPage] = useState('fisk');
@@ -10,7 +11,11 @@ function App() {
   useEffect(() => {
     setPage("calendar");
 
-    //console.log(REACT_BOOKING_APP_SETTINGS);
+    if (window?.drupalSettings?.booking_app?.booking) {
+      setConfig(window.drupalSettings.booking_app.booking);
+
+      console.log("Booking config set", window.drupalSettings.booking_app.booking);
+    }
   }, []);
 
   const onCalendarChange = (param) => {
