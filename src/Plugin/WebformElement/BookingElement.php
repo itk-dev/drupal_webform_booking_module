@@ -40,10 +40,10 @@ class BookingElement extends Hidden
   protected function defineDefaultProperties()
   {
     return [
-      'rooms' => [],
-      'enable_booking' => false,
-      'enable_resource_tooltips' => false
-    ] + parent::defineDefaultProperties();
+        'rooms' => [],
+        'enable_booking' => false,
+        'enable_resource_tooltips' => false
+      ] + parent::defineDefaultProperties();
   }
 
   /**
@@ -76,17 +76,20 @@ class BookingElement extends Hidden
       '#weight' => -50,
     ];
 
+    /*
+     * @todo maybe add rooms selection at a later time.
     $options = [];
     $resources = $this->bookingHelper->getResources();
     foreach ($resources['hydra:member'] as $resource) {
-      $options[$resource['email']] = $resource['title'];
+      $options[$resource['id']] = $resource['resourcename'];
     }
+
     $form['element']['rooms_wrapper']['rooms'] = [
       '#type' => 'checkboxes',
       '#options' => $options,
       '#weight' => -50,
     ];
-
+*/
     $form['element']['enable_booking'] = array(
       '#type' => 'checkbox',
       '#title' => $this
@@ -106,10 +109,27 @@ class BookingElement extends Hidden
    */
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
+    $rooms = [];
+    $resources = $this->bookingHelper->getResources();
+    if(!empty($element['#rooms'])) {
+      foreach ($element['#rooms'] as $roomId) {
+        foreach ($resources['hydra:member'] as $resource) {
+          if ($resource['id'] === (int)$roomId) {
+            $rooms[$resource['resourcemail']] = $resource['resourcename'];
+          }
+        }
+      }
+    }
+    else {
+      // Use all rooms.
+      foreach ($resources['hydra:member'] as $resource) {
+        $rooms[$resource['resourcemail']] = $resource['resourcename'];
+      }
+    }
     $params = [
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint', NULL),
       'element_id' => $element['#webform_key'],
-      'rooms' => $element['#rooms'],
+      'rooms' => $rooms,
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license', NULL),
       'enable_booking' => (isset($element['#enable_booking'])),
