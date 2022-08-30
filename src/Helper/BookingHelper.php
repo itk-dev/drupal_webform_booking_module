@@ -111,7 +111,6 @@ class BookingHelper
     }
     $client = new Client($clientConfig);
     try {
-      $a =1;
       $response = $client->get(
         $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
         ['headers' => [
