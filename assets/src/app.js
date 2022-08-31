@@ -2,6 +2,7 @@ import './app.css';
 import Calendar from "./components/calendar";
 import {useEffect, useState} from "react";
 import Select from "react-select";
+import ConfigLoader from "./config-loader";
 
 function App() {
   const [config, setConfig] = useState('a');
@@ -14,16 +15,21 @@ function App() {
     if (window?.drupalSettings?.booking_app?.booking) {
       setConfig(window.drupalSettings.booking_app.booking);
 
-      //console.log("Booking config set", window.drupalSettings.booking_app.booking);
+      console.log('Booking config loaded from drupalSettings.');
     } else {
-      // Allow loading from
+      // Allow loading from config file.
+      ConfigLoader.loadConfig().then((loadedConfig) => {
+        setConfig(loadedConfig);
+
+        console.log('Booking config loaded from json.');
+      });
     }
   }, []);
 
   useEffect(() => {
     // Fetch locations.
     if (config !== null) {
-      fetch(`https://selvbetjening.aarhuskommune.dk/da/itkdev_booking/locations`)
+      fetch(`${config.api_endpoint}itkdev_booking/locations`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -43,15 +49,15 @@ function App() {
         );
       })
       .catch((err) => {
-        setEvents([]);
+        // TODO: Display loading error and retry option.
       })
     }
   }, [config]);
-
+/*
   // Get data.
   useEffect(() => {
     // If we have no resources try and fetch some.
-    if(resources.length === 0) {
+    if (resources.length === 0) {
       fetch(`http://selvbetjening.aarhuskommune.dk/da/itkdev_booking/resources`)
       .then((response) => {
         if (!response.ok) {
@@ -90,7 +96,7 @@ function App() {
       })
     }
   }, [location, resources, events]);
-
+*/
   const onCalendarChange = (param) => {
     //console.log("onCalendarChange", param);
   }
