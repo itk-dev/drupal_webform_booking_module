@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Booking helper.
@@ -93,23 +94,28 @@ class BookingHelper
   }
 
   /**
-   * Get real data.
+   * Get data from booking service.
    *
    * @param $apiEndpoint
    *   The api endpoint specification.
    * @param $queryString
    *   An additional querystring.
-   * @return array|\Psr\Http\Message\ResponseInterface
+   *
+   * @return \Psr\Http\Message\ResponseInterface
    *   The api response.
+   *
+   * @throws \HttpException
    */
   private function getData($apiEndpoint, $queryString)
   {
-    $response = [];
     $clientConfig = [];
+
     if ($this->bookingApiAllowInsecureConnection) {
       $clientConfig['verify'] = false;
     }
+
     $client = new Client($clientConfig);
+
     try {
       $response = $client->get(
         $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
@@ -121,7 +127,10 @@ class BookingHelper
     } catch (RequestException $e) {
       // Exception is logged.
       \Drupal::logger('itkdev_booking')->error($e);
+
+      throw new HttpException($e->getCode(), $e->getMessage());
     }
+
     return $response;
   }
 

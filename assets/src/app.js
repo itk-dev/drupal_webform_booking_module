@@ -3,6 +3,7 @@ import Calendar from "./components/calendar";
 import {useEffect, useState} from "react";
 import Select from "react-select";
 import ConfigLoader from "./config-loader";
+import dayjs from "dayjs";
 
 function App() {
   // Configuration.
@@ -11,11 +12,14 @@ function App() {
   // User selections.
   const [location, setLocation] = useState(null);
   const [resource, setResource] = useState(null);
+  const [date, setDate] = useState(dayjs().startOf('day'));
+  const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
 
 
   // Loaded data.
-  const [availableLocations, setAvailableLocations] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [resources, setResources] = useState([]);
+  const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
@@ -26,11 +30,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Fetch locations.
+    // Load locations.
     if (config !== null) {
       fetch(`${config.api_endpoint}itkdev_booking/locations`)
       .then((response) => {
         if (!response.ok) {
+          // TODO: Display loading error and retry option.
           throw new Error(
             `This is an HTTP error: The status is ${response.status}`
           );
@@ -38,7 +43,7 @@ function App() {
         return response.json();
       })
       .then((actualLocations) => {
-        setAvailableLocations(
+        setLocations(
           actualLocations["hydra:member"].map(function (value) {
             return {
               value: value.name,
@@ -55,6 +60,8 @@ function App() {
 
   // Get data.
   useEffect(() => {
+    console.log("useEffect: [location]");
+
     // If we have no resources try and fetch some.
     if (config && resources.length === 0) {
       fetch(`${config.api_endpoint}itkdev_booking/resources`)
@@ -66,33 +73,16 @@ function App() {
         }
         return response.json();
       })
-      .then((actualResources) => {
-        setResources(actualResources);
-        return actualResources;
-      })
-      .catch((err) => {
-        setResources([]);
-      })
-      .then((resources) => {
-        // If we found any resources get events for those resources.
-        if(resources) {
-          fetch(`${config.api_endpoint}itkdev_booking/bookings?resources=dokk1-lokale-test1%40aarhus.dk&dateStart=2022-05-30T17%3A32%3A28Z&dateEnd=2022-06-22T17%3A32%3A28Z&page=1`)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(
-                `This is an HTTP error: The status is ${response.status}`
-              );
-            }
-            return response.json();
-          })
-          .then((actualEvents) => {
-            setEvents(actualEvents);
-          })
-          .catch((err) => {
-            setEvents([]);
-          })
-        }
-      })
+      .then((loadedResources) => {
+        setResources(loadedResources["hydra:member"]);
+
+        setResourcesOptions(loadedResources["hydra:member"].map((res) => {
+          return {
+            value: res.resourcemail,
+            label: res.resourcename,
+          };
+        }))
+      });
     }
   }, [location]);
 
@@ -113,6 +103,41 @@ function App() {
      */
   }
 
+  useEffect(() => {
+    if (resources.length > 0) {
+      const dateEnd = dayjs(date).endOf('day');
+
+      // Setup query parameters.
+      const urlSearchParams = new URLSearchParams({
+        resources: resources.map((resource) => resource.resourcemail),
+        dateStart: date.toISOString(),
+        dateEnd: dateEnd.toISOString(),
+        page: 1,
+      });
+
+      // Events on resource.
+      fetch(`${config.api_endpoint}itkdev_booking/bookings?${urlSearchParams}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              `This is an HTTP error: The status is ${response.status}`
+            );
+          }
+          return response.json();
+        })
+        .then((actualEvents) => {
+          setEvents(actualEvents["hydra:member"]);
+        })
+        .catch((err) => {
+          setEvents([]);
+        })
+    }
+  }, [resources]);
+
+  const onCalendarChange = (param) => {
+    //console.log("onCalendarChange", param);
+  }
+
   return (
     <div className="App">
       {!config &&
@@ -121,31 +146,39 @@ function App() {
       {config &&
         <>
           {/* Add dropdown with options from locations */}
-          {availableLocations.length > 0 &&
+          {locations.length > 0 &&
             <Select
               styles={{}}
-              options={availableLocations}
+              options={locations}
               onChange={(newValue) => {setLocation(newValue.value)}}
             />
           }
+
           {/* Add dropdown with options from resources */}
-          {/* Add dropdown with options from facilities */}
-          {/* Add dropdown with options from capacity */}
+          {resourcesOptions?.length > 0 &&
+            <Select
+              styles={{}}
+              options={resourcesOptions}
+              onChange={(newValue) => {setLocation(newValue.value)}}
 
-          {/* Add info text box */}
-
-          {/* Display calendar for selections */}
-          {resources && events &&
-            <Calendar
-              location={location}
-              resources={resources}
-              events={events}
-              onCalendarSelection={onCalendarSelection}
-              setHiddenInput={setHiddenInput}
             />
           }
 
-          {/* Required author fields */}
+          {/* TODO: Add dropdown with options from facilities */}
+          {/* TODO: Add dropdown with options from capacity */}
+
+          {/* TODO: Add info text box */}
+
+          {/* Display calendar for selections */}
+          {resources?.length > 0 && events?.length > 0 &&
+            <Calendar
+              resources={resources}
+              events={events}
+              onCalendarSelection={onCalendarSelection}
+            />
+          }
+
+          {/* TODO: Required author fields */}
         </>
       }
     </div>
