@@ -16,6 +16,15 @@ itkdev_booking.bookings_endpoint:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
+itkdev_booking.locations_endpoint:
+  path: '/itkdev_booking/locations'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\LocationImportController::getLocations'
+  methods: [ GET ]
+  requirements:
+    # Free access to call api endpoint. API key handled in the other end.
+    _access: 'TRUE'
+
 itkdev_booking.user_bookings:
   path: '/itkdev_booking/user-bookings'
   defaults:
@@ -24,7 +33,7 @@ itkdev_booking.user_bookings:
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
-  
+
 itkdev_booking.booking_details:
   path: '/itkdev_booking/booking-details/{hitid}'
   defaults:
