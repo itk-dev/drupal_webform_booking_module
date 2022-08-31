@@ -2,8 +2,9 @@ import './app.css';
 import Calendar from "./components/calendar";
 import {useEffect, useState} from "react";
 import Select from "react-select";
-import ConfigLoader from "./config-loader";
+import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
+import Api from "./util/api";
 
 function App() {
   // Configuration.
@@ -17,108 +18,72 @@ function App() {
 
   // Loaded data.
   const [locations, setLocations] = useState([]);
+  const [locationOptions, setLocationOptions] = useState([]);
   const [resources, setResources] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
 
+  // Get configuration.
   useEffect(() => {
-    // Load configuration.
     ConfigLoader.loadConfig().then((loadedConfig) => {
       setConfig(loadedConfig);
     });
   }, []);
 
+  // Get locations.
   useEffect(() => {
-    // Load locations.
     if (config !== null) {
-      fetch(`${config.api_endpoint}itkdev_booking/locations`)
-      .then((response) => {
-        if (!response.ok) {
-          // TODO: Display loading error and retry option.
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
+      Api.fetchLocations(config.api_endpoint)
+        .then((loadedLocations) => {
+          setLocations(loadedLocations);
+
+          setLocationOptions(
+            loadedLocations.map(function (value) {
+              return {
+                value: value.name,
+                label: value.name,
+              };
+            })
           );
-        }
-        return response.json();
-      })
-      .then((actualLocations) => {
-        setLocations(
-          actualLocations["hydra:member"].map(function (value) {
-            return {
-              value: value.name,
-              label: value.name,
-            };
-          })
-        );
-      })
-      .catch((err) => {
-        // TODO: Display loading error and retry option.
-      })
+        })
+        .catch(() => {
+          // TODO: Display error and retry option for user.
+        });
     }
   }, [config]);
 
-  // Get data.
+  // Get resources for the given location.
   useEffect(() => {
-    console.log("useEffect: [location]");
+    if (config && location !== null) {
+      Api.fetchResources(config.api_endpoint, location)
+        .then((loadedResources) => {
+          setResources(loadedResources);
 
-    // If we have no resources try and fetch some.
-    if (config && resources.length === 0) {
-      fetch(`${config.api_endpoint}itkdev_booking/resources`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-          );
-        }
-        return response.json();
-      })
-      .then((loadedResources) => {
-        setResources(loadedResources["hydra:member"]);
-
-        setResourcesOptions(loadedResources["hydra:member"].map((res) => {
-          return {
-            value: res.resourcemail,
-            label: res.resourcename,
-          };
-        }))
-      });
+          setResourcesOptions(loadedResources.map((res) => {
+            return {
+              value: res.resourcemail,
+              label: res.resourcename,
+            };
+          }))
+        })
+        .catch(() => {
+          // TODO: Display error and retry option for user.
+        });
     }
   }, [location]);
 
+  // Get events for the given resources.
   useEffect(() => {
     if (resources.length > 0) {
-      const dateEnd = dayjs(date).endOf('day');
-
-      // Setup query parameters.
-      const urlSearchParams = new URLSearchParams({
-        resources: resources.map((resource) => resource.resourcemail),
-        dateStart: date.toISOString(),
-        dateEnd: dateEnd.toISOString(),
-        page: 1,
-      });
-
-      // Events on resource.
-      fetch(`${config.api_endpoint}itkdev_booking/bookings?${urlSearchParams}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              `This is an HTTP error: The status is ${response.status}`
-            );
-          }
-          return response.json();
+      Api.fetchEvents(config.api_endpoint, resources, date)
+        .then((loadedEvents) => {
+          setEvents(loadedEvents);
         })
-        .then((actualEvents) => {
-          setEvents(actualEvents["hydra:member"]);
-        })
-        .catch((err) => {
-          setEvents([]);
-        })
+        .catch(() => {
+          // TODO: Display error and retry option for user.
+        });
     }
   }, [resources]);
-
-  const onCalendarChange = (param) => {
-    //console.log("onCalendarChange", param);
-  }
 
   return (
     <div className="App">
@@ -128,10 +93,10 @@ function App() {
       {config &&
         <>
           {/* Add dropdown with options from locations */}
-          {locations.length > 0 &&
+          {locationOptions.length > 0 &&
             <Select
               styles={{}}
-              options={locations}
+              options={locationOptions}
               onChange={(newValue) => {setLocation(newValue.value)}}
             />
           }
