@@ -44,13 +44,14 @@ export default class Api {
     });
 
     // Events on resource.
-    return fetch(`${config.api_endpoint}itkdev_booking/bookings?${urlSearchParams}`)
+    return fetch(`${apiEndpoint}itkdev_booking/bookings?${urlSearchParams}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
             `This is an HTTP error: The status is ${response.status}`
           );
         }
+
         return response.json();
       })
       .then((data) => data["hydra:member"]);

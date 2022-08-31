@@ -74,7 +74,7 @@ function App() {
 
   // Get events for the given resources.
   useEffect(() => {
-    if (resources.length > 0) {
+    if (config && resources?.length > 0) {
       Api.fetchEvents(config.api_endpoint, resources, date)
         .then((loadedEvents) => {
           setEvents(loadedEvents);
