@@ -4,7 +4,20 @@ Provides a webform element for creating bookings through the AAK booking service
 
 ## Development
 
-See assets README.md for working with assets and compilation and assets code styles.
+The booking app is a react app (CRA). A docker compose setup has been supplied to
+ease develop of the app.
+
+```shell
+itkdev-docker-compose run node npm install
+
+itkdev-docker-compose up -d
+itkdev-docker-compose open
+```
+
+To build the code for use in the drupal module
+```shell
+./create-build.sh
+```
 
 ## Setup
 
@@ -34,10 +47,10 @@ Follow the steps in https://github.com/itk-dev/os2forms_selvbetjening/blob/devel
 
 ### 2. Git clone drupal_webform_booking_module into `web/modules/custom` and enable module.
 
-```
+```shell
 git clone https://github.com/itk-dev/drupal_webform_booking_module itkdev_booking
 ```
-```
+```shell
 itkdev-docker-compose drush pm:enable itkdev_booking
 ```
 
@@ -47,7 +60,7 @@ https://github.com/itk-dev/os2forms_selvbetjening/blob/develop/web/modules/custo
 
 ### 4. Create an Affiliation in os2forms selvbetjening
 
-```
+```text
 Structure->Taxonomy->Affiliation
 
 + Add Term
@@ -63,7 +76,7 @@ Follow the readme: https://github.com/itk-dev/book_aarhus/blob/develop/README.md
 
 Create an ApiKeyUser with the following command:
 
-```
+```shell
 docker compose exec phpfpm bin/console app:auth:create-apikey
 ```
 
@@ -82,7 +95,7 @@ SERVICE_APIKEY is the apikey created in step 5.
 
 SERVICE_ENDPOINT is found by running:
 
-```
+```shell
 docker ps
 ```
 
@@ -118,7 +131,7 @@ After submitting the data the submission is added to the queue in os2forms.
 
 To send the submission to book_aarhus the queue needs to run.
 
-```
+```shell
 itkdev-docker-compose drush --uri=http://[SERVICE_ENDPOINT] advancedqueue:queue:process os2forms_api_request_handler -vvv
 ```
 
@@ -126,7 +139,7 @@ This will create a "WebformSubmitMessage" job in the book_aarhus service.
 
 To create the booking in Exchange the job queue in book_aarhus needs to run.
 
-```
+```shell
 itkdev-docker-compose exec phpfpm composer queues
 ```
 

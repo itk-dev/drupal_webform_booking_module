@@ -3,6 +3,7 @@
 namespace Drupal\itkdev_booking\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Annotation\WebformElement;
 use Drupal\webform\Plugin\WebformElement\Hidden;
 use Drupal\Core\Site\Settings;
 use Drupal\webform\WebformInterface;
@@ -115,13 +116,16 @@ class BookingElement extends Hidden
       'enable_booking' => (isset($element['#enable_booking'])),
       'enable_resource_tooltips' => (isset($element['#enable_booking']))
     ];
-    $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_calendar.html.twig', [
+
+    $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [
       'params' => $params,
       // Needed to prevent notices when Twig debugging is enabled.
       'theme_hook_original' => 'not-applicable',
     ]);
 
     if ('booking_element' == $element['#type']) {
+      // @TODO: Move author, userId values out of javascript. Attach with php after submission.
+
       $defaultValue = [
         'subject' => '',
         'resourceEmail' => '',
@@ -129,11 +133,12 @@ class BookingElement extends Hidden
         'endTime' => '',
         'authorName' => '',
         'authorEmail' => '',
-        'userId' => '1111aaaa11',
+        'userId' => '',
         'formElement' => 'booking_element'
       ];
-      $form['#attached']['library'][] = 'itkdev_booking/booking_calendar';
-      $form['#attached']['drupalSettings']['booking_calendar'][$element['#webform_key']] = $params;
+
+      $form['#attached']['library'][] = 'itkdev_booking/booking_app';
+      $form['#attached']['drupalSettings']['booking_app'][$element['#webform_key']] = $params;
       $form['elements'][$element['#webform_key']]['#prefix'] = $prefix;
       $form['elements'][$element['#webform_key']]['#default_value'] = json_encode($defaultValue);
       $form['#validate'][] = [$this, 'validateBooking'];
@@ -148,7 +153,7 @@ class BookingElement extends Hidden
    * @param FormStateInterface $form_state
    *   The state of the form.
    */
-  public function validateBooking(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function validateBooking(&$form, FormStateInterface $form_state) {
     $elements = $form['elements'];
     foreach ($elements as $key => $form_element) {
       if (is_array($form_element) && isset($form_element['#type']) && 'booking_element' === $form_element['#type']) {
