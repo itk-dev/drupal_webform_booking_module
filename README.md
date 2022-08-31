@@ -19,6 +19,12 @@ To build the code for use in the drupal module
 ./create-build.sh
 ```
 
+## Configuration
+
+When the app is served through Drupal it will look for `window.drupalSettings` and load those.
+If served outside of Drupal, e.g. during development, a `public/config.json` can be set with the config values.
+See `public/example_config.json` for structure of `config.json` file.
+
 ## Setup
 
 When used without the following settings the module will fallback to use sample data from sampleData folder.
