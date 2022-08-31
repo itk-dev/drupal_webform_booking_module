@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,11 +8,51 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 
-function Calendar({location, onCalendarChange}) {
+function Calendar({location, resources, events, onCalendarChange}) {
+  // https://fullcalendar.io/docs/react#calendar-api
+  // calendarRef required for navigation.
+  const calendarRef = React.createRef();
+  console.log(this);
   const dateNow = new Date();
+  const [dateDisplayed, setDateDisplayed] = useState(dateNow);
+
+
+  /* @todo set default date selection. */
+  const setDate = (info) => {
+    //console.log(info);
+  }
+
+  /* @todo handle date selection. */
+  const handleDateSelect = (selectionInfo) => {
+    //console.log(selectionInfo);
+  }
+
+  /*  */
+  const getValidRange = () => {
+    return {start: dateNow}
+  }
+
+  /**
+   * Prepare json data source for display.
+   *
+   * @param data {object} A data source.
+   */
+  const handleData = (data) => {
+    const dataFormatted = [];
+    switch (data["@id"]) {
+      case "/v1/busy-intervals":
+        dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
+        break;
+      case "/v1/resources":
+        dataFormatted.data = data["hydra:member"].map(handleResources);
+        break;
+      default:
+    }
+    return dataFormatted.data;
+  }
 
   useEffect(() => {
-    console.log("Location changed to " + location)
+    //console.log("Location changed to " + location)
   }, [location]);
 
   return (
@@ -59,7 +99,7 @@ function Calendar({location, onCalendarChange}) {
         /*scrollTime=@todo*/
         initialView="resourceTimelineDay"
         duration="days: 3"
-        /*initialDate=""*/
+        initialDate={dateDisplayed}
         /*selectConstraint="businessHours"*/
         nowIndicator={true}
         navLinks={true}
@@ -76,85 +116,18 @@ function Calendar({location, onCalendarChange}) {
         dayMaxEvents={true}
         locale={daLocale}
         select={handleDateSelect}
-        validRange={getValidRange(dateNow)}
+        validRange={getValidRange}
         datesSet={setDate}
         loading={false}
-        resources={getResources}
-        events={getEvents}
+
+        resources={handleData(resources)}
+        events={handleData(events)}
       />
     </div>
   );
 }
 
 export default Calendar;
-
-function handleDateSelect(selectionInfo) {
-  console.log(selectionInfo);
-}
-
-function getValidRange(dateNow) {
-  return {start: dateNow}
-}
-
-function setDate(info) {
-  console.log(info);
-}
-
-function getResources(info, successCallback, failureCallback) {
-  fetch(`http://selvbetjening.aarhuskommune.dk/da/itkdev_booking/resources`)
-    .then((response) => response.json())
-    .then((data) =>
-      successCallback(
-        handleData(data, 'resourceFilters', 'elementSettings')
-      )
-    );
-}
-
-function getEvents(info, successCallback, failureCallback) {
-  fetch(
-    `https://selvbetjening.aarhuskommune.dk/da/itkdev_booking/bookings?resources=dokk1-lokale-test1%40aarhus.dk&dateStart=2022-05-30T17%3A32%3A28Z&dateEnd=2022-06-22T17%3A32%3A28Z&page=1`
-  )
-    .then((response) => response.json())
-    .then((data) =>
-      successCallback(handleData(data, 'eventFilters', 'elementSettings'))
-    );
-}
-
-/**
- * Prepare json data source for display.
- *
- * @param {object} data : A data source.
- * @param {object} filters : A list of filters.
- * @param {object} elementSettings : Settings related to a specific webform element.
- * @returns {any} : The data filtered and delivered in a way the calendar understands.
- */
-function handleData(data, filters, elementSettings) {
-  const dataFormatted = [];
-  switch (data["@id"]) {
-    case "/v1/busy-intervals":
-      dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
-      console.log(dataFormatted);
-      break;
-    case "/v1/resources":
-      dataFormatted.data = data["hydra:member"].map(handleResources);
-      /*
-      dataFormatted.data = dataFormatted.data.filter(
-        filterSelectedResourceBackend,
-        elementSettings
-      );
-      */
-      /*
-      dataFormatted.data = dataFormatted.data.filter(
-        filterSelectedResourceFrontend,
-        filters.resources
-      );
-       */
-
-      break;
-    default:
-  }
-  return dataFormatted.data;
-}
 
 /**
  * Handle busy intervals.
