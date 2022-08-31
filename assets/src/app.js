@@ -12,6 +12,7 @@ function App() {
   const [location, setLocation] = useState(null);
   const [resource, setResource] = useState(null);
 
+
   // Loaded data.
   const [availableLocations, setAvailableLocations] = useState([]);
   const [resources, setResources] = useState([]);
@@ -95,8 +96,21 @@ function App() {
     }
   }, [location]);
 
-  const onCalendarChange = (param) => {
-    //console.log("onCalendarChange", param);
+  const onCalendarSelection = (data) => {
+    console.log(data);
+  }
+
+  const setHiddenInput = (param) => {
+    /*
+    const currentValue = JSON.parse(result)
+    let newValue = {
+      ...currentValue,
+      ...param
+    }
+    //console.log(newValue);
+    //setResult(JSON.stringify(newValue))
+
+     */
   }
 
   return (
@@ -126,7 +140,8 @@ function App() {
               location={location}
               resources={resources}
               events={events}
-              onCalendarChange={onCalendarChange}
+              onCalendarSelection={onCalendarSelection}
+              setHiddenInput={setHiddenInput}
             />
           }
 

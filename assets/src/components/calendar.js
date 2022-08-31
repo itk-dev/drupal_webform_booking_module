@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,23 +8,16 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 
-function Calendar({location, resources, events, onCalendarChange}) {
+function Calendar({location, resources, events, onCalendarSelection, setHiddenInput}) {
   // https://fullcalendar.io/docs/react#calendar-api
   // calendarRef required for navigation.
-  const calendarRef = React.createRef();
-  console.log(this);
   const dateNow = new Date();
-  const [dateDisplayed, setDateDisplayed] = useState(dateNow);
-
-
-  /* @todo set default date selection. */
-  const setDate = (info) => {
-    //console.log(info);
-  }
+  const [selection, setSelection] = useState({});
 
   /* @todo handle date selection. */
   const handleDateSelect = (selectionInfo) => {
-    //console.log(selectionInfo);
+    onCalendarSelection(selectionInfo)
+    setSelection(selectionInfo);
   }
 
   /*  */
@@ -50,6 +43,10 @@ function Calendar({location, resources, events, onCalendarChange}) {
     }
     return dataFormatted.data;
   }
+
+  useEffect(() => {
+    setHiddenInput(selection);
+  }, [selection]);
 
   useEffect(() => {
     //console.log("Location changed to " + location)
@@ -78,29 +75,17 @@ function Calendar({location, resources, events, onCalendarChange}) {
           day: "2-digit",
           weekday: "long",
         }}
-        customButtons={{
-          prev: {
-            text: "Prev",
-            click() {
-              //window.calendar.prev();
-              //window.calendar.refetchResources();
-            },
-          },
-          next: {
-            text: "Next",
-            click() {
-              //window.calendar.next();
-              //window.calendar.refetchResources();
-            },
-          },
+        headerToolbar={{
+          start: 'today',
+          center: 'title',
+          end: 'prev,next'
         }}
         height="850px"
-        selectMirror={true}
         /*scrollTime=@todo*/
         initialView="resourceTimelineDay"
         duration="days: 3"
-        initialDate={dateDisplayed}
         /*selectConstraint="businessHours"*/
+        selectMirror={true}
         nowIndicator={true}
         navLinks={true}
         slotDuration="00:15:00"
@@ -117,7 +102,6 @@ function Calendar({location, resources, events, onCalendarChange}) {
         locale={daLocale}
         select={handleDateSelect}
         validRange={getValidRange}
-        datesSet={setDate}
         loading={false}
 
         resources={handleData(resources)}
