@@ -8,10 +8,7 @@ function Calendar({location, onCalendarChange}) {
   return (
     <div className="Calendar">
       Selected location: {location}
-
-      <button onClick={() => {
-        onCalendarChange('fisk')
-      }}>FISK</button>
+      
     </div>
   );
 }
