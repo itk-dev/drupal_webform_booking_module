@@ -5,25 +5,23 @@ import Select from "react-select";
 import ConfigLoader from "./config-loader";
 
 function App() {
-  const [config, setConfig] = useState('a');
+  // Configuration.
+  const [config, setConfig] = useState(null);
+
+  // User selections.
   const [location, setLocation] = useState(null);
+  const [resource, setResource] = useState(null);
+
+  // Loaded data.
   const [availableLocations, setAvailableLocations] = useState([]);
   const [resources, setResources] = useState([]);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    if (window?.drupalSettings?.booking_app?.booking) {
-      setConfig(window.drupalSettings.booking_app.booking);
-
-      console.log('Booking config loaded from drupalSettings.');
-    } else {
-      // Allow loading from config file.
-      ConfigLoader.loadConfig().then((loadedConfig) => {
-        setConfig(loadedConfig);
-
-        console.log('Booking config loaded from json.');
-      });
-    }
+    // Load configuration.
+    ConfigLoader.loadConfig().then((loadedConfig) => {
+      setConfig(loadedConfig);
+    });
   }, []);
 
   useEffect(() => {
@@ -53,12 +51,12 @@ function App() {
       })
     }
   }, [config]);
-/*
+
   // Get data.
   useEffect(() => {
     // If we have no resources try and fetch some.
-    if (resources.length === 0) {
-      fetch(`http://selvbetjening.aarhuskommune.dk/da/itkdev_booking/resources`)
+    if (config && resources.length === 0) {
+      fetch(`${config.api_endpoint}itkdev_booking/resources`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -77,7 +75,7 @@ function App() {
       .then((resources) => {
         // If we found any resources get events for those resources.
         if(resources) {
-          fetch(`https://selvbetjening.aarhuskommune.dk/da/itkdev_booking/bookings?resources=dokk1-lokale-test1%40aarhus.dk&dateStart=2022-05-30T17%3A32%3A28Z&dateEnd=2022-06-22T17%3A32%3A28Z&page=1`)
+          fetch(`${config.api_endpoint}itkdev_booking/bookings?resources=dokk1-lokale-test1%40aarhus.dk&dateStart=2022-05-30T17%3A32%3A28Z&dateEnd=2022-06-22T17%3A32%3A28Z&page=1`)
           .then((response) => {
             if (!response.ok) {
               throw new Error(
@@ -95,38 +93,46 @@ function App() {
         }
       })
     }
-  }, [location, resources, events]);
-*/
+  }, [location]);
+
   const onCalendarChange = (param) => {
     //console.log("onCalendarChange", param);
   }
 
   return (
     <div className="App">
-      {/* Add dropdown with options from locations */}
-      {availableLocations.length > 0 &&
-        <Select
-          styles={{}}
-          options={availableLocations}
-        />
+      {!config &&
+        <div>Loading...</div>
       }
-      {/* Add dropdown with options from resources */}
-      {/* Add dropdown with options from facilities */}
-      {/* Add dropdown with options from capacity */}
+      {config &&
+        <>
+          {/* Add dropdown with options from locations */}
+          {availableLocations.length > 0 &&
+            <Select
+              styles={{}}
+              options={availableLocations}
+              onChange={(newValue) => {setLocation(newValue.value)}}
+            />
+          }
+          {/* Add dropdown with options from resources */}
+          {/* Add dropdown with options from facilities */}
+          {/* Add dropdown with options from capacity */}
 
-      {/* Add info text box */}
+          {/* Add info text box */}
 
-      {/* Display calendar for selections */}
-      {resources && events &&
-        <Calendar
-          location={location}
-          resources={resources}
-          events={events}
-          onCalendarChange={onCalendarChange}
-        />
+          {/* Display calendar for selections */}
+          {resources && events &&
+            <Calendar
+              location={location}
+              resources={resources}
+              events={events}
+              onCalendarChange={onCalendarChange}
+            />
+          }
+
+          {/* Required author fields */}
+        </>
       }
-
-      {/* Required author fields */}
     </div>
   );
 }
