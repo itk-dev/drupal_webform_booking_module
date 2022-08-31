@@ -8,11 +8,12 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 
-function Calendar({location, resources, events, onCalendarChange}) {
+function Calendar({resources, events}) {
   // https://fullcalendar.io/docs/react#calendar-api
+
   // calendarRef required for navigation.
   const calendarRef = React.createRef();
-  console.log(this);
+
   const dateNow = new Date();
   const [dateDisplayed, setDateDisplayed] = useState(dateNow);
 
@@ -51,17 +52,8 @@ function Calendar({location, resources, events, onCalendarChange}) {
     return dataFormatted.data;
   }
 
-  useEffect(() => {
-    //console.log("Location changed to " + location)
-  }, [location]);
-
   return (
     <div className="Calendar">
-      Selected location: {location}
-
-      <button onClick={() => {
-        onCalendarChange('fisk')
-      }}>FISK</button>
       <FullCalendar
         plugins={[
           resourceTimegrid,
@@ -119,9 +111,8 @@ function Calendar({location, resources, events, onCalendarChange}) {
         validRange={getValidRange}
         datesSet={setDate}
         loading={false}
-
-        resources={handleData(resources)}
-        events={handleData(events)}
+        resources={resources.map(handleResources)}
+        events={events.map(handleBusyIntervals)}
       />
     </div>
   );
