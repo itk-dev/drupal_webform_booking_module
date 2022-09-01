@@ -8,14 +8,22 @@ The booking app is a react app (CRA). A docker compose setup has been supplied t
 ease develop of the app.
 
 ```shell
-docker-compose up -d
-open http://$(docker-compose port nginx 80)
+itkdev-docker-compose run node npm install
+
+itkdev-docker-compose up -d
+itkdev-docker-compose open
 ```
 
 To build the code for use in the drupal module
 ```shell
 ./create-build.sh
 ```
+
+## Configuration
+
+When the app is served through Drupal it will look for `window.drupalSettings` and load those.
+If served outside of Drupal, e.g. during development, a `public/config.json` can be set with the config values.
+See `public/example_config.json` for structure of `config.json` file.
 
 ## Setup
 
