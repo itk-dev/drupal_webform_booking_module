@@ -10,6 +10,7 @@ function Userpanel({ location, name }) {
     useEffect(() => {
         getUserBookings(name)
             .then(d => {
+                console.log(d);
                 setUserBookings(d)
             })
         console.log("Location changed to " + location);
@@ -50,21 +51,24 @@ function Userpanel({ location, name }) {
                         <span>{endDate} kl. {endTime}</span>
                     </div>
                     <div>
-                        <button booking_id={obj.hitId} onClick={e => requestDeletion(e.target.getAttribute('booking_id'))}>Anmod om sletning</button>
+                        <button booking_id={obj.hitId} onClick={e => requestDeletion(e.target.getAttribute('booking_id'), index)}>Anmod om sletning</button>
                     </div>
                 </div>
             )
         })
-    function requestDeletion(bookingId) {
+    function requestDeletion(bookingId, ref) {
+        ref.remove;
         if (bookingId) {
             bookingId = encodeURIComponent(bookingId);
-            fetch('')
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (myJson) {
-                console.log(myJson);
-            });
+
+            alert('Request deletion for booking hitid: '+bookingId);
+            // fetch('https://selvbetjening.local.itkdev.dk/da/itkdev_booking/user-bookings/'+bookingId)
+            // .then(function (response) {
+            //     return response.json();
+            // })
+            // .then(function (myJson) {
+            //     console.log(myJson);
+            // });
         }
     }
     return (
