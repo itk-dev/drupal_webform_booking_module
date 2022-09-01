@@ -7,6 +7,7 @@ import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
+import Api from "../util/api";
 
 function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
   const dateNow = new Date();
@@ -26,12 +27,10 @@ function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
           listPlugin,
           resourceTimelinePlugin,
         ]}
-
         titleFormat={{
           year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          weekday: "long",
+          month: "long",
+          day: "numeric",
         }}
         headerToolbar={{
           start: 'today',

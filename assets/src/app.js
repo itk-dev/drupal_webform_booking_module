@@ -5,6 +5,7 @@ import Select from "react-select";
 import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
 import Api from "./util/api";
+import DatePicker from "./components/datepicker"
 
 function App() {
   // Configuration.
@@ -96,45 +97,87 @@ function App() {
       {!config &&
         <div>Loading...</div>
       }
-      {config &&
-        <>
-          {/* Add dropdown with options from locations */}
-          {locationOptions.length > 0 &&
+      <div className="container-fluid">
+        {config &&
+        <div className="row">
+          <div className="col-md-3">
+            {/* Add dropdown with options from locations */}
+            {locationOptions.length > 0 &&
             <Select
               styles={{}}
               options={locationOptions}
-              onChange={(newValue) => {setLocation(newValue.value)}}
+              onChange={(newValue) => {
+                setLocation(newValue.value)
+              }}
             />
+            }
+          </div>
+          <div className="col-md-3">
+            {/* Add dropdown with options from resources */}
+            {
+              <Select
+                styles={{}}
+                options={resourcesOptions}
+                onChange={(newValue) => {
+                  setLocation(newValue.value)
+                }}
+
+              />
+            }
+          </div>
+          {/* Add dropdown with options for facilities */}
+          <div className="col-md-3">
+            {/* TODO: Add dropdown with options from facilities (v1) */}
+            {}
+          </div>
+          {/* Add dropdown capacity widget. */}
+          <div className="col-md-3">
+            {/* TODO: Add dropdown with options from capacity (v1) */}
+            {}
+          </div>
+        </div>
+        }
+
+        {/* Add info box */}
+        <div className="row">
+          {config &&
+          <div className="col-md-12">
+            {/* TODO: Add info text box (v0.1) */}
+            {}
+          </div>
           }
+        </div>
 
-          {/* Add dropdown with options from resources */}
-          {resourcesOptions?.length > 0 &&
-            <Select
-              styles={{}}
-              options={resourcesOptions}
-              onChange={(newValue) => {setLocation(newValue.value)}}
 
-            />
-          }
-
-          {/* TODO: Add dropdown with options from facilities (v1) */}
-          {/* TODO: Add dropdown with options from capacity (v1) */}
-
-          {/* TODO: Add info text box (v0.1) */}
-
-          {/* Display calendar for selections */}
-          {resources?.length > 0 && events?.length > 0 &&
-            <Calendar
-              resources={resources}
-              events={events}
-              onCalendarSelection={onCalendarSelection}
+        {/* Display datepicker */}
+        <div className="row">
+          {config &&
+            <DatePicker
               drupalConfig={config}
             />
           }
+        </div>
 
+        {/* Display calendar for selections */}
+        <div className="row">
+          <div className="col-md-12">
+            {config &&
+              <Calendar
+                resources={resources}
+                events={events}
+                onCalendarSelection={onCalendarSelection}
+                drupalConfig={config}
+              />
+            }
+          </div>
+        </div>
+
+        {/* Display author fields */}
+        <div className="row">
           {/* TODO: Required author fields (v0.1) */}
-        </>
-      }
+          {}
+        </div>
+      </div>
     </div>
   );
 }
