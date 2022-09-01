@@ -8,47 +8,12 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 
-function Calendar({resources, events, onCalendarSelection}) {
+function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
   const dateNow = new Date();
-  const [selection, setSelection] = useState({});
 
-  /* @todo handle date selection. */
-  const handleDateSelect = (selectionInfo) => {
-    onCalendarSelection(selectionInfo)
-    setSelection(selectionInfo);
-  }
-
-  /*  */
   const getValidRange = () => {
     return {start: dateNow}
   }
-
-  /**
-   * Prepare json data source for display.
-   *
-   * @param data {object} A data source.
-   */
-  const handleData = (data) => {
-    const dataFormatted = [];
-    switch (data["@id"]) {
-      case "/v1/busy-intervals":
-        dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
-        break;
-      case "/v1/resources":
-        dataFormatted.data = data["hydra:member"].map(handleResources);
-        break;
-      default:
-    }
-    return dataFormatted.data;
-  }
-  
-  useEffect(() => {
-    setHiddenInput(selection);
-  }, [selection]);
-
-  useEffect(() => {
-    //console.log("Location changed to " + location)
-  }, [location]);
 
   return (
     <div className="Calendar">
@@ -84,7 +49,7 @@ function Calendar({resources, events, onCalendarSelection}) {
         slotDuration="00:15:00"
         selectable={true}
         unselectAuto={false}
-        schedulerLicenseKey="0245891543-fcs-1654684785"
+        schedulerLicenseKey={drupalConfig.license_key}
         slotMinTime= "07:00:00"
         slotMaxTime= "21:00:00"
         slotLabelFormat= {{hour: '2-digit', minute: '2-digit'}}
@@ -93,7 +58,7 @@ function Calendar({resources, events, onCalendarSelection}) {
         editable={false}
         dayMaxEvents={true}
         locale={daLocale}
-        select={handleDateSelect}
+        select={onCalendarSelection}
         validRange={getValidRange}
         loading={false}
         resources={resources.map(handleResources)}

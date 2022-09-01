@@ -14,13 +14,18 @@ function App() {
   const [resource, setResource] = useState(null);
   const [date, setDate] = useState(dayjs().startOf('day'));
   const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
-
+  const [calendarSelection, setCalendarSelection] = useState({});
 
   // Loaded data.
   const [locations, setLocations] = useState([]);
   const [resources, setResources] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
+
+
+  const onCalendarSelection = (data) => {
+    setCalendarSelection(data);
+  }
 
   useEffect(() => {
     // Load configuration.
@@ -86,22 +91,6 @@ function App() {
     }
   }, [location]);
 
-  const onCalendarSelection = (data) => {
-    console.log(data);
-  }
-
-  const setHiddenInput = (param) => {
-    /*
-    const currentValue = JSON.parse(result)
-    let newValue = {
-      ...currentValue,
-      ...param
-    }
-    //console.log(newValue);
-    //setResult(JSON.stringify(newValue))
-
-     */
-  }
 
   useEffect(() => {
     if (resources.length > 0) {
@@ -133,10 +122,6 @@ function App() {
         })
     }
   }, [resources]);
-
-  const onCalendarChange = (param) => {
-    //console.log("onCalendarChange", param);
-  }
 
   return (
     <div className="App">
@@ -175,6 +160,7 @@ function App() {
               resources={resources}
               events={events}
               onCalendarSelection={onCalendarSelection}
+              drupalConfig={config}
             />
           }
 
