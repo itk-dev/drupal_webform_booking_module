@@ -1,10 +1,12 @@
 import './app.css';
 import Calendar from "./components/calendar";
+import Userpanel from "./components/userpanel/userpanel"
 import {useEffect, useState} from "react";
 import Select from "react-select";
 import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
 import Api from "./util/api";
+import Resourceview from './components/resourceView/resourceView';
 
 function App() {
   // Configuration.
@@ -122,8 +124,11 @@ function App() {
               events={events}
             />
           }
-
           {/* TODO: Required author fields */}
+
+          {<Userpanel config={config} />}
+
+          {<Resourceview config={config} />}
         </>
       }
     </div>

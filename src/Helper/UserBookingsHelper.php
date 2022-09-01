@@ -82,7 +82,7 @@ class UserBookingsHelper
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
       switch ($apiEndpoint) {
         case "v1/user-bookings":
-          $response = $this->getData($apiEndpoint."?userId=1", $request->getQueryString());
+          $response = $this->getData($apiEndpoint."?userId= ", $request->getQueryString());
           return json_decode($response->getBody(), TRUE);
           break;
         case "v1/booking-details":
