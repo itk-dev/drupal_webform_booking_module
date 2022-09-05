@@ -10,7 +10,6 @@ function resourceDetails({ resourceId, config }) {
         if (config && resourceId !== null) {
             Api.fetchResource(config.api_endpoint, "1")
               .then((resource) => {
-                console.log(resource);
                 setResource(resource)
                 setFacilities(resource['facilities'])
               })

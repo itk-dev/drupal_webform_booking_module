@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useState } from 'react';
 import Api from "../../util/api"
+import dayjs from "dayjs";
 
-function UserBookingsList({ userId, key, onDeleteBooking, config }) {
+
+function UserBookingsList({ userId, onDeleteBooking, config }) {
     const [userBookings, setUserBookings] = useState();
 
     useEffect(() => {
@@ -21,23 +23,14 @@ function UserBookingsList({ userId, key, onDeleteBooking, config }) {
         }
     }
 
-    function getFormattedDate(dateObj) {
-        let formatted_date = new Date(dateObj).toLocaleDateString("da-dk", {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        })
+    function getFormattedDateTime(dateObj) {
 
-        return formatted_date;
+        let formatted_date = dayjs(dateObj).format('dddd [d.] D/M');
+        let formatted_time = dayjs(dateObj).format('[kl.] HH:mm');
+        let formatted_date_time = formatted_date+" "+formatted_time;
+        return formatted_date_time;
     }
-    function getFormattedTime(dateObj) {
-        let formatted_time = new Date(dateObj).toLocaleTimeString("da-dk", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-        return formatted_time;
-    }
+
     return (
         <div className="userbookings-container">
             {userBookings && Object.values(userBookings).map((obj, index) => (
@@ -47,9 +40,9 @@ function UserBookingsList({ userId, key, onDeleteBooking, config }) {
                         <span className="subject">{obj.subject}</span>
                     </div>
                     <div>
-                        <span>{getFormattedDate(obj.start)} - kl. {getFormattedTime(obj.start)}</span>
+                        <span>{getFormattedDateTime(obj.start)}</span>
                         <span>→</span>
-                        <span>{getFormattedDate(obj.end)} - kl. {getFormattedTime(obj.end)}</span>
+                        <span>{getFormattedDateTime(obj.end)}</span>
                     </div>
                     <div>
                         <button onClick={() => onDeleteBooking(obj.hitId)}>Anmod om sletning</button>

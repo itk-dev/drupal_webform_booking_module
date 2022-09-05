@@ -7,6 +7,8 @@ import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
 import Api from "./util/api";
 import Resourceview from './components/resourceView/resourceView';
+import localeData from "dayjs/locale/da";
+dayjs.locale('da');
 
 function App() {
   // Configuration.
