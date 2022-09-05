@@ -20,15 +20,6 @@ function Calendar({resources, events, date, setDate, onCalendarSelection, drupal
 
   const calendarRef = useRef();
 
-  const onCalendarDisplayDateSet = (date) => {
-    if(calendarRef.current) {
-      const newDate = new Date(date.startStr);
-      //console.log('calendar', date);
-      console.log(calendarRef.current);
-      setDate(newDate);
-    }
-  };
-
   // Go to calendar date when date changes.
   useEffect(() => {
     calendarRef?.current?.getApi().gotoDate(date)
@@ -87,8 +78,6 @@ function Calendar({resources, events, date, setDate, onCalendarSelection, drupal
           locale={daLocale}
           select={onCalendarSelection}
           validRange={getValidRange}
-          //datesSet={onCalendarDisplayDateSet}
-          //dayHeaderDidMount={onCalendarDisplayDateSet}
           loading={false}
           resources={resources.map(handleResources)}
           events={events.map(handleBusyIntervals)}
