@@ -44,7 +44,7 @@ itkdev_booking.user_bookings:
     _access: 'TRUE'
 
 itkdev_booking.user_bookings_delete:
-  path: '/itkdev_booking/user-bookings/{bookingId}'
+  path: '/itkdev_booking/user-booking-delete/{bookingId}'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::DeleteUserBooking'
   methods: [DELETE]

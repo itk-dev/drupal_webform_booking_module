@@ -8,7 +8,7 @@ function Userpanel({ userId, config }) {
 
     function requestDeletion(bookingId) {
         if (bookingId) {
-            bookingId = encodeURIComponent(bookingId);
+            bookingId = btoa(bookingId);
             Api.deleteBooking(config.api_endpoint, bookingId)
               .then((resource) => {
                 console.log(resource);

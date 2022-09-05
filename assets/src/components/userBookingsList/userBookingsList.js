@@ -24,7 +24,6 @@ function UserBookingsList({ userId, onDeleteBooking, config }) {
     }
 
     function getFormattedDateTime(dateObj) {
-
         let formatted_date = dayjs(dateObj).format('dddd [d.] D/M');
         let formatted_time = dayjs(dateObj).format('[kl.] HH:mm');
         let formatted_date_time = formatted_date+" "+formatted_time;

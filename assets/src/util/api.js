@@ -96,7 +96,9 @@ export default class Api {
   }
 
   static async deleteBooking(apiEndpoint, bookingId) {
-    return fetch(`${apiEndpoint}itkdev_booking/user-bookings/${bookingId}`)
+    return fetch(`${apiEndpoint}itkdev_booking/user-booking-delete/${bookingId}`, {
+      method: "DELETE"
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(

@@ -83,7 +83,6 @@ class UserBookingsHelper
       switch ($apiEndpoint) {
         case "v1/user-bookings":
           if ($request->isMethod("DELETE")) {
-            return "test delete";
             $response = $this->deleteData($apiEndpoint, $request->getQueryString());
           }
           $response = $this->getData($apiEndpoint, $request->getQueryString());
