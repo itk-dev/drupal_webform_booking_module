@@ -17,7 +17,7 @@ export default class Api {
   static async fetchResources(apiEndpoint, location) {
     // Setup query parameters.
     const urlSearchParams = new URLSearchParams({
-      location: location,
+      location,
     });
 
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
@@ -33,7 +33,7 @@ export default class Api {
   }
 
   static async fetchEvents(apiEndpoint, resources, date) {
-    const dateEnd = dayjs(date).endOf('day');
+    const dateEnd = dayjs(date).endOf("day");
 
     // Setup query parameters.
     const urlSearchParams = new URLSearchParams({

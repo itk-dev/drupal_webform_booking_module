@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import FullCalendar from '@fullcalendar/react' // must go before plugins
+import React, { useEffect, useState } from "react";
+import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -7,9 +7,19 @@ import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
+import * as PropTypes from "prop-types";
 
-function Calendar({resources, events}) {
-  // https://fullcalendar.io/docs/react#calendar-api
+/**
+ * @param {object} props Props.
+ * @param {Array} props.resources List of resources.
+ * @param {Array} props.events List of events for the given resources and date.
+ *
+ * @see https://fullcalendar.io/docs/react#calendar-api
+ *
+ * @returns {string} Calendar component.
+ */
+function Calendar({ resources, events }) {
+  //
 
   // calendarRef required for navigation.
   const calendarRef = React.createRef();
@@ -17,21 +27,20 @@ function Calendar({resources, events}) {
   const dateNow = new Date();
   const [dateDisplayed, setDateDisplayed] = useState(dateNow);
 
-
   /* @todo set default date selection. */
   const setDate = (info) => {
-    //console.log(info);
-  }
+    // console.log(info);
+  };
 
   /* @todo handle date selection. */
   const handleDateSelect = (selectionInfo) => {
-    //console.log(selectionInfo);
-  }
+    // console.log(selectionInfo);
+  };
 
   /*  */
   const getValidRange = () => {
-    return {start: dateNow}
-  }
+    return { start: dateNow };
+  };
 
   /**
    * Prepare json data source for display.
@@ -50,7 +59,7 @@ function Calendar({resources, events}) {
       default:
     }
     return dataFormatted.data;
-  }
+  };
 
   return (
     <div className="Calendar">
@@ -64,7 +73,6 @@ function Calendar({resources, events}) {
           listPlugin,
           resourceTimelinePlugin,
         ]}
-
         titleFormat={{
           year: "numeric",
           month: "2-digit",
@@ -75,38 +83,38 @@ function Calendar({resources, events}) {
           prev: {
             text: "Prev",
             click() {
-              //window.calendar.prev();
-              //window.calendar.refetchResources();
+              // window.calendar.prev();
+              // window.calendar.refetchResources();
             },
           },
           next: {
             text: "Next",
             click() {
-              //window.calendar.next();
-              //window.calendar.refetchResources();
+              // window.calendar.next();
+              // window.calendar.refetchResources();
             },
           },
         }}
         height="850px"
-        selectMirror={true}
-        /*scrollTime=@todo*/
+        selectMirror
+        /* scrollTime=@todo */
         initialView="resourceTimelineDay"
         duration="days: 3"
         initialDate={dateDisplayed}
-        /*selectConstraint="businessHours"*/
-        nowIndicator={true}
-        navLinks={true}
+        /* selectConstraint="businessHours" */
+        nowIndicator
+        navLinks
         slotDuration="00:15:00"
-        selectable={true}
+        selectable
         unselectAuto={false}
         schedulerLicenseKey="0245891543-fcs-1654684785"
-        slotMinTime= "07:00:00"
-        slotMaxTime= "21:00:00"
-        slotLabelFormat= {{hour: '2-digit', minute: '2-digit'}}
+        slotMinTime="07:00:00"
+        slotMaxTime="21:00:00"
+        slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
         selectOverlap={false}
         nextDayThreshold="21:00:00"
         editable={false}
-        dayMaxEvents={true}
+        dayMaxEvents
         locale={daLocale}
         select={handleDateSelect}
         validRange={getValidRange}
@@ -118,6 +126,12 @@ function Calendar({resources, events}) {
     </div>
   );
 }
+
+Calendar.propTypes = {
+  // TODO: Fix prop types for resources and events.
+  resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+};
 
 export default Calendar;
 

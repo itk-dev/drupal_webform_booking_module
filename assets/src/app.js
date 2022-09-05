@@ -1,15 +1,21 @@
-import './app.css';
+import "./app.scss";
+import React, { useEffect, useState } from "react";
 import Calendar from "./components/calendar";
 import Userpanel from "./components/userpanel/userpanel"
-import {useEffect, useState} from "react";
 import Select from "react-select";
-import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
+import ConfigLoader from "./util/config-loader";
+import Calendar from "./components/calendar";
 import Api from "./util/api";
 import Resourceview from './components/resourceView/resourceView';
 import localeData from "dayjs/locale/da";
 dayjs.locale('da');
 
+/**
+ * App component.
+ *
+ * @returns {string} App component.
+ */
 function App() {
   // Configuration.
   const [config, setConfig] = useState(null);
@@ -17,7 +23,7 @@ function App() {
   // User selections.
   const [location, setLocation] = useState(null);
   const [resource, setResource] = useState(null);
-  const [date, setDate] = useState(dayjs().startOf('day'));
+  const [date, setDate] = useState(dayjs().startOf("day"));
   const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
 
   // Loaded data.
@@ -42,7 +48,7 @@ function App() {
           setLocations(loadedLocations);
 
           setLocationOptions(
-            loadedLocations.map(function (value) {
+            loadedLocations.map((value) => {
               return {
                 value: value.name,
                 label: value.name,
@@ -63,12 +69,14 @@ function App() {
         .then((loadedResources) => {
           setResources(loadedResources);
 
-          setResourcesOptions(loadedResources.map((res) => {
-            return {
-              value: res.resourcemail,
-              label: res.resourcename,
-            };
-          }))
+          setResourcesOptions(
+            loadedResources.map((res) => {
+              return {
+                value: res.resourcemail,
+                label: res.resourcename,
+              };
+            })
+          );
         })
         .catch(() => {
           // TODO: Display error and retry option for user.
@@ -91,28 +99,30 @@ function App() {
 
   return (
     <div className="App">
-      {!config &&
-        <div>Loading...</div>
-      }
-      {config &&
+      {!config && <div>Loading...</div>}
+      {config && (
         <>
           {/* Add dropdown with options from locations */}
-          {locationOptions.length > 0 &&
+          {locationOptions.length > 0 && (
             <Select
               styles={{}}
               options={locationOptions}
-              onChange={(newValue) => {setLocation(newValue.value)}}
+              onChange={(newValue) => {
+                setLocation(newValue.value);
+              }}
             />
-          }
+          )}
 
           {/* Add dropdown with options from resources */}
-          {resourcesOptions?.length > 0 &&
+          {resourcesOptions?.length > 0 && (
             <Select
               styles={{}}
               options={resourcesOptions}
-              onChange={(newValue) => {setLocation(newValue.value)}}
+              onChange={(newValue) => {
+                setLocation(newValue.value);
+              }}
             />
-          }
+          )}
 
           {/* TODO: Add dropdown with options from facilities */}
           {/* TODO: Add dropdown with options from capacity */}
@@ -120,19 +130,17 @@ function App() {
           {/* TODO: Add info text box */}
 
           {/* Display calendar for selections */}
-          {resources?.length > 0 && events?.length > 0 &&
-            <Calendar
-              resources={resources}
-              events={events}
-            />
-          }
+          {resources?.length > 0 && events?.length > 0 && (
+            <Calendar resources={resources} events={events} />
+          )}
+
           {/* TODO: Required author fields */}
 
           {<Userpanel config={config} />}
 
           {<Resourceview config={config} />}
         </>
-      }
+      )}
     </div>
   );
 }
