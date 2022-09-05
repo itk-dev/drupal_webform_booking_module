@@ -4,8 +4,10 @@ jobs:
   frontend-build:
     name: Frontend build
     runs-on: ubuntu-latest
-    working-directory: assets
     container: node:18
+    defaults:
+      run:
+        working-directory: ./assets
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
@@ -29,8 +31,10 @@ jobs:
   frontend-coding-standards:
     name: Frontend coding standards
     runs-on: ubuntu-latest
-    working-directory: assets
     container: node:18
+    defaults:
+      run:
+        working-directory: ./assets
     steps:
       - uses: actions/checkout@v2
 
