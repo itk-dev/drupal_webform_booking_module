@@ -13,10 +13,9 @@ function App() {
   // User selections.
   const [location, setLocation] = useState(null);
   const [resource, setResource] = useState(null);
-  const [date, setDate] = useState(dayjs().startOf('day'));
+  const [date, setDate] = useState(new Date());
   const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
   const [calendarSelection, setCalendarSelection] = useState({});
-  const [calendarDisplayDate, setCalendarDisplayDate] = useState({});
 
   // Loaded data.
   const [locations, setLocations] = useState([]);
@@ -80,8 +79,8 @@ function App() {
 
   // Get events for the given resources.
   useEffect(() => {
-    if (config && resources?.length > 0) {
-      Api.fetchEvents(config.api_endpoint, resources, date)
+    if (config && resources?.length > 0 && date !== null) {
+      Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf('day'))
         .then((loadedEvents) => {
           setEvents(loadedEvents);
         })
@@ -89,7 +88,7 @@ function App() {
           // TODO: Display error and retry option for user. (v0.1)
         });
     }
-  }, [resources]);
+  }, [resources, date]);
 
   return (
     <div className="App">
@@ -153,6 +152,8 @@ function App() {
             <Calendar
               resources={resources}
               events={events}
+              date={date}
+              setDate={setDate}
               onCalendarSelection={onCalendarSelection}
               drupalConfig={config}
             />

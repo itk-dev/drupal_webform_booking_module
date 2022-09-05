@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -7,34 +7,45 @@ import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
-import DatePicker from "./datepicker"
+import CalendarHeader from "./calendarheader"
 import dayjs from "dayjs";
 import Api from "../util/api";
 import ConfigLoader from "../util/config-loader";
 
-function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
-  const [calendarDisplayDate, setCalendarDisplayDate] = useState(dayjs().format('YYYY-MM-DD'));
+function Calendar({resources, events, date, setDate, onCalendarSelection, drupalConfig}) {
   const dateNow = new Date();
   const getValidRange = () => {
     return {start: dateNow}
   }
 
-  const onCalendarDisplayDateSet = (calendarDisplayDate) => {
-    const newDate = dayjs(calendarDisplayDate.timeStamp).format('YYYY-MM-DD');
-    setCalendarDisplayDate(newDate);
-    console.log(newDate); //always log "1970-01-01"
+  const calendarRef = useRef();
+
+  const onCalendarDisplayDateSet = (date) => {
+    if(calendarRef.current) {
+      const newDate = new Date(date.startStr);
+      //console.log('calendar', date);
+      console.log(calendarRef.current);
+      setDate(newDate);
+    }
   };
+
+  // Go to calendar date when date changes.
+  useEffect(() => {
+    calendarRef?.current?.getApi().gotoDate(date)
+  }, [date]);
 
   return (
     <div className="Calendar">
       {
-        <DatePicker
+        <CalendarHeader
           drupalConfig={drupalConfig}
-          calendarDisplayDate={calendarDisplayDate}
+          date={date}
+          setDate={setDate}
         />
       }
       <div className="col-md-12">
         {<FullCalendar
+          ref={calendarRef}
           plugins={[
             resourceTimegrid,
             interactionPlugin,
@@ -53,6 +64,7 @@ function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
             center: 'title',
             end: 'prev,next'
           }}
+
           height="850px"
           /*scrollTime=@todo*/
           initialView="resourceTimelineDay"
@@ -75,7 +87,8 @@ function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
           locale={daLocale}
           select={onCalendarSelection}
           validRange={getValidRange}
-          datesSet={onCalendarDisplayDateSet}
+          //datesSet={onCalendarDisplayDateSet}
+          //dayHeaderDidMount={onCalendarDisplayDateSet}
           loading={false}
           resources={resources.map(handleResources)}
           events={events.map(handleBusyIntervals)}
