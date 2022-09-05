@@ -32,7 +32,7 @@ function CalendarHeader({drupalConfig, date, setDate}) {
       <button id="calendar-forward" onClick={(e)=>onChangeDate(e)}>Forward</button>
       <div className="datepicker pull-right">
         <input
-          class="calendar-datepicker-input"
+          className="calendar-datepicker-input"
           id="calendar-datepicker"
           type="date"
           min={dayjs(new Date()).format("YYYY-MM-DD")}

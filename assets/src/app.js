@@ -1,11 +1,14 @@
-import './app.css';
-import Calendar from "./components/calendar";
-import {useEffect, useState} from "react";
+import "./app.scss";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
+import ConfigLoader from "./util/config-loader";
+import Calendar from "./components/calendar";
 import Api from "./util/api";
 
+/**
+ * App component.
+ */
 function App() {
   // Configuration.
   const [config, setConfig] = useState(null);
@@ -43,7 +46,7 @@ function App() {
           setLocations(loadedLocations);
 
           setLocationOptions(
-            loadedLocations.map(function (value) {
+            loadedLocations.map((value) => {
               return {
                 value: value.name,
                 label: value.name,
@@ -64,12 +67,14 @@ function App() {
         .then((loadedResources) => {
           setResources(loadedResources);
 
-          setResourcesOptions(loadedResources.map((res) => {
-            return {
-              value: res.resourcemail,
-              label: res.resourcename,
-            };
-          }))
+          setResourcesOptions(
+            loadedResources.map((res) => {
+              return {
+                value: res.resourcemail,
+                label: res.resourcename,
+              };
+            })
+          );
         })
         .catch(() => {
           // TODO: Display error and retry option for user. (v0.1)
@@ -93,7 +98,7 @@ function App() {
   return (
     <div className="App">
       {!config &&
-        <div>Loading...</div>
+      <div>Loading...</div>
       }
       <div className="container-fluid">
         {config &&
@@ -149,14 +154,14 @@ function App() {
         {/* Display calendar for selections */}
         <div className="row">
           {config &&
-            <Calendar
-              resources={resources}
-              events={events}
-              date={date}
-              setDate={setDate}
-              onCalendarSelection={onCalendarSelection}
-              drupalConfig={config}
-            />
+          <Calendar
+            resources={resources}
+            events={events}
+            date={date}
+            setDate={setDate}
+            onCalendarSelection={onCalendarSelection}
+            drupalConfig={config}
+          />
           }
         </div>
 

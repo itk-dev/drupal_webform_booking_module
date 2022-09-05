@@ -8,6 +8,7 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import CalendarHeader from "./calendarheader"
+import * as PropTypes from "prop-types";
 import dayjs from "dayjs";
 import Api from "../util/api";
 import ConfigLoader from "../util/config-loader";
@@ -15,8 +16,8 @@ import ConfigLoader from "../util/config-loader";
 function Calendar({resources, events, date, setDate, onCalendarSelection, drupalConfig}) {
   const dateNow = new Date();
   const getValidRange = () => {
-    return {start: dateNow}
-  }
+    return { start: dateNow };
+  };
 
   const calendarRef = useRef();
 
@@ -86,6 +87,12 @@ function Calendar({resources, events, date, setDate, onCalendarSelection, drupal
     </div>
   );
 }
+
+Calendar.propTypes = {
+  // TODO: Fix prop types for resources and events.
+  resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+};
 
 export default Calendar;
 
