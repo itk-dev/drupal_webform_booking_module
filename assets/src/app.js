@@ -1,6 +1,5 @@
 import "./app.scss";
 import React, { useEffect, useState } from "react";
-import Calendar from "./components/calendar";
 import Userpanel from "./components/userpanel/userpanel"
 import Select from "react-select";
 import dayjs from "dayjs";

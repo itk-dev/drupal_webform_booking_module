@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useEffect } from "react";
 import ResourceDetails from '../resourceDetails/resourceDetails';
 import Loadingspinner from '../loadingSpinner/loadingSpinner';
-import "./resourceView.css";
+import "./resourceView.scss";
 
 function Resourceview({ id, config }) {
 
