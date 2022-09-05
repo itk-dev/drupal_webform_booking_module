@@ -10,7 +10,8 @@ function resourceDetails({ resourceId, config }) {
         if (config && resourceId !== null) {
             Api.fetchResource(config.api_endpoint, "1")
               .then((resource) => {
-                setResource(resource['resource'][0])
+                console.log(resource);
+                setResource(resource)
                 setFacilities(resource['facilities'])
               })
               .catch(() => {
@@ -25,10 +26,9 @@ function resourceDetails({ resourceId, config }) {
             <div>
                 <div><div><img src={'/assets/images/icons/Chair.svg'} /></div><span>{resource.capacity} siddepladser</span></div>
                 {
-                    Object.keys(facilities).map(key => {
-                        console.log()
+                    Object.keys(facilities).map((key, index) => {
                         return (
-                            <div><div><img src={facilities[key].icon} /></div><span>{facilities[key].title}</span></div>
+                            <div key={index}><div><img src={facilities[key].icon} /></div><span>{facilities[key].title}</span></div>
                         )
                     })
                 }

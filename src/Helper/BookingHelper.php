@@ -57,16 +57,6 @@ class BookingHelper
     $this->httpClient = $guzzleClient;
   }
 
-  /**
-   * Get resources from local resources endpoint.
-   *
-   * @return mixed
-   */
-  public function getResources()
-  {
-    $request = new Request(['page' => 1]);
-    return $this->getResult('v1/resources', $request);
-  }
 
   /**
    * Get a data result depending on request and desired api endpoint.
@@ -83,9 +73,24 @@ class BookingHelper
   public function getResult(string $apiEndpoint, Request $request)
   {
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      $queryString = http_build_query($request->query->all());
-      $response = $this->getData($apiEndpoint, $queryString);
-      return json_decode($response->getBody(), TRUE);
+      switch ($apiEndpoint) {
+     
+        case "v1/resources":
+          $resourceId = $request->attributes->get('resourceId');
+          if (isset($resourceId) && !empty($resourceId)) {
+            $apiEndpoint = $apiEndpoint."/".$resourceId;
+          }
+          $response = $this->getData($apiEndpoint, $resourceId);
+          return json_decode($response->getBody(), TRUE);
+          break;
+        default:
+          // $queryString = $request->getQueryString();
+          $response = $this->getData($apiEndpoint, "");
+          return json_decode($response->getBody(), TRUE);
+        break;
+
+      };
+      
     }
     else {
       $response = $this->getSampleData($apiEndpoint);
@@ -108,6 +113,9 @@ class BookingHelper
    */
   private function getData($apiEndpoint, $queryString)
   {
+    if ($apiEndpoint == "v1\/locations") {
+      die($this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString);
+    }
     $clientConfig = [];
 
     if ($this->bookingApiAllowInsecureConnection) {
@@ -115,7 +123,7 @@ class BookingHelper
     }
 
     $client = new Client($clientConfig);
-
+    
     try {
       $response = $client->get(
         $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,

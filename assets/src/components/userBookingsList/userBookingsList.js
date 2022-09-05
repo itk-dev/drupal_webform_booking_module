@@ -11,7 +11,7 @@ function UserBookingsList({ userId, key, onDeleteBooking, config }) {
 
     function loadUserBookings() {
         if (config && userId !== null) {
-            Api.fetchUserBookings(config.api_endpoint, " ")
+            Api.fetchUserBookings(config.api_endpoint, "")
                 .then((userBookings) => {
                     setUserBookings(userBookings)
                 })
@@ -19,11 +19,6 @@ function UserBookingsList({ userId, key, onDeleteBooking, config }) {
                     // TODO: Display error and retry option for user.
                 });
         }
-        // getUserBookings(userId)
-        //     .then(d => {
-        //         console.log(d);
-        //         setUserBookings(d)
-        //     })
     }
 
     function getFormattedDate(dateObj) {
@@ -57,7 +52,7 @@ function UserBookingsList({ userId, key, onDeleteBooking, config }) {
                         <span>{getFormattedDate(obj.end)} - kl. {getFormattedTime(obj.end)}</span>
                     </div>
                     <div>
-                        <button booking_id={obj.hitId} onClick={e => onDeleteBooking(e.target.getAttribute('booking_id'), index)}>Anmod om sletning</button>
+                        <button onClick={() => onDeleteBooking(obj.hitId)}>Anmod om sletning</button>
                     </div>
                 </div>
             ))

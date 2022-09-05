@@ -53,4 +53,19 @@ class ResourceImportController extends ControllerBase {
     $payload = $this->bookingHelper->getResult('v1/resources', $request);
     return new JsonResponse($payload);
   }
+  /**
+   * Fetch resources from booking service.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   The payload.
+   */
+  public function getResource(Request $request, $resourceId) {
+    $request->attributes->set('resourceId', $resourceId);
+    $payload = $this->bookingHelper->getResult('v1/resources', $request);
+    return new JsonResponse($payload);
+  }
+
 }
