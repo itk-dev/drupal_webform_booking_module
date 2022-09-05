@@ -5,7 +5,6 @@ import Select from "react-select";
 import ConfigLoader from "./util/config-loader";
 import dayjs from "dayjs";
 import Api from "./util/api";
-import DatePicker from "./components/datepicker"
 
 function App() {
   // Configuration.
@@ -17,6 +16,7 @@ function App() {
   const [date, setDate] = useState(dayjs().startOf('day'));
   const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
   const [calendarSelection, setCalendarSelection] = useState({});
+  const [calendarDisplayDate, setCalendarDisplayDate] = useState({});
 
   // Loaded data.
   const [locations, setLocations] = useState([]);
@@ -24,7 +24,6 @@ function App() {
   const [resources, setResources] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
-
 
   const onCalendarSelection = (data) => {
     setCalendarSelection(data);
@@ -148,28 +147,16 @@ function App() {
           }
         </div>
 
-
-        {/* Display datepicker */}
+        {/* Display calendar for selections */}
         <div className="row">
           {config &&
-            <DatePicker
+            <Calendar
+              resources={resources}
+              events={events}
+              onCalendarSelection={onCalendarSelection}
               drupalConfig={config}
             />
           }
-        </div>
-
-        {/* Display calendar for selections */}
-        <div className="row">
-          <div className="col-md-12">
-            {config &&
-              <Calendar
-                resources={resources}
-                events={events}
-                onCalendarSelection={onCalendarSelection}
-                drupalConfig={config}
-              />
-            }
-          </div>
         </div>
 
         {/* Display author fields */}

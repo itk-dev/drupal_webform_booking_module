@@ -7,62 +7,80 @@ import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
+import DatePicker from "./datepicker"
+import dayjs from "dayjs";
 import Api from "../util/api";
+import ConfigLoader from "../util/config-loader";
 
 function Calendar({resources, events, onCalendarSelection, drupalConfig}) {
+  const [calendarDisplayDate, setCalendarDisplayDate] = useState(dayjs().format('YYYY-MM-DD'));
   const dateNow = new Date();
-
   const getValidRange = () => {
     return {start: dateNow}
   }
 
+  const onCalendarDisplayDateSet = (calendarDisplayDate) => {
+    const newDate = dayjs(calendarDisplayDate.timeStamp).format('YYYY-MM-DD');
+    setCalendarDisplayDate(newDate);
+    console.log(newDate); //always log "1970-01-01"
+  };
+
   return (
     <div className="Calendar">
-      <FullCalendar
-        plugins={[
-          resourceTimegrid,
-          interactionPlugin,
-          dayGridPlugin,
-          timeGridPlugin,
-          listPlugin,
-          resourceTimelinePlugin,
-        ]}
-        titleFormat={{
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }}
-        headerToolbar={{
-          start: 'today',
-          center: 'title',
-          end: 'prev,next'
-        }}
-        height="850px"
-        /*scrollTime=@todo*/
-        initialView="resourceTimelineDay"
-        duration="days: 3"
-        /*selectConstraint="businessHours"*/
-        selectMirror={true}
-        nowIndicator={true}
-        navLinks={true}
-        slotDuration="00:15:00"
-        selectable={true}
-        unselectAuto={false}
-        schedulerLicenseKey={drupalConfig.license_key}
-        slotMinTime= "07:00:00"
-        slotMaxTime= "21:00:00"
-        slotLabelFormat= {{hour: '2-digit', minute: '2-digit'}}
-        selectOverlap={false}
-        nextDayThreshold="21:00:00"
-        editable={false}
-        dayMaxEvents={true}
-        locale={daLocale}
-        select={onCalendarSelection}
-        validRange={getValidRange}
-        loading={false}
-        resources={resources.map(handleResources)}
-        events={events.map(handleBusyIntervals)}
-      />
+      {
+        <DatePicker
+          drupalConfig={drupalConfig}
+          calendarDisplayDate={calendarDisplayDate}
+        />
+      }
+      <div className="col-md-12">
+        {<FullCalendar
+          plugins={[
+            resourceTimegrid,
+            interactionPlugin,
+            dayGridPlugin,
+            timeGridPlugin,
+            listPlugin,
+            resourceTimelinePlugin,
+          ]}
+          titleFormat={{
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }}
+          headerToolbar={{
+            start: 'today',
+            center: 'title',
+            end: 'prev,next'
+          }}
+          height="850px"
+          /*scrollTime=@todo*/
+          initialView="resourceTimelineDay"
+          duration="days: 3"
+          /*selectConstraint="businessHours"*/
+          selectMirror={true}
+          nowIndicator={true}
+          navLinks={true}
+          slotDuration="00:15:00"
+          selectable={true}
+          unselectAuto={false}
+          schedulerLicenseKey={drupalConfig.license_key}
+          slotMinTime= "07:00:00"
+          slotMaxTime= "21:00:00"
+          slotLabelFormat= {{hour: '2-digit', minute: '2-digit'}}
+          selectOverlap={false}
+          nextDayThreshold="21:00:00"
+          editable={false}
+          dayMaxEvents={true}
+          locale={daLocale}
+          select={onCalendarSelection}
+          validRange={getValidRange}
+          datesSet={onCalendarDisplayDateSet}
+          loading={false}
+          resources={resources.map(handleResources)}
+          events={events.map(handleBusyIntervals)}
+        />}
+      </div>
     </div>
   );
 }
