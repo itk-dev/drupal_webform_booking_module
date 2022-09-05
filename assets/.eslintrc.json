@@ -1,0 +1,28 @@
+{
+  "plugins": ["react", "jsx", "prettier", "only-warn"],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:jsdoc/recommended",
+    "plugin:prettier/recommended",
+    "plugin:cypress/recommended"
+  ],
+  "ignorePatterns": ["*.yml"],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+    }
+  },
+  "rules": {
+    "react/jsx-filename-extension": [
+      "warn",
+      {
+        "extensions": [".js", ".jsx"]
+      }
+    ]
+  }
+}
