@@ -60,30 +60,52 @@ export default class Api {
   static async fetchResource(apiEndpoint, resourceId) {
     // Setup query parameters.
     const urlSearchParams = new URLSearchParams({
-      resourceId: resourceId,
+      resourceId,
     });
 
     return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`)
       .then((response) => response.json())
       .then((data) => {
-        data['facilities'] = {
-          ...data.monitorequipment && { monitorequipment: { title: 'Projektor / Skærm', icon: '/assets/images/icons/Projector.svg' } },
-          ...data.wheelchairaccessible && { wheelchairaccessible: { title: 'Handicapvenligt', icon: '/assets/images/icons/Wheelchair.svg' } },
-          ...data.videoconferenceequipment && { videoconferenceequipment: { 'videoconferenceequipment': '/assets/images/icons/Video-camera.svg' } },
-          ...data.catering && { catering: { 'catering': '/assets/images/icons/Food.svg' } },
-          ...data.holidayOpeningHours && { holidayOpeningHours: { 'holidayOpeningHours': '/assets/images/icons/Candles.svg' } },
-        }
+        data.facilities = {
+          ...(data.monitorequipment && {
+            monitorequipment: {
+              title: "Projektor / Skærm",
+              icon: "/assets/images/icons/Projector.svg",
+            },
+          }),
+          ...(data.wheelchairaccessible && {
+            wheelchairaccessible: {
+              title: "Handicapvenligt",
+              icon: "/assets/images/icons/Wheelchair.svg",
+            },
+          }),
+          ...(data.videoconferenceequipment && {
+            videoconferenceequipment: {
+              videoconferenceequipment: "/assets/images/icons/Video-camera.svg",
+            },
+          }),
+          ...(data.catering && {
+            catering: { catering: "/assets/images/icons/Food.svg" },
+          }),
+          ...(data.holidayOpeningHours && {
+            holidayOpeningHours: {
+              holidayOpeningHours: "/assets/images/icons/Candles.svg",
+            },
+          }),
+        };
         return data;
-      })
+      });
   }
 
   static async fetchUserBookings(apiEndpoint, userId) {
     // Setup query parameters.
     const urlSearchParams = new URLSearchParams({
       userId: " ",
-      page: 1
+      page: 1,
     });
-    return fetch(`${apiEndpoint}itkdev_booking/user-bookings?${urlSearchParams}`)
+    return fetch(
+      `${apiEndpoint}itkdev_booking/user-bookings?${urlSearchParams}`
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -96,9 +118,12 @@ export default class Api {
   }
 
   static async deleteBooking(apiEndpoint, bookingId) {
-    return fetch(`${apiEndpoint}itkdev_booking/user-booking-delete/${bookingId}`, {
-      method: "DELETE"
-    })
+    return fetch(
+      `${apiEndpoint}itkdev_booking/user-booking-delete/${bookingId}`,
+      {
+        method: "DELETE",
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(

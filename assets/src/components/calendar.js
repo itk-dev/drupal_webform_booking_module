@@ -13,10 +13,8 @@ import * as PropTypes from "prop-types";
  * @param {object} props Props.
  * @param {Array} props.resources List of resources.
  * @param {Array} props.events List of events for the given resources and date.
- *
- * @see https://fullcalendar.io/docs/react#calendar-api
- *
  * @returns {string} Calendar component.
+ * @see https://fullcalendar.io/docs/react#calendar-api
  */
 function Calendar({ resources, events }) {
   //
@@ -63,7 +61,6 @@ function Calendar({ resources, events }) {
 
   return (
     <div className="Calendar">
-
       <FullCalendar
         plugins={[
           resourceTimegrid,
