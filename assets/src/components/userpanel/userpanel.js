@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import UserBookingsList from "../userBookingsList/userBookingsList"
 import Loadingspinner from '../loadingSpinner/loadingSpinner';
 import Api from "../../util/api"
-import './userpanel.css';
+import './userpanel.scss';
 
 function Userpanel({ userId, config }) {
 
