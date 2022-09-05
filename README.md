@@ -19,6 +19,18 @@ To build the code for use in the drupal module
 ./create-build.sh
 ```
 
+## Code standards
+
+Check js coding standards
+```
+itkdev-docker-compose run node npm run check-coding-standards
+```
+
+Apply (automatic fixes) js coding standards
+```
+itkdev-docker-compose run node npm run apply-coding-standards
+```
+
 ## Configuration
 
 When the app is served through Drupal it will look for `window.drupalSettings` and load those.
