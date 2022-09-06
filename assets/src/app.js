@@ -2,7 +2,7 @@ import "./app.scss";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import dayjs from "dayjs";
-import localeData from "dayjs/locale/da";
+import "dayjs/locale/da";
 import Userpanel from "./components/userpanel/userpanel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
@@ -11,28 +11,28 @@ import Resourceview from "./components/resourceView/resourceView";
 
 dayjs.locale("da");
 
-/** App component. */
+/**
+ * App component.
+ *
+ * @returns {string} App component.
+ */
 function App() {
   // Configuration.
   const [config, setConfig] = useState(null);
 
   // User selections.
   const [location, setLocation] = useState(null);
-  const [resource, setResource] = useState(null);
   const [date, setDate] = useState(new Date());
-  const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
   const [calendarSelection, setCalendarSelection] = useState({});
+  // TODO: Add these.
+  // const [resource, setResource] = useState(null);
+  // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
 
   // Loaded data.
-  const [locations, setLocations] = useState([]);
   const [locationOptions, setLocationOptions] = useState([]);
   const [resources, setResources] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
-
-  const onCalendarSelection = (data) => {
-    setCalendarSelection(data);
-  };
 
   // Get configuration.
   useEffect(() => {
@@ -46,8 +46,6 @@ function App() {
     if (config !== null) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
-          setLocations(loadedLocations);
-
           setLocationOptions(
             loadedLocations.map((value) => {
               return {
@@ -104,24 +102,22 @@ function App() {
 
   return (
     <div className="App">
-      {!config && <div>Loading...</div>}
       <div className="container-fluid">
+        {!config && <div>Loading...</div>}
         {config && (
           <div className="row filters-wrapper">
             <div className="col-md-3">
-              {/* Add dropdown with options from locations */}
-              {locationOptions.length > 0 && (
-                <Select
-                  styles={{}}
-                  options={locationOptions}
-                  onChange={(newValue) => {
-                    setLocation(newValue.value);
-                  }}
-                />
-              )}
+              {/* Dropdown with locations */}
+              <Select
+                styles={{}}
+                options={locationOptions}
+                onChange={(newValue) => {
+                  setLocation(newValue.value);
+                }}
+              />
             </div>
             <div className="col-md-3">
-              {/* Add dropdown with options from resources */}
+              {/* Dropdown with resources */}
               <Select
                 styles={{}}
                 options={resourcesOptions}
@@ -130,15 +126,13 @@ function App() {
                 }}
               />
             </div>
-            {/* Add dropdown with options for facilities */}
+            {/* Dropdown with facilities */}
             <div className="col-md-3">
               {/* TODO: Add dropdown with options from facilities (v1) */}
-              {}
             </div>
-            {/* Add dropdown capacity widget. */}
+            {/* Dropdown with capacity */}
             <div className="col-md-3">
               {/* TODO: Add dropdown with options from capacity (v1) */}
-              {}
             </div>
           </div>
         )}
@@ -148,7 +142,6 @@ function App() {
           {config && (
             <div className="col-md-12">
               {/* TODO: Add info text box (v0.1) */}
-              {}
             </div>
           )}
         </div>
@@ -161,32 +154,26 @@ function App() {
               events={events}
               date={date}
               setDate={setDate}
-              onCalendarSelection={onCalendarSelection}
+              calendarSelection={calendarSelection}
+              onCalendarSelection={setCalendarSelection}
               drupalConfig={config}
             />
           )}
-
-          {/* TODO: Add dropdown with options from facilities */}
-          {/* TODO: Add dropdown with options from capacity */}
-
-          {/* TODO: Add info text box */}
 
           {/* Display calendar for selections */}
           {resources?.length > 0 && events?.length > 0 && (
             <Calendar resources={resources} events={events} />
           )}
 
-          {/* TODO: Required author fields */}
+          {/* TODO: Only show if user menu is requested */}
           <Userpanel config={config} />
 
+          {/* TODO: Only show if resource view is requested */}
           <Resourceview config={config} />
         </div>
 
         {/* Display author fields */}
-        <div className="row">
-          {/* TODO: Required author fields (v0.1) */}
-          {}
-        </div>
+        <div className="row">{/* TODO: Required author fields (v0.1) */}</div>
       </div>
     </div>
   );
