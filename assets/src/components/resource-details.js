@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
-import Api from "../../util/api";
+import Api from "../util/api";
+import * as PropTypes from "prop-types";
 
 /**
- * @param root0
- * @param root0.resourceId
- * @param root0.config
+ * @param {object} props Props.
+ * @param {object} props.resourceId Resource id.
+ * @param {object} props.config App config.
  */
-function resourceDetails({ resourceId, config }) {
+function ResourceDetails({ resourceId, config }) {
   const [resource, setResource] = useState();
   const [facilities, setFacilities] = useState();
 
   useEffect(() => {
     if (config && resourceId !== null) {
-      Api.fetchResource(config.api_endpoint, "1")
+      Api.fetchResource(config.api_endpoint, resourceId)
         .then((resource) => {
           setResource(resource);
           setFacilities(resource.facilities);
@@ -92,4 +93,12 @@ function resourceDetails({ resourceId, config }) {
     )
   );
 }
-export default resourceDetails;
+
+ResourceDetails.propTypes = {
+  resourceId: PropTypes.string.isRequired,
+  config: PropTypes.shape({
+    api_endpoint: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
+export default ResourceDetails;

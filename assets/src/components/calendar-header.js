@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import React from "react";
 import dayjs from "dayjs";
-import Calendar from "./calendar";
-import ConfigLoader from "../util/config-loader";
+import * as PropTypes from "prop-types";
 
 /**
- * @param root0
- * @param root0.drupalConfig
- * @param root0.date
- * @param root0.setDate
+ * Calendar header component.
+ *
+ * @param {object} props Props.
+ * @param {object} props.date Date.
+ * @param {Function} props.setDate Set date function.
+ * @returns {string} Calendar header component.
  */
-function CalendarHeader({ drupalConfig, date, setDate }) {
+function CalendarHeader({ date, setDate }) {
   const onChangeDate = (event) => {
     switch (event.target.id) {
       case "calendar-today":
@@ -36,7 +37,11 @@ function CalendarHeader({ drupalConfig, date, setDate }) {
     <div className="col-md-12">
       <div className="row calendar-header-wrapper">
         <div className="col-md-4">
-          <button id="calendar-today" onClick={(e) => onChangeDate(e)}>
+          <button
+            id="calendar-today"
+            type="button"
+            onClick={(e) => onChangeDate(e)}
+          >
             Today
           </button>
         </div>
@@ -60,12 +65,17 @@ function CalendarHeader({ drupalConfig, date, setDate }) {
           <div className="pull-right">
             <button
               id="calendar-back"
+              type="button"
               disabled={new Date() > date}
               onClick={(e) => onChangeDate(e)}
             >
               Back
             </button>
-            <button id="calendar-forward" onClick={(e) => onChangeDate(e)}>
+            <button
+              id="calendar-forward"
+              type="button"
+              onClick={(e) => onChangeDate(e)}
+            >
               Forward
             </button>
           </div>
@@ -74,5 +84,10 @@ function CalendarHeader({ drupalConfig, date, setDate }) {
     </div>
   );
 }
+
+CalendarHeader.propTypes = {
+  date: PropTypes.shape({}).isRequired,
+  setDate: PropTypes.func.isRequired,
+};
 
 export default CalendarHeader;
