@@ -8,9 +8,7 @@ import "./user-panel.scss";
  * @param {object} props.config App config.
  */
 function UserPanel({ config }) {
-  /**
-   * @param {string} bookingId Booking id to request deletion of.
-   */
+  /** @param {string} bookingId Booking id to request deletion of. */
   function requestDeletion(bookingId) {
     if (bookingId) {
       bookingId = btoa(bookingId);

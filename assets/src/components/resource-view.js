@@ -17,7 +17,7 @@ function ResourceView({ id, config }) {
       <br />
       <h1>Ressource Information:</h1>
       {}
-      <ResourceDetails config={config} resourceId={id}/>
+      <ResourceDetails config={config} resourceId={id} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Api from "../util/api";
 import * as PropTypes from "prop-types";
+import Api from "../util/api";
 
 /**
  * @param {object} props Props.
