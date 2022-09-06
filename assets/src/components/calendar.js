@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,120 +8,93 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
+import dayjs from "dayjs";
+import CalendarHeader from "./calendarheader";
+import Api from "../util/api";
+import ConfigLoader from "../util/config-loader";
 
 /**
- * @param {object} props Props.
- * @param {Array} props.resources List of resources.
- * @param {Array} props.events List of events for the given resources and date.
- *
- * @see https://fullcalendar.io/docs/react#calendar-api
- *
- * @returns {string} Calendar component.
+ * @param root0
+ * @param root0.resources
+ * @param root0.events
+ * @param root0.date
+ * @param root0.setDate
+ * @param root0.onCalendarSelection
+ * @param root0.drupalConfig
  */
-function Calendar({ resources, events }) {
-  //
-
-  // calendarRef required for navigation.
-  const calendarRef = React.createRef();
-
+function Calendar({
+  resources,
+  events,
+  date,
+  setDate,
+  onCalendarSelection,
+  drupalConfig,
+}) {
   const dateNow = new Date();
-  const [dateDisplayed, setDateDisplayed] = useState(dateNow);
-
-  /* @todo set default date selection. */
-  const setDate = (info) => {
-    // console.log(info);
-  };
-
-  /* @todo handle date selection. */
-  const handleDateSelect = (selectionInfo) => {
-    // console.log(selectionInfo);
-  };
-
-  /*  */
   const getValidRange = () => {
     return { start: dateNow };
   };
 
-  /**
-   * Prepare json data source for display.
-   *
-   * @param data {object} A data source.
-   */
-  const handleData = (data) => {
-    const dataFormatted = [];
-    switch (data["@id"]) {
-      case "/v1/busy-intervals":
-        dataFormatted.data = data["hydra:member"].map(handleBusyIntervals);
-        break;
-      case "/v1/resources":
-        dataFormatted.data = data["hydra:member"].map(handleResources);
-        break;
-      default:
-    }
-    return dataFormatted.data;
-  };
+  const calendarRef = useRef();
+
+  // Go to calendar date when date changes.
+  useEffect(() => {
+    calendarRef?.current?.getApi().gotoDate(date);
+  }, [date]);
 
   return (
     <div className="Calendar">
-      <FullCalendar
-        plugins={[
-          resourceTimegrid,
-          interactionPlugin,
-          dayGridPlugin,
-          timeGridPlugin,
-          listPlugin,
-          resourceTimelinePlugin,
-        ]}
-        titleFormat={{
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          weekday: "long",
-        }}
-        customButtons={{
-          prev: {
-            text: "Prev",
-            click() {
-              // window.calendar.prev();
-              // window.calendar.refetchResources();
-            },
-          },
-          next: {
-            text: "Next",
-            click() {
-              // window.calendar.next();
-              // window.calendar.refetchResources();
-            },
-          },
-        }}
-        height="850px"
-        selectMirror
-        /* scrollTime=@todo */
-        initialView="resourceTimelineDay"
-        duration="days: 3"
-        initialDate={dateDisplayed}
-        /* selectConstraint="businessHours" */
-        nowIndicator
-        navLinks
-        slotDuration="00:15:00"
-        selectable
-        unselectAuto={false}
-        schedulerLicenseKey="0245891543-fcs-1654684785"
-        slotMinTime="07:00:00"
-        slotMaxTime="21:00:00"
-        slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
-        selectOverlap={false}
-        nextDayThreshold="21:00:00"
-        editable={false}
-        dayMaxEvents
-        locale={daLocale}
-        select={handleDateSelect}
-        validRange={getValidRange}
-        datesSet={setDate}
-        loading={false}
-        resources={resources.map(handleResources)}
-        events={events.map(handleBusyIntervals)}
+      <CalendarHeader
+        drupalConfig={drupalConfig}
+        date={date}
+        setDate={setDate}
       />
+      <div className="col-md-12">
+        {
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[
+              resourceTimegrid,
+              interactionPlugin,
+              dayGridPlugin,
+              timeGridPlugin,
+              listPlugin,
+              resourceTimelinePlugin,
+            ]}
+            titleFormat={{
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }}
+            headerToolbar=""
+            height="850px"
+            /* scrollTime=@todo */
+            initialView="resourceTimelineDay"
+            duration="days: 3"
+            /* selectConstraint="businessHours" */
+            selectMirror
+            nowIndicator
+            navLinks
+            slotDuration="00:15:00"
+            selectable
+            unselectAuto={false}
+            schedulerLicenseKey={drupalConfig.license_key}
+            slotMinTime="07:00:00"
+            slotMaxTime="21:00:00"
+            slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
+            selectOverlap={false}
+            nextDayThreshold="21:00:00"
+            editable={false}
+            dayMaxEvents
+            locale={daLocale}
+            select={onCalendarSelection}
+            validRange={getValidRange}
+            loading={false}
+            resources={resources.map(handleResources)}
+            events={events.map(handleBusyIntervals)}
+          />
+        }
+      </div>
     </div>
   );
 }
