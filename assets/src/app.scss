@@ -1,6 +1,12 @@
+@import "styles/calendarheader";
 body {
   font-family: sans-serif;
 }
+
 .App {
   background: white;
+}
+
+.filters-wrapper {
+  margin-bottom: 1em;
 }

@@ -84,8 +84,9 @@ class UserBookingsHelper
         case "v1/user-bookings":
           if ($request->isMethod("DELETE")) {
             $response = $this->deleteData($apiEndpoint, $request->getQueryString());
+          } else {
+            $response = $this->getData($apiEndpoint, $request->getQueryString());
           }
-          $response = $this->getData($apiEndpoint, $request->getQueryString());
           return json_decode($response->getBody(), TRUE);
           break;
         case "v1/booking-details":

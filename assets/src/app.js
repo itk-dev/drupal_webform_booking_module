@@ -11,11 +11,7 @@ import Resourceview from "./components/resourceView/resourceView";
 
 dayjs.locale("da");
 
-/**
- * App component.
- *
- * @returns {string} App component.
- */
+/** App component. */
 function App() {
   // Configuration.
   const [config, setConfig] = useState(null);
@@ -23,8 +19,9 @@ function App() {
   // User selections.
   const [location, setLocation] = useState(null);
   const [resource, setResource] = useState(null);
-  const [date, setDate] = useState(dayjs().startOf("day"));
+  const [date, setDate] = useState(new Date());
   const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
+  const [calendarSelection, setCalendarSelection] = useState({});
 
   // Loaded data.
   const [locations, setLocations] = useState([]);
@@ -32,6 +29,10 @@ function App() {
   const [resources, setResources] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
+
+  const onCalendarSelection = (data) => {
+    setCalendarSelection(data);
+  };
 
   // Get configuration.
   useEffect(() => {
@@ -57,7 +58,7 @@ function App() {
           );
         })
         .catch(() => {
-          // TODO: Display error and retry option for user.
+          // TODO: Display error and retry option for user. (v0.1)
         });
     }
   }, [config]);
@@ -79,48 +80,89 @@ function App() {
           );
         })
         .catch(() => {
-          // TODO: Display error and retry option for user.
+          // TODO: Display error and retry option for user. (v0.1)
         });
     }
   }, [location]);
 
   // Get events for the given resources.
   useEffect(() => {
-    if (config && resources?.length > 0) {
-      Api.fetchEvents(config.api_endpoint, resources, date)
+    if (config && resources?.length > 0 && date !== null) {
+      Api.fetchEvents(
+        config.api_endpoint,
+        resources,
+        dayjs(date).startOf("day")
+      )
         .then((loadedEvents) => {
           setEvents(loadedEvents);
         })
         .catch(() => {
-          // TODO: Display error and retry option for user.
+          // TODO: Display error and retry option for user. (v0.1)
         });
     }
-  }, [resources]);
+  }, [resources, date]);
 
   return (
     <div className="App">
       {!config && <div>Loading...</div>}
-      {config && (
-        <>
-          {/* Add dropdown with options from locations */}
-          {locationOptions.length > 0 && (
-            <Select
-              styles={{}}
-              options={locationOptions}
-              onChange={(newValue) => {
-                setLocation(newValue.value);
-              }}
-            />
-          )}
+      <div className="container-fluid">
+        {config && (
+          <div className="row filters-wrapper">
+            <div className="col-md-3">
+              {/* Add dropdown with options from locations */}
+              {locationOptions.length > 0 && (
+                <Select
+                  styles={{}}
+                  options={locationOptions}
+                  onChange={(newValue) => {
+                    setLocation(newValue.value);
+                  }}
+                />
+              )}
+            </div>
+            <div className="col-md-3">
+              {/* Add dropdown with options from resources */}
+              <Select
+                styles={{}}
+                options={resourcesOptions}
+                onChange={(newValue) => {
+                  setLocation(newValue.value);
+                }}
+              />
+            </div>
+            {/* Add dropdown with options for facilities */}
+            <div className="col-md-3">
+              {/* TODO: Add dropdown with options from facilities (v1) */}
+              {}
+            </div>
+            {/* Add dropdown capacity widget. */}
+            <div className="col-md-3">
+              {/* TODO: Add dropdown with options from capacity (v1) */}
+              {}
+            </div>
+          </div>
+        )}
 
-          {/* Add dropdown with options from resources */}
-          {resourcesOptions?.length > 0 && (
-            <Select
-              styles={{}}
-              options={resourcesOptions}
-              onChange={(newValue) => {
-                setLocation(newValue.value);
-              }}
+        {/* Add info box */}
+        <div className="row">
+          {config && (
+            <div className="col-md-12">
+              {/* TODO: Add info text box (v0.1) */}
+              {}
+            </div>
+          )}
+        </div>
+
+        {/* Display calendar for selections */}
+        <div className="row">
+          {config && (
+            <Calendar
+              resources={resources}
+              events={events}
+              date={date}
+              setDate={setDate}
+              onCalendarSelection={onCalendarSelection}
+              drupalConfig={config}
             />
           )}
 
@@ -135,12 +177,17 @@ function App() {
           )}
 
           {/* TODO: Required author fields */}
-
           <Userpanel config={config} />
 
           <Resourceview config={config} />
-        </>
-      )}
+        </div>
+
+        {/* Display author fields */}
+        <div className="row">
+          {/* TODO: Required author fields (v0.1) */}
+          {}
+        </div>
+      </div>
     </div>
   );
 }
