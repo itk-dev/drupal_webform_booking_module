@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
-import Userpanel from "./components/userpanel/userpanel";
+import UserPanel from "./components/user-panel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
 import Api from "./util/api";
-import Resourceview from "./components/resourceView/resourceView";
+import ResourceView from "./components/resource-view";
 
 dayjs.locale("da");
 
@@ -105,75 +105,68 @@ function App() {
       <div className="container-fluid">
         {!config && <div>Loading...</div>}
         {config && (
-          <div className="row filters-wrapper">
-            <div className="col-md-3">
-              {/* Dropdown with locations */}
-              <Select
-                styles={{}}
-                options={locationOptions}
-                onChange={(newValue) => {
-                  setLocation(newValue.value);
-                }}
+          <>
+            <div className="row filters-wrapper">
+              <div className="col-md-3">
+                {/* Dropdown with locations */}
+                <Select
+                  styles={{}}
+                  options={locationOptions}
+                  onChange={(newValue) => {
+                    setLocation(newValue.value);
+                  }}
+                />
+              </div>
+              <div className="col-md-3">
+                {/* Dropdown with resources */}
+                <Select
+                  styles={{}}
+                  options={resourcesOptions}
+                  onChange={(newValue) => {
+                    setLocation(newValue.value);
+                  }}
+                />
+              </div>
+              {/* Dropdown with facilities */}
+              <div className="col-md-3">
+                {/* TODO: Add dropdown with options from facilities (v1) */}
+              </div>
+              {/* Dropdown with capacity */}
+              <div className="col-md-3">
+                {/* TODO: Add dropdown with options from capacity (v1) */}
+              </div>
+            </div>
+
+            {/* Add info box */}
+            <div className="row">
+              <div className="col-md-12">
+                {/* TODO: Add info text box (v0.1) */}
+              </div>
+            </div>
+
+            {/* Display calendar for selections */}
+            <div className="row">
+              <Calendar
+                resources={resources}
+                events={events}
+                date={date}
+                setDate={setDate}
+                calendarSelection={calendarSelection}
+                onCalendarSelection={setCalendarSelection}
+                config={config}
               />
             </div>
-            <div className="col-md-3">
-              {/* Dropdown with resources */}
-              <Select
-                styles={{}}
-                options={resourcesOptions}
-                onChange={(newValue) => {
-                  setLocation(newValue.value);
-                }}
-              />
-            </div>
-            {/* Dropdown with facilities */}
-            <div className="col-md-3">
-              {/* TODO: Add dropdown with options from facilities (v1) */}
-            </div>
-            {/* Dropdown with capacity */}
-            <div className="col-md-3">
-              {/* TODO: Add dropdown with options from capacity (v1) */}
-            </div>
-          </div>
+
+            {/* TODO: Only show if user menu is requested */}
+            <UserPanel config={config} />
+
+            {/* TODO: Only show if resource view is requested */}
+            <ResourceView config={config} id={"1"} />
+
+            {/* Display author fields */}
+            <div className="row">{/* TODO: Required author fields (v0.1) */}</div>
+          </>
         )}
-
-        {/* Add info box */}
-        <div className="row">
-          {config && (
-            <div className="col-md-12">
-              {/* TODO: Add info text box (v0.1) */}
-            </div>
-          )}
-        </div>
-
-        {/* Display calendar for selections */}
-        <div className="row">
-          {config && (
-            <Calendar
-              resources={resources}
-              events={events}
-              date={date}
-              setDate={setDate}
-              calendarSelection={calendarSelection}
-              onCalendarSelection={setCalendarSelection}
-              drupalConfig={config}
-            />
-          )}
-
-          {/* Display calendar for selections */}
-          {resources?.length > 0 && events?.length > 0 && (
-            <Calendar resources={resources} events={events} />
-          )}
-
-          {/* TODO: Only show if user menu is requested */}
-          <Userpanel config={config} />
-
-          {/* TODO: Only show if resource view is requested */}
-          <Resourceview config={config} />
-        </div>
-
-        {/* Display author fields */}
-        <div className="row">{/* TODO: Required author fields (v0.1) */}</div>
       </div>
     </div>
   );
