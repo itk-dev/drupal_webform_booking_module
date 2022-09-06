@@ -3,6 +3,7 @@ export default class ConfigLoader {
   static async loadConfig() {
     // Load config from drupalSettings if available.
     if (window?.drupalSettings?.booking_app?.booking) {
+      console.log('123321');
       return window.drupalSettings.booking_app.booking;
     }
     // Loading from config file in public folder.

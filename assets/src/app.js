@@ -102,7 +102,7 @@ function App() {
       }
       <div className="container-fluid">
         {config &&
-        <div className="row">
+        <div className="row filters-wrapper">
           <div className="col-md-3">
             {/* Add dropdown with options from locations */}
             {locationOptions.length > 0 &&

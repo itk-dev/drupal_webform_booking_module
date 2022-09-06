@@ -51,12 +51,7 @@ function Calendar({resources, events, date, setDate, onCalendarSelection, drupal
             month: "long",
             day: "numeric",
           }}
-          headerToolbar={{
-            start: 'today',
-            center: 'title',
-            end: 'prev,next'
-          }}
-
+          headerToolbar={''}
           height="850px"
           /*scrollTime=@todo*/
           initialView="resourceTimelineDay"

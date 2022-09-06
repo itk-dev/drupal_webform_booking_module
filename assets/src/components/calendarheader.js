@@ -27,18 +27,29 @@ function CalendarHeader({drupalConfig, date, setDate}) {
 
   return (
     <div className="col-md-12">
-      <button id="calendar-today" onClick={(e)=>onChangeDate(e)}>Today</button>
-      <button id="calendar-back" disabled={new Date() > date} onClick={(e)=>onChangeDate(e)}>Back</button>
-      <button id="calendar-forward" onClick={(e)=>onChangeDate(e)}>Forward</button>
-      <div className="datepicker pull-right">
-        <input
-          className="calendar-datepicker-input"
-          id="calendar-datepicker"
-          type="date"
-          min={dayjs(new Date()).format("YYYY-MM-DD")}
-          value={dayjs(date).format("YYYY-MM-DD")}
-          onChange={(e)=>onChangeDate(e)}
-        />
+      <div className="row calendar-header-wrapper">
+        <div className="col-md-4">
+          <button id="calendar-today" onClick={(e)=>onChangeDate(e)}>Today</button>
+        </div>
+        <div className="col-md-4">
+          <div className="datepicker text-center">
+            <input
+              className="calendar-datepicker-input"
+              id="calendar-datepicker"
+              type="date"
+              min={dayjs(new Date()).format("YYYY-MM-DD")}
+              value={dayjs(date).format("YYYY-MM-DD")}
+              onChange={(e)=>onChangeDate(e)}
+            />
+            <label className="h3 calendar-title" htmlFor="calendar-datepicker">{dayjs(date).format("D. MMMM YYYY")}<span className="small">X</span></label>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="pull-right">
+            <button id="calendar-back" disabled={new Date() > date} onClick={(e)=>onChangeDate(e)}>Back</button>
+            <button id="calendar-forward" onClick={(e)=>onChangeDate(e)}>Forward</button>
+          </div>
+        </div>
       </div>
     </div>
   );
