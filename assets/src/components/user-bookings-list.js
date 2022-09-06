@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import Api from "../../util/api";
+import Api from "../util/api";
 
 /**
  * @param root0

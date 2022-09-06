@@ -1,28 +1,28 @@
-import { useEffect } from "react";
-import UserBookingsList from "../userBookingsList/userBookingsList";
-import Loadingspinner from "../loadingSpinner/loadingSpinner";
-import Api from "../../util/api";
-import "./userpanel.scss";
+import React from "react";
+import UserBookingsList from "./user-bookings-list";
+import Api from "../util/api";
+import "./user-panel.scss";
 
 /**
- * @param root0
- * @param root0.userId
- * @param root0.config
+ * @param {object} props Props.
+ * @param {object} props.config App config.
  */
-function Userpanel({ userId, config }) {
-  /** @param bookingId */
+function UserPanel({ config }) {
+  /**
+   * @param {string} bookingId Booking id to request deletion of.
+   */
   function requestDeletion(bookingId) {
     if (bookingId) {
       bookingId = btoa(bookingId);
       Api.deleteBooking(config.api_endpoint, bookingId)
         .then((resource) => {
+          // TODO: Report delete success.
+          // TODO: Update list of bookings.
           console.log(resource);
         })
         .catch(() => {
           // TODO: Display error and retry option for user.
         });
-
-      // alert('Request deletion for booking hitid: ' + bookingId);
     }
   }
 
@@ -42,4 +42,4 @@ function Userpanel({ userId, config }) {
   );
 }
 
-export default Userpanel;
+export default UserPanel;
