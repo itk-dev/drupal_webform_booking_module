@@ -42,7 +42,7 @@ class UserBookingsController extends ControllerBase {
   }
 
   /**
-   * Fetch bookings from booking service.
+   * Fetch  bookings from booking service.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request.
@@ -51,6 +51,21 @@ class UserBookingsController extends ControllerBase {
    *   The payload.
    */
   public function getUserBookings(Request $request) {
+    $payload = $this->bookingHelper->getResult('v1/user-bookings', $request);
+    return new JsonResponse($payload);
+  }
+
+   /**
+   * delete bookings from booking service.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   The payload.
+   */
+  public function DeleteUserBooking(Request $request, $bookingId) {
+    $request->attributes->set('bookingId', $bookingId);
     $payload = $this->bookingHelper->getResult('v1/user-bookings', $request);
     return new JsonResponse($payload);
   }
@@ -69,17 +84,4 @@ class UserBookingsController extends ControllerBase {
     return new JsonResponse($payload);
   }
 
-    /**
-   * Send request to delete booking.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
-   *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
-   */
-  public function DeleteUserBooking(Request $request) {
-    $payload = $this->bookingHelper->sendRequest("v1/user-bookings", $request);
-    return new JsonResponse($payload);
-  }
 }

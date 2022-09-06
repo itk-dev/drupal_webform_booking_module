@@ -2,9 +2,14 @@ import "./app.scss";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import dayjs from "dayjs";
+import localeData from "dayjs/locale/da";
+import Userpanel from "./components/userpanel/userpanel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
 import Api from "./util/api";
+import Resourceview from "./components/resourceView/resourceView";
+
+dayjs.locale("da");
 
 /** App component. */
 function App() {
@@ -160,6 +165,21 @@ function App() {
               drupalConfig={config}
             />
           )}
+
+          {/* TODO: Add dropdown with options from facilities */}
+          {/* TODO: Add dropdown with options from capacity */}
+
+          {/* TODO: Add info text box */}
+
+          {/* Display calendar for selections */}
+          {resources?.length > 0 && events?.length > 0 && (
+            <Calendar resources={resources} events={events} />
+          )}
+
+          {/* TODO: Required author fields */}
+          <Userpanel config={config} />
+
+          <Resourceview config={config} />
         </div>
 
         {/* Display author fields */}

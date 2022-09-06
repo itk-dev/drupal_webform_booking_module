@@ -7,6 +7,15 @@ itkdev_booking.resources_endpoint:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
+itkdev_booking.resource_endpoint:
+  path: '/itkdev_booking/resources/{resourceId}'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\ResourceImportController::getResource'
+  methods: [GET]
+  requirements:
+    # Free access to call api endpoint. API key handled in the other end.
+    _access: 'TRUE'
+
 itkdev_booking.bookings_endpoint:
   path: '/itkdev_booking/bookings'
   defaults:
@@ -34,6 +43,15 @@ itkdev_booking.user_bookings:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
+itkdev_booking.user_bookings_delete:
+  path: '/itkdev_booking/user-booking-delete/{bookingId}'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::DeleteUserBooking'
+  methods: [DELETE]
+  requirements:
+    # Free access to call api endpoint. API key handled in the other end.
+    _access: 'TRUE'
+
 itkdev_booking.booking_details:
   path: '/itkdev_booking/booking-details/{hitid}'
   defaults:
@@ -41,12 +59,4 @@ itkdev_booking.booking_details:
   methods: [GET]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
-    _access: 'TRUE'
-
-itkdev_booking.remove_booking:
-  path: '/itkdev_booking/remove-booking'
-  defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::DeleteUserBooking'
-  requirements:
-    _permission: "access content"
     _access: 'TRUE'

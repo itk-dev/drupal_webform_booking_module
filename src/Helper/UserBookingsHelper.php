@@ -82,7 +82,11 @@ class UserBookingsHelper
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
       switch ($apiEndpoint) {
         case "v1/user-bookings":
-          $response = $this->getData($apiEndpoint."?userId=1", $request->getQueryString());
+          if ($request->isMethod("DELETE")) {
+            $response = $this->deleteData($apiEndpoint, $request->getQueryString());
+          } else {
+            $response = $this->getData($apiEndpoint, $request->getQueryString());
+          }
           return json_decode($response->getBody(), TRUE);
           break;
         case "v1/booking-details":
@@ -170,6 +174,20 @@ class UserBookingsHelper
     return $response;
   }
 
+  private function deleteData($apiEndpoint, $queryString)
+  {
+    $response = [];
+    $client = new Client();
+    $response = $client->delete(
+      $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
+      ['headers' => [
+        'accept' => 'application/ld+json',
+        'Authorization' => 'Apikey ' . $this->bookingApiKey
+      ]]
+    );
+
+    return $response;
+  }
   /**
    * Get real data.
    *
