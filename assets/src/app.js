@@ -6,6 +6,7 @@ import localeData from "dayjs/locale/da";
 import Userpanel from "./components/userpanel/userpanel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
+import AuthorFields from "./components/authorfields";
 import Api from "./util/api";
 import Resourceview from "./components/resourceView/resourceView";
 
@@ -22,6 +23,7 @@ function App() {
   const [date, setDate] = useState(new Date());
   const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
   const [calendarSelection, setCalendarSelection] = useState({});
+  const [authorFields, setAuthorFields] = useState({});
 
   // Loaded data.
   const [locations, setLocations] = useState([]);
@@ -101,6 +103,17 @@ function App() {
         });
     }
   }, [resources, date]);
+
+  // Set selection as json.
+  useEffect(() => {
+    if (config) {
+      document.getElementById(config.output_field_id).value =
+        JSON.stringify({
+        ...calendarSelection,
+        ...authorFields
+      });
+    }
+  }, [calendarSelection, authorFields]);
 
   return (
     <div className="App">
@@ -184,8 +197,13 @@ function App() {
 
         {/* Display author fields */}
         <div className="row">
-          {/* TODO: Required author fields (v0.1) */}
-          {}
+          {config && (
+            <AuthorFields
+              drupalConfig={config}
+              authorFields={authorFields}
+              setAuthorFields={setAuthorFields}
+            />
+          )}
         </div>
       </div>
     </div>
