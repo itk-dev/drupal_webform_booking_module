@@ -1,5 +1,5 @@
-import {useEffect, useState, useRef} from "react";
-import FullCalendar from '@fullcalendar/react' // must go before plugins
+import { useEffect, useState, useRef } from "react";
+import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -7,13 +7,29 @@ import listPlugin from "@fullcalendar/list";
 import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
-import CalendarHeader from "./calendarheader"
 import * as PropTypes from "prop-types";
 import dayjs from "dayjs";
+import CalendarHeader from "./calendarheader";
 import Api from "../util/api";
 import ConfigLoader from "../util/config-loader";
 
-function Calendar({resources, events, date, setDate, onCalendarSelection, drupalConfig}) {
+/**
+ * @param root0
+ * @param root0.resources
+ * @param root0.events
+ * @param root0.date
+ * @param root0.setDate
+ * @param root0.onCalendarSelection
+ * @param root0.drupalConfig
+ */
+function Calendar({
+  resources,
+  events,
+  date,
+  setDate,
+  onCalendarSelection,
+  drupalConfig,
+}) {
   const dateNow = new Date();
   const getValidRange = () => {
     return { start: dateNow };
@@ -23,61 +39,61 @@ function Calendar({resources, events, date, setDate, onCalendarSelection, drupal
 
   // Go to calendar date when date changes.
   useEffect(() => {
-    calendarRef?.current?.getApi().gotoDate(date)
+    calendarRef?.current?.getApi().gotoDate(date);
   }, [date]);
 
   return (
     <div className="Calendar">
-      {
-        <CalendarHeader
-          drupalConfig={drupalConfig}
-          date={date}
-          setDate={setDate}
-        />
-      }
+      <CalendarHeader
+        drupalConfig={drupalConfig}
+        date={date}
+        setDate={setDate}
+      />
       <div className="col-md-12">
-        {<FullCalendar
-          ref={calendarRef}
-          plugins={[
-            resourceTimegrid,
-            interactionPlugin,
-            dayGridPlugin,
-            timeGridPlugin,
-            listPlugin,
-            resourceTimelinePlugin,
-          ]}
-          titleFormat={{
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }}
-          headerToolbar={''}
-          height="850px"
-          /*scrollTime=@todo*/
-          initialView="resourceTimelineDay"
-          duration="days: 3"
-          /*selectConstraint="businessHours"*/
-          selectMirror={true}
-          nowIndicator={true}
-          navLinks={true}
-          slotDuration="00:15:00"
-          selectable={true}
-          unselectAuto={false}
-          schedulerLicenseKey={drupalConfig.license_key}
-          slotMinTime= "07:00:00"
-          slotMaxTime= "21:00:00"
-          slotLabelFormat= {{hour: '2-digit', minute: '2-digit'}}
-          selectOverlap={false}
-          nextDayThreshold="21:00:00"
-          editable={false}
-          dayMaxEvents={true}
-          locale={daLocale}
-          select={onCalendarSelection}
-          validRange={getValidRange}
-          loading={false}
-          resources={resources.map(handleResources)}
-          events={events.map(handleBusyIntervals)}
-        />}
+        {
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[
+              resourceTimegrid,
+              interactionPlugin,
+              dayGridPlugin,
+              timeGridPlugin,
+              listPlugin,
+              resourceTimelinePlugin,
+            ]}
+            titleFormat={{
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }}
+            headerToolbar=""
+            height="850px"
+            /* scrollTime=@todo */
+            initialView="resourceTimelineDay"
+            duration="days: 3"
+            /* selectConstraint="businessHours" */
+            selectMirror
+            nowIndicator
+            navLinks
+            slotDuration="00:15:00"
+            selectable
+            unselectAuto={false}
+            schedulerLicenseKey={drupalConfig.license_key}
+            slotMinTime="07:00:00"
+            slotMaxTime="21:00:00"
+            slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
+            selectOverlap={false}
+            nextDayThreshold="21:00:00"
+            editable={false}
+            dayMaxEvents
+            locale={daLocale}
+            select={onCalendarSelection}
+            validRange={getValidRange}
+            loading={false}
+            resources={resources.map(handleResources)}
+            events={events.map(handleBusyIntervals)}
+          />
+        }
       </div>
     </div>
   );
