@@ -58,15 +58,12 @@ export default class Api {
   }
 
   static async fetchResource(apiEndpoint, resourceId) {
-    // Setup query parameters.
-    const urlSearchParams = new URLSearchParams({
-      resourceId,
-    });
-
     return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`)
       .then((response) => response.json())
       .then((data) => {
-        data.facilities = {
+        const newDate = { ...data };
+
+        newDate.facilities = {
           ...(data.monitorequipment && {
             monitorequipment: {
               title: "Projektor / Skærm",
@@ -93,16 +90,19 @@ export default class Api {
             },
           }),
         };
-        return data;
+
+        return newDate;
       });
   }
 
-  static async fetchUserBookings(apiEndpoint, userId) {
+  static async fetchUserBookings(apiEndpoint) {
     // Setup query parameters.
+    // TODO: Remove userId. This should be handled in the api endpoint.
     const urlSearchParams = new URLSearchParams({
       userId: " ",
       page: 1,
     });
+
     return fetch(
       `${apiEndpoint}itkdev_booking/user-bookings?${urlSearchParams}`
     )
