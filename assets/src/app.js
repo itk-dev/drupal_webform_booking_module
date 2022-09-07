@@ -25,7 +25,7 @@ function App() {
   const [location, setLocation] = useState(null);
   const [date, setDate] = useState(new Date());
   const [calendarSelection, setCalendarSelection] = useState({});
-  const [authorFields, setAuthorFields] = useState({email: ''});
+  const [authorFields, setAuthorFields] = useState({email: ""});
   // TODO: Add these.
   // const [resource, setResource] = useState(null);
   // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
