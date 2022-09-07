@@ -105,10 +105,9 @@ function App() {
   // Set selection as json.
   useEffect(() => {
     if (config) {
-      document.getElementById(config.output_field_id).value =
-        JSON.stringify({
+      document.getElementById(config.output_field_id).value = JSON.stringify({
         ...calendarSelection,
-        ...authorFields
+        ...authorFields,
       });
     }
   }, [calendarSelection, authorFields]);

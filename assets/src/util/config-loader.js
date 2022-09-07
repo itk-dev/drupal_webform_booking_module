@@ -17,7 +17,7 @@ export default class ConfigLoader {
           license_key: "",
           enable_booking: true,
           enable_resource_tooltips: true,
-          output_field_id: "submit-values"
+          output_field_id: "submit-values",
         };
       });
   }
