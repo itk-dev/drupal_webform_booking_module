@@ -1,6 +1,7 @@
 import React from "react";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
+import "./calendar-header.scss";
 
 /**
  * Calendar header component.

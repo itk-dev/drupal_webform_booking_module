@@ -6,6 +6,7 @@ import "dayjs/locale/da";
 import UserPanel from "./components/user-panel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
+import AuthorFields from "./components/author-fields";
 import Api from "./util/api";
 import ResourceView from "./components/resource-view";
 
@@ -24,6 +25,7 @@ function App() {
   const [location, setLocation] = useState(null);
   const [date, setDate] = useState(new Date());
   const [calendarSelection, setCalendarSelection] = useState({});
+  const [authorFields, setAuthorFields] = useState({});
   // TODO: Add these.
   // const [resource, setResource] = useState(null);
   // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
@@ -100,6 +102,16 @@ function App() {
     }
   }, [resources, date]);
 
+  // Set selection as json.
+  useEffect(() => {
+    if (config) {
+      document.getElementById(config.output_field_id).value = JSON.stringify({
+        ...calendarSelection,
+        ...authorFields,
+      });
+    }
+  }, [calendarSelection, authorFields]);
+
   return (
     <div className="App">
       <div className="container-fluid">
@@ -165,7 +177,12 @@ function App() {
 
             {/* Display author fields */}
             <div className="row">
-              {/* TODO: Required author fields (v0.1) */}
+              {authorFields && (
+                <AuthorFields
+                  authorFields={authorFields}
+                  setAuthorFields={setAuthorFields}
+                />
+              )}
             </div>
           </>
         )}

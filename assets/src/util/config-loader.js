@@ -2,8 +2,8 @@
 export default class ConfigLoader {
   static async loadConfig() {
     // Load config from drupalSettings if available.
-    if (window?.drupalSettings?.booking_app?.booking) {
-      return window.drupalSettings.booking_app.booking;
+    if (window?.drupalSettings?.booking_app) {
+      return window.drupalSettings.booking_app;
     }
     // Loading from config file in public folder.
     return fetch("config.json")
@@ -17,6 +17,7 @@ export default class ConfigLoader {
           license_key: "",
           enable_booking: true,
           enable_resource_tooltips: true,
+          output_field_id: "submit-values",
         };
       });
   }

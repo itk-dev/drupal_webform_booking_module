@@ -71,26 +71,6 @@ class BookingElement extends Hidden
   {
     $form = parent::form($form, $form_state);
 
-    $form['element']['rooms_wrapper'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Select rooms'),
-      '#weight' => -50,
-    ];
-
-    /*
-     * @todo maybe add rooms selection at a later time.
-    $options = [];
-    $resources = $this->bookingHelper->getResources();
-    foreach ($resources['hydra:member'] as $resource) {
-      $options[$resource['id']] = $resource['resourcename'];
-    }
-
-    $form['element']['rooms_wrapper']['rooms'] = [
-      '#type' => 'checkboxes',
-      '#options' => $options,
-      '#weight' => -50,
-    ];
-*/
     $form['element']['enable_booking'] = array(
       '#type' => 'checkbox',
       '#title' => $this
@@ -110,31 +90,13 @@ class BookingElement extends Hidden
    */
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
-    $rooms = [];
-    $resources = $this->bookingHelper->getResources();
-    if(!empty($element['#rooms'])) {
-      foreach ($element['#rooms'] as $roomId) {
-        foreach ($resources['hydra:member'] as $resource) {
-          if ($resource['id'] === (int)$roomId) {
-            $rooms[$resource['resourcemail']] = $resource['resourcename'];
-          }
-        }
-      }
-    }
-    else {
-      // Use all rooms.
-      foreach ($resources['hydra:member'] as $resource) {
-        $rooms[$resource['resourcemail']] = $resource['resourcename'];
-      }
-    }
     $params = [
-      'api_endpoint' => Settings::get('itkdev_booking_api_endpoint', NULL),
-      'element_id' => $element['#webform_key'],
-      'rooms' => $rooms,
+      'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend', NULL),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license', NULL),
       'enable_booking' => (isset($element['#enable_booking'])),
-      'enable_resource_tooltips' => (isset($element['#enable_booking']))
+      'enable_resource_tooltips' => (isset($element['#enable_booking'])),
+      'output_field_id' => 'submit-values'
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [
@@ -144,23 +106,11 @@ class BookingElement extends Hidden
     ]);
 
     if ('booking_element' == $element['#type']) {
-      // @TODO: Move author, userId values out of javascript. Attach with php after submission.
-
-      $defaultValue = [
-        'subject' => '',
-        'resourceEmail' => '',
-        'startTime' => '',
-        'endTime' => '',
-        'authorName' => '',
-        'authorEmail' => '',
-        'userId' => '',
-        'formElement' => 'booking_element'
-      ];
-
       $form['#attached']['library'][] = 'itkdev_booking/booking_app';
-      $form['#attached']['drupalSettings']['booking_app'][$element['#webform_key']] = $params;
+      $form['#attached']['drupalSettings']['booking_app'] = $params;
       $form['elements'][$element['#webform_key']]['#prefix'] = $prefix;
-      $form['elements'][$element['#webform_key']]['#default_value'] = json_encode($defaultValue);
+      $form['elements'][$element['#webform_key']]['#attributes']['id'] = 'submit-values';
+      $form['elements'][$element['#webform_key']]['#default_value'] = json_encode([]);
       $form['#validate'][] = [$this, 'validateBooking'];
     }
   }
@@ -174,6 +124,7 @@ class BookingElement extends Hidden
    *   The state of the form.
    */
   public function validateBooking(&$form, FormStateInterface $form_state) {
+    // @todo handle validation after react submisison.
     $elements = $form['elements'];
     foreach ($elements as $key => $form_element) {
       if (is_array($form_element) && isset($form_element['#type']) && 'booking_element' === $form_element['#type']) {
