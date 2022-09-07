@@ -24,7 +24,7 @@ export function handleResources(value) {
   // TODO: Add business hours.
   // const businessStartHour = Math.floor(Math.random() * (12 - 2 + 1) + 2);
   return {
-    id: value.resourcemail,
+    id: value.id,
     title: value.resourcename,
     capacity: value.capacity,
     building: value.location,

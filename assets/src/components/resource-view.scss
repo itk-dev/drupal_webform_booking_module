@@ -3,6 +3,7 @@ div.resource-container {
   height: 800px;
   background-color: #f9f9f9;
   border: 1px solid #f1f1f1;
+  margin: 40px auto;
 
   div.resource-headline {
     display: flex;
@@ -15,12 +16,12 @@ div.resource-container {
     span {
       margin: auto auto auto 15px;
       color: #fff;
-      font-size: 24px;
+      font-size: 20px;
     }
 
     button {
       margin: auto 15px auto auto;
-      padding: 10px 20px;
+      padding: 5px 15px;
       font-size: 15px;
     }
   }

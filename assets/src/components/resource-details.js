@@ -1,17 +1,31 @@
 import React, { useState, useEffect } from "react";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
+import LoadingSpinner from "./loading-spinner";
+import "./resource-details.scss";
 
 /**
  * @param {object} props Props.
  * @param {object} props.resourceId Resource id.
  * @param {object} props.config App config.
+ * @param props.hideResourceView
+ * @param props.resource
+ * @param props.setResource
+ * @param props.facilities
+ * @param props.setFacilities
+ * @param props.showResourceView
  * @returns {object} Component.
  */
-function ResourceDetails({ resourceId, config }) {
-  const [resource, setResource] = useState();
-  const [facilities, setFacilities] = useState();
-
+function ResourceDetails({
+  resourceId,
+  config,
+  hideResourceView,
+  resource,
+  setResource,
+  facilities,
+  setFacilities,
+  showResourceView,
+}) {
   useEffect(() => {
     if (config && resourceId !== null) {
       Api.fetchResource(config.api_endpoint, resourceId)
@@ -23,7 +37,7 @@ function ResourceDetails({ resourceId, config }) {
           // TODO: Display error and retry option for user.
         });
     }
-  }, [resourceId]);
+  }, [resourceId, config]);
 
   /**
    * Get facilities list.
@@ -54,47 +68,64 @@ function ResourceDetails({ resourceId, config }) {
   }
 
   return (
-    resource && (
-      <div className="resource-container">
-        <div className="resource-headline">
-          <span>Ressource information</span>
-          <button type="button">Tilbage til listen</button>
-        </div>
-        <div className="resource-title">
-          <h2>{resource.resourcemail}</h2>
-        </div>
-        <div className="resource-details">
-          <div className="image">
-            <img src="https://via.placeholder.com/500x300" alt="" />
+    <div
+      className={
+        showResourceView === true
+          ? "fade-in-content resource-container"
+          : "  resource-container"
+      }
+    >
+      {!resource && <LoadingSpinner />}
+      {resource && (
+        <div>
+          <div className="resource-headline">
+            <span>Ressource information</span>
+            <button type="button" onClick={hideResourceView}>
+              Tilbage til listen
+            </button>
           </div>
-          <div className="facilities">
-            <span>Faciliteter</span>
-            {facilities && getFacilitiesList()}
+          <div className="resource-title">
+            <h2>{resource.resourcemail}</h2>
           </div>
-          <div className="location">
-            <span>Lokation</span>
-            <div>
-              <span>{resource.location}</span>
+          <div className="resource-details">
+            <div className="image">
+              <img
+                src="https://via.placeholder.com/500x300"
+                onStateChange={(imageState) => {
+                  console.log(imageState);
+                }}
+                alt=""
+              />
             </div>
+            <div className="facilities">
+              <span>Faciliteter</span>
+              {facilities && getFacilitiesList()}
+            </div>
+            <div className="location">
+              <span>Lokation</span>
+              <div>
+                <span>{resource.location}</span>
+              </div>
+              <div>
+                <span>Adresse...</span>
+              </div>
+            </div>
+          </div>
+          <div className="resource-description">
+            <span>Beskrivelse</span>
             <div>
-              <span>Adresse...</span>
+              <span>{resource.resourcedescription}</span>
+            </div>
+          </div>
+          <div className="resource-guidelines">
+            <span>Priser og vilkår</span>
+            <div>
+              <span>Priser og vilkår...</span>
             </div>
           </div>
         </div>
-        <div className="resource-description">
-          <span>Beskrivelse</span>
-          <div>
-            <span>{resource.resourcedescription}</span>
-          </div>
-        </div>
-        <div className="resource-guidelines">
-          <span>Priser og vilkår</span>
-          <div>
-            <span>Priser og vilkår...</span>
-          </div>
-        </div>
-      </div>
-    )
+      )}
+    </div>
   );
 }
 

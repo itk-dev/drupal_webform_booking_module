@@ -28,7 +28,13 @@ function App() {
   const [authorFields, setAuthorFields] = useState({});
   // TODO: Add these.
   // const [resource, setResource] = useState(null);
+  const [resource, setResource] = useState(null);
+  const [facilities, setFacilities] = useState(null);
   // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
+
+  // ResourceView overlay trigger & global data
+  const [showResourceView, setShowResourceView] = useState(null);
+  const [resourceId, setResourceId] = useState(null);
 
   // Loaded data.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -157,7 +163,7 @@ function App() {
             </div>
 
             {/* Display calendar for selections */}
-            <div className="row">
+            <div className="row calendar-container">
               <Calendar
                 resources={resources}
                 events={events}
@@ -166,14 +172,25 @@ function App() {
                 calendarSelection={calendarSelection}
                 onCalendarSelection={setCalendarSelection}
                 config={config}
+                setResourceId={setResourceId}
+                setShowResourceView={setShowResourceView}
+              />
+              {/* TODO: Only show if resource view is requested */}
+              <ResourceView
+                config={config}
+                id={resourceId}
+                setResourceId={setResourceId}
+                showResourceView={showResourceView}
+                setShowResourceView={setShowResourceView}
+                resource={resource}
+                setResource={setResource}
+                facilities={facilities}
+                setFacilities={setFacilities}
               />
             </div>
 
             {/* TODO: Only show if user menu is requested */}
             <UserPanel config={config} />
-
-            {/* TODO: Only show if resource view is requested */}
-            <ResourceView config={config} id="1" />
 
             {/* Display author fields */}
             <div className="row">
