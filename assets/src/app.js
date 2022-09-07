@@ -174,7 +174,7 @@ function App() {
             <UserPanel config={config} />
 
             {/* TODO: Only show if resource view is requested */}
-            <ResourceView config={config} id={"1"} />
+            <ResourceView config={config} id="1" />
 
             {/* Display author fields */}
             <div className="row">

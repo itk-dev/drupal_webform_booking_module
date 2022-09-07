@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import Api from "../util/api";
+import React, { useState, useEffect } from "react";
 import * as PropTypes from "prop-types";
+import Api from "../util/api";
 
 /**
  * @param {object} props Props.
  * @param {object} props.resourceId Resource id.
  * @param {object} props.config App config.
+ * @returns {object} Component.
  */
 function ResourceDetails({ resourceId, config }) {
   const [resource, setResource] = useState();
@@ -14,9 +15,9 @@ function ResourceDetails({ resourceId, config }) {
   useEffect(() => {
     if (config && resourceId !== null) {
       Api.fetchResource(config.api_endpoint, resourceId)
-        .then((resource) => {
-          setResource(resource);
-          setFacilities(resource.facilities);
+        .then((loadedResource) => {
+          setResource(loadedResource);
+          setFacilities(loadedResource.facilities);
         })
         .catch(() => {
           // TODO: Display error and retry option for user.
@@ -25,22 +26,24 @@ function ResourceDetails({ resourceId, config }) {
   }, [resourceId]);
 
   /**
+   * Get facilities list.
    *
+   * @returns {string} Facilities list.
    */
   function getFacilitiesList() {
     return (
       <div className="facility-container">
         <div className="facility-item">
           <div className="facility-icon">
-            <img src="/assets/images/icons/Chair.svg" />
+            <img src="/assets/images/icons/Chair.svg" alt="capacity" />
           </div>
           <span>{resource.capacity} siddepladser</span>
         </div>
-        {Object.keys(facilities).map((key, index) => {
+        {Object.keys(facilities).map((key) => {
           return (
-            <div className="facility-item" key={index}>
+            <div className="facility-item" key={key}>
               <div className="facility-icon">
-                <img src={facilities[key].icon} />
+                <img src={facilities[key].icon} alt="facility" />
               </div>
               <span>{facilities[key].title}</span>
             </div>
@@ -49,19 +52,20 @@ function ResourceDetails({ resourceId, config }) {
       </div>
     );
   }
+
   return (
     resource && (
       <div className="resource-container">
         <div className="resource-headline">
           <span>Ressource information</span>
-          <button>Tilbage til listen</button>
+          <button type="button">Tilbage til listen</button>
         </div>
         <div className="resource-title">
           <h2>{resource.resourcemail}</h2>
         </div>
         <div className="resource-details">
           <div className="image">
-            <img src="https://via.placeholder.com/500x300" />
+            <img src="https://via.placeholder.com/500x300" alt="" />
           </div>
           <div className="facilities">
             <span>Faciliteter</span>

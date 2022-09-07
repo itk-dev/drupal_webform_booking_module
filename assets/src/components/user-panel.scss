@@ -57,7 +57,7 @@ div.userbookings-container > div.user-booking > div:nth-child(3) {
   display: flex;
   flex-direction: row;
   flex: 5;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 div.userbookings-container > div.user-booking > div:nth-child(3) > button {
