@@ -89,13 +89,7 @@ function ResourceDetails({
           </div>
           <div className="resource-details">
             <div className="image">
-              <img
-                src="https://via.placeholder.com/500x300"
-                onStateChange={(imageState) => {
-                  console.log(imageState);
-                }}
-                alt=""
-              />
+              <img src="https://via.placeholder.com/500x300" alt="" />
             </div>
             <div className="facilities">
               <span>Faciliteter</span>

@@ -53,7 +53,6 @@ function Calendar({
   function triggerResourceView(resourceId) {
     setShowResourceView(true);
     setResourceId(resourceId);
-    console.log(resourceId);
   }
 
   return (
