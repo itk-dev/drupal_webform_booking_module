@@ -6,7 +6,7 @@ import "dayjs/locale/da";
 import UserPanel from "./components/user-panel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
-import AuthorFields from "./components/authorfields";
+import AuthorFields from "./components/author-fields";
 import Api from "./util/api";
 import ResourceView from "./components/resource-view";
 
@@ -178,9 +178,8 @@ function App() {
 
             {/* Display author fields */}
             <div className="row">
-              {config && (
+              {authorFields && (
                 <AuthorFields
-                  drupalConfig={config}
                   authorFields={authorFields}
                   setAuthorFields={setAuthorFields}
                 />

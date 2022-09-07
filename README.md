@@ -44,6 +44,7 @@ To connect to the book_aarhus service add the following lines to your settings.l
 
 ```php
 $settings['itkdev_booking_api_endpoint'] = [INSERT ENDPOINT IN QUOTES];
+$settings['itkdev_booking_api_endpoint_frontend'] = [INSERT ENDPOINT IN QUOTES];
 $settings['itkdev_booking_api_key'] = [INSERT API KEY IN QUOTES];
 $settings['itkdev_booking_fullcalendar_license'] = [INSERT FULLCALENDAR LICENSE KEY IN QUOTES];
 ```

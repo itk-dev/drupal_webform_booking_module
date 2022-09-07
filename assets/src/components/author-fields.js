@@ -1,4 +1,4 @@
-function AuthorFields({ drupalConfig, authorFields, setAuthorFields }) {
+function AuthorFields({ authorFields, setAuthorFields }) {
   const onChangeEmail = (event) => {
     setAuthorFields({email: event.target.value});
   };
