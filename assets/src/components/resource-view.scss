@@ -1,9 +1,8 @@
 div.resource-container {
-  width: 1200px;
-  height: 800px;
+  width: 100%;
+  height: 100%;
   background-color: #f9f9f9;
   border: 1px solid #f1f1f1;
-  margin: 40px auto;
 
   div.resource-headline {
     display: flex;
@@ -61,6 +60,8 @@ div.resource-container {
     flex-direction: row;
 
     div.image {
+      display: block;
+      height: 300px;
       flex: 3;
       padding: 0 15px;
     }

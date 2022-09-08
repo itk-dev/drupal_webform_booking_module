@@ -23,8 +23,8 @@ import CalendarCellInfoButton from "./calendar-cell-info-button";
  * @param {Function} props.setDate Set date function.
  * @param {Function} props.onCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
- * @param props.setShowResourceView
- * @param props.setResourceId
+ * @param {Function} props.setShowResourceView Set to show resource view
+ * @param {Function} props.setResourceId Set resource id to load
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -49,7 +49,10 @@ function Calendar({
     calendarRef?.current?.getApi().gotoDate(date);
   }, [date]);
 
-  /** @param resourceId */
+  /**
+   * @param {string} resourceId Id of the resource to load - retrieved from
+   *   CalendarCellInfoButton component
+   */
   function triggerResourceView(resourceId) {
     setShowResourceView(true);
     setResourceId(resourceId);

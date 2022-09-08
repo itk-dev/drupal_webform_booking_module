@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
@@ -8,12 +8,12 @@ import "./resource-details.scss";
  * @param {object} props Props.
  * @param {object} props.resourceId Resource id.
  * @param {object} props.config App config.
- * @param props.hideResourceView
- * @param props.resource
- * @param props.setResource
- * @param props.facilities
- * @param props.setFacilities
- * @param props.showResourceView
+ * @param {Function} props.hideResourceView Hides and resets resource view
+ * @param {object} props.resource Resource information object
+ * @param {Function} props.setResource Resource information object setter
+ * @param {Function} props.facilities Facilities information object
+ * @param {Function} props.setFacilities Facilities information object setter
+ * @param {Function} props.showResourceView Shows resource view
  * @returns {object} Component.
  */
 function ResourceDetails({
@@ -128,6 +128,12 @@ ResourceDetails.propTypes = {
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
+  hideResourceView: PropTypes.func.isRequired,
+  resource: PropTypes.object.isRequired,
+  setResource: PropTypes.func.isRequired,
+  facilities: PropTypes.object.isRequired,
+  setFacilities: PropTypes.func.isRequired,
+  showResourceView: PropTypes.bool.isRequired,
 };
 
 export default ResourceDetails;
