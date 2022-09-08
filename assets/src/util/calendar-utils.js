@@ -29,7 +29,7 @@ export function handleResources(value) {
     capacity: value.capacity,
     building: value.location,
     description: value.resourcedescription,
-    image: 'http://placekitten.com/1920/1080'
+    image: "http://placekitten.com/1920/1080",
     /*
     businessHours: {
       startTime: businessHoursOrNearestHalfHour(businessStartHour),
