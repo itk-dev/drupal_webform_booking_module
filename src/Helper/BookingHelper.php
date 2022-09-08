@@ -77,15 +77,16 @@ class BookingHelper
      
         case "v1/resources":
           $resourceId = $request->attributes->get('resourceId');
+          $queryString = $request->getQueryString();
           if (isset($resourceId) && !empty($resourceId)) {
             $apiEndpoint = $apiEndpoint."/".$resourceId;
           }
-          $response = $this->getData($apiEndpoint, $resourceId);
+          $response = $this->getData($apiEndpoint, $queryString);
           return json_decode($response->getBody(), TRUE);
           break;
         default:
-          // $queryString = $request->getQueryString();
-          $response = $this->getData($apiEndpoint, "");
+          $queryString = $request->getQueryString();
+          $response = $this->getData($apiEndpoint, $queryString);
           return json_decode($response->getBody(), TRUE);
         break;
 
@@ -113,9 +114,6 @@ class BookingHelper
    */
   private function getData($apiEndpoint, $queryString)
   {
-    if ($apiEndpoint == "v1\/locations") {
-      die($this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString);
-    }
     $clientConfig = [];
 
     if ($this->bookingApiAllowInsecureConnection) {

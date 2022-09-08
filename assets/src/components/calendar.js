@@ -11,6 +11,7 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
+import CalendarCellInfoButton from "./calendar-cell-info-button";
 
 /**
  * Calendar component.
@@ -22,6 +23,7 @@ import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
  * @param {Function} props.setDate Set date function.
  * @param {Function} props.onCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
+ * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -31,6 +33,7 @@ function Calendar({
   setDate,
   onCalendarSelection,
   config,
+  setShowResourceViewId,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
@@ -44,6 +47,20 @@ function Calendar({
     calendarRef?.current?.getApi().gotoDate(date);
   }, [date]);
 
+  /** @param {string} showResourceViewId Id of the resource to load */
+  const triggerResourceView = (showResourceViewId) => {
+    setShowResourceViewId(showResourceViewId);
+  };
+
+  const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
+    return (
+      <CalendarCellInfoButton
+        title={title}
+        showResourceViewId={id}
+        onClickEvent={triggerResourceViewEv}
+      />
+    );
+  };
   return (
     <div className="Calendar">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -89,6 +106,27 @@ function Calendar({
             validRange={getValidRange}
             loading={false}
             resources={resources.map(handleResources)}
+            resourceAreaColumns={[
+              {
+                headerContent: "Ressource titel",
+                cellContent(arg) {
+                  return renderCalendarCellInfoButton(
+                    arg.resource.title,
+                    arg.resource.id,
+                    triggerResourceView
+                  );
+                },
+              },
+              {
+                headerContent: {
+                  html: '<div class="resource-calendar-capacity"><img src="/assets/images/icons/Chair.svg" /></div>',
+                },
+                width: "60px",
+                cellContent(arg) {
+                  return arg.resource.extendedProps.capacity;
+                },
+              },
+            ]}
             events={events.map(handleBusyIntervals)}
           />
         }
@@ -96,7 +134,6 @@ function Calendar({
     </div>
   );
 }
-
 Calendar.propTypes = {
   resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
@@ -106,6 +143,7 @@ Calendar.propTypes = {
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
   }).isRequired,
+  setShowResourceViewId: PropTypes.func.isRequired,
 };
 
 export default Calendar;
