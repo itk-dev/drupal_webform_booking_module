@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import * as PropTypes from "prop-types";
 import ResourceDetails from "./resource-details";
 import "./resource-view.scss";
@@ -40,6 +40,7 @@ function ResourceView({
   facilities,
   setFacilities,
 }) {
+
   function hideResourceView() {
     setShowResourceView(null);
     setResourceId(null);

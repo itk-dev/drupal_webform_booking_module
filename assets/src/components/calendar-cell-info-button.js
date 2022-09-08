@@ -36,10 +36,9 @@ function CalendarCellInfoButton({ title, resourceId, onClickEvent }) {
     </span>
   );
 }
-
 CalendarCellInfoButton.prototype = {
-  title: PropTypes.shape({}).isRequired,
-  resourceId: PropTypes.shape({}).isRequired,
+  title: PropTypes.string.isRequired,
+  resourceId: PropTypes.string.isRequired,
   onClickEvent: PropTypes.func.isRequired,
 };
 export default CalendarCellInfoButton;
