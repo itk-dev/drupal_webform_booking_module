@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
+import LoadingSpinner from "./loading-spinner";
+import "./resource-details.scss";
 
 /**
  * @param {object} props Props.
- * @param {object} props.resourceId Resource id.
  * @param {object} props.config App config.
+ * @param {Function} props.hideResourceView Hides and resets resource view
+ * @param {object} props.resource Resource information object
+ * @param {Function} props.setResource Resource information object setter
+ * @param {Function} props.facilities Facilities information object
+ * @param {Function} props.setFacilities Facilities information object setter
+ * @param {string} props.showResourceViewId Id of the resource to load
  * @returns {object} Component.
  */
-function ResourceDetails({ resourceId, config }) {
-  const [resource, setResource] = useState();
-  const [facilities, setFacilities] = useState();
-
+function ResourceDetails({
+  config,
+  hideResourceView,
+  resource,
+  setResource,
+  facilities,
+  setFacilities,
+  showResourceViewId,
+}) {
   useEffect(() => {
-    if (config && resourceId !== null) {
-      Api.fetchResource(config.api_endpoint, resourceId)
+    if (config && showResourceViewId !== null) {
+      Api.fetchResource(config.api_endpoint, showResourceViewId)
         .then((loadedResource) => {
           setResource(loadedResource);
           setFacilities(loadedResource.facilities);
@@ -23,7 +35,7 @@ function ResourceDetails({ resourceId, config }) {
           // TODO: Display error and retry option for user.
         });
     }
-  }, [resourceId]);
+  }, [showResourceViewId, config]);
 
   /**
    * Get facilities list.
@@ -54,55 +66,76 @@ function ResourceDetails({ resourceId, config }) {
   }
 
   return (
-    resource && (
-      <div className="resource-container">
-        <div className="resource-headline">
-          <span>Ressource information</span>
-          <button type="button">Tilbage til listen</button>
-        </div>
-        <div className="resource-title">
-          <h2>{resource.resourcemail}</h2>
-        </div>
-        <div className="resource-details">
-          <div className="image">
-            <img src="https://via.placeholder.com/500x300" alt="" />
+    <div
+      className={
+        showResourceViewId !== null
+          ? "fade-in-content resource-container"
+          : "  resource-container"
+      }
+    >
+      {!resource && <LoadingSpinner />}
+      {resource && (
+        <div>
+          <div className="resource-headline">
+            <span>Ressource information</span>
+            <button type="button" onClick={hideResourceView}>
+              Tilbage til listen
+            </button>
           </div>
-          <div className="facilities">
-            <span>Faciliteter</span>
-            {facilities && getFacilitiesList()}
+          <div className="resource-title">
+            <h2>{resource.resourcemail}</h2>
           </div>
-          <div className="location">
-            <span>Lokation</span>
-            <div>
-              <span>{resource.location}</span>
+          <div className="resource-details">
+            <div className="image">
+              <img src="https://via.placeholder.com/500x300" alt="" />
             </div>
+            <div className="facilities">
+              <span>Faciliteter</span>
+              {facilities && getFacilitiesList()}
+            </div>
+            <div className="location">
+              <span>Lokation</span>
+              <div>
+                <span>{resource.location}</span>
+              </div>
+              <div>
+                <span>Adresse...</span>
+              </div>
+            </div>
+          </div>
+          <div className="resource-description">
+            <span>Beskrivelse</span>
             <div>
-              <span>Adresse...</span>
+              <span>{resource.resourcedescription}</span>
+            </div>
+          </div>
+          <div className="resource-guidelines">
+            <span>Priser og vilkår</span>
+            <div>
+              <span>Priser og vilkår...</span>
             </div>
           </div>
         </div>
-        <div className="resource-description">
-          <span>Beskrivelse</span>
-          <div>
-            <span>{resource.resourcedescription}</span>
-          </div>
-        </div>
-        <div className="resource-guidelines">
-          <span>Priser og vilkår</span>
-          <div>
-            <span>Priser og vilkår...</span>
-          </div>
-        </div>
-      </div>
-    )
+      )}
+    </div>
   );
 }
 
 ResourceDetails.propTypes = {
-  resourceId: PropTypes.string.isRequired,
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
+  hideResourceView: PropTypes.func.isRequired,
+  resource: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setResource: PropTypes.func.isRequired,
+  facilities: PropTypes.arrayOf(
+    PropTypes.shape({
+      icon: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  setFacilities: PropTypes.func.isRequired,
+  showResourceViewId: PropTypes.string.isRequired,
 };
 
 export default ResourceDetails;

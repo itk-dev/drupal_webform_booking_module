@@ -1,6 +1,6 @@
 div.resource-container {
-  width: 1200px;
-  height: 800px;
+  width: 100%;
+  height: 100%;
   background-color: #f9f9f9;
   border: 1px solid #f1f1f1;
 
@@ -15,12 +15,12 @@ div.resource-container {
     span {
       margin: auto auto auto 15px;
       color: #fff;
-      font-size: 24px;
+      font-size: 20px;
     }
 
     button {
       margin: auto 15px auto auto;
-      padding: 10px 20px;
+      padding: 5px 15px;
       font-size: 15px;
     }
   }
@@ -60,6 +60,8 @@ div.resource-container {
     flex-direction: row;
 
     div.image {
+      display: block;
+      height: 300px;
       flex: 3;
       padding: 0 15px;
     }

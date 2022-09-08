@@ -28,7 +28,12 @@ function App() {
   const [authorFields, setAuthorFields] = useState({ email: "" });
   // TODO: Add these.
   // const [resource, setResource] = useState(null);
+  const [resource, setResource] = useState(null);
+  const [facilities, setFacilities] = useState(null);
   // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
+
+  // ResourceView overlay trigger & global data
+  const [showResourceViewId, setShowResourceViewId] = useState(null);
 
   // Loaded data.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -123,6 +128,7 @@ function App() {
                 {/* Dropdown with locations */}
                 <Select
                   styles={{}}
+                  placeholder="lokationer..."
                   options={locationOptions}
                   onChange={(newValue) => {
                     setLocation(newValue.value);
@@ -133,6 +139,7 @@ function App() {
                 {/* Dropdown with resources */}
                 <Select
                   styles={{}}
+                  placeholder="ressourcer..."
                   options={resourcesOptions}
                   onChange={(newValue) => {
                     setLocation(newValue.value);
@@ -157,23 +164,30 @@ function App() {
             </div>
 
             {/* Display calendar for selections */}
-            <div className="row">
+            <div className="row calendar-container">
               <Calendar
                 resources={resources}
                 events={events}
                 date={date}
                 setDate={setDate}
-                calendarSelection={calendarSelection}
                 onCalendarSelection={setCalendarSelection}
                 config={config}
+                setShowResourceViewId={setShowResourceViewId}
+              />
+              {/* TODO: Only show if resource view is requested */}
+              <ResourceView
+                config={config}
+                resource={resource}
+                setResource={setResource}
+                facilities={facilities}
+                setFacilities={setFacilities}
+                showResourceViewId={showResourceViewId}
+                setShowResourceViewId={setShowResourceViewId}
               />
             </div>
 
             {/* TODO: Only show if user menu is requested */}
             <UserPanel config={config} />
-
-            {/* TODO: Only show if resource view is requested */}
-            <ResourceView config={config} id="1" />
 
             {/* Display author fields */}
             <div className="row">

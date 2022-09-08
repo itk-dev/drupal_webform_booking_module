@@ -6,6 +6,29 @@ body {
   background: white;
 }
 
+.calendar-container,
+.resource-container {
+  position: relative;
+}
+
 .filters-wrapper {
   margin-bottom: 1em;
+}
+
+.fade-in-background {
+  opacity: 1;
+  top: 0;
+}
+.fade-in-content {
+  opacity: 1;
+  animation: fadeInContent 0.3s ease;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

@@ -82,15 +82,20 @@ export default class Api {
           }),
           ...(data.videoconferenceequipment && {
             videoconferenceequipment: {
-              videoconferenceequipment: "/assets/images/icons/Video-camera.svg",
+              title: "Videoconference",
+              icon: "/assets/images/icons/Video-camera.svg",
             },
           }),
           ...(data.catering && {
-            catering: { catering: "/assets/images/icons/Food.svg" },
+            catering: {
+              title: "Forplejning",
+              icon: "/assets/images/icons/Food.svg",
+            },
           }),
           ...(data.holidayOpeningHours && {
             holidayOpeningHours: {
-              holidayOpeningHours: "/assets/images/icons/Candles.svg",
+              title: "Tilgængelig på helligdag",
+              icon: "/assets/images/icons/Candles.svg",
             },
           }),
         };
