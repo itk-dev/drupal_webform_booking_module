@@ -23,8 +23,7 @@ import CalendarCellInfoButton from "./calendar-cell-info-button";
  * @param {Function} props.setDate Set date function.
  * @param {Function} props.onCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
- * @param {Function} props.setShowResourceView Set to show resource view
- * @param {Function} props.setResourceId Set resource id to load
+ * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -32,11 +31,9 @@ function Calendar({
   events,
   date,
   setDate,
-  calendarSelection,
   onCalendarSelection,
   config,
-  showResourceViewId,
-  setShowResourceViewId
+  setShowResourceViewId,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
@@ -51,10 +48,19 @@ function Calendar({
   }, [date]);
 
   /** @param {string} showResourceViewId Id of the resource to load */
-  function triggerResourceView(showResourceViewId) {
+  const triggerResourceView = (showResourceViewId) => {
     setShowResourceViewId(showResourceViewId);
-  }
+  };
 
+  const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
+    return (
+      <CalendarCellInfoButton
+        title={title}
+        showResourceViewId={id}
+        onClickEvent={triggerResourceViewEv}
+      />
+    );
+  };
   return (
     <div className="Calendar">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -104,12 +110,10 @@ function Calendar({
               {
                 headerContent: "Ressource titel",
                 cellContent(arg) {
-                  return (
-                    <CalendarCellInfoButton
-                      title={arg.resource.title}
-                      resourceId={arg.resource.id}
-                      onClickEvent={triggerResourceView}
-                    />
+                  return renderCalendarCellInfoButton(
+                    arg.resource.title,
+                    arg.resource.id,
+                    triggerResourceView
                   );
                 },
               },
@@ -139,8 +143,7 @@ Calendar.propTypes = {
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
   }).isRequired,
-  showResourceViewId: PropTypes.string.isRequired,
-  setShowResourceViewId: PropTypes.func.isRequired
+  setShowResourceViewId: PropTypes.func.isRequired,
 };
 
 export default Calendar;

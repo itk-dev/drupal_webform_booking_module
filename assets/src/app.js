@@ -149,14 +149,6 @@ function App() {
               {/* Dropdown with facilities */}
               <div className="col-md-3">
                 {/* TODO: Add dropdown with options from facilities (v1) */}
-                <Select
-                  styles={{}}
-                  placeholder="faciliteter..."
-                  options={facilityOptions}
-                  onChange={(newValue) => {
-                    setLocation(newValue.value);
-                  }}
-                />
               </div>
               {/* Dropdown with capacity */}
               <div className="col-md-3">
@@ -178,10 +170,8 @@ function App() {
                 events={events}
                 date={date}
                 setDate={setDate}
-                calendarSelection={calendarSelection}
                 onCalendarSelection={setCalendarSelection}
                 config={config}
-                showResourceViewId={showResourceViewId}
                 setShowResourceViewId={setShowResourceViewId}
               />
               {/* TODO: Only show if resource view is requested */}
@@ -192,7 +182,7 @@ function App() {
                 facilities={facilities}
                 setFacilities={setFacilities}
                 showResourceViewId={showResourceViewId}
-                setshowResourceViewId={setShowResourceViewId}
+                setShowResourceViewId={setShowResourceViewId}
               />
             </div>
 

@@ -6,14 +6,13 @@ import "./resource-details.scss";
 
 /**
  * @param {object} props Props.
- * @param {object} props.resourceId Resource id.
  * @param {object} props.config App config.
  * @param {Function} props.hideResourceView Hides and resets resource view
  * @param {object} props.resource Resource information object
  * @param {Function} props.setResource Resource information object setter
  * @param {Function} props.facilities Facilities information object
  * @param {Function} props.setFacilities Facilities information object setter
- * @param {Function} props.showResourceView Shows resource view
+ * @param {string} props.showResourceViewId Id of the resource to load
  * @returns {object} Component.
  */
 function ResourceDetails({
@@ -136,7 +135,7 @@ ResourceDetails.propTypes = {
     })
   ).isRequired,
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string.isRequired
+  showResourceViewId: PropTypes.string.isRequired,
 };
 
 export default ResourceDetails;
