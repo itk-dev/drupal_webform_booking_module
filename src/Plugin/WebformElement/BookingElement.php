@@ -91,9 +91,9 @@ class BookingElement extends Hidden
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
     $params = [
-      'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend', NULL),
+      'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
-      'license_key' => Settings::get('itkdev_booking_fullcalendar_license', NULL),
+      'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
       'enable_booking' => (isset($element['#enable_booking'])),
       'enable_resource_tooltips' => (isset($element['#enable_booking'])),
       'output_field_id' => 'submit-values'

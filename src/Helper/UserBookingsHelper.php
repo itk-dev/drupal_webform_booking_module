@@ -14,26 +14,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class UserBookingsHelper
 {
-  /**
-   * Guzzle Http Client.
-   *
-   * @var GuzzleHttp\ClientInterface
-   */
-  protected $httpClient;
-
-  /**
-   * The booking api endpoint.
-   *
-   * @var string|mixed
-   */
+  protected ClientInterface $httpClient;
   protected string $bookingApiEndpoint;
-
-  /**
-   * The booking api key.
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiKey;
+  protected bool $bookingApiSampleData;
 
   /**
    * UserBookingsHelper constructor.
@@ -43,8 +27,9 @@ class UserBookingsHelper
    */
   public function __construct(ClientInterface $guzzleClient)
   {
-    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
-    $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint');
+    $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
+    $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
     $this->httpClient = $guzzleClient;
   }
 
@@ -80,6 +65,7 @@ class UserBookingsHelper
   public function getResult(string $apiEndpoint, Request $request)
   {
     if ($this->bookingApiEndpoint && $this->bookingApiKey) {
+      // TODO: Cleanup hacks.
       switch ($apiEndpoint) {
         case "v1/user-bookings":
           if ($request->isMethod("DELETE")) {
@@ -88,18 +74,15 @@ class UserBookingsHelper
             $response = $this->getData($apiEndpoint, $request->getQueryString());
           }
           return json_decode($response->getBody(), TRUE);
-          break;
         case "v1/booking-details":
           $hitId = base64_decode($request->attributes->get('hitid'));
           $response = $this->getBookingDetails($apiEndpoint, $hitId);
           return json_decode($response->getBody(), TRUE);
-          break;
         default:
           return "No endpoint defined";
-          break;
       }
     } else {
-      $response = $this->getSampleData($apiEndpoint);
+      $response = \SampleDataHelper::getSampleData($apiEndpoint);
       return json_decode($response, TRUE);
     }
   }
@@ -144,7 +127,7 @@ class UserBookingsHelper
     //   return json_decode($response->getBody(), TRUE);
     // }
     // else {
-    //   $response = $this->getSampleData($apiEndpoint);
+    //   $response =  \SampleDataHelper::getSampleData($apiEndpoint);
     //   return json_decode($response, TRUE);
     // }
   }
@@ -161,33 +144,36 @@ class UserBookingsHelper
    */
   private function getData($apiEndpoint, $queryString)
   {
-    $response = [];
     $client = new Client();
-    $response = $client->get(
+
+    return $client->get(
       $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
       ['headers' => [
         'accept' => 'application/ld+json',
         'Authorization' => 'Apikey ' . $this->bookingApiKey
       ]]
     );
-
-    return $response;
   }
 
+  /**
+   * @param $apiEndpoint
+   * @param $queryString
+   *
+   * @return \Psr\Http\Message\ResponseInterface
+   */
   private function deleteData($apiEndpoint, $queryString)
   {
-    $response = [];
     $client = new Client();
-    $response = $client->delete(
+
+    return $client->delete(
       $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
       ['headers' => [
         'accept' => 'application/ld+json',
         'Authorization' => 'Apikey ' . $this->bookingApiKey
       ]]
     );
-
-    return $response;
   }
+
   /**
    * Get real data.
    *
@@ -200,32 +186,14 @@ class UserBookingsHelper
    */
   private function getBookingDetails($apiEndpoint, $queryString)
   {
-    $response = [];
     $client = new Client();
-    $response = $client->get(
+
+    return $client->get(
       $this->bookingApiEndpoint . $apiEndpoint . '?bookingId=' . $queryString . '&page=1',
       ['headers' => [
         'accept' => 'application/ld+json',
         'Authorization' => 'Apikey ' . $this->bookingApiKey
       ]]
     );
-
-    return $response;
-  }
-
-  /**
-   * Get sample data from local file.
-   *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @return false|string
-   *   The sample data requested.
-   */
-  private function getSampleData($apiEndpoint)
-  {
-    switch ($apiEndpoint) {
-      case 'v1/user-bookings':
-        return file_get_contents(__DIR__ . '/../../sampleData/user-bookings.json');
-    }
   }
 }

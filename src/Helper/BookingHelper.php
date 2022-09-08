@@ -3,10 +3,9 @@
 namespace Drupal\itkdev_booking\Helper;
 
 use Drupal\Core\Site\Settings;
-use Drupal\Core\Url;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -15,85 +14,53 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class BookingHelper
 {
-  /**
-   * Guzzle Http Client.
-   *
-   * @var GuzzleHttp\ClientInterface
-   */
-  protected $httpClient;
-
-  /**
-   * The booking api endpoint.
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiEndpoint;
-
-  /**
-   * The booking api key.
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiKey;
-
-  /**
-   * Whether we use a secure connection
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiAllowInsecureConnection;
+  protected bool $bookingApiSampleData;
 
   /**
    * BookingHelper constructor.
-   *
-   * @param \GuzzleHttp\ClientInterface $guzzleClient
-   *   The http client.
    */
-  public function __construct(ClientInterface $guzzleClient)
+  public function __construct()
   {
-    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
-    $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint');
+    $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
     $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
-    $this->httpClient = $guzzleClient;
+    $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
   }
-
 
   /**
    * Get a data result depending on request and desired api endpoint.
    *
-   * Uses sample data if no api endpoint is set. See module README.md.
+   * Uses sample data if the setting 'itkdev_booking_api_sample_data' is set. See module README.md.
    *
    * @param string $apiEndpoint
-   *   The api endpoint specification.
+   *   The api endpoint.
    * @param Request $request
    *   The original request.
+   *
    * @return mixed
    *   Decoded json data as array.
+   *
+   * @throws \Exception
    */
   public function getResult(string $apiEndpoint, Request $request)
   {
-    if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      switch ($apiEndpoint) {
-     
-        case "v1/resources":
-          $resourceId = $request->attributes->get('resourceId');
-          if (isset($resourceId) && !empty($resourceId)) {
-            $apiEndpoint = $apiEndpoint."/".$resourceId;
-          }
-          $response = $this->getData($apiEndpoint, $resourceId);
-          return json_decode($response->getBody(), TRUE);
-          break;
-        default:
-          // $queryString = $request->getQueryString();
-          $response = $this->getData($apiEndpoint, "");
-          return json_decode($response->getBody(), TRUE);
-        break;
+    if (!$this->bookingApiSampleData) {
+      if (!$this->bookingApiEndpoint && !$this->bookingApiKey) {
+        throw new \Exception('Booking module not configured.', 500);
+      }
 
-      };
-      
+      $queryString = $request->getQueryString();
+
+      $response = $this->getResponse($apiEndpoint, $queryString);
+
+      return json_decode($response->getBody(), TRUE);
     }
     else {
-      $response = $this->getSampleData($apiEndpoint);
+      $response = \SampleDataHelper::getSampleData($apiEndpoint);
+
       return json_decode($response, TRUE);
     }
   }
@@ -101,21 +68,15 @@ class BookingHelper
   /**
    * Get data from booking service.
    *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @param $queryString
-   *   An additional querystring.
+   * @param string $apiEndpoint
+   *   The api endpoint.
+   * @param string|null $queryString
+   *   An optional query string.
    *
    * @return \Psr\Http\Message\ResponseInterface
    *   The api response.
-   *
-   * @throws \HttpException
    */
-  private function getData($apiEndpoint, $queryString)
-  {
-    if ($apiEndpoint == "v1\/locations") {
-      die($this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString);
-    }
+  private function getResponse(string $apiEndpoint, string $queryString = null): ResponseInterface {
     $clientConfig = [];
 
     if ($this->bookingApiAllowInsecureConnection) {
@@ -123,10 +84,10 @@ class BookingHelper
     }
 
     $client = new Client($clientConfig);
-    
+
     try {
       $response = $client->get(
-        $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
+        $this->bookingApiEndpoint . $apiEndpoint . ($queryString ? '?' . $queryString : ''),
         ['headers' => [
           'accept' => 'application/ld+json',
           'Authorization' => 'Apikey ' . $this->bookingApiKey
@@ -140,23 +101,5 @@ class BookingHelper
     }
 
     return $response;
-  }
-
-  /**
-   * Get sample data from local file.
-   *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @return false|string
-   *   The sample data requested.
-   */
-  private function getSampleData($apiEndpoint)
-  {
-    switch ($apiEndpoint) {
-      case 'v1/busy-intervals':
-        return file_get_contents(__DIR__ . '/../../sampleData/busy-intervals.json');
-      case 'v1/resources':
-        return file_get_contents(__DIR__ . '/../../sampleData/resources.json');
-    }
   }
 }
