@@ -32,10 +32,11 @@ function Calendar({
   events,
   date,
   setDate,
+  calendarSelection,
   onCalendarSelection,
   config,
-  setShowResourceView,
-  setResourceId,
+  showResourceViewId,
+  setShowResourceViewId
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
@@ -49,13 +50,9 @@ function Calendar({
     calendarRef?.current?.getApi().gotoDate(date);
   }, [date]);
 
-  /**
-   * @param {string} resourceId Id of the resource to load - retrieved from
-   *   CalendarCellInfoButton component
-   */
-  function triggerResourceView(resourceId) {
-    setShowResourceView(true);
-    setResourceId(resourceId);
+  /** @param {string} showResourceViewId Id of the resource to load */
+  function triggerResourceView(showResourceViewId) {
+    setShowResourceViewId(showResourceViewId);
   }
 
   return (
@@ -142,6 +139,8 @@ Calendar.propTypes = {
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
   }).isRequired,
+  showResourceViewId: PropTypes.string.isRequired,
+  setShowResourceViewId: PropTypes.func.isRequired
 };
 
 export default Calendar;

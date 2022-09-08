@@ -33,8 +33,7 @@ function App() {
   // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
 
   // ResourceView overlay trigger & global data
-  const [showResourceView, setShowResourceView] = useState(null);
-  const [resourceId, setResourceId] = useState(null);
+  const [showResourceViewId, setShowResourceViewId] = useState(null);
 
   // Loaded data.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -129,6 +128,7 @@ function App() {
                 {/* Dropdown with locations */}
                 <Select
                   styles={{}}
+                  placeholder="lokationer..."
                   options={locationOptions}
                   onChange={(newValue) => {
                     setLocation(newValue.value);
@@ -139,6 +139,7 @@ function App() {
                 {/* Dropdown with resources */}
                 <Select
                   styles={{}}
+                  placeholder="ressourcer..."
                   options={resourcesOptions}
                   onChange={(newValue) => {
                     setLocation(newValue.value);
@@ -148,6 +149,14 @@ function App() {
               {/* Dropdown with facilities */}
               <div className="col-md-3">
                 {/* TODO: Add dropdown with options from facilities (v1) */}
+                <Select
+                  styles={{}}
+                  placeholder="faciliteter..."
+                  options={facilityOptions}
+                  onChange={(newValue) => {
+                    setLocation(newValue.value);
+                  }}
+                />
               </div>
               {/* Dropdown with capacity */}
               <div className="col-md-3">
@@ -172,20 +181,18 @@ function App() {
                 calendarSelection={calendarSelection}
                 onCalendarSelection={setCalendarSelection}
                 config={config}
-                setResourceId={setResourceId}
-                setShowResourceView={setShowResourceView}
+                showResourceViewId={showResourceViewId}
+                setShowResourceViewId={setShowResourceViewId}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView
                 config={config}
-                id={resourceId}
-                setResourceId={setResourceId}
-                showResourceView={showResourceView}
-                setShowResourceView={setShowResourceView}
                 resource={resource}
                 setResource={setResource}
                 facilities={facilities}
                 setFacilities={setFacilities}
+                showResourceViewId={showResourceViewId}
+                setshowResourceViewId={setShowResourceViewId}
               />
             </div>
 

@@ -3,12 +3,6 @@ import * as PropTypes from "prop-types";
 import "./calendar-cell-info-button.scss";
 
 /**
- * @param root0
- * @param root0.title
- * @param root0.resourceId
- * @param root0.onClickEvent
- */
-/**
  * Calendar cell information button component.
  *
  * @param {object} props Props.
@@ -36,9 +30,10 @@ function CalendarCellInfoButton({ title, resourceId, onClickEvent }) {
     </span>
   );
 }
-CalendarCellInfoButton.prototype = {
+CalendarCellInfoButton.propTypes = {
   title: PropTypes.string.isRequired,
   resourceId: PropTypes.string.isRequired,
   onClickEvent: PropTypes.func.isRequired,
 };
+
 export default CalendarCellInfoButton;

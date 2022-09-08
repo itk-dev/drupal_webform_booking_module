@@ -4,19 +4,6 @@ import ResourceDetails from "./resource-details";
 import "./resource-view.scss";
 
 /**
- * @param root0
- * @param root0.id
- * @param root0.config
- * @param root0.setResourceId
- * @param root0.showResourceView
- * @param root0.setShowResourceView
- * @param root0.resource
- * @param root0.setResource
- * @param root0.facilities
- * @param root0.setFacilities
- */
-
-/**
  * @param {object} props Props
  * @param {string} props.id Resource id.
  * @param {object} props.config App config.
@@ -32,29 +19,27 @@ import "./resource-view.scss";
 function ResourceView({
   id,
   config,
-  setResourceId,
-  showResourceView,
-  setShowResourceView,
   resource,
   setResource,
   facilities,
   setFacilities,
+  showResourceViewId,
+  setshowResourceViewId
 }) {
-
+  /** Hide resource view */
   function hideResourceView() {
-    setShowResourceView(null);
-    setResourceId(null);
+    setshowResourceViewId(null);
     setResource(false);
     setFacilities(null);
   }
   return (
     <div
       className={
-        showResourceView === true
+        showResourceViewId !== null
           ? "fade-in-background resource-view"
           : "resource-view"
       }
-      style={{ display: showResourceView === true ? "block" : "none" }}
+      style={{ display: showResourceViewId !== null ? "block" : "none" }}
     >
       <ResourceDetails
         config={config}
@@ -64,7 +49,7 @@ function ResourceView({
         setResource={setResource}
         facilities={facilities}
         setFacilities={setFacilities}
-        showResourceView={showResourceView}
+        showResourceViewId={showResourceViewId}
       />
     </div>
   );
@@ -75,13 +60,12 @@ ResourceView.propTypes = {
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
-  setResourceId: PropTypes.func.isRequired,
-  showResourceView: PropTypes.bool.isRequired,
-  setShowResourceView: PropTypes.func.isRequired,
-  resource: PropTypes.object.isRequired,
+  resource: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.object.isRequired,
+  facilities: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setFacilities: PropTypes.func.isRequired,
+  showResourceViewId: PropTypes.string.isRequired,
+  setShowResourceView: PropTypes.func.isRequired
 };
 
 export default ResourceView;

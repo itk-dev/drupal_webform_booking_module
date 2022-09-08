@@ -17,18 +17,17 @@ import "./resource-details.scss";
  * @returns {object} Component.
  */
 function ResourceDetails({
-  resourceId,
   config,
   hideResourceView,
   resource,
   setResource,
   facilities,
   setFacilities,
-  showResourceView,
+  showResourceViewId,
 }) {
   useEffect(() => {
-    if (config && resourceId !== null) {
-      Api.fetchResource(config.api_endpoint, resourceId)
+    if (config && showResourceViewId !== null) {
+      Api.fetchResource(config.api_endpoint, showResourceViewId)
         .then((loadedResource) => {
           setResource(loadedResource);
           setFacilities(loadedResource.facilities);
@@ -37,7 +36,7 @@ function ResourceDetails({
           // TODO: Display error and retry option for user.
         });
     }
-  }, [resourceId, config]);
+  }, [showResourceViewId, config]);
 
   /**
    * Get facilities list.
@@ -70,7 +69,7 @@ function ResourceDetails({
   return (
     <div
       className={
-        showResourceView === true
+        showResourceViewId !== null
           ? "fade-in-content resource-container"
           : "  resource-container"
       }
@@ -124,16 +123,20 @@ function ResourceDetails({
 }
 
 ResourceDetails.propTypes = {
-  resourceId: PropTypes.string.isRequired,
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
   hideResourceView: PropTypes.func.isRequired,
-  resource: PropTypes.object.isRequired,
+  resource: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.object.isRequired,
+  facilities: PropTypes.arrayOf(
+    PropTypes.shape({
+      icon: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   setFacilities: PropTypes.func.isRequired,
-  showResourceView: PropTypes.bool.isRequired,
+  showResourceViewId: PropTypes.string.isRequired
 };
 
 export default ResourceDetails;
