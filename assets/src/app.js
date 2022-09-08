@@ -187,7 +187,7 @@ function App() {
             </div>
 
             {/* TODO: Only show if user menu is requested */}
-            <UserPanel config={config} />
+            {/* <UserPanel config={config} /> */}
 
             {/* Display author fields */}
             <div className="row">
