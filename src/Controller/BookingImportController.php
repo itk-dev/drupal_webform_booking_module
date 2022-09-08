@@ -12,13 +12,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Booking import controller.
  */
 class BookingImportController extends ControllerBase {
-
-  /**
-   * Booking helper
-   *
-   * @var BookingHelper
-   *   A booking helper service.
-   */
   protected BookingHelper $bookingHelper;
 
   /**
