@@ -2,11 +2,9 @@
 
 namespace Drupal\itkdev_booking\Controller;
 
-// use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\itkdev_booking\Helper\UserBookingsHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -14,19 +12,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class UserBookingsController extends ControllerBase {
 
-  /**
-   * Booking helper
-   *
-   * @var UserBookingsHelper
-   *   A booking helper service.
-   */
-  protected UserBookingsHelper $UserBookingsHelper;
+  protected UserBookingsHelper $bookingHelper;
 
   /**
    * UserBookingsController constructor.
    *
-   * @param UserBookingsHelper $bookingHelper
-   *   A booking helper service.
+   * @param UserBookingsHelper $UserBookingsHelper
    */
   public function __construct(UserBookingsHelper $UserBookingsHelper) {
     $this->bookingHelper = $UserBookingsHelper;
@@ -35,52 +26,46 @@ class UserBookingsController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): UserBookingsController {
     return new static(
       $container->get('itkdev_booking.user_bookings_helper')
     );
   }
 
   /**
-   * Fetch  bookings from booking service.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * Get logged in user's booking.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
    */
-  public function getUserBookings(Request $request) {
-    $payload = $this->bookingHelper->getResult('v1/user-bookings', $request);
-    return new JsonResponse($payload);
+  public function getUserBookings(): JsonResponse {
+    $response = $this->bookingHelper->getUserBookings();
+
+    return new JsonResponse(null, $response->getStatusCode());
   }
 
-   /**
-   * delete bookings from booking service.
+  /**
+   * Delete booking with given bookingId.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * @param string $bookingId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
    */
-  public function DeleteUserBooking(Request $request, $bookingId) {
-    $request->attributes->set('bookingId', $bookingId);
-    $payload = $this->bookingHelper->getResult('v1/user-bookings', $request);
-    return new JsonResponse($payload);
+  public function deleteUserBooking(string $bookingId): JsonResponse {
+    $response = $this->bookingHelper->deleteUserBooking($bookingId);
+
+    return new JsonResponse(null, $response->getStatusCode());
   }
 
-    /**
-   * Fetch bookings from booking service.
+  /**
+   * Get booking details for a given hitId.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * @param string $hitId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
    */
-  public function getBookingDetails(Request $request) {
-    $payload = $this->bookingHelper->getResult('v1/booking-details', $request);
+  public function getBookingDetails(string $hitId): JsonResponse {
+    $payload = $this->bookingHelper->getBookingDetails($hitId);
+
     return new JsonResponse($payload);
   }
 

@@ -34,7 +34,7 @@ class BookingImportController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): BookingImportController {
     return new static(
       $container->get('itkdev_booking.booking_helper')
     );
@@ -48,8 +48,10 @@ class BookingImportController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The payload.
+   *
+   * @throws \Exception
    */
-  public function getBookings(Request $request) {
+  public function getBusyIntervals(Request $request): JsonResponse {
     $payload = $this->bookingHelper->getResult('v1/busy-intervals', $request);
     return new JsonResponse($payload);
   }

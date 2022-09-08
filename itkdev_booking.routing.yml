@@ -1,4 +1,4 @@
-itkdev_booking.resources_endpoint:
+itkdev_booking.resources:
   path: '/itkdev_booking/resources'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\ResourceImportController::getResources'
@@ -7,7 +7,7 @@ itkdev_booking.resources_endpoint:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
-itkdev_booking.resource_endpoint:
+itkdev_booking.resources_by_id:
   path: '/itkdev_booking/resources/{resourceId}'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\ResourceImportController::getResource'
@@ -16,16 +16,16 @@ itkdev_booking.resource_endpoint:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
-itkdev_booking.bookings_endpoint:
-  path: '/itkdev_booking/bookings'
+itkdev_booking.busy_intervals:
+  path: '/itkdev_booking/busy_intervals'
   defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\BookingImportController::getBookings'
+    _controller: '\Drupal\itkdev_booking\Controller\BookingImportController::getBusyIntervals'
   methods: [GET]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
-itkdev_booking.locations_endpoint:
+itkdev_booking.locations:
   path: '/itkdev_booking/locations'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\LocationImportController::getLocations'
@@ -44,16 +44,16 @@ itkdev_booking.user_bookings:
     _access: 'TRUE'
 
 itkdev_booking.user_bookings_delete:
-  path: '/itkdev_booking/user-booking-delete/{bookingId}'
+  path: '/itkdev_booking/user-booking/{bookingId}'
   defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::DeleteUserBooking'
+    _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::deleteUserBooking'
   methods: [DELETE]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.booking_details:
-  path: '/itkdev_booking/booking-details/{hitid}'
+  path: '/itkdev_booking/booking-details/{hitId}'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::getBookingDetails'
   methods: [GET]
