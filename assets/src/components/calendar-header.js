@@ -57,7 +57,10 @@ function CalendarHeader({ date, setDate }) {
                 value={dayjs(date).format("YYYY-MM-DD")}
                 onChange={(e) => onChangeDate(e)}
               />
-              <label className="h3 calendar-title" htmlFor="calendar-datepicker">
+              <label
+                htmlFor="calendar-datepicker"
+                className="h3 calendar-title"
+              >
                 {dayjs(date).format("D. MMMM YYYY")}
                 <span className="small">X</span>
               </label>
