@@ -1,23 +1,20 @@
 <?php
 
 class SampleDataHelper {
+
   /**
    * Get sample data from local file.
    *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @return false|string
+   * @param $sampleName
+   *   Name of the same to serve.
+   *
+   * @return array
    *   The sample data requested.
+   *
+   * @throws \JsonException
    */
-  public static function getSampleData($apiEndpoint)
-  {
-    switch ($apiEndpoint) {
-      case 'v1/busy-intervals':
-        return file_get_contents(__DIR__ . '/../../sampleData/busy-intervals.json');
-      case 'v1/resources':
-        return file_get_contents(__DIR__ . '/../../sampleData/resources.json');
-      case 'v1/user-bookings':
-        return file_get_contents(__DIR__ . '/../../sampleData/user-bookings.json');
-    }
+  public static function getSampleData($sampleName): array {
+    $stringData = file_get_contents(__DIR__ . '/../../sampleData/' . $sampleName . '.json');
+    return json_decode($stringData, true, 512, JSON_THROW_ON_ERROR);
   }
 }

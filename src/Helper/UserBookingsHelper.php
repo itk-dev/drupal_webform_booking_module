@@ -22,8 +22,6 @@ class UserBookingsHelper
   protected array $headers;
 
   /**
-   * UserBookingsHelper constructor.
-   *
    * @param \GuzzleHttp\ClientInterface $guzzleClient
    *   The http client.
    */
@@ -40,6 +38,11 @@ class UserBookingsHelper
     ];
   }
 
+  /**
+   * Get user bookings.
+   *
+   * @return \Psr\Http\Message\ResponseInterface
+   */
   public function getUserBookings(): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
     // TODO: Attach userid.
@@ -49,6 +52,13 @@ class UserBookingsHelper
     return $client->get("${endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
   }
 
+  /**
+   * Delete user booking.
+   *
+   * @param string $bookingId
+   *
+   * @return \Psr\Http\Message\ResponseInterface
+   */
   public function deleteUserBooking(string $bookingId): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
     // TODO: Attach userid.

@@ -3,6 +3,7 @@
 namespace Drupal\itkdev_booking\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Site\Settings;
 use Drupal\itkdev_booking\Helper\BookingHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,15 +13,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class LocationController extends ControllerBase {
   protected BookingHelper $bookingHelper;
+  protected bool $bookingApiSampleData;
 
   /**
-   * LocationController constructor.
-   *
    * @param BookingHelper $bookingHelper
    *   A booking helper service.
    */
   public function __construct(BookingHelper $bookingHelper) {
     $this->bookingHelper = $bookingHelper;
+    $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
   }
 
   /**
@@ -33,12 +34,17 @@ class LocationController extends ControllerBase {
   }
 
   /**
-   * Fetch bookings from booking service.
+   * Get locations.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    * @throws \JsonException
    */
   public function getLocations(): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      $data = \SampleDataHelper::getSampleData("locations");
+      return new JsonResponse($data, 200);
+    }
+
     $response = $this->bookingHelper->getLocations();
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
