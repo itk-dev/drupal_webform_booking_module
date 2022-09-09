@@ -105,9 +105,7 @@ export default class Api {
   }
 
   static async fetchUserBookings(apiEndpoint) {
-    return fetch(
-      `${apiEndpoint}itkdev_booking/user-bookings`
-    )
+    return fetch(`${apiEndpoint}itkdev_booking/user-bookings`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
