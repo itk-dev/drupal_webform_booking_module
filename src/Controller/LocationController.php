@@ -5,6 +5,7 @@ namespace Drupal\itkdev_booking\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Site\Settings;
 use Drupal\itkdev_booking\Helper\BookingHelper;
+use Drupal\itkdev_booking\Helper\SampleDataHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -41,7 +42,7 @@ class LocationController extends ControllerBase {
    */
   public function getLocations(): JsonResponse {
     if ($this->bookingApiSampleData) {
-      $data = \SampleDataHelper::getSampleData("locations");
+      $data = SampleDataHelper::getSampleData("locations");
       return new JsonResponse($data, 200);
     }
 

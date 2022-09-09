@@ -5,6 +5,7 @@ namespace Drupal\itkdev_booking\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Site\Settings;
 use Drupal\itkdev_booking\Helper\BookingHelper;
+use Drupal\itkdev_booking\Helper\SampleDataHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -45,7 +46,7 @@ class BookingController extends ControllerBase {
    */
   public function getBusyIntervals(Request $request): JsonResponse {
     if ($this->bookingApiSampleData) {
-      $data = \SampleDataHelper::getSampleData("busy-intervals");
+      $data = SampleDataHelper::getSampleData("busy-intervals");
       return new JsonResponse($data, 200);
     }
 

@@ -4,6 +4,7 @@ namespace Drupal\itkdev_booking\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Site\Settings;
+use Drupal\itkdev_booking\Helper\SampleDataHelper;
 use Drupal\itkdev_booking\Helper\UserBookingsHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -42,7 +43,7 @@ class UserBookingsController extends ControllerBase {
    */
   public function getUserBookings(): JsonResponse {
     if ($this->bookingApiSampleData) {
-      $data = \SampleDataHelper::getSampleData("user-bookings");
+      $data = SampleDataHelper::getSampleData("user-bookings");
       return new JsonResponse($data, 200);
     }
 
@@ -80,7 +81,7 @@ class UserBookingsController extends ControllerBase {
    */
   public function getBookingDetails(string $hitId): JsonResponse {
     if ($this->bookingApiSampleData) {
-      $data = \SampleDataHelper::getSampleData("booking-details");
+      $data = SampleDataHelper::getSampleData("booking-details");
       return new JsonResponse($data, 200);
     }
 

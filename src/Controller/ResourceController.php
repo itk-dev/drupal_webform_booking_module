@@ -5,6 +5,7 @@ namespace Drupal\itkdev_booking\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Site\Settings;
 use Drupal\itkdev_booking\Helper\BookingHelper;
+use Drupal\itkdev_booking\Helper\SampleDataHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -45,7 +46,7 @@ class ResourceController extends ControllerBase {
    */
   public function getResources(Request $request): JsonResponse {
     if ($this->bookingApiSampleData) {
-      $data = \SampleDataHelper::getSampleData("resources");
+      $data = SampleDataHelper::getSampleData("resources");
       return new JsonResponse($data, 200);
     }
 
@@ -67,7 +68,7 @@ class ResourceController extends ControllerBase {
    */
   public function getResource(string $resourceId): JsonResponse {
     if ($this->bookingApiSampleData) {
-      $data = \SampleDataHelper::getSampleData("resource");
+      $data = SampleDataHelper::getSampleData("resource");
       return new JsonResponse($data, 200);
     }
 
