@@ -4,18 +4,17 @@ namespace Drupal\itkdev_booking\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\itkdev_booking\Helper\BookingHelper;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Booking import controller.
+ * Location controller.
  */
-class BookingImportController extends ControllerBase {
+class LocationController extends ControllerBase {
   protected BookingHelper $bookingHelper;
 
   /**
-   * ResourceImportController constructor.
+   * LocationController constructor.
    *
    * @param BookingHelper $bookingHelper
    *   A booking helper service.
@@ -27,7 +26,7 @@ class BookingImportController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): BookingImportController {
+  public static function create(ContainerInterface $container): LocationController {
     return new static(
       $container->get('itkdev_booking.booking_helper')
     );
@@ -36,17 +35,13 @@ class BookingImportController extends ControllerBase {
   /**
    * Fetch bookings from booking service.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
-   *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
-   *
-   * @throws \Exception
+   * @throws \JsonException
    */
-  public function getBusyIntervals(Request $request): JsonResponse {
-    $payload = $this->bookingHelper->getResult('v1/busy-intervals', $request);
-    return new JsonResponse($payload);
-  }
+  public function getLocations(): JsonResponse {
+    $response = $this->bookingHelper->getLocations();
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
+    return new JsonResponse($data, $response->getStatusCode());
+  }
 }

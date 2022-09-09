@@ -46,7 +46,7 @@ class UserBookingsHelper
     $userId = "TODO";
     $client = new Client();
 
-    return $client->delete("$endpoint/v1/user-bookings?userid=$userId", ['headers' => $this->headers]);
+    return $client->get("$endpoint/v1/user-bookings?userid=$userId", ['headers' => $this->headers]);
   }
 
   public function deleteUserBooking(string $bookingId): ResponseInterface {

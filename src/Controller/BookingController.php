@@ -9,20 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Booking import controller.
+ * Booking controller.
  */
-class LocationImportController extends ControllerBase {
-
-  /**
-   * Booking helper
-   *
-   * @var BookingHelper
-   *   A booking helper service.
-   */
+class BookingController extends ControllerBase {
   protected BookingHelper $bookingHelper;
 
   /**
-   * LocationImportController constructor.
+   * ResourceImportController constructor.
    *
    * @param BookingHelper $bookingHelper
    *   A booking helper service.
@@ -34,7 +27,7 @@ class LocationImportController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): BookingController {
     return new static(
       $container->get('itkdev_booking.booking_helper')
     );
@@ -44,14 +37,20 @@ class LocationImportController extends ControllerBase {
    * Fetch bookings from booking service.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
+   *
+   * @throws \Exception
    */
-  public function getLocations(Request $request) {
-    $payload = $this->bookingHelper->getResult('v1/locations', $request);
-    return new JsonResponse($payload);
-  }
+  public function getBusyIntervals(Request $request): JsonResponse {
+    $query = $request->query;
+    $resourceEmails = $query->get('resources');
+    $dateStart = $query->get('dateStart');
+    $dateEnd = $query->get('dateEnd');
 
+    $response = $this->bookingHelper->getBusyIntervals($resourceEmails, $dateStart, $dateEnd);
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
+
+    return new JsonResponse($data, $response->getStatusCode());
+  }
 }

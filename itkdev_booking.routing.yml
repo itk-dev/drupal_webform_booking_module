@@ -1,7 +1,7 @@
 itkdev_booking.resources:
   path: '/itkdev_booking/resources'
   defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\ResourceImportController::getResources'
+    _controller: '\Drupal\itkdev_booking\Controller\ResourceController::getResources'
   methods: [GET]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
@@ -10,7 +10,7 @@ itkdev_booking.resources:
 itkdev_booking.resources_by_id:
   path: '/itkdev_booking/resources/{resourceId}'
   defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\ResourceImportController::getResource'
+    _controller: '\Drupal\itkdev_booking\Controller\ResourceController::getResource'
   methods: [GET]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
@@ -19,7 +19,7 @@ itkdev_booking.resources_by_id:
 itkdev_booking.busy_intervals:
   path: '/itkdev_booking/busy_intervals'
   defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\BookingImportController::getBusyIntervals'
+    _controller: '\Drupal\itkdev_booking\Controller\BookingController::getBusyIntervals'
   methods: [GET]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.
@@ -28,7 +28,7 @@ itkdev_booking.busy_intervals:
 itkdev_booking.locations:
   path: '/itkdev_booking/locations'
   defaults:
-    _controller: '\Drupal\itkdev_booking\Controller\LocationImportController::getLocations'
+    _controller: '\Drupal\itkdev_booking\Controller\LocationController::getLocations'
   methods: [ GET ]
   requirements:
     # Free access to call api endpoint. API key handled in the other end.

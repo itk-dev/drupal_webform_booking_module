@@ -9,16 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Resource import controller.
+ * Resource controller.
  */
-class ResourceImportController extends ControllerBase {
-
-  /**
-   * Booking helper
-   *
-   * @var BookingHelper
-   *   A booking helper service.
-   */
+class ResourceController extends ControllerBase {
   protected BookingHelper $bookingHelper;
 
   /**
@@ -34,7 +27,7 @@ class ResourceImportController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): ResourceController {
     return new static(
       $container->get('itkdev_booking.booking_helper')
     );
@@ -44,28 +37,32 @@ class ResourceImportController extends ControllerBase {
    * Fetch resources from booking service.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
+   *
+   * @throws \Exception
    */
-  public function getResources(Request $request) {
-    $payload = $this->bookingHelper->getResult('v1/resources', $request);
-    return new JsonResponse($payload);
+  public function getResources(Request $request): JsonResponse {
+    $query = $request->query->all();
+
+    $response = $this->bookingHelper->getResources($query);
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
+
+    return new JsonResponse($data, $response->getStatusCode());
   }
+
   /**
    * Fetch resources from booking service.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * @param $resourceId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
+   * @throws \JsonException
    */
-  public function getResource(Request $request, $resourceId) {
-    $request->attributes->set('resourceId', $resourceId);
-    $payload = $this->bookingHelper->getResult('v1/resources', $request);
-    return new JsonResponse($payload);
-  }
+  public function getResource($resourceId): JsonResponse {
+    $response = $this->bookingHelper->getResourceById($resourceId);
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
+    return new JsonResponse($data, $response->getStatusCode());
+  }
 }

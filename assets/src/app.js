@@ -78,8 +78,8 @@ function App() {
           setResourcesOptions(
             loadedResources.map((res) => {
               return {
-                value: res.resourcemail,
-                label: res.resourcename,
+                value: res.resourceMail,
+                label: res.resourceName,
               };
             })
           );

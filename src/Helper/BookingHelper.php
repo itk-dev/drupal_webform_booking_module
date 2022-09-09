@@ -18,6 +18,7 @@ class BookingHelper
   protected string $bookingApiKey;
   protected string $bookingApiAllowInsecureConnection;
   protected bool $bookingApiSampleData;
+  protected array $headers;
 
   /**
    * BookingHelper constructor.
@@ -28,6 +29,46 @@ class BookingHelper
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
     $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
     $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
+
+    $this->headers = [
+      'accept' => 'application/ld+json',
+      'Authorization' => 'Apikey ' . $this->bookingApiKey
+    ];
+  }
+
+  public function getLocations(): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    $client = new Client();
+
+    return $client->get("${endpoint}v1/locations", ['headers' => $this->headers]);
+  }
+
+  public function getResources(array $query): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    $client = new Client();
+
+    return $client->get("${endpoint}v1/resources", ['query' => $query, 'headers' => $this->headers]);
+  }
+
+  public function getResourceById(string $resourceId): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    $client = new Client();
+
+    return $client->get("${endpoint}v1/resources/${$resourceId}", ['headers' => $this->headers]);
+  }
+
+  public function getBusyIntervals(array $resources, string $dateStart, string $dateEnd): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    $client = new Client();
+
+    return $client->get("${endpoint}v1/busy-intervals", [
+      'query' => [
+        'resources' => $resources,
+        'dateStart' => $dateStart,
+        'dateEnd' => $dateEnd,
+      ],
+      'headers' => $this->headers,
+    ]);
   }
 
   /**

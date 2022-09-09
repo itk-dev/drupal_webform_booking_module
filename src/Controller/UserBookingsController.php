@@ -8,10 +8,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Booking import controller.
+ * UserBooking controller.
  */
 class UserBookingsController extends ControllerBase {
-
   protected UserBookingsHelper $bookingHelper;
 
   /**
@@ -36,11 +35,13 @@ class UserBookingsController extends ControllerBase {
    * Get logged in user's booking.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   * @throws \JsonException
    */
   public function getUserBookings(): JsonResponse {
     $response = $this->bookingHelper->getUserBookings();
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse(null, $response->getStatusCode());
+    return new JsonResponse($data, $response->getStatusCode());
   }
 
   /**
@@ -49,6 +50,7 @@ class UserBookingsController extends ControllerBase {
    * @param string $bookingId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   * @throws \JsonException
    */
   public function deleteUserBooking(string $bookingId): JsonResponse {
     $response = $this->bookingHelper->deleteUserBooking($bookingId);
@@ -62,11 +64,12 @@ class UserBookingsController extends ControllerBase {
    * @param string $hitId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   * @throws \JsonException
    */
   public function getBookingDetails(string $hitId): JsonResponse {
-    $payload = $this->bookingHelper->getBookingDetails($hitId);
+    $response = $this->bookingHelper->getBookingDetails($hitId);
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse($payload);
+    return new JsonResponse($data, $response->getStatusCode());
   }
-
 }

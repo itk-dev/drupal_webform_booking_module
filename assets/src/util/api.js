@@ -37,7 +37,7 @@ export default class Api {
 
     // Setup query parameters.
     const urlSearchParams = new URLSearchParams({
-      resources: resources.map((resource) => resource.resourcemail),
+      resources: resources.map((resource) => resource.resourceMail),
       dateStart: date.toISOString(),
       dateEnd: dateEnd.toISOString(),
       page: 1,
