@@ -1,0 +1,24 @@
+.calendar-container {
+  table {
+    margin-top: 0;
+    margin-bottom: 0;
+
+    td {
+      height:0;
+    }
+    tr {
+      &:hover {
+        background: inherit;
+      }
+    }
+  }
+
+  .datepicker {
+    text-align: center;
+    font-size: 1.8em;
+  }
+
+  .calendar-nav {
+    text-align: right;
+  }
+}
