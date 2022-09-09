@@ -7,6 +7,7 @@ use Drupal\Core\Url;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -14,218 +15,72 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class UserBookingsHelper
 {
-  /**
-   * Guzzle Http Client.
-   *
-   * @var GuzzleHttp\ClientInterface
-   */
-  protected $httpClient;
-
-  /**
-   * The booking api endpoint.
-   *
-   * @var string|mixed
-   */
+  protected ClientInterface $httpClient;
   protected string $bookingApiEndpoint;
-
-  /**
-   * The booking api key.
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiKey;
+  protected bool $bookingApiSampleData;
+  protected array $headers;
 
   /**
-   * UserBookingsHelper constructor.
-   *
    * @param \GuzzleHttp\ClientInterface $guzzleClient
    *   The http client.
    */
   public function __construct(ClientInterface $guzzleClient)
   {
-    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
-    $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
+    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint');
+    $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
+    $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
     $this->httpClient = $guzzleClient;
+
+    $this->headers = [
+      'accept' => 'application/ld+json',
+      'Authorization' => 'Apikey ' . $this->bookingApiKey
+    ];
   }
 
   /**
-   * Get resources from local resources endpoint.
+   * Get user bookings.
    *
-   * @return mixed
+   * @return \Psr\Http\Message\ResponseInterface
    */
-  public function getUserBookings()
-  {
-    $url = Url::fromRoute('itkdev_booking.user_bookings', ['userId' => '1'], ['absolute' => TRUE])->toString();
+  public function getUserBookings(): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    // TODO: Attach userid.
+    $userId = "1";
     $client = new Client();
-    try {
-      $response = $client->get($url);
-    } catch (RequestException $e) {
-      // Exception is logged
-    }
 
-    return json_decode($response->getBody(), TRUE);
+    return $client->get("{$endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
   }
+
   /**
-   * Get a data result depending on request and desired api endpoint.
+   * Delete user booking.
    *
-   * Uses sample data if no api endpoint is set. See module README.md.
+   * @param string $bookingId
    *
-   * @param string $apiEndpoint
-   *   The api endpoint specification.
-   * @param Request $request
-   *   The original request.
-   * @return mixed
-   *   Decoded json data as array.
+   * @return \Psr\Http\Message\ResponseInterface
    */
-  public function getResult(string $apiEndpoint, Request $request)
-  {
-    if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      switch ($apiEndpoint) {
-        case "v1/user-bookings":
-          if ($request->isMethod("DELETE")) {
-            $response = $this->deleteData($apiEndpoint, $request->getQueryString());
-          } else {
-            $response = $this->getData($apiEndpoint, $request->getQueryString());
-          }
-          return json_decode($response->getBody(), TRUE);
-          break;
-        case "v1/booking-details":
-          $hitId = base64_decode($request->attributes->get('hitid'));
-          $response = $this->getBookingDetails($apiEndpoint, $hitId);
-          return json_decode($response->getBody(), TRUE);
-          break;
-        default:
-          return "No endpoint defined";
-          break;
-      }
-    } else {
-      $response = $this->getSampleData($apiEndpoint);
-      return json_decode($response, TRUE);
-    }
+  public function deleteUserBooking(string $bookingId): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    // TODO: Attach userid.
+    $userId = "TODO";
+    $client = new Client();
+
+    return $client->delete("{$endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
   }
 
   /**
-   * Request action depending on request and desired api endpoint.
+   * Get booking details.
    *
-   *
-   *
-   * @param string $apiEndpoint
-   *   The api endpoint specification.
-   * @param Request $request
-   *   The original request.
-   * @return mixed
-   *   Decoded json data as array.
-   */
-  public function sendRequest(string $apiEndpoint, Request $request, $queryString)
-  {
-    $fields = json_decode($request->getContent());
-    $param1 = $fields->param1;
-    $param2 = $fields->param2;
-
-
-    return $param1;
-    // $response = [];
-    // $client = new Client();
-    // try {
-    //   $response = $client->get(
-    //       $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
-    //     ['headers' => [
-    //       'accept' => 'application/ld+json',
-    //       'Authorization' => 'Apikey ' . $this->bookingApiKey
-    //     ]]);
-
-    // } catch (RequestException $e) {
-    //   // Exception is logged.
-    // }
-    // return $response;
-
-    // if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-    //   $response = $this->getData($apiEndpoint, $request->getQueryString());
-    //   return json_decode($response->getBody(), TRUE);
-    // }
-    // else {
-    //   $response = $this->getSampleData($apiEndpoint);
-    //   return json_decode($response, TRUE);
-    // }
-  }
-
-  /**
-   * Get real data.
-   *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @param $queryString
-   *   An additional querystring.
-   * @return array|\Psr\Http\Message\ResponseInterface
+   * @return \Psr\Http\Message\ResponseInterface
    *   The api response.
    */
-  private function getData($apiEndpoint, $queryString)
-  {
-    $response = [];
+  public function getBookingDetails(string $hitId): ResponseInterface {
+    $endpoint = $this->bookingApiEndpoint;
+    // TODO: Attach userid.
+    $userId = "TODO";
+
     $client = new Client();
-    $response = $client->get(
-      $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
-      ['headers' => [
-        'accept' => 'application/ld+json',
-        'Authorization' => 'Apikey ' . $this->bookingApiKey
-      ]]
-    );
 
-    return $response;
-  }
-
-  private function deleteData($apiEndpoint, $queryString)
-  {
-    $response = [];
-    $client = new Client();
-    $response = $client->delete(
-      $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
-      ['headers' => [
-        'accept' => 'application/ld+json',
-        'Authorization' => 'Apikey ' . $this->bookingApiKey
-      ]]
-    );
-
-    return $response;
-  }
-  /**
-   * Get real data.
-   *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @param $queryString
-   *   An additional querystring.
-   * @return array|\Psr\Http\Message\ResponseInterface
-   *   The api response.
-   */
-  private function getBookingDetails($apiEndpoint, $queryString)
-  {
-    $response = [];
-    $client = new Client();
-    $response = $client->get(
-      $this->bookingApiEndpoint . $apiEndpoint . '?bookingId=' . $queryString . '&page=1',
-      ['headers' => [
-        'accept' => 'application/ld+json',
-        'Authorization' => 'Apikey ' . $this->bookingApiKey
-      ]]
-    );
-
-    return $response;
-  }
-
-  /**
-   * Get sample data from local file.
-   *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @return false|string
-   *   The sample data requested.
-   */
-  private function getSampleData($apiEndpoint)
-  {
-    switch ($apiEndpoint) {
-      case 'v1/user-bookings':
-        return file_get_contents(__DIR__ . '/../../sampleData/user-bookings.json');
-    }
+    return $client->get("{$endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
   }
 }

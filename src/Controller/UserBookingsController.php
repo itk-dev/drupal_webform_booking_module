@@ -2,86 +2,92 @@
 
 namespace Drupal\itkdev_booking\Controller;
 
-// use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Site\Settings;
+use Drupal\itkdev_booking\Helper\SampleDataHelper;
 use Drupal\itkdev_booking\Helper\UserBookingsHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Booking import controller.
+ * UserBooking controller.
  */
 class UserBookingsController extends ControllerBase {
-
-  /**
-   * Booking helper
-   *
-   * @var UserBookingsHelper
-   *   A booking helper service.
-   */
-  protected UserBookingsHelper $UserBookingsHelper;
+  protected UserBookingsHelper $bookingHelper;
+  protected bool $bookingApiSampleData;
 
   /**
    * UserBookingsController constructor.
    *
-   * @param UserBookingsHelper $bookingHelper
-   *   A booking helper service.
+   * @param UserBookingsHelper $userBookingsHelper
    */
-  public function __construct(UserBookingsHelper $UserBookingsHelper) {
-    $this->bookingHelper = $UserBookingsHelper;
+  public function __construct(UserBookingsHelper $userBookingsHelper) {
+    $this->bookingHelper = $userBookingsHelper;
+    $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): UserBookingsController {
     return new static(
       $container->get('itkdev_booking.user_bookings_helper')
     );
   }
 
   /**
-   * Fetch  bookings from booking service.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * Get logged in user's booking.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
+   * @throws \JsonException
    */
-  public function getUserBookings(Request $request) {
-    $payload = $this->bookingHelper->getResult('v1/user-bookings', $request);
-    return new JsonResponse($payload);
+  public function getUserBookings(): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      $data = SampleDataHelper::getSampleData("user-bookings");
+      return new JsonResponse($data, 200);
+    }
+
+    $response = $this->bookingHelper->getUserBookings();
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
+
+    return new JsonResponse($data, $response->getStatusCode());
   }
 
-   /**
-   * delete bookings from booking service.
+  /**
+   * Delete booking with given bookingId.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * @param string $bookingId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
+   * @throws \JsonException
    */
-  public function DeleteUserBooking(Request $request, $bookingId) {
-    $request->attributes->set('bookingId', $bookingId);
-    $payload = $this->bookingHelper->getResult('v1/user-bookings', $request);
-    return new JsonResponse($payload);
+  public function deleteUserBooking(string $bookingId): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      return new JsonResponse([], 201);
+    }
+
+    $response = $this->bookingHelper->deleteUserBooking($bookingId);
+
+    return new JsonResponse(null, $response->getStatusCode());
   }
 
-    /**
-   * Fetch bookings from booking service.
+  /**
+   * Get booking details for a given hitId.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request.
+   * @param string $hitId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   The payload.
+   * @throws \JsonException
    */
-  public function getBookingDetails(Request $request) {
-    $payload = $this->bookingHelper->getResult('v1/booking-details', $request);
-    return new JsonResponse($payload);
-  }
+  public function getBookingDetails(string $hitId): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      $data = SampleDataHelper::getSampleData("booking-details");
+      return new JsonResponse($data, 200);
+    }
 
+    $response = $this->bookingHelper->getBookingDetails($hitId);
+    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
+
+    return new JsonResponse($data, $response->getStatusCode());
+  }
 }
