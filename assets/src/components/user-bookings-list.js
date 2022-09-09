@@ -16,7 +16,7 @@ function UserBookingsList({ userId, onDeleteBooking, config }) {
   /** Loads user bookings. */
   function loadUserBookings() {
     if (config && userId !== null) {
-      Api.fetchUserBookings(config.api_endpoint, "")
+      Api.fetchUserBookings(config.api_endpoint)
         .then((loadedUserBookings) => {
           setUserBookings(loadedUserBookings);
         })

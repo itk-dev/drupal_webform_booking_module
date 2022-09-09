@@ -43,10 +43,10 @@ class UserBookingsHelper
   public function getUserBookings(): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
     // TODO: Attach userid.
-    $userId = "TODO";
+    $userId = "1";
     $client = new Client();
 
-    return $client->get("$endpoint/v1/user-bookings?userid=$userId", ['headers' => $this->headers]);
+    return $client->get("${endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
   }
 
   public function deleteUserBooking(string $bookingId): ResponseInterface {
@@ -55,7 +55,7 @@ class UserBookingsHelper
     $userId = "TODO";
     $client = new Client();
 
-    return $client->delete("$endpoint/v1/user-bookings/$bookingId?userid=$userId", ['headers' => $this->headers]);
+    return $client->delete("${endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
   }
 
   /**
@@ -71,6 +71,6 @@ class UserBookingsHelper
 
     $client = new Client();
 
-    return $client->get("$endpoint/v1/user-bookings/$hitId?userid=$userId", ['headers' => $this->headers]);
+    return $client->get("${endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
   }
 }

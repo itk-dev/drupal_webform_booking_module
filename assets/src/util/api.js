@@ -105,15 +105,8 @@ export default class Api {
   }
 
   static async fetchUserBookings(apiEndpoint) {
-    // Setup query parameters.
-    // TODO: Remove userId. This should be handled in the api endpoint.
-    const urlSearchParams = new URLSearchParams({
-      userId: " ",
-      page: 1,
-    });
-
     return fetch(
-      `${apiEndpoint}itkdev_booking/user-bookings?${urlSearchParams}`
+      `${apiEndpoint}itkdev_booking/user-bookings`
     )
       .then((response) => {
         if (!response.ok) {
