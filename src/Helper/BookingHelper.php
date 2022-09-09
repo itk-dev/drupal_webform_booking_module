@@ -37,7 +37,7 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("${endpoint}v1/locations", ['headers' => $this->headers]);
+    return $client->get("{$endpoint}v1/locations", ['headers' => $this->headers]);
   }
 
   /**
@@ -51,7 +51,7 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("${endpoint}v1/resources", ['query' => $query, 'headers' => $this->headers]);
+    return $client->get("{$endpoint}v1/resources", ['query' => $query, 'headers' => $this->headers]);
   }
 
   /**
@@ -65,7 +65,7 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("${endpoint}v1/resources/${$resourceId}", ['headers' => $this->headers]);
+    return $client->get("{$endpoint}v1/resources/${$resourceId}", ['headers' => $this->headers]);
   }
 
   /**
@@ -81,7 +81,7 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("${endpoint}v1/busy-intervals", [
+    return $client->get("{$endpoint}v1/busy-intervals", [
       'query' => [
         'resources' => $resources,
         'dateStart' => $dateStart,
