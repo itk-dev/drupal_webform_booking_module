@@ -6,8 +6,10 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Site\Settings;
 use Drupal\itkdev_booking\Helper\SampleDataHelper;
 use Drupal\itkdev_booking\Helper\UserBookingsHelper;
+use Drupal\itkdev_booking\Helper\UserHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * UserBooking controller.
@@ -15,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class UserBookingsController extends ControllerBase {
   protected UserBookingsHelper $bookingHelper;
   protected bool $bookingApiSampleData;
+  protected UserHelper $userHelper;
 
   /**
    * UserBookingsController constructor.
@@ -24,6 +27,7 @@ class UserBookingsController extends ControllerBase {
   public function __construct(UserBookingsHelper $userBookingsHelper) {
     $this->bookingHelper = $userBookingsHelper;
     $this->bookingApiSampleData = Settings::get('itkdev_booking_api_sample_data', FALSE);
+    $this->userHelper = new UserHelper();
   }
 
   /**
@@ -38,16 +42,20 @@ class UserBookingsController extends ControllerBase {
   /**
    * Get logged in user's booking.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    * @throws \JsonException
    */
-  public function getUserBookings(): JsonResponse {
+  public function getUserBookings(Request $request): JsonResponse {
     if ($this->bookingApiSampleData) {
       $data = SampleDataHelper::getSampleData("user-bookings");
       return new JsonResponse($data, 200);
     }
 
-    $response = $this->bookingHelper->getUserBookings();
+    $userArray = $this->userHelper->getUserValues($request);
+
+    $response = $this->bookingHelper->getUserBookings($userArray['userId']);
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
     return new JsonResponse($data, $response->getStatusCode());
@@ -56,17 +64,19 @@ class UserBookingsController extends ControllerBase {
   /**
    * Delete booking with given bookingId.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $bookingId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
-   * @throws \JsonException
    */
-  public function deleteUserBooking(string $bookingId): JsonResponse {
+  public function deleteUserBooking(Request $request, string $bookingId): JsonResponse {
     if ($this->bookingApiSampleData) {
       return new JsonResponse([], 201);
     }
 
-    $response = $this->bookingHelper->deleteUserBooking($bookingId);
+    $userArray = $this->userHelper->getUserValues($request);
+
+    $response = $this->bookingHelper->deleteUserBooking($userArray['userId'], $bookingId);
 
     return new JsonResponse(null, $response->getStatusCode());
   }
@@ -74,18 +84,21 @@ class UserBookingsController extends ControllerBase {
   /**
    * Get booking details for a given hitId.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $hitId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    * @throws \JsonException
    */
-  public function getBookingDetails(string $hitId): JsonResponse {
+  public function getBookingDetails(Request $request, string $hitId): JsonResponse {
     if ($this->bookingApiSampleData) {
       $data = SampleDataHelper::getSampleData("booking-details");
       return new JsonResponse($data, 200);
     }
 
-    $response = $this->bookingHelper->getBookingDetails($hitId);
+    $userArray = $this->userHelper->getUserValues($request);
+
+    $response = $this->bookingHelper->getBookingDetails($userArray['userId'], $hitId);
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
     return new JsonResponse($data, $response->getStatusCode());

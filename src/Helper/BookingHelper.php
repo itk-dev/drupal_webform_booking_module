@@ -65,7 +65,7 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("{$endpoint}v1/resources/${$resourceId}", ['headers' => $this->headers]);
+    return $client->get("{$endpoint}v1/resources/$resourceId", ['headers' => $this->headers]);
   }
 
   /**

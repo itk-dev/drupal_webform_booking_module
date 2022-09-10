@@ -3,12 +3,9 @@
 namespace Drupal\itkdev_booking\Helper;
 
 use Drupal\Core\Site\Settings;
-use Drupal\Core\Url;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Booking helper.
@@ -43,10 +40,8 @@ class UserBookingsHelper
    *
    * @return \Psr\Http\Message\ResponseInterface
    */
-  public function getUserBookings(): ResponseInterface {
+  public function getUserBookings(string $userId): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
-    // TODO: Attach userid.
-    $userId = "1";
     $client = new Client();
 
     return $client->get("{$endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
@@ -59,10 +54,8 @@ class UserBookingsHelper
    *
    * @return \Psr\Http\Message\ResponseInterface
    */
-  public function deleteUserBooking(string $bookingId): ResponseInterface {
+  public function deleteUserBooking(string $userId, string $bookingId): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
-    // TODO: Attach userid.
-    $userId = "TODO";
     $client = new Client();
 
     return $client->delete("{$endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
@@ -74,11 +67,8 @@ class UserBookingsHelper
    * @return \Psr\Http\Message\ResponseInterface
    *   The api response.
    */
-  public function getBookingDetails(string $hitId): ResponseInterface {
+  public function getBookingDetails(string $userId, string $hitId): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
-    // TODO: Attach userid.
-    $userId = "TODO";
-
     $client = new Client();
 
     return $client->get("{$endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
