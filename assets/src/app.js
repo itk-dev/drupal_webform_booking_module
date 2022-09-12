@@ -21,25 +21,28 @@ function App() {
   // Configuration.
   const [config, setConfig] = useState(null);
 
-  // User selections.
-  const [location, setLocation] = useState(null);
-  const [date, setDate] = useState(new Date());
-  const [calendarSelection, setCalendarSelection] = useState({});
-  const [authorFields, setAuthorFields] = useState({ email: "" });
-  // TODO: Add these.
-  // const [resource, setResource] = useState(null);
+  // Options for filters.
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [resourcesOptions, setResourcesOptions] = useState([]);
+
+  // User selections in the filters.
+  const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
+  const [locationFilter, setLocationFilter] = useState([]);
+  const [resourceFilter, setResourceFilter] = useState([]); // eslint-disable-line no-unused-vars
+
+  // App display for calendar, list and map.
+  const [resources, setResources] = useState([]); // The result after filtering resources
+  const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
+
+  // Id of a specific resource to be displayed in resource view.
+  // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
   const [resource, setResource] = useState(null);
   const [facilities, setFacilities] = useState(null);
-  // const [minimumSeatsRequired, setMinimumSeatsRequired] = useState(null);
-
-  // ResourceView overlay trigger & global data
   const [showResourceViewId, setShowResourceViewId] = useState(null);
 
-  // Loaded data.
-  const [locationOptions, setLocationOptions] = useState([]);
-  const [resources, setResources] = useState([]);
-  const [resourcesOptions, setResourcesOptions] = useState([]);
-  const [events, setEvents] = useState([]);
+  // App output. - Data to be pushed to API or used as parameters for redirect.
+  const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+  const [authorFields, setAuthorFields] = useState({ email: "" }); // Additional fields for author information.
 
   // Get configuration.
   useEffect(() => {
@@ -61,6 +64,7 @@ function App() {
               };
             })
           );
+          setResourceFilter([]);
         })
         .catch(() => {
           // TODO: Display error and retry option for user. (v0.1)
@@ -70,8 +74,8 @@ function App() {
 
   // Get resources for the given location.
   useEffect(() => {
-    if (config && location !== null) {
-      Api.fetchResources(config.api_endpoint, location)
+    if (config && locationFilter !== null) {
+      Api.fetchResources(config.api_endpoint, locationFilter)
         .then((loadedResources) => {
           setResources(loadedResources);
 
@@ -88,7 +92,7 @@ function App() {
           // TODO: Display error and retry option for user. (v0.1)
         });
     }
-  }, [location]);
+  }, [locationFilter]);
 
   // Get events for the given resources.
   useEffect(() => {
@@ -131,8 +135,9 @@ function App() {
                   placeholder="lokationer..."
                   options={locationOptions}
                   onChange={(newValue) => {
-                    setLocation(newValue.value);
+                    setLocationFilter(newValue);
                   }}
+                  isMulti
                 />
               </div>
               <div className="col-md-3">
@@ -142,8 +147,9 @@ function App() {
                   placeholder="ressourcer..."
                   options={resourcesOptions}
                   onChange={(newValue) => {
-                    setLocation(newValue.value);
+                    setResourceFilter(newValue);
                   }}
+                  isMulti
                 />
               </div>
               {/* Dropdown with facilities */}
