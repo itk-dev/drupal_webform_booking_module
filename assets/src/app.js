@@ -36,9 +36,9 @@ function App() {
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
-  const [resource, setResource] = useState(null);
-  const [facilities, setFacilities] = useState(null);
-  const [showResourceViewId, setShowResourceViewId] = useState(null);
+  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
+  const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
+  const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
