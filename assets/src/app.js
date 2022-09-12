@@ -28,8 +28,7 @@ function App() {
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [locationFilter, setLocationFilter] = useState([]);
-  const [resourceFilter, setResourceFilter] = useState([]);
-  console.log(resourceFilter); // to bypass no-unused-vars
+  const [resourceFilter, setResourceFilter] = useState([]); // eslint-disable-line no-unused-vars
 
   // App display for calendar, list and map.
   const [resources, setResources] = useState([]); // The result after filtering resources
