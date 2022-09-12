@@ -1,3 +1,15 @@
+#react-booking-app {
+  // Import flexbox grid similar to bootstrap 5 http://sassflexboxgrid.com/ for use in the app.
+  /* stylelint-disable */
+  @import "node_modules/@drewbot/sass-flexbox-grid/public/sass-flexbox/scss/main";
+  /* stylelint-enable */
+
+  .no-gutter {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 body {
   font-family: sans-serif;
 }

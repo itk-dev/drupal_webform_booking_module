@@ -164,7 +164,7 @@ function App() {
             </div>
 
             {/* Display calendar for selections */}
-            <div className="row calendar-container">
+            <div className="row no-gutter calendar-container">
               <Calendar
                 resources={resources}
                 events={events}
@@ -190,7 +190,7 @@ function App() {
             <UserPanel config={config} />
 
             {/* Display author fields */}
-            <div className="row">
+            <div className="row no-gutter">
               {authorFields && (
                 <AuthorFields
                   authorFields={authorFields}

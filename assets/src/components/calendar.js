@@ -12,6 +12,7 @@ import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
+import "./calendar.scss";
 
 /**
  * Calendar component.
@@ -62,74 +63,76 @@ function Calendar({
     );
   };
   return (
-    <div className="Calendar">
+    <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
-      <div className="col-md-12">
-        {
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[
-              resourceTimegrid,
-              interactionPlugin,
-              dayGridPlugin,
-              timeGridPlugin,
-              listPlugin,
-              resourceTimelinePlugin,
-            ]}
-            titleFormat={{
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }}
-            headerToolbar=""
-            height="850px"
-            /* scrollTime=@todo */
-            initialView="resourceTimelineDay"
-            duration="days: 3"
-            /* selectConstraint="businessHours" */
-            selectMirror
-            nowIndicator
-            navLinks
-            slotDuration="00:15:00"
-            selectable
-            unselectAuto={false}
-            schedulerLicenseKey={config.license_key}
-            slotMinTime="07:00:00"
-            slotMaxTime="21:00:00"
-            slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
-            selectOverlap={false}
-            nextDayThreshold="21:00:00"
-            editable={false}
-            dayMaxEvents
-            locale={daLocale}
-            select={onCalendarSelection}
-            validRange={getValidRange}
-            loading={false}
-            resources={resources.map(handleResources)}
-            resourceAreaColumns={[
-              {
-                headerContent: "Ressource titel",
-                cellContent(arg) {
-                  return renderCalendarCellInfoButton(
-                    arg.resource.title,
-                    arg.resource.id,
-                    triggerResourceView
-                  );
+      <div className="row">
+        <div className="col-md-12">
+          {
+            <FullCalendar
+              ref={calendarRef}
+              plugins={[
+                resourceTimegrid,
+                interactionPlugin,
+                dayGridPlugin,
+                timeGridPlugin,
+                listPlugin,
+                resourceTimelinePlugin,
+              ]}
+              titleFormat={{
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }}
+              headerToolbar=""
+              height="850px"
+              /* scrollTime=@todo */
+              initialView="resourceTimelineDay"
+              duration="days: 3"
+              /* selectConstraint="businessHours" */
+              selectMirror
+              nowIndicator
+              navLinks
+              slotDuration="00:15:00"
+              selectable
+              unselectAuto={false}
+              schedulerLicenseKey={config.license_key}
+              slotMinTime="07:00:00"
+              slotMaxTime="21:00:00"
+              slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
+              selectOverlap={false}
+              nextDayThreshold="21:00:00"
+              editable={false}
+              dayMaxEvents
+              locale={daLocale}
+              select={onCalendarSelection}
+              validRange={getValidRange}
+              loading={false}
+              resources={resources.map(handleResources)}
+              resourceAreaColumns={[
+                {
+                  headerContent: "Ressource titel",
+                  cellContent(arg) {
+                    return renderCalendarCellInfoButton(
+                      arg.resource.title,
+                      arg.resource.id,
+                      triggerResourceView
+                    );
+                  },
                 },
-              },
-              {
-                headerContent: {
-                  html: '<div class="resource-calendar-capacity"><img src="/assets/images/icons/Chair.svg" /></div>',
+                {
+                  headerContent: {
+                    html: '<div class="resource-calendar-capacity"><img src="/assets/images/icons/Chair.svg" /></div>',
+                  },
+                  width: "60px",
+                  cellContent(arg) {
+                    return arg.resource.extendedProps.capacity;
+                  },
                 },
-                width: "60px",
-                cellContent(arg) {
-                  return arg.resource.extendedProps.capacity;
-                },
-              },
-            ]}
-            events={events.map(handleBusyIntervals)}
-          />
-        }
+              ]}
+              events={events.map(handleBusyIntervals)}
+            />
+          }
+        </div>
       </div>
     </div>
   );
