@@ -31,7 +31,6 @@ class BookingElement extends Hidden
   {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->extensionList = $container->get('extension.list.module');
-    $instance->bookingHelper = $container->get('itkdev_booking.booking_helper');
     return $instance;
   }
 
