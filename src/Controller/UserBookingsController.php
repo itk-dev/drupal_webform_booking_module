@@ -39,6 +39,8 @@ class UserBookingsController extends ControllerBase {
     );
   }
 
+
+
   /**
    * Get logged in user's booking.
    *
@@ -102,5 +104,25 @@ class UserBookingsController extends ControllerBase {
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
     return new JsonResponse($data, $response->getStatusCode());
+  }
+
+  /**
+   * Get user information.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   * @throws \JsonException
+   */
+  public function getUserInformationAction(Request $request): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      $userArray = SampleDataHelper::getSampleData("user");
+    } else {
+      $userArray = $this->userHelper->getUserValues($request);
+    }
+
+    return new JsonResponse([
+      'userType' => $userArray['userType'],
+    ], 200);
   }
 }

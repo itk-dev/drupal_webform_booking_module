@@ -14,13 +14,12 @@ class UserHelper {
     $this->bookingApiSampleUser = Settings::get('itkdev_booking_api_sample_user', FALSE);
   }
 
+  /**
+   * @throws \JsonException
+   */
   public function getUserValues(Request $request): array {
     if ($this->bookingApiSampleUser) {
-      return [
-        'name' => 'Test Testesen',
-        'givenName' => 'Test',
-        'userId' => Crypt::hashBase64('1234567890'),
-      ];
+      return SampleDataHelper::getSampleData('user');
     }
 
     $session = $request->getSession();
@@ -33,9 +32,23 @@ class UserHelper {
       throw new UnauthorizedHttpException('User should authenticate.');
     }
 
+    $userType = null;
+
+    if (isset($userToken['cpr'])) {
+      $userType = 'CPR';
+    } else if (isset($userToken['cvr'])) {
+      // TODO: Test this.
+      $userType = 'CVR';
+    }
+
+    if ($userType == null) {
+      throw new UnauthorizedHttpException('User role cannot be decided.');
+    }
+
     return [
       'name' => $userToken['name'],
       'givenName' => $userToken['given_name'],
+      'userType' => $userType,
       'userId' => $this->generateUserId($userToken),
     ];
   }

@@ -4,7 +4,6 @@ itkdev_booking.resources:
     _controller: '\Drupal\itkdev_booking\Controller\ResourceController::getResources'
   methods: [GET]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.resources_by_id:
@@ -13,7 +12,6 @@ itkdev_booking.resources_by_id:
     _controller: '\Drupal\itkdev_booking\Controller\ResourceController::getResource'
   methods: [GET]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.busy_intervals:
@@ -22,7 +20,6 @@ itkdev_booking.busy_intervals:
     _controller: '\Drupal\itkdev_booking\Controller\BookingController::getBusyIntervals'
   methods: [GET]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.locations:
@@ -31,7 +28,6 @@ itkdev_booking.locations:
     _controller: '\Drupal\itkdev_booking\Controller\LocationController::getLocations'
   methods: [ GET ]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.user_bookings:
@@ -40,7 +36,6 @@ itkdev_booking.user_bookings:
     _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::getUserBookings'
   methods: [GET]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.user_bookings_delete:
@@ -49,7 +44,6 @@ itkdev_booking.user_bookings_delete:
     _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::deleteUserBooking'
   methods: [DELETE]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
     _access: 'TRUE'
 
 itkdev_booking.booking_details:
@@ -58,5 +52,12 @@ itkdev_booking.booking_details:
     _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::getBookingDetails'
   methods: [GET]
   requirements:
-    # Free access to call api endpoint. API key handled in the other end.
+    _access: 'TRUE'
+
+itkdev_booking.user_information:
+  path: '/itkdev_booking/user_information'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\UserBookingsController::getUserInformation'
+  methods: [GET]
+  requirements:
     _access: 'TRUE'
