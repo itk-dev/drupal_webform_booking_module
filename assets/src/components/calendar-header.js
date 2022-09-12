@@ -58,7 +58,7 @@ function CalendarHeader({ date, setDate }) {
             />
             <label className="h4 calendar-title" htmlFor="calendar-datepicker">
               {dayjs(date).format("D. MMMM YYYY")}
-              <span className="small">X</span>
+              <span>📅</span>
             </label>
           </div>
         </div>

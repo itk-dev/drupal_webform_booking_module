@@ -3,7 +3,12 @@ body {
 }
 
 .App {
-  background: white;
+  background: #E9ECEF;
+  padding: 30px;
+}
+
+.fc-scrollgrid {
+  border: none !important;
 }
 
 .calendar-container,
@@ -11,26 +16,36 @@ body {
   position: relative;
 }
 
+.calendar-container {
+  padding: 20px 15px;
+  background: #fff;
+  border-radius: 5px;
+}
+
 .filters-wrapper {
-  margin-bottom: 1em;
-  padding: 10px;
-  box-shadow: 0px 0px 2px #333;
+  margin-bottom: 30px;
+  padding: 20px 15px;
+  background: #fff;
 }
 
 .fade-in-background {
   opacity: 1;
   top: 0;
 }
+
 .fade-in-content {
   opacity: 1;
   animation: fadeInContent 0.3s ease;
 }
-.resource-calendar-capacity-header > div > div {
+
+.resource-calendar-capacity-header>div>div {
   margin: auto;
 }
-.resource-calendar-capacity-value > div > div {
+
+.resource-calendar-capacity-value>div>div {
   text-align: right;
 }
+
 div.fc-highlight {
   display: block;
   border: 1px solid #3788d8;
@@ -38,21 +53,26 @@ div.fc-highlight {
   background-color: #3788d8;
   background-color: var(--fc-event-bg-color, #3788d8);
 }
+
 .fc-timegrid-event-short .fc-event-time:after {
   display: none !important;
 }
-.fc-timegrid-event-harness > .fc-timegrid-event {
+
+.fc-timegrid-event-harness>.fc-timegrid-event {
   left: -2px !important;
   right: -25px !important;
 }
-.fc-timegrid-slots > table{
+
+.fc-timegrid-slots>table {
   /* Using specific selector here for overwriting plugin standards */
   background: #FFF;
 }
+
 @keyframes fadeInContent {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

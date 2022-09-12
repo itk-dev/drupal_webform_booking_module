@@ -64,7 +64,7 @@ function Calendar({
     getSpecifiedBusinessHours(resources, calendarRef);
     let numberOfResources = resources.length;
     let calendarView = "resourceTimelineDay";
-    if (numberOfResources > 5) {
+    if (numberOfResources < 5) {
       calendarView = "resourceTimeGridDay";
     }
     calendarRef.current
@@ -109,7 +109,6 @@ function Calendar({
             slotLabelFormat={
               {
                 hour: "numeric",
-                minute: "numeric",
                 omitZeroMinute: false
               }
             }

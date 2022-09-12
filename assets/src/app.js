@@ -9,6 +9,7 @@ import Calendar from "./components/calendar";
 import AuthorFields from "./components/author-fields";
 import Api from "./util/api";
 import ResourceView from "./components/resource-view";
+import LoadingSpinner from "./components/loading-spinner";
 
 dayjs.locale("da");
 
@@ -120,7 +121,7 @@ function App() {
   return (
     <div className="App">
       <div className="container-fluid">
-        {!config && <div>Loading...</div>}
+        {!config && <LoadingSpinner />}
         {config && (
           <>
             <div className="container filters-wrapper">

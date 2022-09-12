@@ -12,6 +12,7 @@ button {
   .date-header {
     display: flex;
     justify-content: center;
+
     .datepicker {
       display: flex;
       align-items: center;
@@ -21,6 +22,10 @@ button {
   .calendar-title {
     cursor: pointer;
     margin: 0;
+
+    span {
+      padding-left: 10px;
+    }
   }
 
   .calendar-datepicker-input {
