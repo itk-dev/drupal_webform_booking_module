@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 
 export default class Api {
   static async fetchLocations(apiEndpoint) {
+    console.log(`${apiEndpoint}itkdev_booking/locations`);
     return fetch(`${apiEndpoint}itkdev_booking/locations`)
       .then((response) => {
         if (!response.ok) {
@@ -14,12 +15,10 @@ export default class Api {
       .then((data) => data["hydra:member"]);
   }
 
-  static async fetchResources(apiEndpoint, location) {
-    // Setup query parameters.
-    const urlSearchParams = new URLSearchParams({
-      location,
-    });
-
+  static async fetchResources(apiEndpoint, locations) {
+    const urlSearchParams = new URLSearchParams(
+      locations.map((location) => ["location[]", location.value])
+    );
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
       .then((response) => {
         if (!response.ok) {
@@ -37,14 +36,16 @@ export default class Api {
 
     // Setup query parameters.
     const urlSearchParams = new URLSearchParams({
-      resources: resources.map((resource) => resource.resourcemail),
+      resources: resources.map((resource) => resource.resourceMail),
       dateStart: date.toISOString(),
       dateEnd: dateEnd.toISOString(),
       page: 1,
     });
 
     // Events on resource.
-    return fetch(`${apiEndpoint}itkdev_booking/bookings?${urlSearchParams}`)
+    return fetch(
+      `${apiEndpoint}itkdev_booking/busy_intervals?${urlSearchParams}`
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -62,6 +63,8 @@ export default class Api {
       .then((response) => response.json())
       .then((data) => {
         const newDate = { ...data };
+
+        // TODO: Remove and handle this in ResourceDetails.
 
         newDate.facilities = {
           ...(data.monitorequipment && {
@@ -101,16 +104,7 @@ export default class Api {
   }
 
   static async fetchUserBookings(apiEndpoint) {
-    // Setup query parameters.
-    // TODO: Remove userId. This should be handled in the api endpoint.
-    const urlSearchParams = new URLSearchParams({
-      userId: " ",
-      page: 1,
-    });
-
-    return fetch(
-      `${apiEndpoint}itkdev_booking/user-bookings?${urlSearchParams}`
-    )
+    return fetch(`${apiEndpoint}itkdev_booking/user-bookings`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -123,12 +117,9 @@ export default class Api {
   }
 
   static async deleteBooking(apiEndpoint, bookingId) {
-    return fetch(
-      `${apiEndpoint}itkdev_booking/user-booking-delete/${bookingId}`,
-      {
-        method: "DELETE",
-      }
-    )
+    return fetch(`${apiEndpoint}itkdev_booking/user-booking/${bookingId}`, {
+      method: "DELETE",
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(

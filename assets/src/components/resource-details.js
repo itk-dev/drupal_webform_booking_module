@@ -83,7 +83,7 @@ function ResourceDetails({
             </button>
           </div>
           <div className="resource-title">
-            <h2>{resource.resourcemail}</h2>
+            <h2>{resource.resourceName}</h2>
           </div>
           <div className="resource-details">
             <div className="image">

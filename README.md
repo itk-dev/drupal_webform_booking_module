@@ -54,6 +54,15 @@ If you need to connect to the booking service through an insecure connection add
 $settings['itkdev_booking_api_allow_insecure_connection'] = TRUE;
 ```
 
+You can use sample data by setting the following settings:
+
+```php
+// Use sample data.
+$settings['itkdev_booking_api_sample_data'] = true;
+// Use sample user.
+$settings['itkdev_booking_api_sample_user'] = true;
+```
+
 ## Setting up the booking module and the booking service
 
 To set up the project the following steps should be followed.

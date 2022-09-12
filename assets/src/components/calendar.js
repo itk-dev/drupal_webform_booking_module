@@ -12,6 +12,7 @@ import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources, getSpecifiedBusinessHours } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
+import "./calendar.scss";
 
 /**
  * Calendar component.
@@ -64,7 +65,7 @@ function Calendar({
     getSpecifiedBusinessHours(resources, calendarRef);
     let numberOfResources = resources.length;
     let calendarView = "resourceTimelineDay";
-    if (numberOfResources < 5) {
+    if (numberOfResources > 5) {
       calendarView = "resourceTimeGridDay";
     }
     calendarRef.current
@@ -84,8 +85,9 @@ function Calendar({
   };
 
   return (
-    <div className="Calendar">
+    <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
+      <div className="row">
       <div className="col-md-12">
         {
           <FullCalendar
@@ -98,6 +100,11 @@ function Calendar({
               listPlugin,
               resourceTimelinePlugin,
             ]}
+            titleFormat={{
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }}
             headerToolbar=""
             height="650px"
             /* scrollTime=@todo */
@@ -117,7 +124,7 @@ function Calendar({
             slotDuration="00:15:00"
             allDaySlot={false}
             selectable
-            unselectAuto={true}
+            unselectAuto={false}
             schedulerLicenseKey={config.license_key}
             slotMinTime="07:00:00"
             slotMaxTime="21:00:00"
@@ -157,6 +164,7 @@ function Calendar({
             events={events.map(handleBusyIntervals)}
           />
         }
+        </div>
       </div>
     </div>
   );

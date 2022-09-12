@@ -35,50 +35,55 @@ function CalendarHeader({ date, setDate }) {
   };
 
   return (
-    <div className="col-md-12">
-      <div className="row calendar-header-wrapper">
-        <div className="col-md-4">
-          <button
-            id="calendar-today"
-            type="button"
-            onClick={(e) => onChangeDate(e)}
-          >
-            I dag
-          </button>
-        </div>
-        <div className="col-md-4 date-header">
-          <div className="datepicker text-center">
-            <input
-              className="calendar-datepicker-input"
-              id="calendar-datepicker"
-              type="date"
-              min={dayjs(new Date()).format("YYYY-MM-DD")}
-              value={dayjs(date).format("YYYY-MM-DD")}
-              onChange={(e) => onChangeDate(e)}
-            />
-            <label className="h4 calendar-title" htmlFor="calendar-datepicker">
-              {dayjs(date).format("D. MMMM YYYY")}
-              <span>📅</span>
-            </label>
+    <div className="row">
+      <div className="col-md-12 no-gutter">
+        <div className="row calendar-header-wrapper">
+          <div className="col-md-4">
+            <button
+              id="calendar-today"
+              type="button"
+              onClick={(e) => onChangeDate(e)}
+            >
+              I dag
+            </button>
           </div>
-        </div>
-        <div className="col-md-4">
-          <div className="pull-right">
-            <button
-              id="calendar-back"
-              type="button"
-              disabled={new Date() > date}
-              onClick={(e) => onChangeDate(e)}
-            >
-              {"<"}
-            </button>
-            <button
-              id="calendar-forward"
-              type="button"
-              onClick={(e) => onChangeDate(e)}
-            >
-              {">"}
-            </button>
+          <div className="col-md-4">
+            <div className="datepicker">
+              <input
+                className="calendar-datepicker-input"
+                id="calendar-datepicker"
+                type="date"
+                min={dayjs(new Date()).format("YYYY-MM-DD")}
+                value={dayjs(date).format("YYYY-MM-DD")}
+                onChange={(e) => onChangeDate(e)}
+              />
+              <label
+                htmlFor="calendar-datepicker"
+                className="h3 calendar-title"
+              >
+                {dayjs(date).format("D. MMMM YYYY")}
+                <span>📅</span>
+              </label>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="calendar-nav">
+              <button
+                id="calendar-back"
+                type="button"
+                disabled={new Date() > date}
+                onClick={(e) => onChangeDate(e)}
+              >
+                {"<"}
+              </button>
+              <button
+                id="calendar-forward"
+                type="button"
+                onClick={(e) => onChangeDate(e)}
+              >
+                {">"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
