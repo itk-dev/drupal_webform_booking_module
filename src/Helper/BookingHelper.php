@@ -4,7 +4,6 @@ namespace Drupal\itkdev_booking\Helper;
 
 use Drupal\Core\Site\Settings;
 use GuzzleHttp\Client;
-use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -34,28 +33,57 @@ class BookingHelper
   /**
    * Get locations.
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    */
-  public function getLocations(): ResponseInterface {
+  public function getLocations(): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("{$endpoint}v1/locations", ['headers' => $this->headers]);
+    $response = $client->get("{$endpoint}v1/locations", ['headers' => $this->headers]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 
   /**
    * Get resources by query.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   * @param array $query
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    */
-  public function getResources(Request $request, array $query): ResponseInterface {
+  public function getResources(Request $request): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("{$endpoint}v1/resources", ['query' => $query, 'headers' => $this->headers]);
+    $query = $request->query->all();
+
+    $response = $client->get("{$endpoint}v1/resources", ['query' => $query, 'headers' => $this->headers]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 
   /**
@@ -64,30 +92,46 @@ class BookingHelper
    * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $resourceId
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    */
-  public function getResourceById(Request $request, string $resourceId): ResponseInterface {
+  public function getResourceById(Request $request, string $resourceId): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("{$endpoint}v1/resources/$resourceId", ['headers' => $this->headers]);
+    $response = $client->get("{$endpoint}v1/resources/$resourceId", ['headers' => $this->headers]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 
   /**
    * Get busy intervals.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   * @param mixed $resources
-   * @param string $dateStart
-   * @param string $dateEnd
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    */
-  public function getBusyIntervals(Request $request, $resources, string $dateStart, string $dateEnd): ResponseInterface {
+  public function getBusyIntervals(Request $request): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    return $client->get("{$endpoint}v1/busy-intervals", [
+    $query = $request->query;
+    $resources = $query->get('resources');
+    $dateStart = $query->get('dateStart');
+    $dateEnd = $query->get('dateEnd');
+
+    $response = $client->get("{$endpoint}v1/busy-intervals", [
       'query' => [
         'resources' => $resources,
         'dateStart' => $dateStart,
@@ -95,6 +139,20 @@ class BookingHelper
       ],
       'headers' => $this->headers,
     ]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 
   /**
@@ -102,17 +160,31 @@ class BookingHelper
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    * @throws \JsonException
    */
-  public function getUserBookings(Request $request): ResponseInterface {
+  public function getUserBookings(Request $request): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
     $userArray = $this->userHelper->getUserValues($request);
     $userId = $userArray['userId'];
 
-    return $client->get("{$endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
+    $response = $client->get("{$endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 
   /**
@@ -121,17 +193,31 @@ class BookingHelper
    * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $bookingId
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    * @throws \JsonException
    */
-  public function deleteUserBooking(Request $request, string $bookingId): ResponseInterface {
+  public function deleteUserBooking(Request $request, string $bookingId): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
     $userArray = $this->userHelper->getUserValues($request);
     $userId = $userArray['userId'];
 
-    return $client->delete("{$endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
+    $response = $client->delete("{$endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 
   /**
@@ -140,16 +226,30 @@ class BookingHelper
    * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $hitId
    *
-   * @return \Psr\Http\Message\ResponseInterface
+   * @return array
    * @throws \JsonException
    */
-  public function getUserBookingDetails(Request $request, string $hitId): ResponseInterface {
+  public function getUserBookingDetails(Request $request, string $hitId): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
     $userArray = $this->userHelper->getUserValues($request);
     $userId = $userArray['userId'];
 
-    return $client->get("{$endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
+    $response = $client->get("{$endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
   }
 }

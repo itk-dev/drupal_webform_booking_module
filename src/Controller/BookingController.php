@@ -50,9 +50,8 @@ class BookingController extends ControllerBase {
     }
 
     $response = $this->bookingHelper->getLocations();
-    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse($data, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
@@ -62,7 +61,7 @@ class BookingController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *
-   * @throws \Exception
+   * @throws \JsonException
    */
   public function getResources(Request $request): JsonResponse {
     if ($this->bookingApiSampleData) {
@@ -70,17 +69,15 @@ class BookingController extends ControllerBase {
       return new JsonResponse($data, 200);
     }
 
-    $query = $request->query->all();
+    $response = $this->bookingHelper->getResources($request);
 
-    $response = $this->bookingHelper->getResources($request, $query);
-    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
-
-    return new JsonResponse($data, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
    * Get resource by id.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $resourceId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
@@ -93,9 +90,8 @@ class BookingController extends ControllerBase {
     }
 
     $response = $this->bookingHelper->getResourceById($request, $resourceId);
-    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse($data, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
@@ -113,15 +109,9 @@ class BookingController extends ControllerBase {
       return new JsonResponse($data, 200);
     }
 
-    $query = $request->query;
-    $resourceEmails = $query->get('resources');
-    $dateStart = $query->get('dateStart');
-    $dateEnd = $query->get('dateEnd');
+    $response = $this->bookingHelper->getBusyIntervals($request);
 
-    $response = $this->bookingHelper->getBusyIntervals($request, $resourceEmails, $dateStart, $dateEnd);
-    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
-
-    return new JsonResponse($data, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
@@ -139,9 +129,8 @@ class BookingController extends ControllerBase {
     }
 
     $response = $this->bookingHelper->getUserBookings($request);
-    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse($data, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
@@ -160,7 +149,7 @@ class BookingController extends ControllerBase {
 
     $response = $this->bookingHelper->deleteUserBooking($request, $bookingId);
 
-    return new JsonResponse(null, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
@@ -179,9 +168,8 @@ class BookingController extends ControllerBase {
     }
 
     $response = $this->bookingHelper->getUserBookingDetails($request, $hitId);
-    $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
-    return new JsonResponse($data, $response->getStatusCode());
+    return new JsonResponse($response['data'], $response['statusCode']);
   }
 
   /**
