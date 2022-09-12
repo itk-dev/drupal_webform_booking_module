@@ -128,7 +128,10 @@ function App() {
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
-    setFilterParams({ ...filterParams, ...{"resourceMail[]": resourceValues}});
+    setFilterParams({
+      ...filterParams,
+      ...{ "resourceMail[]": resourceValues },
+    });
   }, [resourceFilter]);
 
   // Get events for the given resources.
