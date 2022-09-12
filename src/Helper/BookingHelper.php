@@ -37,7 +37,6 @@ class BookingHelper
    * @return \Psr\Http\Message\ResponseInterface
    */
   public function getLocations(): ResponseInterface {
-    return "test";
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
     return $client->get("{$endpoint}v1/locations", ['headers' => $this->headers]);

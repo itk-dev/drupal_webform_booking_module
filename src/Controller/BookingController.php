@@ -44,7 +44,6 @@ class BookingController extends ControllerBase {
    * @throws \JsonException
    */
   public function getLocations(): JsonResponse {
-    return "waheyy";
     if ($this->bookingApiSampleData) {
       $data = SampleDataHelper::getSampleData("locations");
       return new JsonResponse($data, 200);
