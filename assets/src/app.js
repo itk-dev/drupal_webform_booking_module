@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
-import UserPanel from "./components/user-panel";
+// import UserPanel from "./components/user-panel";
 import ConfigLoader from "./util/config-loader";
 import Calendar from "./components/calendar";
 import AuthorFields from "./components/author-fields";
@@ -40,6 +40,7 @@ function App() {
   const [resources, setResources] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [events, setEvents] = useState([]);
+  
 
   // Get configuration.
   useEffect(() => {
@@ -47,7 +48,6 @@ function App() {
       setConfig(loadedConfig);
     });
   }, []);
-
   // Get locations.
   useEffect(() => {
     if (config !== null) {
@@ -61,6 +61,7 @@ function App() {
               };
             })
           );
+          setLocation("LOCATION1");
         })
         .catch(() => {
           // TODO: Display error and retry option for user. (v0.1)
@@ -74,7 +75,6 @@ function App() {
       Api.fetchResources(config.api_endpoint, location)
         .then((loadedResources) => {
           setResources(loadedResources);
-
           setResourcesOptions(
             loadedResources.map((res) => {
               return {
@@ -123,7 +123,7 @@ function App() {
         {!config && <div>Loading...</div>}
         {config && (
           <>
-            <div className="row filters-wrapper">
+            <div className="container filters-wrapper">
               <div className="col-md-3">
                 {/* Dropdown with locations */}
                 <Select
@@ -170,6 +170,7 @@ function App() {
                 events={events}
                 date={date}
                 setDate={setDate}
+                calendarSelection={calendarSelection}
                 onCalendarSelection={setCalendarSelection}
                 config={config}
                 setShowResourceViewId={setShowResourceViewId}
@@ -187,7 +188,7 @@ function App() {
             </div>
 
             {/* TODO: Only show if user menu is requested */}
-            <UserPanel config={config} />
+            {/* <UserPanel config={config} /> */}
 
             {/* Display author fields */}
             <div className="row">

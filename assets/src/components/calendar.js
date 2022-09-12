@@ -10,7 +10,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources, getSpecifiedBusinessHours } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 
 /**
@@ -21,6 +21,7 @@ import CalendarCellInfoButton from "./calendar-cell-info-button";
  * @param {Array} props.events Events to show in calendar.
  * @param {Date} props.date Date to show calendar for.
  * @param {Function} props.setDate Set date function.
+ * @param {Function} props.calendarSelection Calendar selection function.
  * @param {Function} props.onCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
@@ -31,6 +32,7 @@ function Calendar({
   events,
   date,
   setDate,
+  calendarSelection,
   onCalendarSelection,
   config,
   setShowResourceViewId,
@@ -52,6 +54,25 @@ function Calendar({
     setShowResourceViewId(showResourceViewId);
   };
 
+  useEffect(() => {
+    console.log(document.getElementsByClassName('fc-highlight'));
+    let elem = document.getElementsByClassName('fc-highlight');
+
+  }, [calendarSelection])
+
+  useEffect(() => {
+    getSpecifiedBusinessHours(resources, calendarRef);
+    let numberOfResources = resources.length;
+    let calendarView = "resourceTimelineDay";
+    if (numberOfResources > 5) {
+      calendarView = "resourceTimeGridDay";
+    }
+    calendarRef.current
+      .getApi()
+      .changeView(calendarView);
+      console.log(resources);
+  }, [resources])
+
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
       <CalendarCellInfoButton
@@ -61,6 +82,7 @@ function Calendar({
       />
     );
   };
+
   return (
     <div className="Calendar">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -76,27 +98,30 @@ function Calendar({
               listPlugin,
               resourceTimelinePlugin,
             ]}
-            titleFormat={{
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }}
             headerToolbar=""
-            height="850px"
+            height="650px"
             /* scrollTime=@todo */
             initialView="resourceTimelineDay"
             duration="days: 3"
             /* selectConstraint="businessHours" */
             selectMirror
+            displayEventTime={true}
+            slotLabelFormat={
+              {
+                hour: "numeric",
+                minute: "numeric",
+                omitZeroMinute: false
+              }
+            }
             nowIndicator
             navLinks
             slotDuration="00:15:00"
+            allDaySlot={false}
             selectable
-            unselectAuto={false}
+            unselectAuto={true}
             schedulerLicenseKey={config.license_key}
             slotMinTime="07:00:00"
             slotMaxTime="21:00:00"
-            slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
             selectOverlap={false}
             nextDayThreshold="21:00:00"
             editable={false}
@@ -109,6 +134,7 @@ function Calendar({
             resourceAreaColumns={[
               {
                 headerContent: "Ressource titel",
+
                 cellContent(arg) {
                   return renderCalendarCellInfoButton(
                     arg.resource.title,
@@ -119,9 +145,11 @@ function Calendar({
               },
               {
                 headerContent: {
-                  html: '<div class="resource-calendar-capacity"><img src="/assets/images/icons/Chair.svg" /></div>',
+                  html: '<img src="/assets/images/icons/Chair.svg" />',
                 },
+                headerClassNames: "resource-calendar-capacity-header",
                 width: "60px",
+                cellClassNames: "resource-calendar-capacity-value",
                 cellContent(arg) {
                   return arg.resource.extendedProps.capacity;
                 },
@@ -139,6 +167,7 @@ Calendar.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
+  calendarSelection: PropTypes.object.isRequired,
   onCalendarSelection: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
