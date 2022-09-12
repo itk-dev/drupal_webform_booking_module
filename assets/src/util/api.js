@@ -14,12 +14,10 @@ export default class Api {
       .then((data) => data["hydra:member"]);
   }
 
-  static async fetchResources(apiEndpoint, location) {
-    // Setup query parameters.
-    const urlSearchParams = new URLSearchParams({
-      location,
-    });
-
+  static async fetchResources(apiEndpoint, locations) {
+    const urlSearchParams = new URLSearchParams(
+      locations.map(location=>['location[]',location.value])
+    );
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
       .then((response) => {
         if (!response.ok) {

@@ -135,8 +135,9 @@ function App() {
                   placeholder="lokationer..."
                   options={locationOptions}
                   onChange={(newValue) => {
-                    setLocationFilter(newValue.value);
+                    setLocationFilter(newValue);
                   }}
+                  isMulti={true}
                 />
               </div>
               <div className="col-md-3">
@@ -146,8 +147,9 @@ function App() {
                   placeholder="ressourcer..."
                   options={resourcesOptions}
                   onChange={(newValue) => {
-                    setResourceFilter([newValue.value]);
+                    setResourceFilter(newValue);
                   }}
+                  isMulti={true}
                 />
               </div>
               {/* Dropdown with facilities */}
