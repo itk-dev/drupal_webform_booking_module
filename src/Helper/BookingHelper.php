@@ -46,11 +46,12 @@ class BookingHelper
   /**
    * Get resources by query.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
    * @param array $query
    *
    * @return \Psr\Http\Message\ResponseInterface
    */
-  public function getResources(array $query): ResponseInterface {
+  public function getResources(Request $request, array $query): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
@@ -60,11 +61,12 @@ class BookingHelper
   /**
    * Get resource by id.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
    * @param string $resourceId
    *
    * @return \Psr\Http\Message\ResponseInterface
    */
-  public function getResourceById(string $resourceId): ResponseInterface {
+  public function getResourceById(Request $request, string $resourceId): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
@@ -74,13 +76,14 @@ class BookingHelper
   /**
    * Get busy intervals.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
    * @param mixed $resources
    * @param string $dateStart
    * @param string $dateEnd
    *
    * @return \Psr\Http\Message\ResponseInterface
    */
-  public function getBusyIntervals($resources, string $dateStart, string $dateEnd): ResponseInterface {
+  public function getBusyIntervals(Request $request, $resources, string $dateStart, string $dateEnd): ResponseInterface {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
@@ -107,7 +110,7 @@ class BookingHelper
     $client = new Client();
 
     $userArray = $this->userHelper->getUserValues($request);
-    $userId = $userArray['userId'] ?? '';
+    $userId = $userArray['userId'];
 
     return $client->get("{$endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
   }
@@ -126,7 +129,7 @@ class BookingHelper
     $client = new Client();
 
     $userArray = $this->userHelper->getUserValues($request);
-    $userId = $userArray['userId'] ?? '';
+    $userId = $userArray['userId'];
 
     return $client->delete("{$endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
   }
@@ -145,7 +148,7 @@ class BookingHelper
     $client = new Client();
 
     $userArray = $this->userHelper->getUserValues($request);
-    $userId = $userArray['userId'] ?? '';
+    $userId = $userArray['userId'];
 
     return $client->get("{$endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
   }

@@ -72,7 +72,7 @@ class BookingController extends ControllerBase {
 
     $query = $request->query->all();
 
-    $response = $this->bookingHelper->getResources($query);
+    $response = $this->bookingHelper->getResources($request, $query);
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
     return new JsonResponse($data, $response->getStatusCode());
@@ -86,13 +86,13 @@ class BookingController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    * @throws \JsonException
    */
-  public function getResource(string $resourceId): JsonResponse {
+  public function getResource(Request $request, string $resourceId): JsonResponse {
     if ($this->bookingApiSampleData) {
       $data = SampleDataHelper::getSampleData("resource");
       return new JsonResponse($data, 200);
     }
 
-    $response = $this->bookingHelper->getResourceById($resourceId);
+    $response = $this->bookingHelper->getResourceById($request, $resourceId);
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
     return new JsonResponse($data, $response->getStatusCode());
@@ -118,7 +118,7 @@ class BookingController extends ControllerBase {
     $dateStart = $query->get('dateStart');
     $dateEnd = $query->get('dateEnd');
 
-    $response = $this->bookingHelper->getBusyIntervals($resourceEmails, $dateStart, $dateEnd);
+    $response = $this->bookingHelper->getBusyIntervals($request, $resourceEmails, $dateStart, $dateEnd);
     $data = json_decode($response->getBody()->getContents(), TRUE, 512, JSON_THROW_ON_ERROR);
 
     return new JsonResponse($data, $response->getStatusCode());
