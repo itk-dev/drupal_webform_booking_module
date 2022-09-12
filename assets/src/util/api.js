@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 
 export default class Api {
   static async fetchLocations(apiEndpoint) {
-    console.log(`${apiEndpoint}itkdev_booking/locations`);
     return fetch(`${apiEndpoint}itkdev_booking/locations`)
       .then((response) => {
         if (!response.ok) {
