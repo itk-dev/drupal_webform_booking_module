@@ -137,7 +137,7 @@ function App() {
                   onChange={(newValue) => {
                     setLocationFilter(newValue);
                   }}
-                  isMulti={true}
+                  isMulti
                 />
               </div>
               <div className="col-md-3">
@@ -149,7 +149,7 @@ function App() {
                   onChange={(newValue) => {
                     setResourceFilter(newValue);
                   }}
-                  isMulti={true}
+                  isMulti
                 />
               </div>
               {/* Dropdown with facilities */}

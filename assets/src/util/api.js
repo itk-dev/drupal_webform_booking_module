@@ -16,7 +16,7 @@ export default class Api {
 
   static async fetchResources(apiEndpoint, locations) {
     const urlSearchParams = new URLSearchParams(
-      locations.map(location=>['location[]',location.value])
+      locations.map((location) => ["location[]", location.value])
     );
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
       .then((response) => {
