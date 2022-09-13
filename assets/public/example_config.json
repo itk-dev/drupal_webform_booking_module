@@ -1,5 +1,5 @@
 {
-  "api_endpoint": "https://selvbetjening.local.itkdev.dk/",
+  "api_endpoint": "https://selvbetjening.local.itkdev.dk/da/",
   "element_id": "booking",
   "front_page_url": "https://selvbetjening.local.itkdev.dk/",
   "license_key": "",
