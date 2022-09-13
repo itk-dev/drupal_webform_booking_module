@@ -3,12 +3,16 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
-import UserPanel from "./components/user-panel";
-import ConfigLoader from "./util/config-loader";
-import Calendar from "./components/calendar";
+import {useSearchParams} from "react-router-dom";
 import AuthorFields from "./components/author-fields";
-import Api from "./util/api";
+import Calendar from "./components/calendar";
+import MinimizedDisplay from "./components/minimized-display"
 import ResourceView from "./components/resource-view";
+import UserPanel from "./components/user-panel";
+import Api from "./util/api";
+import ConfigLoader from "./util/config-loader";
+import Initializer from "./util/initializer";
+import UrlValidator from "./util/url-validator";
 
 dayjs.locale("da");
 
@@ -18,8 +22,11 @@ dayjs.locale("da");
  * @returns {string} App component.
  */
 function App() {
-  // Configuration.
+  // App configuration and behavior.
   const [config, setConfig] = useState(null);
+  const [urlParams] = useSearchParams();
+  const [validUrlParams, setValidUrlParams] = useState({});
+  const [displayState, setDisplayState] = useState('maximized');
 
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -28,7 +35,7 @@ function App() {
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [locationFilter, setLocationFilter] = useState([]);
-  const [resourceFilter, setResourceFilter] = useState([]); // eslint-disable-line no-unused-vars
+  const [resourceFilter, setResourceFilter] = useState([]);
   const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
 
   // App display for calendar, list and map.
@@ -50,6 +57,11 @@ function App() {
     ConfigLoader.loadConfig().then((loadedConfig) => {
       setConfig(loadedConfig);
     });
+
+    if(UrlValidator.valid(urlParams) !== null) {
+      setValidUrlParams(urlParams)
+      setDisplayState('minimized');
+    }
   }, []);
 
   // Get locations.
@@ -165,7 +177,7 @@ function App() {
     <div className="App">
       <div className="container-fluid">
         {!config && <div>Loading...</div>}
-        {config && (
+        {config && displayState === 'maximized' && (
           <>
             <div className="row filters-wrapper">
               <div className="col-md-3">
@@ -243,6 +255,16 @@ function App() {
                   setAuthorFields={setAuthorFields}
                 />
               )}
+            </div>
+          </>
+        )}
+        {config && urlParams && displayState === 'minimized' && (
+          <>
+            <div className="row">
+              <MinimizedDisplay
+                urlParams={urlParams}
+                setDisplayState={setDisplayState}
+              />
             </div>
           </>
         )}
