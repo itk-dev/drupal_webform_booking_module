@@ -5,7 +5,6 @@ namespace Drupal\itkdev_booking\Helper;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Site\Settings;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class UserHelper {
   protected bool $bookingApiSampleUser;
@@ -17,7 +16,37 @@ class UserHelper {
   /**
    * @throws \JsonException
    */
-  public function getUserValues(Request $request): array {
+  public function attachUserToQueryParameters(Request $request, array $query, bool $attachUserId = false): array {
+    $userArray = $this->getUserValues($request);
+
+    if ($userArray != null) {
+      if ($attachUserId) {
+        $query['userId'] = $userArray['userId'];
+      }
+
+      $permission = $userArray['permission'];
+
+      if ($permission == 'businessPartner') {
+        $query['permissionBusinessPartner'] = true;
+
+        if (isset($userArray['whitelistKey'])) {
+          $query['whitelistKey'] = $userArray['whitelistKey'];
+        }
+      } else if ($permission == 'citizen') {
+        $query['permissionCitizen'] = true;
+      } else {
+        $query['permissionBusinessPartner'] = true;
+        $query['permissionCitizen'] = true;
+      }
+    }
+
+    return $query;
+  }
+
+  /**
+   * @throws \JsonException
+   */
+  public function getUserValues(Request $request): ?array {
     if ($this->bookingApiSampleUser) {
       return SampleDataHelper::getSampleData('user');
     }
@@ -29,27 +58,29 @@ class UserHelper {
       !array_key_exists('pid', $userToken) ||
       !array_key_exists('name', $userToken) ||
       !array_key_exists('given_name', $userToken)) {
-      throw new UnauthorizedHttpException('User should authenticate.');
+      return null;
     }
 
-    $userType = null;
+    $permission = null;
 
     if (isset($userToken['cpr'])) {
-      $userType = 'CPR';
+      $permission = 'citizen';
     } else if (isset($userToken['cvr'])) {
       // TODO: Test this.
-      $userType = 'CVR';
+      $permission = 'businessPartner';
+      $whitelistKey = $userToken['cvr'];
     }
 
-    if ($userType == null) {
-      throw new UnauthorizedHttpException('User role cannot be decided.');
+    if ($permission == null) {
+      return null;
     }
 
     return [
       'name' => $userToken['name'],
       'givenName' => $userToken['given_name'],
-      'userType' => $userType,
+      'permission' => $permission,
       'userId' => $this->generateUserId($userToken),
+      'whitelistKey' => $whitelistKey ?? null,
     ];
   }
 

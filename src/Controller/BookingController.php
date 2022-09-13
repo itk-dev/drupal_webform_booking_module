@@ -40,16 +40,18 @@ class BookingController extends ControllerBase {
   /**
    * Get locations.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    * @throws \JsonException
    */
-  public function getLocations(): JsonResponse {
+  public function getLocations(Request $request): JsonResponse {
     if ($this->bookingApiSampleData) {
       $data = SampleDataHelper::getSampleData("locations");
       return new JsonResponse($data, 200);
     }
 
-    $response = $this->bookingHelper->getLocations();
+    $response = $this->bookingHelper->getLocations($request);
 
     return new JsonResponse($response['data'], $response['statusCode']);
   }

@@ -9,16 +9,19 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Booking helper.
  */
-class BookingHelper
-{
+class BookingHelper {
+
   protected string $bookingApiEndpoint;
+
   protected string $bookingApiKey;
+
   protected string $bookingApiAllowInsecureConnection;
+
   protected array $headers;
+
   protected UserHelper $userHelper;
 
-  public function __construct()
-  {
+  public function __construct() {
     $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint');
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
     $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
@@ -26,20 +29,31 @@ class BookingHelper
 
     $this->headers = [
       'accept' => 'application/ld+json',
-      'Authorization' => 'Apikey ' . $this->bookingApiKey
+      'Authorization' => 'Apikey ' . $this->bookingApiKey,
     ];
   }
 
   /**
    * Get locations.
    *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
    * @return array
+   * @throws \JsonException
    */
-  public function getLocations(): array {
+  public function getLocations(Request $request): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $response = $client->get("{$endpoint}v1/locations", ['headers' => $this->headers]);
+    $query = [];
+
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+
+    $response = $client->get("{$endpoint}v1/locations", [
+      'query' => $query,
+      'headers' => $this->headers,
+    ]);
 
     $statusCode = $response->getStatusCode();
     $content = $response->getBody()->getContents();
@@ -62,6 +76,7 @@ class BookingHelper
    * @param \Symfony\Component\HttpFoundation\Request $request
    *
    * @return array
+   * @throws \JsonException
    */
   public function getResources(Request $request): array {
     $endpoint = $this->bookingApiEndpoint;
@@ -69,7 +84,13 @@ class BookingHelper
 
     $query = $request->query->all();
 
-    $response = $client->get("{$endpoint}v1/resources", ['query' => $query, 'headers' => $this->headers]);
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+
+    $response = $client->get("{$endpoint}v1/resources", [
+      'query' => $query,
+      'headers' => $this->headers,
+    ]);
 
     $statusCode = $response->getStatusCode();
     $content = $response->getBody()->getContents();
@@ -93,12 +114,21 @@ class BookingHelper
    * @param string $resourceId
    *
    * @return array
+   * @throws \JsonException
    */
   public function getResourceById(Request $request, string $resourceId): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $response = $client->get("{$endpoint}v1/resources/$resourceId", ['headers' => $this->headers]);
+    $query = [];
+
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+
+    $response = $client->get("{$endpoint}v1/resources/$resourceId", [
+      'query' => $query,
+      'headers' => $this->headers,
+    ]);
 
     $statusCode = $response->getStatusCode();
     $content = $response->getBody()->getContents();
@@ -121,22 +151,19 @@ class BookingHelper
    * @param \Symfony\Component\HttpFoundation\Request $request
    *
    * @return array
+   * @throws \JsonException
    */
   public function getBusyIntervals(Request $request): array {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $query = $request->query;
-    $resources = $query->get('resources');
-    $dateStart = $query->get('dateStart');
-    $dateEnd = $query->get('dateEnd');
+    $query = $request->query->all();
+
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
 
     $response = $client->get("{$endpoint}v1/busy-intervals", [
-      'query' => [
-        'resources' => $resources,
-        'dateStart' => $dateStart,
-        'dateEnd' => $dateEnd,
-      ],
+      'query' => $query,
       'headers' => $this->headers,
     ]);
 
@@ -167,10 +194,15 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $userArray = $this->userHelper->getUserValues($request);
-    $userId = $userArray['userId'];
+    $query = [];
 
-    $response = $client->get("{$endpoint}v1/user-bookings?userId=$userId", ['headers' => $this->headers]);
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query, TRUE);
+
+    $response = $client->get("{$endpoint}v1/user-bookings", [
+      'query' => $query,
+      'headers' => $this->headers,
+    ]);
 
     $statusCode = $response->getStatusCode();
     $content = $response->getBody()->getContents();
@@ -200,10 +232,15 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $userArray = $this->userHelper->getUserValues($request);
-    $userId = $userArray['userId'];
+    $query = [];
 
-    $response = $client->delete("{$endpoint}v1/user-bookings/$bookingId?userId=$userId", ['headers' => $this->headers]);
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query, TRUE);
+
+    $response = $client->delete("{$endpoint}v1/user-bookings/$bookingId", [
+      'query' => $query,
+      'headers' => $this->headers,
+    ]);
 
     $statusCode = $response->getStatusCode();
     $content = $response->getBody()->getContents();
@@ -233,10 +270,15 @@ class BookingHelper
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $userArray = $this->userHelper->getUserValues($request);
-    $userId = $userArray['userId'];
+    $query = [];
 
-    $response = $client->get("{$endpoint}v1/user-bookings/$hitId?userId=$userId", ['headers' => $this->headers]);
+    // Attach user query parameters if user is logged in.
+    $query = $this->userHelper->attachUserToQueryParameters($request, $query, TRUE);
+
+    $response = $client->get("{$endpoint}v1/user-bookings/$hitId", [
+      'query' => $query,
+      'headers' => $this->headers,
+    ]);
 
     $statusCode = $response->getStatusCode();
     $content = $response->getBody()->getContents();
@@ -252,4 +294,5 @@ class BookingHelper
       'data' => $data,
     ];
   }
+
 }
