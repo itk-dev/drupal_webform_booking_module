@@ -34,9 +34,6 @@ class UserHelper {
         }
       } else if ($permission == 'citizen') {
         $query['permissionCitizen'] = true;
-      } else {
-        $query['permissionBusinessPartner'] = true;
-        $query['permissionCitizen'] = true;
       }
     }
 
