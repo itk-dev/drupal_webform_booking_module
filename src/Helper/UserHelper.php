@@ -25,12 +25,18 @@ class UserHelper {
       }
 
       $permission = $userArray['permission'];
-      $query['permission'] = $permission;
 
       if ($permission == 'businessPartner') {
+        $query['permissionBusinessPartner'] = true;
+
         if (isset($userArray['whitelistKey'])) {
           $query['whitelistKey'] = $userArray['whitelistKey'];
         }
+      } else if ($permission == 'citizen') {
+        $query['permissionCitizen'] = true;
+      } else {
+        $query['permissionBusinessPartner'] = true;
+        $query['permissionCitizen'] = true;
       }
     }
 
