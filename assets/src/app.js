@@ -31,6 +31,7 @@ function App() {
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]); // eslint-disable-line no-unused-vars
+  const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
 
   // App display for calendar, list and map.
   const [resources, setResources] = useState([]); // The result after filtering resources
@@ -38,9 +39,9 @@ function App() {
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
-  const [resource, setResource] = useState(null);
-  const [facilities, setFacilities] = useState(null);
-  const [showResourceViewId, setShowResourceViewId] = useState(null);
+  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
+  const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
+  const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -54,7 +55,7 @@ function App() {
   }, []);
   // Get locations.
   useEffect(() => {
-    if (config !== null) {
+    if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocationOptions(
@@ -73,17 +74,48 @@ function App() {
     }
   }, [config]);
 
-  // Get resources for the given location.
+  // Get resources from filterParams.
   useEffect(() => {
-    if (config && locationFilter !== null) {
-      Api.fetchResources(config.api_endpoint, locationFilter)
+    if (config) {
+      const urlSearchParams = new URLSearchParams();
+      Object.entries(filterParams).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((arrayValue) =>
+            urlSearchParams.append(key, arrayValue.toString())
+          );
+        } else {
+          urlSearchParams.append(key, value.toString());
+        }
+      });
+      Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResources(loadedResources);
+        })
+        .catch(() => {
+          // TODO: Display error and retry option for user. (v0.1)
+        });
+    }
+  }, [filterParams]);
+
+  // Set location filter and resource dropdown options.
+  useEffect(() => {
+    const locationValues = locationFilter.map(({ value }) => value);
+    setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
+
+    // Set resource dropdown options.
+    if (config) {
+      const dropdownParams = locationFilter.map(({ value }) => [
+        "location[]",
+        value,
+      ]);
+      const urlSearchParams = new URLSearchParams(dropdownParams);
+      Api.fetchResources(config.api_endpoint, urlSearchParams)
+        .then((loadedResources) => {
           setResourcesOptions(
-            loadedResources.map((res) => {
+            loadedResources.map((value) => {
               return {
-                value: res.resourceMail,
-                label: res.resourceName,
+                value: value.resourceMail,
+                label: value.resourceName,
               };
             })
           );
@@ -93,6 +125,15 @@ function App() {
         });
     }
   }, [locationFilter]);
+
+  // Set resource filter.
+  useEffect(() => {
+    const resourceValues = resourceFilter.map(({ value }) => value);
+    setFilterParams({
+      ...filterParams,
+      ...{ "resourceMail[]": resourceValues },
+    });
+  }, [resourceFilter]);
 
   // Get events for the given resources.
   useEffect(() => {
