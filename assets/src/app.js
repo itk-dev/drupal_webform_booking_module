@@ -10,6 +10,7 @@ import AuthorFields from "./components/author-fields";
 import Api from "./util/api";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
+import InfoBox from "./components/info-box";
 
 dayjs.locale("da");
 
@@ -132,6 +133,7 @@ function App() {
                 <Select
                   styles={{}}
                   placeholder="lokationer..."
+                  closeMenuOnSelect={false}
                   options={locationOptions}
                   onChange={(newValue) => {
                     setLocationFilter(newValue);
@@ -144,6 +146,7 @@ function App() {
                 <Select
                   styles={{}}
                   placeholder="ressourcer..."
+                  closeMenuOnSelect={false}
                   options={resourcesOptions}
                   onChange={(newValue) => {
                     setResourceFilter(newValue);
@@ -162,10 +165,8 @@ function App() {
             </div>
 
             {/* Add info box */}
-            <div className="row">
-              <div className="col-md-12">
-                {/* TODO: Add info text box (v0.1) */}
-              </div>
+            <div className="row info-box-wrapper">
+              <InfoBox config={config}/>
             </div>
 
             {/* Display calendar for selections */}

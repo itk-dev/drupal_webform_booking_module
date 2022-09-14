@@ -6,6 +6,7 @@
     td {
       height: 0;
     }
+
     tr {
       &:hover {
         background: inherit;
@@ -21,67 +22,93 @@
   .calendar-nav {
     text-align: right;
   }
+
   .fc-datagrid-cell {
     height: auto;
   }
 }
 
-tr {
-  background: unset !important;
-}
 
-.fc .fc-resource-timeline .fc-resource-group:not([rowspan]) {
-  background-color: #E9ECEF !important;
-}
-.fc-timeline-slot-label {
-  background-color: #fff !important;
-}
-.fc-datagrid-cell {
-  background-color: #fff !important;
-}
-.fc-timeline-slot-frame {
-  a {
-    color: #000;
+
+.Calendar {
+  padding: 15px !important;
+  > div {
+    padding-top: 0;
+    > div {
+      padding-top: 0 !important;
+    }
   }
-}
-.fc-resource-group .fc-datagrid-cell-main {
-  font-weight: bold;
-  margin-left: 15px;
-  font-size: 15px;  
-}
-th[role=columnheader] .fc-datagrid-expander-placeholder {
-  display: none;
-}
-.fc-datagrid-expander-placeholder + .fc-datagrid-cell-main {
-  font-weight: 400;
-}
-.fc .fc-timeline-now-indicator-line {
-  pointer-events: none;
-}
-.resource-calendar-capacity-header>div>div {
-  margin: auto;
-}
-
-.resource-calendar-capacity-value>div>div {
-  text-align: right;
-}
-
-div.fc-highlight {
-  display: block;
-  border: 1px solid #84B6FC;
-  background-color: #84B6FC !important;
-}
-
-.fc-timegrid-event-short .fc-event-time:after {
-  display: none !important;
-}
-
-.fc-timegrid-event-harness>.fc-timegrid-event {
-  left: -2px !important;
-  right: -25px !important;
-}
-
-.fc-timegrid-slots>table {
-  /* Using specific selector here for overwriting plugin standards */
-  background: #FFF;
+  #calendar-back {
+    margin-right: 5px;
+  }
+  tr {
+    background: unset !important;
+  }
+  
+  .fc .fc-resource-timeline .fc-resource-group:not([rowspan]) {
+    background-color: #E9ECEF !important;
+  }
+  
+  .fc-timeline-slot-label {
+    background-color: #fff !important;
+  }
+  
+  .fc-datagrid-cell {
+    background-color: #fff !important;
+  }
+  
+  .fc-timeline-slot-frame {
+    a {
+      color: #000;
+    }
+  }
+  
+  .fc-resource-group .fc-datagrid-cell-main {
+    font-weight: bold;
+    margin-left: 15px;
+    font-size: 15px;
+  }
+  
+  th[role=columnheader] .fc-datagrid-expander-placeholder {
+    display: none;
+  }
+  
+  .fc-datagrid-expander-placeholder+.fc-datagrid-cell-main {
+    font-weight: 400;
+  }
+  
+  .fc .fc-timeline-now-indicator-line {
+    pointer-events: none;
+  }
+  
+  .resource-calendar-capacity-header>div>div {
+    margin: auto;
+  }
+  
+  .resource-calendar-capacity-value>div>div {
+    text-align: right;
+  }
+  
+  div.fc-highlight {
+    display: block;
+    border: 1px solid #84B6FC;
+    background-color: #84B6FC !important;
+  }
+  
+  .fc-timegrid-event-short .fc-event-time:after {
+    display: none !important;
+  }
+  
+  .fc-timegrid-event-harness>.fc-timegrid-event {
+    left: -2px !important;
+    right: -25px !important;
+  }
+  
+  .fc-timegrid-slots>table {
+    background: #FFF;
+  }
+  
+  .fc .fc-timeline-now-indicator-container {
+    z-index: 1;
+  }
 }

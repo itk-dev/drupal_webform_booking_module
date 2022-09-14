@@ -1,0 +1,33 @@
+.info-box-wrapper {
+    margin: 30px 0 !important;
+
+    .info-box {
+        background-color: #0C6EFD;
+        border-radius: 5px;
+
+        .info-box-content {
+            text-align: left;
+
+            span.info-box-content-header {
+                color: #fff;
+                font-weight: bold;
+            }
+
+            span.info-box-content-text {
+                color: #fff;
+                margin-left: 15px;
+            }
+        }
+
+        .info-box-close {
+            text-align: right;
+            cursor: pointer;
+
+            span {
+                color: #fff;
+                font-weight: bold;
+                padding-right: 10px;
+            }
+        }
+    }
+}

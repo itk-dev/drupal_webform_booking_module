@@ -8,7 +8,16 @@ button {
   display: flex;
   flex-direction: row;
   margin-bottom: 1em;
-
+  div.datepicker-container {
+    display: flex;
+    justify-content: center;
+    div.datepicker {
+      display: flex;
+      label {
+        margin: auto;
+      }
+    }
+  }
   .date-header {
     display: flex;
     justify-content: center;
@@ -37,5 +46,44 @@ button {
     &:focus-visible {
       outline: none;
     }
+  }
+}
+
+
+
+
+
+label.datepicker-label {
+  display: inline-block;
+  position: relative;
+  line-height: 0;
+}
+#calendar-datepicker {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+#calendar-datepicker::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 300%;
+  height: 300%;
+  cursor: pointer;
+}
+#calendar-datepicker::-webkit-clear-button {
+  display: none;
+}
+#calendar-datepicker + button {
+  background-color: transparent;
+  font-size: 22px;
+  border: none;
+  span {
+    padding-left: 5px;
+    font-size: 20px;
   }
 }

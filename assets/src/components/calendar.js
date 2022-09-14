@@ -42,9 +42,7 @@ function Calendar({
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
-  const waheyy = () => {
-    console.log('woopwoop');
-  }
+
   const getValidRange = () => {
     return { start: dateNow };
   };
@@ -60,7 +58,6 @@ function Calendar({
   };
 
   useEffect(() => {
-    console.log(calendarSelection);
     let highlight_element = document.querySelector('div.fc-highlight');
     if (highlight_element !== null) {
       setTimeout(function () {
@@ -79,19 +76,6 @@ function Calendar({
       }, 1)
     }
   }, [calendarSelection])
-
-  useEffect(() => {
-    getSpecifiedBusinessHours(resources, calendarRef);
-    let numberOfResources = resources.length;
-    let calendarView = "resourceTimelineDay";
-    if (numberOfResources > 5) {
-      calendarView = "resourceTimeGridDay";
-    }
-    calendarRef.current
-      .getApi()
-      .changeView(calendarView);
-    console.log(resources);
-  }, [resources])
 
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
@@ -129,7 +113,7 @@ function Calendar({
               /* scrollTime=@todo */
               initialView="resourceTimelineDay"
               duration="days: 3"
-              /* selectConstraint="businessHours" */
+              selectConstraint="businessHours"
               selectMirror
               displayEventTime={true}
               slotLabelFormat={
@@ -155,12 +139,11 @@ function Calendar({
               select={onCalendarSelection}
               validRange={getValidRange}
               loading={false}
-              resources={resources.map(handleResources)}
+              resources={resources.map((value) => handleResources(value, calendarRef))}
               resourceGroupField={"building"}
               resourceAreaColumns={[
                 {
                   headerContent: "Ressourcer",
-
                   cellContent(arg) {
                     return renderCalendarCellInfoButton(
                       arg.resource.title,
