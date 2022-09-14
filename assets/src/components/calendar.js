@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 // FullCalendar must be imported before FullCalendar plugins
+import ReactDOMServer from 'react-dom/server'
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -12,6 +13,7 @@ import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources, getSpecifiedBusinessHours } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
+import CalendarSelectionBox from "./calendar-selection-box";
 import "./calendar.scss";
 
 /**
@@ -40,7 +42,9 @@ function Calendar({
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
-
+  const waheyy = () => {
+    console.log('woopwoop');
+  }
   const getValidRange = () => {
     return { start: dateNow };
   };
@@ -56,9 +60,24 @@ function Calendar({
   };
 
   useEffect(() => {
-    console.log(document.getElementsByClassName('fc-highlight'));
-    let elem = document.getElementsByClassName('fc-highlight');
-
+    console.log(calendarSelection);
+    let highlight_element = document.querySelector('div.fc-highlight');
+    if (highlight_element !== null) {
+      setTimeout(function () {
+        let calendarSelectionBox = ReactDOMServer.renderToString(<CalendarSelectionBox calendarSelection={calendarSelection} />);
+        document.querySelector('div.fc-highlight').innerHTML = calendarSelectionBox;
+        document.getElementById("calendar-selection-choice-confirm").addEventListener("mousedown", function(e) {
+          e.stopPropagation();
+        });
+        document.getElementById("calendar-selection-container").addEventListener("mousedown", function(e) {
+          e.stopPropagation();
+        });
+        document.getElementById("calendar-selection-close").addEventListener("mousedown", function(e) {
+          e.stopPropagation();
+          calendarRef.current.getApi().unselect();
+        });
+      }, 1)
+    }
   }, [calendarSelection])
 
   useEffect(() => {
@@ -71,7 +90,7 @@ function Calendar({
     calendarRef.current
       .getApi()
       .changeView(calendarView);
-      console.log(resources);
+    console.log(resources);
   }, [resources])
 
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
@@ -88,82 +107,83 @@ function Calendar({
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
-      <div className="col-md-12">
-        {
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[
-              resourceTimegrid,
-              interactionPlugin,
-              dayGridPlugin,
-              timeGridPlugin,
-              listPlugin,
-              resourceTimelinePlugin,
-            ]}
-            titleFormat={{
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }}
-            headerToolbar=""
-            height="650px"
-            /* scrollTime=@todo */
-            initialView="resourceTimelineDay"
-            duration="days: 3"
-            /* selectConstraint="businessHours" */
-            selectMirror
-            displayEventTime={true}
-            slotLabelFormat={
-              {
-                hour: "numeric",
-                omitZeroMinute: false
+        <div className="col-md-12">
+          {
+            <FullCalendar
+              ref={calendarRef}
+              plugins={[
+                resourceTimegrid,
+                interactionPlugin,
+                dayGridPlugin,
+                timeGridPlugin,
+                listPlugin,
+                resourceTimelinePlugin,
+              ]}
+              titleFormat={{
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }}
+              headerToolbar=""
+              height="650px"
+              /* scrollTime=@todo */
+              initialView="resourceTimelineDay"
+              duration="days: 3"
+              /* selectConstraint="businessHours" */
+              selectMirror
+              displayEventTime={true}
+              slotLabelFormat={
+                {
+                  hour: "numeric",
+                  omitZeroMinute: false
+                }
               }
-            }
-            nowIndicator
-            navLinks
-            slotDuration="00:15:00"
-            allDaySlot={false}
-            selectable
-            unselectAuto={false}
-            schedulerLicenseKey={config.license_key}
-            slotMinTime="07:00:00"
-            slotMaxTime="21:00:00"
-            selectOverlap={false}
-            nextDayThreshold="21:00:00"
-            editable={false}
-            dayMaxEvents
-            locale={daLocale}
-            select={onCalendarSelection}
-            validRange={getValidRange}
-            loading={false}
-            resources={resources.map(handleResources)}
-            resourceAreaColumns={[
-              {
-                headerContent: "Ressource titel",
+              nowIndicator
+              navLinks
+              slotDuration="00:15:00"
+              allDaySlot={false}
+              selectable
+              unselectAuto={false}
+              schedulerLicenseKey={config.license_key}
+              slotMinTime="07:00:00"
+              slotMaxTime="21:00:00"
+              selectOverlap={false}
+              nextDayThreshold="21:00:00"
+              editable={false}
+              dayMaxEvents
+              locale={daLocale}
+              select={onCalendarSelection}
+              validRange={getValidRange}
+              loading={false}
+              resources={resources.map(handleResources)}
+              resourceGroupField={"building"}
+              resourceAreaColumns={[
+                {
+                  headerContent: "Ressourcer",
 
-                cellContent(arg) {
-                  return renderCalendarCellInfoButton(
-                    arg.resource.title,
-                    arg.resource.id,
-                    triggerResourceView
-                  );
+                  cellContent(arg) {
+                    return renderCalendarCellInfoButton(
+                      arg.resource.title,
+                      arg.resource.id,
+                      triggerResourceView
+                    );
+                  },
                 },
-              },
-              {
-                headerContent: {
-                  html: '<img src="/assets/images/icons/Chair.svg" />',
+                {
+                  headerContent: {
+                    html: '<img src="/assets/images/icons/Chair.svg" />',
+                  },
+                  headerClassNames: "resource-calendar-capacity-header",
+                  width: "60px",
+                  cellClassNames: "resource-calendar-capacity-value",
+                  cellContent(arg) {
+                    return arg.resource.extendedProps.capacity;
+                  },
                 },
-                headerClassNames: "resource-calendar-capacity-header",
-                width: "60px",
-                cellClassNames: "resource-calendar-capacity-value",
-                cellContent(arg) {
-                  return arg.resource.extendedProps.capacity;
-                },
-              },
-            ]}
-            events={events.map(handleBusyIntervals)}
-          />
-        }
+              ]}
+              events={events.map(handleBusyIntervals)}
+            />
+          }
         </div>
       </div>
     </div>
