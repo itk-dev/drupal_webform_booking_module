@@ -125,6 +125,7 @@ function Calendar({
               selectConstraint="businessHours"
               selectMirror
               displayEventTime
+              scrollTimeReset={false}
               slotLabelFormat={{
                 hour: "numeric",
                 omitZeroMinute: false,
