@@ -24,10 +24,10 @@ dayjs.locale("da");
 function App() {
   // App configuration and behavior.
   const [config, setConfig] = useState(null); // Config imported from an external source.
+  const [displayState, setDisplayState] = useState("maximized"); // The app display mode to be used.
   const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
-  const [displayState, setDisplayState] = useState("maximized"); // The app display mode to be used.
 
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -35,23 +35,23 @@ function App() {
 
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
+  const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]);
-  const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
 
   // App display for calendar, list and map.
-  const [resources, setResources] = useState([]); // The result after filtering resources
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
+  const [resources, setResources] = useState([]); // The result after filtering resources
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
-  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
+  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
-  const [calendarSelection, setCalendarSelection] = useState(null); // The selection of a time span in calendar.
   const [authorFields, setAuthorFields] = useState({ email: "" }); // Additional fields for author information.
+  const [calendarSelection, setCalendarSelection] = useState(null); // The selection of a time span in calendar.
 
   // Get configuration.
   useEffect(() => {
