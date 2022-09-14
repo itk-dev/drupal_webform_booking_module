@@ -50,15 +50,17 @@ function CalendarHeader({ date, setDate }) {
           </div>
           <div className="col-md-4 datepicker-container">
             <div className="datepicker">
-              <label className="datepicker-label">
-                <input 
-                type="date"
-                id="calendar-datepicker"
-                min={dayjs(new Date()).format("YYYY-MM-DD")}
-                value={dayjs(date).format("YYYY-MM-DD")}
-                onChange={(e) => onChangeDate(e)}
+              <label htmlFor="calendar-datepicker" className="datepicker-label">
+                <input
+                  type="date"
+                  id="calendar-datepicker"
+                  min={dayjs(new Date()).format("YYYY-MM-DD")}
+                  value={dayjs(date).format("YYYY-MM-DD")}
+                  onChange={(e) => onChangeDate(e)}
                 />
-                <button id="calendar_text">{dayjs(date).format("D. MMMM YYYY")} <span>📅</span></button>
+                <button type="button" id="calendar_text">
+                  {dayjs(date).format("D. MMMM YYYY")} <span>📅</span>
+                </button>
               </label>
             </div>
           </div>
@@ -71,7 +73,7 @@ function CalendarHeader({ date, setDate }) {
                 disabled={new Date() > date}
                 onClick={(e) => onChangeDate(e)}
               >
-                {"‹"}
+                ‹
               </button>
               <button
                 id="calendar-forward"
@@ -79,7 +81,7 @@ function CalendarHeader({ date, setDate }) {
                 type="button"
                 onClick={(e) => onChangeDate(e)}
               >
-                {"›"}
+                ›
               </button>
             </div>
           </div>

@@ -12,11 +12,11 @@
 
 body {
   font-family: sans-serif;
-  background: #E9ECEF;
+  background: #e9ecef;
 }
 
 .App {
-  background: #E9ECEF;
+  background: #e9ecef;
   padding: 30px;
 }
 
@@ -60,7 +60,6 @@ body {
     opacity: 1;
   }
 }
-
 
 #calendar-selection-dot {
   width: 13px;
@@ -118,7 +117,7 @@ body {
     font-size: 14px;
   }
   #calendar-selection-choice-confirm {
-    background-color: #343A40;
+    background-color: #343a40;
     color: #fff;
     margin-top: auto;
     font-size: 15px;
@@ -130,7 +129,7 @@ body {
   }
 }
 .booking-btn {
-  background-color: #6C757D;
+  background-color: #6c757d;
   color: #fff;
   font-size: 18px;
   padding: 15px 20px;
@@ -138,4 +137,7 @@ body {
   box-shadow: none !important;
   border: none !important;
   cursor: pointer;
+}
+.booking-btn:hover {
+  background-color: #343a40;
 }

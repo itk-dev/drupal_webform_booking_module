@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 // FullCalendar must be imported before FullCalendar plugins
-import ReactDOMServer from 'react-dom/server'
+import ReactDOMServer from "react-dom/server";
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -11,7 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import { handleBusyIntervals, handleResources, getSpecifiedBusinessHours } from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import "./calendar.scss";
@@ -58,24 +58,33 @@ function Calendar({
   };
 
   useEffect(() => {
-    let highlight_element = document.querySelector('div.fc-highlight');
-    if (highlight_element !== null) {
-      setTimeout(function () {
-        let calendarSelectionBox = ReactDOMServer.renderToString(<CalendarSelectionBox calendarSelection={calendarSelection} />);
-        document.querySelector('div.fc-highlight').innerHTML = calendarSelectionBox;
-        document.getElementById("calendar-selection-choice-confirm").addEventListener("mousedown", function(e) {
-          e.stopPropagation();
-        });
-        document.getElementById("calendar-selection-container").addEventListener("mousedown", function(e) {
-          e.stopPropagation();
-        });
-        document.getElementById("calendar-selection-close").addEventListener("mousedown", function(e) {
-          e.stopPropagation();
-          calendarRef.current.getApi().unselect();
-        });
-      }, 1)
+    const highlightElement = document.querySelector("div.fc-highlight");
+    if (highlightElement !== null) {
+      setTimeout(() => {
+        const calendarSelectionBox = ReactDOMServer.renderToString(
+          <CalendarSelectionBox calendarSelection={calendarSelection} />
+        );
+        document.querySelector("div.fc-highlight").innerHTML =
+          calendarSelectionBox;
+        document
+          .getElementById("calendar-selection-choice-confirm")
+          .addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+          });
+        document
+          .getElementById("calendar-selection-container")
+          .addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+          });
+        document
+          .getElementById("calendar-selection-close")
+          .addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+            calendarRef.current.getApi().unselect();
+          });
+      }, 1);
     }
-  }, [calendarSelection])
+  }, [calendarSelection]);
 
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
@@ -115,13 +124,11 @@ function Calendar({
               duration="days: 3"
               selectConstraint="businessHours"
               selectMirror
-              displayEventTime={true}
-              slotLabelFormat={
-                {
-                  hour: "numeric",
-                  omitZeroMinute: false
-                }
-              }
+              displayEventTime
+              slotLabelFormat={{
+                hour: "numeric",
+                omitZeroMinute: false,
+              }}
               nowIndicator
               navLinks
               slotDuration="00:15:00"
@@ -139,8 +146,10 @@ function Calendar({
               select={onCalendarSelection}
               validRange={getValidRange}
               loading={false}
-              resources={resources.map((value) => handleResources(value, calendarRef))}
-              resourceGroupField={"building"}
+              resources={resources.map((value) =>
+                handleResources(value, calendarRef)
+              )}
+              resourceGroupField="building"
               resourceAreaColumns={[
                 {
                   headerContent: "Ressourcer",
@@ -177,7 +186,7 @@ Calendar.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
-  calendarSelection: PropTypes.object.isRequired,
+  calendarSelection: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   onCalendarSelection: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,

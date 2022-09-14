@@ -20,7 +20,8 @@ export default class ConfigLoader {
           output_field_id: "submit-values",
           info_box_color: "#0C6EFD",
           info_box_header: "Bemærk Behandlingstid!",
-          info_box_content: "Til godkendelse og nøgleudlevering. Det vil fremgå af lokalets information."
+          info_box_content:
+            "Til godkendelse og nøgleudlevering. Det vil fremgå af lokalets information.",
         };
       });
   }

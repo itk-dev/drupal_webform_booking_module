@@ -166,7 +166,7 @@ function App() {
 
             {/* Add info box */}
             <div className="row info-box-wrapper">
-              <InfoBox config={config}/>
+              <InfoBox config={config} />
             </div>
 
             {/* Display calendar for selections */}
