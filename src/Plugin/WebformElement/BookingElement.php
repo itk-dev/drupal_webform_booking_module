@@ -44,7 +44,7 @@ class BookingElement extends Hidden
         'enable_booking' => false,
         'enable_resource_tooltips' => false,
         'step1' => false,
-        'step2_url' => ''
+        'redirect_url' => ''
       ] + parent::defineDefaultProperties();
   }
 
@@ -91,7 +91,7 @@ class BookingElement extends Hidden
         ->t('If checked the form will perform a redirect with booking parameters when booking choices are made.'),
     );
 
-    $form['element']['step2_url'] = array(
+    $form['element']['redirect_url'] = array(
       '#type' => 'url',
       '#title' => $this
         ->t('Redirect url'),
@@ -119,7 +119,7 @@ class BookingElement extends Hidden
       'enable_resource_tooltips' => (isset($element['#enable_booking'])),
       'output_field_id' => 'submit-values',
       'step_one' => (isset($element['#step1'])),
-      'redirect_url' => isset($element['#step2_url']) ? $element['#step2_url'] : null,
+      'redirect_url' => isset($element['#redirect_url']) ? $element['#redirect_url'] : null,
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [

@@ -4,7 +4,7 @@ import * as PropTypes from "prop-types";
 import "./minimized-display.scss";
 
 /**
- * Calendar header component.
+ * Minimized display component.
  *
  * @param {object} props Props.
  * @param {object} props.validUrlParams Validated parameters.
