@@ -15,13 +15,11 @@ div.resource-container {
     span {
       margin: auto auto auto 15px;
       color: #fff;
-      font-size: 20px;
+      font-size: 22px;
     }
 
     button {
       margin: auto 15px auto auto;
-      padding: 5px 15px;
-      font-size: 15px;
     }
   }
 
@@ -106,137 +104,3 @@ div.resource-container {
     }
   }
 }
-
-// div.resource-container {
-//   width: 1200px;
-//   height: 800px;
-//   background-color: #f9f9f9;
-//   border: 1px solid #f1f1f1;
-// }
-
-// div.resource-container > div.resource-headline {
-//   display: flex;
-//   width: 100%;
-//   background-color: #2d3e4f;
-//   padding: 10px 0;
-//   border-top-right-radius: 5px;
-//   border-top-left-radius: 5px;
-// }
-
-// div.resource-container > div.resource-headline > span {
-//   margin: auto auto auto 15px;
-//   color: #fff;
-//   font-size: 24px;
-// }
-
-// div.resource-container > div.resource-headline > button {
-//   margin: auto 15px auto auto;
-//   padding: 10px 20px;
-//   font-size: 15px;
-// }
-
-// div.resource-container > div.resource-title {
-//   display: flex;
-//   padding: 20px 15px 5px 15px;
-// }
-
-// div.resource-container > div.resource-title > h2 {
-//   font-weight: bold;
-// }
-
-// div.resource-container > div.resource-details {
-//   display: flex;
-//   flex-direction: row;
-// }
-
-// div.resource-container > div.resource-details > div.image {
-//   flex: 3;
-//   padding: 0 15px;
-// }
-
-// div.resource-container > div.resource-details > div.facilities {
-//   flex: 2;
-//   padding: 0 15px;
-// }
-
-// div.resource-container > div.resource-details > div.facilities > span {
-//   font-weight: bold;
-//   margin-bottom: 5px;
-// }
-
-// div.resource-container > div.resource-details > div.facilities > div {
-//   display: flex;
-//   flex-direction: column;
-// }
-
-// div.resource-container
-//   > div.resource-details
-//   > div.facilities
-//   > div
-//   > div:first-child {
-//   display: flex;
-//   padding: 10px 0 5px 0;
-// }
-
-// div.resource-container > div.resource-details > div.facilities > div > div {
-//   display: flex;
-//   padding: 5px 0;
-// }
-
-// div.resource-container
-//   > div.resource-details
-//   > div.facilities
-//   > div
-//   > div
-//   > div {
-//   margin: auto 5px auto 0;
-//   width: 30px;
-//   height: 25px;
-// }
-
-// div.resource-container
-//   > div.resource-details
-//   > div.facilities
-//   > div
-//   > div
-//   > div
-//   > img {
-//   margin: auto;
-// }
-
-// div.resource-container
-//   > div.resource-details
-//   > div.facilities
-//   > div
-//   > div
-//   > span {
-//   margin: auto auto auto 0;
-// }
-
-// div.resource-container > div.resource-details > div.location {
-//   flex: 2;
-//   display: flex;
-//   flex-direction: column;
-//   padding: 0 15px;
-// }
-
-// div.resource-container > div.resource-details > div.location > span {
-//   font-weight: bold;
-// }
-
-// div.resource-container > div.resource-details > div.location > div {
-//   padding: 10px 0 0 0;
-// }
-
-// div.resource-container > div.resource-description,
-// div.resource-container > div.resource-guidelines {
-//   padding: 15px;
-// }
-// div.resource-container > div.resource-description > div,
-// div.resource-container > div.resource-guidelines > div {
-//   padding: 10px 0 0 0;
-// }
-// div.resource-container > div.resource-description > span,
-// div.resource-container > div.resource-guidelines > span {
-//   font-weight: bold;
-// }

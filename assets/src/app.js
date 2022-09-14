@@ -168,7 +168,7 @@ function App() {
         {!config && <LoadingSpinner />}
         {config && (
           <>
-            <div className="row filters-wrapper">
+            <div className={"row filters-wrapper " +(showResourceViewId !== null ? "disable-filters":"")}>
               <div className="col-md-3">
                 {/* Dropdown with locations */}
                 <Select

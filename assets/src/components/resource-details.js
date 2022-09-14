@@ -75,12 +75,11 @@ function ResourceDetails({
       }
     >
       {!resource && <LoadingSpinner />}
-      {console.log(resource)}
       {resource && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
-            <button type="button" onClick={hideResourceView}>
+            <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
           </div>
