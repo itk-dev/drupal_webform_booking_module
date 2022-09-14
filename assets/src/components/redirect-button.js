@@ -13,14 +13,9 @@ import * as PropTypes from "prop-types";
 function RedirectButton({ calendarSelection, config }) {
   const onRedirectClick = () => {
     const paramsObj = {
-      from: calendarSelection.startStr,
-      to: calendarSelection.endStr,
-      resource: Object.prototype.hasOwnProperty.call(
-        calendarSelection,
-        "resource"
-      )
-        ? calendarSelection.resource.id
-        : undefined,
+      from: calendarSelection.start.toISOString(),
+      to: calendarSelection.end.toISOString(),
+      resource: calendarSelection.resourceId ?? undefined,
     };
     if (
       paramsObj.from === undefined ||
@@ -47,11 +42,13 @@ function RedirectButton({ calendarSelection, config }) {
 
 RedirectButton.propTypes = {
   calendarSelection: PropTypes.shape({
-    startStr: PropTypes.string.isRequired,
-    endStr: PropTypes.string.isRequired,
-    resource: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }),
+    start: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    end: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).string.isRequired,
+    resourceId: PropTypes.string.isRequired,
   }).isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
