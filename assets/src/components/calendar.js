@@ -14,6 +14,7 @@ import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
+import IconChair from "./icon-chair";
 import "./calendar.scss";
 
 /**
@@ -163,9 +164,7 @@ function Calendar({
                   },
                 },
                 {
-                  headerContent: {
-                    html: '<img src="/assets/images/icons/Chair.svg" />',
-                  },
+                  headerContent: (<IconChair />),
                   headerClassNames: "resource-calendar-capacity-header",
                   width: "60px",
                   cellClassNames: "resource-calendar-capacity-value",

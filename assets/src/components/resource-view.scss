@@ -36,25 +36,15 @@ div.resource-container {
   div.resource-description {
     padding: 15px;
 
-    div {
-      padding: 10px 0 0 0;
-    }
-
-    span {
+    > span {
       font-weight: bold;
     }
-  }
-  div.resource-guidelines {
-    padding: 15px;
 
     div {
       padding: 10px 0 0 0;
     }
-
-    span {
-      font-weight: bold;
-    }
   }
+
   div.resource-details {
     display: flex;
     flex-direction: row;

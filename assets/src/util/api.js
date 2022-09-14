@@ -1,4 +1,9 @@
 import dayjs from "dayjs";
+import IconCandles from "../components/icon-candles";
+import IconFood from "../components/icon-food";
+import IconProjector from "../components/icon-projector";
+import IconVideocamera from "../components/icon-videocamera";
+import IconWheelchair from "../components/icon-wheelchair";
 
 export default class Api {
   static async fetchLocations(apiEndpoint) {
@@ -63,34 +68,34 @@ export default class Api {
         // TODO: Remove and handle this in ResourceDetails.
 
         newDate.facilities = {
-          ...(data.monitorequipment && {
+          ...(!data.monitorequipment && {
             monitorequipment: {
               title: "Projektor / Skærm",
-              icon: "/assets/images/icons/Projector.svg",
+              icon: <IconProjector/>,
             },
           }),
           ...(data.wheelchairaccessible && {
             wheelchairaccessible: {
               title: "Handicapvenligt",
-              icon: "/assets/images/icons/Wheelchair.svg",
+              icon: <IconWheelchair/>
             },
           }),
           ...(data.videoconferenceequipment && {
             videoconferenceequipment: {
               title: "Videoconference",
-              icon: "/assets/images/icons/Video-camera.svg",
+              icon: <IconVideocamera/>,
             },
           }),
           ...(data.catering && {
             catering: {
               title: "Forplejning",
-              icon: "/assets/images/icons/Food.svg",
+              icon: <IconFood/>
             },
           }),
           ...(data.holidayOpeningHours && {
             holidayOpeningHours: {
               title: "Tilgængelig på helligdag",
-              icon: "/assets/images/icons/Candles.svg",
+              icon: <IconCandles/>
             },
           }),
         };

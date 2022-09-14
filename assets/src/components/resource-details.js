@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
+import IconChair from "./icon-chair";
 import "./resource-details.scss";
 
 /**
@@ -47,7 +48,7 @@ function ResourceDetails({
       <div className="facility-container">
         <div className="facility-item">
           <div className="facility-icon">
-            <img src="/assets/images/icons/Chair.svg" alt="capacity" />
+            {<IconChair />}
           </div>
           <span>{resource.capacity} siddepladser</span>
         </div>
@@ -55,7 +56,7 @@ function ResourceDetails({
           return (
             <div className="facility-item" key={key}>
               <div className="facility-icon">
-                <img src={facilities[key].icon} alt="facility" />
+                {facilities[key].icon}
               </div>
               <span>{facilities[key].title}</span>
             </div>
@@ -74,6 +75,7 @@ function ResourceDetails({
       }
     >
       {!resource && <LoadingSpinner />}
+      {console.log(resource)}
       {resource && (
         <div>
           <div className="resource-headline">
@@ -99,20 +101,14 @@ function ResourceDetails({
                 <span>{resource.location}</span>
               </div>
               <div>
-                <span>Adresse...</span>
+                <span>...</span>
               </div>
             </div>
           </div>
           <div className="resource-description">
             <span>Beskrivelse</span>
             <div>
-              <span>{resource.resourcedescription}</span>
-            </div>
-          </div>
-          <div className="resource-guidelines">
-            <span>Priser og vilkår</span>
-            <div>
-              <span>Priser og vilkår...</span>
+              <span>{resource.resourceDescription}</span>
             </div>
           </div>
         </div>
