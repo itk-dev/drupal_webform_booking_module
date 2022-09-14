@@ -18,6 +18,8 @@ export default class ConfigLoader {
           enable_booking: true,
           enable_resource_tooltips: true,
           output_field_id: "submit-values",
+          step_one: false,
+          redirect_url: "http://google.com/",
         };
       });
   }

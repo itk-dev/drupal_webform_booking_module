@@ -3,35 +3,31 @@ import dayjs from "dayjs";
 /** Url validator. */
 export default class UrlValidator {
   static valid(urlParams) {
-    let invalid = false
+    let invalid = false;
     switch (true) {
       // Check for existing values
-      case (urlParams.get("from") === null):
-      case (urlParams.get("to") === null):
-      case (urlParams.get("location") === null):
+      case urlParams.get("from") === null:
+      case urlParams.get("to") === null:
+      case urlParams.get("resource") === null:
         invalid = true;
+        break;
       default:
     }
-    console.log('aa', invalid);
-    for (const [key, value] of urlParams) {
-      // Parameter specific validation.
+
+    Object.entries(urlParams).forEach(([key, value]) => {
       switch (key) {
-        case 'from':
-        case 'to':
-          // @todo validate on full date string.
-          if(!dayjs(value, 'YYYY-MM-DD', true).isValid()) {
+        case "from":
+        case "to":
+          if (!dayjs(value, "YYYY-MM-DDTHH:MN:SS", true).isValid()) {
             invalid = true;
           }
           break;
-        case 'location':
-          // @todo check that the location exists.
-          break;
         default:
       }
-    }
+    });
 
-    if(invalid) {
-      return null
+    if (invalid) {
+      return null;
     }
     return urlParams;
   }

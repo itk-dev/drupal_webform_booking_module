@@ -21,7 +21,7 @@
   display: block;
   margin-top: 5px;
 }
-.minimized-display > div:first-child  span.subject {
+.minimized-display > div:first-child span.subject {
   margin: auto;
   font-size: 15px;
   font-style: italic;
@@ -56,7 +56,7 @@
 }
 
 @media screen and (max-width: 1199px) {
-.minimized-display {
+  .minimized-display {
     flex: 0 0 100%;
   }
 }
