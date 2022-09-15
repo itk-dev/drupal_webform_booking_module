@@ -20,7 +20,7 @@ function AuthorFields({ authorFields, setAuthorFields }) {
   };
 
   return (
-    <div className="col-md-12">
+    <div className="col-md-12 author-fields-wrapper">
       <h2 className="webform-section-title">Nødvendig information: </h2>
       <div className="webform-section-wrapper">
         <div className="form-item">
