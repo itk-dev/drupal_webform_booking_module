@@ -43,7 +43,7 @@ function CalendarHeader({ date, setDate }) {
               id="calendar-today"
               className="booking-btn"
               type="button"
-              onClick={(e) => onChangeDate(e)}
+              onClick={onChangeDate}
             >
               I dag
             </button>
@@ -56,7 +56,7 @@ function CalendarHeader({ date, setDate }) {
                   id="calendar-datepicker"
                   min={dayjs(new Date()).format("YYYY-MM-DD")}
                   value={dayjs(date).format("YYYY-MM-DD")}
-                  onChange={(e) => onChangeDate(e)}
+                  onChange={onChangeDate}
                 />
                 <button type="button" id="calendar_text">
                   {dayjs(date).format("D. MMMM YYYY")} <span>📅</span>
@@ -71,7 +71,7 @@ function CalendarHeader({ date, setDate }) {
                 className="booking-btn"
                 type="button"
                 disabled={new Date() > date}
-                onClick={(e) => onChangeDate(e)}
+                onClick={onChangeDate}
               >
                 ‹
               </button>
@@ -79,7 +79,7 @@ function CalendarHeader({ date, setDate }) {
                 id="calendar-forward"
                 className="booking-btn"
                 type="button"
-                onClick={(e) => onChangeDate(e)}
+                onClick={onChangeDate}
               >
                 ›
               </button>

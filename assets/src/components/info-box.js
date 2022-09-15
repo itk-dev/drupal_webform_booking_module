@@ -9,7 +9,7 @@ import "./info-box.scss";
  * @param {object} props.config Object containing configuration from drupal
  * @returns {object} Info box component
  */
-function infoBox({ config }) {
+function InfoBox({ config }) {
   const [infoBoxColor, setInfoBoxColor] = useState("");
   const [infoBoxHeader, setInfoBoxHeader] = useState("");
   const [infoBoxContent, setInfoBoxContent] = useState("");
@@ -20,9 +20,8 @@ function infoBox({ config }) {
     setInfoBoxHeader(config.info_box_header);
     setInfoBoxContent(config.info_box_content);
   }, [config]);
-  const hideInfoBox = () => {
-    setShowInfoBox("none");
-  };
+  
+  const hideInfoBox = () => setShowInfoBox("none");
   return (
     <div
       className="row info-box"
@@ -46,7 +45,7 @@ function infoBox({ config }) {
   );
 }
 
-infoBox.propTypes = {
+InfoBox.propTypes = {
   config: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
-export default infoBox;
+export default InfoBox;

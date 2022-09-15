@@ -11,8 +11,7 @@ import dayjs from "dayjs";
  *   returned by fullcalendar
  * @returns {object} Calendar selection box
  */
-function calendarSelectionBox({ calendarSelection }) {
-  useEffect(() => {}, []);
+function CalendarSelectionBox({ calendarSelection }) {
   /**
    * @param {string} startStr String containing the start-dateTime of the
    *   selection
@@ -64,8 +63,8 @@ function calendarSelectionBox({ calendarSelection }) {
   );
 }
 
-calendarSelectionBox.propTypes = {
+CalendarSelectionBox.propTypes = {
   calendarSelection: PropTypes.shape({}).isRequired,
 };
 
-export default calendarSelectionBox;
+export default CalendarSelectionBox;
