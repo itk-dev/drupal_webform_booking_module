@@ -52,10 +52,7 @@ function calendarSelectionBox({ calendarSelection }) {
           </span>
           <span>
             <b>
-              {getFormattedTime(
-                calendarSelection.start,
-                calendarSelection.end
-              )}
+              {getFormattedTime(calendarSelection.start, calendarSelection.end)}
             </b>
           </span>
           <button id="calendar-selection-choice-confirm" type="button">

@@ -46,7 +46,6 @@ function Calendar({
   const [internalSelection, setInternalSelection] = useState();
 
   const onCalendarSelection = (selection) => {
-
     const newSelection = {
       resource: selection.resource,
       allDay: selection.allDay,
@@ -86,7 +85,6 @@ function Calendar({
 
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
-    console.log(highlightElement);
     if (highlightElement !== null) {
       setTimeout(() => {
         const calendarSelectionBox = ReactDOMServer.renderToString(
