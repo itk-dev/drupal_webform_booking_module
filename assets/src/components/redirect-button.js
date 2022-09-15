@@ -33,7 +33,7 @@ function RedirectButton({ calendarSelection, config }) {
     <button
       id="redirect-button"
       type="button"
-      onClick={(e) => onRedirectClick(e)}
+      onClick={onRedirectClick}
     >
       Log ind for at foretage booking
     </button>
@@ -47,7 +47,7 @@ RedirectButton.propTypes = {
     }).isRequired,
     end: PropTypes.shape({
       toISOString: PropTypes.func.isRequired,
-    }).string.isRequired,
+    }).isRequired,
     resourceId: PropTypes.string.isRequired,
   }).isRequired,
   config: PropTypes.shape({

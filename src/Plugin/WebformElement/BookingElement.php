@@ -118,8 +118,8 @@ class BookingElement extends Hidden
       'enable_booking' => (isset($element['#enable_booking'])),
       'enable_resource_tooltips' => (isset($element['#enable_booking'])),
       'output_field_id' => 'submit-values',
-      'step_one' => (isset($element['#step1'])),
-      'redirect_url' => isset($element['#redirect_url']) ? $element['#redirect_url'] : null,
+      'step_one' => isset($element['#step1']),
+      'redirect_url' => $element['#redirect_url'] ?? null,
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [

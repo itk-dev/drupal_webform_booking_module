@@ -88,6 +88,7 @@ function Calendar({
       />
     );
   };
+
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
