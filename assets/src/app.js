@@ -281,9 +281,9 @@ function App() {
 
             {/* Add info box */}
             <div className="row info-box-wrapper">
-              {config.info_box_color && 
-              config.info_box_header && 
-              config.info_box_content && <InfoBox config={config} />}
+              {config.info_box_color &&
+                config.info_box_header &&
+                config.info_box_content && <InfoBox config={config} />}
             </div>
 
             {/* Display calendar for selections */}

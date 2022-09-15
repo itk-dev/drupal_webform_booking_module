@@ -60,11 +60,11 @@ function Calendar({
   };
 
   const getScrollTime = () => {
-    let dateTimeNow = new Date();
-    dateTimeNow.setHours(dateTimeNow.getHours()-2);
-    let scrollTimeString = dateTimeNow.getHours()+":00:00"
+    const dateTimeNow = new Date();
+    dateTimeNow.setHours(dateTimeNow.getHours() - 2);
+    const scrollTimeString = `${dateTimeNow.getHours()}:00:00`;
     return scrollTimeString;
-  }
+  };
 
   const getValidRange = () => {
     return { start: dateNow };
