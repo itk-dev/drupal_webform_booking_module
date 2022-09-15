@@ -15,7 +15,7 @@ function RedirectButton({ calendarSelection, config }) {
     const paramsObj = {
       from: calendarSelection.start.toISOString(),
       to: calendarSelection.end.toISOString(),
-      resource: calendarSelection.resourceId ?? undefined,
+      resource: calendarSelection.resource.extendedProps.resourceId ?? undefined,
     };
     if (
       paramsObj.from === undefined ||
