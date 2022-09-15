@@ -20,7 +20,7 @@ function InfoBox({ config }) {
     setInfoBoxHeader(config.info_box_header);
     setInfoBoxContent(config.info_box_content);
   }, [config]);
-  
+
   const hideInfoBox = () => setShowInfoBox("none");
   return (
     <div

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import * as PropTypes from "prop-types";
 import dayjs from "dayjs";
 /* eslint no-underscore-dangle: 0 */
@@ -64,7 +64,15 @@ function CalendarSelectionBox({ calendarSelection }) {
 }
 
 CalendarSelectionBox.propTypes = {
-  calendarSelection: PropTypes.shape({}).isRequired,
+  calendarSelection: PropTypes.shape({
+    resource: PropTypes.shape({
+      _resource: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+    start: PropTypes.shape({}).isRequired,
+    end: PropTypes.shape({}).isRequired,
+  }).isRequired,
 };
 
 export default CalendarSelectionBox;
