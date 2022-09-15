@@ -233,7 +233,6 @@ function App() {
   return (
     <div className="App">
       <div className="container-fluid">
-        {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
           <>
             <div

@@ -11,6 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
+import LoadingSpinner from "./loading-spinner";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
@@ -128,9 +129,13 @@ function Calendar({
       />
     );
   };
-
+ 
   return (
     <div className="Calendar no-gutter col-md-12">
+      {!resources && !events && <LoadingSpinner />}
+      
+      {resources && events && (
+        <div>
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
         <div className="col-md-12">
@@ -212,6 +217,9 @@ function Calendar({
           }
         </div>
       </div>
+      </div>
+      )}
+
     </div>
   );
 }
