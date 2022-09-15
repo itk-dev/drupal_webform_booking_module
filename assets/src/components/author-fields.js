@@ -12,13 +12,27 @@ import "./author-fields.scss";
  */
 function AuthorFields({ authorFields, setAuthorFields }) {
   const onChangeEmail = (event) => {
-    setAuthorFields({ email: event.target.value });
+    setAuthorFields({ ...authorFields, email: event.target.value });
+  };
+
+  const onChangeSubject = (event) => {
+    setAuthorFields({ ...authorFields, subject: event.target.value });
   };
 
   return (
     <div className="col-md-12">
       <div className="form-item">
         <label htmlFor="email-input" className="form-item__label">
+          <span className="form-item-label">Booking subject</span>
+          <input
+            id="subject-input"
+            type="text"
+            placeholder="Booking title"
+            required
+            value={authorFields.subject}
+            onChange={onChangeSubject}
+            className="form-element"
+          />
           <span className="form-item-label">Email</span>
           <input
             id="email-input"
@@ -27,7 +41,7 @@ function AuthorFields({ authorFields, setAuthorFields }) {
             placeholder="Email"
             required
             value={authorFields.email}
-            onChange={(e) => onChangeEmail(e)}
+            onChange={onChangeEmail}
             className="form-element"
           />
         </label>
@@ -39,6 +53,7 @@ function AuthorFields({ authorFields, setAuthorFields }) {
 AuthorFields.propTypes = {
   authorFields: PropTypes.shape({
     email: PropTypes.string.isRequired,
+    subject: PropTypes.string.isRequired,
   }).isRequired,
   setAuthorFields: PropTypes.func.isRequired,
 };
