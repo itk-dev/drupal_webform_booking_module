@@ -110,7 +110,7 @@ function Calendar({
           });
       }, 1);
     }
-  }, [calendarSelection]);
+  }, [calendarSelection, events]);
 
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
