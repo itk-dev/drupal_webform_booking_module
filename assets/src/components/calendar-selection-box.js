@@ -13,7 +13,6 @@ import dayjs from "dayjs";
  */
 function calendarSelectionBox({ calendarSelection }) {
   useEffect(() => {}, []);
-
   /**
    * @param {string} startStr String containing the start-dateTime of the
    *   selection
@@ -49,13 +48,13 @@ function calendarSelectionBox({ calendarSelection }) {
             <b>{calendarSelection.resource._resource.title}</b>
           </span>
           <span>
-            <b>{getFormattedDate(calendarSelection.startStr)}</b>
+            <b>{getFormattedDate(calendarSelection.start)}</b>
           </span>
           <span>
             <b>
               {getFormattedTime(
-                calendarSelection.startStr,
-                calendarSelection.endStr
+                calendarSelection.start,
+                calendarSelection.end
               )}
             </b>
           </span>
