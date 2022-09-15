@@ -9,6 +9,8 @@ import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
 import RedirectButton from "./components/redirect-button";
 import ResourceView from "./components/resource-view";
+import LoadingSpinner from "./components/loading-spinner";
+import InfoBox from "./components/info-box";
 // import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
@@ -71,12 +73,14 @@ function App() {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocationOptions(
-            loadedLocations.map((value) => {
-              return {
-                value: value.name,
-                label: value.name,
-              };
-            })
+            loadedLocations
+              .map((value) => {
+                return {
+                  value: value.name,
+                  label: value.name,
+                };
+              })
+              .sort()
           );
           setResourceFilter([]);
         })
@@ -223,16 +227,21 @@ function App() {
   return (
     <div className="App">
       <div className="container-fluid">
-        {!config && <div>Loading...</div>}
+        {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
           <>
-            <div className="row filters-wrapper">
+            <div
+              className={`row filters-wrapper ${
+                showResourceViewId !== null ? "disable-filters" : ""
+              }`}
+            >
               <div className="col-md-3">
                 {/* Dropdown with locations */}
                 <Select
                   styles={{}}
                   defaultValue={locationFilter}
                   placeholder="lokationer..."
+                  closeMenuOnSelect={false}
                   options={locationOptions}
                   onChange={(newValue) => {
                     setLocationFilter(newValue);
@@ -246,6 +255,7 @@ function App() {
                   styles={{}}
                   defaultValue={resourceFilter}
                   placeholder="ressourcer..."
+                  closeMenuOnSelect={false}
                   options={resourcesOptions}
                   onChange={(newValue) => {
                     setResourceFilter(newValue);
@@ -264,10 +274,8 @@ function App() {
             </div>
 
             {/* Add info box */}
-            <div className="row">
-              <div className="col-md-12">
-                {/* TODO: Add info text box (v0.1) */}
-              </div>
+            <div className="row info-box-wrapper">
+              <InfoBox config={config} />
             </div>
 
             {/* Display calendar for selections */}

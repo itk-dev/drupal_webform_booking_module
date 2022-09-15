@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 // FullCalendar must be imported before FullCalendar plugins
+import ReactDOMServer from "react-dom/server";
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -12,6 +13,8 @@ import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
+import CalendarSelectionBox from "./calendar-selection-box";
+import { ReactComponent as IconChair } from "../assets/chair.svg";
 import "./calendar.scss";
 
 /**
@@ -44,6 +47,7 @@ function Calendar({
 
   const onCalendarSelection = (selection) => {
     const newSelection = {
+      resource: selection.resource,
       allDay: selection.allDay,
       end: selection.end,
       resourceId: selection.resource.id,
@@ -79,6 +83,35 @@ function Calendar({
     setShowResourceViewId(showResourceViewId);
   };
 
+  useEffect(() => {
+    const highlightElement = document.querySelector("div.fc-highlight");
+    if (highlightElement !== null) {
+      setTimeout(() => {
+        const calendarSelectionBox = ReactDOMServer.renderToString(
+          <CalendarSelectionBox calendarSelection={calendarSelection} />
+        );
+        document.querySelector("div.fc-highlight").innerHTML =
+          calendarSelectionBox;
+        document
+          .getElementById("calendar-selection-choice-confirm")
+          .addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+          });
+        document
+          .getElementById("calendar-selection-container")
+          .addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+          });
+        document
+          .getElementById("calendar-selection-close")
+          .addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+            calendarRef.current.getApi().unselect();
+          });
+      }, 1);
+    }
+  }, [calendarSelection]);
+
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
       <CalendarCellInfoButton
@@ -111,21 +144,27 @@ function Calendar({
                 day: "numeric",
               }}
               headerToolbar=""
-              height="850px"
+              height="650px"
               /* scrollTime=@todo */
               initialView="resourceTimelineDay"
               duration="days: 3"
-              /* selectConstraint="businessHours" */
+              selectConstraint="businessHours"
               selectMirror
+              displayEventTime
+              scrollTimeReset={false}
+              slotLabelFormat={{
+                hour: "numeric",
+                omitZeroMinute: false,
+              }}
               nowIndicator
               navLinks
               slotDuration="00:15:00"
+              allDaySlot={false}
               selectable
               unselectAuto={false}
               schedulerLicenseKey={config.license_key}
               slotMinTime="07:00:00"
               slotMaxTime="21:00:00"
-              slotLabelFormat={{ hour: "2-digit", minute: "2-digit" }}
               selectOverlap={false}
               nextDayThreshold="21:00:00"
               editable={false}
@@ -134,29 +173,33 @@ function Calendar({
               select={onCalendarSelection}
               validRange={getValidRange}
               loading={false}
-              resources={resources.map(handleResources)}
+              resources={resources.map((value) =>
+                handleResources(value, calendarRef)
+              )}
+              resourceGroupField="building"
               resourceAreaColumns={[
                 {
-                  headerContent: "Ressource titel",
+                  headerContent: "Ressourcer",
                   cellContent(arg) {
                     return renderCalendarCellInfoButton(
                       arg.resource.title,
-                      arg.resource.id,
+                      // eslint-disable-next-line no-underscore-dangle
+                      arg.resource._resource.extendedProps.resourceId,
                       triggerResourceView
                     );
                   },
                 },
                 {
-                  headerContent: {
-                    html: '<div class="resource-calendar-capacity"><img src="/assets/images/icons/Chair.svg" /></div>',
-                  },
+                  headerContent: <IconChair />,
+                  headerClassNames: "resource-calendar-capacity-header",
                   width: "60px",
+                  cellClassNames: "resource-calendar-capacity-value",
                   cellContent(arg) {
                     return arg.resource.extendedProps.capacity;
                   },
                 },
               ]}
-              events={events.map(handleBusyIntervals)}
+              events={events.map((value) => handleBusyIntervals(value))}
             />
           }
         </div>

@@ -55,48 +55,9 @@ export default class Api {
   }
 
   static async fetchResource(apiEndpoint, resourceId) {
-    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const newDate = { ...data };
-
-        // TODO: Remove and handle this in ResourceDetails.
-
-        newDate.facilities = {
-          ...(data.monitorequipment && {
-            monitorequipment: {
-              title: "Projektor / Skærm",
-              icon: "/assets/images/icons/Projector.svg",
-            },
-          }),
-          ...(data.wheelchairaccessible && {
-            wheelchairaccessible: {
-              title: "Handicapvenligt",
-              icon: "/assets/images/icons/Wheelchair.svg",
-            },
-          }),
-          ...(data.videoconferenceequipment && {
-            videoconferenceequipment: {
-              title: "Videoconference",
-              icon: "/assets/images/icons/Video-camera.svg",
-            },
-          }),
-          ...(data.catering && {
-            catering: {
-              title: "Forplejning",
-              icon: "/assets/images/icons/Food.svg",
-            },
-          }),
-          ...(data.holidayOpeningHours && {
-            holidayOpeningHours: {
-              title: "Tilgængelig på helligdag",
-              icon: "/assets/images/icons/Candles.svg",
-            },
-          }),
-        };
-
-        return newDate;
-      });
+    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`).then(
+      (response) => response.json()
+    );
   }
 
   static async fetchUserBookings(apiEndpoint) {
