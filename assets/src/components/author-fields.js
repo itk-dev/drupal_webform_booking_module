@@ -53,6 +53,7 @@ function AuthorFields({ authorFields, setAuthorFields }) {
 AuthorFields.propTypes = {
   authorFields: PropTypes.shape({
     email: PropTypes.string.isRequired,
+    subject: PropTypes.string.isRequired,
   }).isRequired,
   setAuthorFields: PropTypes.func.isRequired,
 };

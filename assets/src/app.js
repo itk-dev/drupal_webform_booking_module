@@ -140,6 +140,7 @@ function App() {
   useEffect(() => {
     if (config) {
       const urlSearchParams = new URLSearchParams();
+
       Object.entries(filterParams).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           value.forEach((arrayValue) =>
@@ -149,6 +150,7 @@ function App() {
           urlSearchParams.append(key, value.toString());
         }
       });
+
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResources(loadedResources);
@@ -171,6 +173,7 @@ function App() {
         value,
       ]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
+
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResourcesOptions(
@@ -191,6 +194,7 @@ function App() {
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
+
     setFilterParams({
       ...filterParams,
       ...{ "resourceMail[]": resourceValues },
@@ -217,28 +221,12 @@ function App() {
   // Set selection as json.
   useEffect(() => {
     if (config) {
-      let resourceData = {};
-
-      if (calendarSelection) {
-        const filteredResources = resources.filter((el) => el.id === parseInt(calendarSelection.resourceId));
-
-        if (filteredResources.length === 1) {
-          resourceData = {
-            resourceMail: filteredResources[0].resourceMail,
-            resourceName: filteredResources[0].resourceName,
-          };
-        }
-      }
-
-      const data = JSON.stringify({
-        ...calendarSelection,
+      document.getElementById(config.output_field_id).value = JSON.stringify({
+        start: calendarSelection.start,
+        end: calendarSelection.end,
+        resourceId: calendarSelection.resourceId,
         ...authorFields,
-        ...resourceData,
       });
-
-      console.log(data);
-
-      document.getElementById(config.output_field_id).value = data;
     }
   }, [calendarSelection, authorFields]);
 
