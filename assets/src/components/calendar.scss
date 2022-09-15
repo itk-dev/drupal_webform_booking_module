@@ -18,6 +18,11 @@
         }
       }
     }
+    .fc-scrollgrid-sync-table   {
+      td.fc-timeline-lane {
+        height: 0;
+      }
+    }
     .fc-timegrid-slots > table {
       background: #fff;
     }

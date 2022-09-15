@@ -160,6 +160,7 @@ function Calendar({
               navLinks
               slotDuration="00:15:00"
               allDaySlot={false}
+              resourcesInitiallyExpanded={false}
               selectable
               unselectAuto={false}
               schedulerLicenseKey={config.license_key}
