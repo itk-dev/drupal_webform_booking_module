@@ -41,28 +41,26 @@ function CalendarHeader({ date, setDate }) {
           <div className="col-md-4">
             <button
               id="calendar-today"
+              className="booking-btn"
               type="button"
-              onClick={(e) => onChangeDate(e)}
+              onClick={onChangeDate}
             >
-              Today
+              I dag
             </button>
           </div>
-          <div className="col-md-4">
+          <div className="col-md-4 datepicker-container">
             <div className="datepicker">
-              <input
-                className="calendar-datepicker-input"
-                id="calendar-datepicker"
-                type="date"
-                min={dayjs(new Date()).format("YYYY-MM-DD")}
-                value={dayjs(date).format("YYYY-MM-DD")}
-                onChange={(e) => onChangeDate(e)}
-              />
-              <label
-                htmlFor="calendar-datepicker"
-                className="h3 calendar-title"
-              >
-                {dayjs(date).format("D. MMMM YYYY")}
-                <span className="small">X</span>
+              <label htmlFor="calendar-datepicker" className="datepicker-label">
+                <input
+                  type="date"
+                  id="calendar-datepicker"
+                  min={dayjs(new Date()).format("YYYY-MM-DD")}
+                  value={dayjs(date).format("YYYY-MM-DD")}
+                  onChange={onChangeDate}
+                />
+                <button type="button" id="calendar_text">
+                  {dayjs(date).format("D. MMMM YYYY")} <span>📅</span>
+                </button>
               </label>
             </div>
           </div>
@@ -70,18 +68,20 @@ function CalendarHeader({ date, setDate }) {
             <div className="calendar-nav">
               <button
                 id="calendar-back"
+                className="booking-btn"
                 type="button"
                 disabled={new Date() > date}
-                onClick={(e) => onChangeDate(e)}
+                onClick={onChangeDate}
               >
-                Back
+                ‹
               </button>
               <button
                 id="calendar-forward"
+                className="booking-btn"
                 type="button"
-                onClick={(e) => onChangeDate(e)}
+                onClick={onChangeDate}
               >
-                Forward
+                ›
               </button>
             </div>
           </div>

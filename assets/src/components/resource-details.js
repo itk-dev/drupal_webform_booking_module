@@ -3,6 +3,12 @@ import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
 import "./resource-details.scss";
+import { ReactComponent as IconChair } from "../assets/chair.svg";
+import { ReactComponent as IconProjector } from "../assets/projector.svg";
+import { ReactComponent as IconWheelchair } from "../assets/wheelchair.svg";
+import { ReactComponent as IconVideocamera } from "../assets/videocamera.svg";
+import { ReactComponent as IconFood } from "../assets/food.svg";
+import { ReactComponent as IconCandles } from "../assets/candles.svg";
 
 /**
  * @param {object} props Props.
@@ -27,9 +33,42 @@ function ResourceDetails({
   useEffect(() => {
     if (config && showResourceViewId !== null) {
       Api.fetchResource(config.api_endpoint, showResourceViewId)
-        .then((loadedResource) => {
-          setResource(loadedResource);
-          setFacilities(loadedResource.facilities);
+        .then((data) => {
+          const resourceData = { ...data };
+          resourceData.facilities = {
+            ...(data.monitorequipment && {
+              monitorequipment: {
+                title: "Projektor / Skærm",
+                icon: <IconProjector />,
+              },
+            }),
+            ...(data.wheelchairaccessible && {
+              wheelchairaccessible: {
+                title: "Handicapvenligt",
+                icon: <IconWheelchair />,
+              },
+            }),
+            ...(data.videoconferenceequipment && {
+              videoconferenceequipment: {
+                title: "Videoconference",
+                icon: <IconVideocamera />,
+              },
+            }),
+            ...(data.catering && {
+              catering: {
+                title: "Forplejning",
+                icon: <IconFood />,
+              },
+            }),
+            ...(data.holidayOpeningHours && {
+              holidayOpeningHours: {
+                title: "Tilgængelig på helligdag",
+                icon: <IconCandles />,
+              },
+            }),
+          };
+          setResource(resourceData);
+          setFacilities(resourceData.facilities);
         })
         .catch(() => {
           // TODO: Display error and retry option for user.
@@ -47,16 +86,14 @@ function ResourceDetails({
       <div className="facility-container">
         <div className="facility-item">
           <div className="facility-icon">
-            <img src="/assets/images/icons/Chair.svg" alt="capacity" />
+            <IconChair />
           </div>
           <span>{resource.capacity} siddepladser</span>
         </div>
         {Object.keys(facilities).map((key) => {
           return (
             <div className="facility-item" key={key}>
-              <div className="facility-icon">
-                <img src={facilities[key].icon} alt="facility" />
-              </div>
+              <div className="facility-icon">{facilities[key].icon}</div>
               <span>{facilities[key].title}</span>
             </div>
           );
@@ -78,7 +115,11 @@ function ResourceDetails({
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
-            <button type="button" onClick={hideResourceView}>
+            <button
+              type="button"
+              className="booking-btn-inv"
+              onClick={hideResourceView}
+            >
               Tilbage til listen
             </button>
           </div>
@@ -99,20 +140,14 @@ function ResourceDetails({
                 <span>{resource.location}</span>
               </div>
               <div>
-                <span>Adresse...</span>
+                <span>...</span>
               </div>
             </div>
           </div>
           <div className="resource-description">
             <span>Beskrivelse</span>
             <div>
-              <span>{resource.resourcedescription}</span>
-            </div>
-          </div>
-          <div className="resource-guidelines">
-            <span>Priser og vilkår</span>
-            <div>
-              <span>Priser og vilkår...</span>
+              <span>{resource.resourceDescription}</span>
             </div>
           </div>
         </div>
