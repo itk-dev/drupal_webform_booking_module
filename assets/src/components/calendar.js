@@ -14,7 +14,7 @@ import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import IconChair from "./icon-chair";
+import { ReactComponent as IconChair } from "../assets/chair.svg";
 import "./calendar.scss";
 
 /**
@@ -86,7 +86,7 @@ function Calendar({
       }, 1);
     }
   }, [calendarSelection]);
-  
+
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
       <CalendarCellInfoButton
@@ -157,13 +157,14 @@ function Calendar({
                   cellContent(arg) {
                     return renderCalendarCellInfoButton(
                       arg.resource.title,
+                      // eslint-disable-next-line no-underscore-dangle
                       arg.resource._resource.extendedProps.resourceId,
                       triggerResourceView
                     );
                   },
                 },
                 {
-                  headerContent: (<IconChair />),
+                  headerContent: <IconChair />,
                   headerClassNames: "resource-calendar-capacity-header",
                   width: "60px",
                   cellClassNames: "resource-calendar-capacity-value",

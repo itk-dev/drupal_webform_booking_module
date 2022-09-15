@@ -64,7 +64,7 @@ export function handleBusyIntervals(value) {
     title: "Busy",
     start: value.startTime,
     end: value.endTime,
-  }
+  };
 }
 
 /**

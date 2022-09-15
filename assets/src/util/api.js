@@ -1,9 +1,4 @@
 import dayjs from "dayjs";
-import IconCandles from "../components/icon-candles";
-import IconFood from "../components/icon-food";
-import IconProjector from "../components/icon-projector";
-import IconVideocamera from "../components/icon-videocamera";
-import IconWheelchair from "../components/icon-wheelchair";
 
 export default class Api {
   static async fetchLocations(apiEndpoint) {
@@ -60,48 +55,9 @@ export default class Api {
   }
 
   static async fetchResource(apiEndpoint, resourceId) {
-    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const newDate = { ...data };
-
-        // TODO: Remove and handle this in ResourceDetails.
-
-        newDate.facilities = {
-          ...(!data.monitorequipment && {
-            monitorequipment: {
-              title: "Projektor / Skærm",
-              icon: <IconProjector/>,
-            },
-          }),
-          ...(data.wheelchairaccessible && {
-            wheelchairaccessible: {
-              title: "Handicapvenligt",
-              icon: <IconWheelchair/>
-            },
-          }),
-          ...(data.videoconferenceequipment && {
-            videoconferenceequipment: {
-              title: "Videoconference",
-              icon: <IconVideocamera/>,
-            },
-          }),
-          ...(data.catering && {
-            catering: {
-              title: "Forplejning",
-              icon: <IconFood/>
-            },
-          }),
-          ...(data.holidayOpeningHours && {
-            holidayOpeningHours: {
-              title: "Tilgængelig på helligdag",
-              icon: <IconCandles/>
-            },
-          }),
-        };
-
-        return newDate;
-      });
+    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`).then(
+      (response) => response.json()
+    );
   }
 
   static async fetchUserBookings(apiEndpoint) {

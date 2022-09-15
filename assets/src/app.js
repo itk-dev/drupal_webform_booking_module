@@ -58,21 +58,15 @@ function App() {
     if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
-          console.log(loadedLocations);
           setLocationOptions(
-            loadedLocations.map((value) => {
-              return {
-                value: value.name,
-                label: value.name,
-              };
-            }).sort(),
-
-            console.log(loadedLocations.map((value) => {
-              return {
-                value: value.name,
-                label: value.name,
-              };
-            }).sort())
+            loadedLocations
+              .map((value) => {
+                return {
+                  value: value.name,
+                  label: value.name,
+                };
+              })
+              .sort()
           );
           setResourceFilter([]);
         })
@@ -152,7 +146,6 @@ function App() {
         dayjs(date).startOf("day")
       )
         .then((loadedEvents) => {
-          console.log(loadedEvents);
           setEvents(loadedEvents);
         })
         .catch(() => {
@@ -177,7 +170,11 @@ function App() {
         {!config && <LoadingSpinner />}
         {config && (
           <>
-            <div className={"row filters-wrapper " +(showResourceViewId !== null ? "disable-filters":"")}>
+            <div
+              className={`row filters-wrapper ${
+                showResourceViewId !== null ? "disable-filters" : ""
+              }`}
+            >
               <div className="col-md-3">
                 {/* Dropdown with locations */}
                 <Select
