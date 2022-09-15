@@ -58,13 +58,21 @@ function App() {
     if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
+          console.log(loadedLocations);
           setLocationOptions(
             loadedLocations.map((value) => {
               return {
                 value: value.name,
                 label: value.name,
               };
-            })
+            }).sort(),
+
+            console.log(loadedLocations.map((value) => {
+              return {
+                value: value.name,
+                label: value.name,
+              };
+            }).sort())
           );
           setResourceFilter([]);
         })
@@ -144,6 +152,7 @@ function App() {
         dayjs(date).startOf("day")
       )
         .then((loadedEvents) => {
+          console.log(loadedEvents);
           setEvents(loadedEvents);
         })
         .catch(() => {

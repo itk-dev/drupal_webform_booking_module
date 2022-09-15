@@ -60,12 +60,11 @@ function businessHoursOrNearestHalfHour(
  */
 export function handleBusyIntervals(value) {
   return {
-    groupId: 0,
+    resourceId: value.resource,
     title: "Busy",
     start: value.startTime,
     end: value.endTime,
-    resourceId: value.resource,
-  };
+  }
 }
 
 /**
@@ -79,7 +78,8 @@ export function handleResources(value, calendarRef) {
   // TODO: Add business hours.
   const currentCalendarDate = calendarRef.current.getApi().getDate();
   return {
-    id: value.id,
+    resourceId: value.id,
+    id: value.resourceMail,
     title: value.resourceName,
     capacity: value.capacity,
     building: value.location,

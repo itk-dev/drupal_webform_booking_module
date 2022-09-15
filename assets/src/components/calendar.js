@@ -86,7 +86,7 @@ function Calendar({
       }, 1);
     }
   }, [calendarSelection]);
-
+  
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
       <CalendarCellInfoButton
@@ -96,7 +96,6 @@ function Calendar({
       />
     );
   };
-
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -158,7 +157,7 @@ function Calendar({
                   cellContent(arg) {
                     return renderCalendarCellInfoButton(
                       arg.resource.title,
-                      arg.resource.id,
+                      arg.resource._resource.extendedProps.resourceId,
                       triggerResourceView
                     );
                   },
@@ -173,7 +172,7 @@ function Calendar({
                   },
                 },
               ]}
-              events={events.map(handleBusyIntervals)}
+              events={events.map((value) => handleBusyIntervals(value))}
             />
           }
         </div>
