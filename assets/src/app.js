@@ -233,121 +233,121 @@ function App() {
   return (
     <div className="App">
       <div className="container-fluid">
-        {!config && <LoadingSpinner />}
-        {config && displayState === "maximized" && (
-          <>
-            <div
-              className={`row filters-wrapper ${
-                showResourceViewId !== null ? "disable-filters" : ""
-              }`}
-            >
-              <div className="col-md-3">
-                {/* Dropdown with locations */}
-                <Select
-                  styles={{}}
-                  defaultValue={locationFilter}
-                  placeholder="lokationer..."
-                  closeMenuOnSelect={false}
-                  options={locationOptions}
-                  onChange={(newValue) => {
-                    setLocationFilter(newValue);
-                  }}
-                  isMulti
+          {!config && <LoadingSpinner />}
+          {config && displayState === "maximized" && (
+            <div className="app-content">
+              <div
+                className={`row filters-wrapper ${
+                  showResourceViewId !== null ? "disable-filters" : ""
+                }`}
+              >
+                <div className="col-md-3">
+                  {/* Dropdown with locations */}
+                  <Select
+                    styles={{}}
+                    defaultValue={locationFilter}
+                    placeholder="lokationer..."
+                    closeMenuOnSelect={false}
+                    options={locationOptions}
+                    onChange={(newValue) => {
+                      setLocationFilter(newValue);
+                    }}
+                    isMulti
+                  />
+                </div>
+                <div className="col-md-3">
+                  {/* Dropdown with resources */}
+                  <Select
+                    styles={{}}
+                    defaultValue={resourceFilter}
+                    placeholder="ressourcer..."
+                    closeMenuOnSelect={false}
+                    options={resourcesOptions}
+                    onChange={(newValue) => {
+                      setResourceFilter(newValue);
+                    }}
+                    isMulti
+                  />
+                </div>
+                {/* Dropdown with facilities */}
+                <div className="col-md-3">
+                  {/* TODO: Add dropdown with options from facilities (v1) */}
+                </div>
+                {/* Dropdown with capacity */}
+                <div className="col-md-3">
+                  {/* TODO: Add dropdown with options from capacity (v1) */}
+                </div>
+              </div>
+
+              {/* Add info box */}
+              <div className="row info-box-wrapper">
+                {config.info_box_color &&
+                  config.info_box_header &&
+                  config.info_box_content && <InfoBox config={config} />}
+              </div>
+
+              {/* Display calendar for selections */}
+              <div className="row no-gutter calendar-container">
+                <Calendar
+                  resources={resources}
+                  events={events}
+                  date={date}
+                  setDate={setDate}
+                  calendarSelection={calendarSelection}
+                  setCalendarSelection={setCalendarSelection}
+                  config={config}
+                  setShowResourceViewId={setShowResourceViewId}
+                />
+                {/* TODO: Only show if resource view is requested */}
+                <ResourceView
+                  config={config}
+                  resource={resource}
+                  setResource={setResource}
+                  facilities={facilities}
+                  setFacilities={setFacilities}
+                  showResourceViewId={showResourceViewId}
+                  setShowResourceViewId={setShowResourceViewId}
                 />
               </div>
-              <div className="col-md-3">
-                {/* Dropdown with resources */}
-                <Select
-                  styles={{}}
-                  defaultValue={resourceFilter}
-                  placeholder="ressourcer..."
-                  closeMenuOnSelect={false}
-                  options={resourcesOptions}
-                  onChange={(newValue) => {
-                    setResourceFilter(newValue);
-                  }}
-                  isMulti
+            </div>
+          )}
+          {config &&
+            validUrlParams &&
+            urlResource &&
+            displayState === "minimized" && (
+              <div className="row">
+                <MinimizedDisplay
+                  validUrlParams={validUrlParams}
+                  setDisplayState={setDisplayState}
+                  urlResource={urlResource}
                 />
               </div>
-              {/* Dropdown with facilities */}
-              <div className="col-md-3">
-                {/* TODO: Add dropdown with options from facilities (v1) */}
-              </div>
-              {/* Dropdown with capacity */}
-              <div className="col-md-3">
-                {/* TODO: Add dropdown with options from capacity (v1) */}
-              </div>
-            </div>
+            )}
 
-            {/* Add info box */}
-            <div className="row info-box-wrapper">
-              {config.info_box_color &&
-                config.info_box_header &&
-                config.info_box_content && <InfoBox config={config} />}
-            </div>
+          {/* TODO: Only show if user menu is requested */}
+          {/* <UserPanel config={config} /> */}
 
-            {/* Display calendar for selections */}
-            <div className="row no-gutter calendar-container">
-              <Calendar
-                resources={resources}
-                events={events}
-                date={date}
-                setDate={setDate}
-                calendarSelection={calendarSelection}
-                setCalendarSelection={setCalendarSelection}
-                config={config}
-                setShowResourceViewId={setShowResourceViewId}
-              />
-              {/* TODO: Only show if resource view is requested */}
-              <ResourceView
-                config={config}
-                resource={resource}
-                setResource={setResource}
-                facilities={facilities}
-                setFacilities={setFacilities}
-                showResourceViewId={showResourceViewId}
-                setShowResourceViewId={setShowResourceViewId}
-              />
-            </div>
-          </>
-        )}
-        {config &&
-          validUrlParams &&
-          urlResource &&
-          displayState === "minimized" && (
-            <div className="row">
-              <MinimizedDisplay
-                validUrlParams={validUrlParams}
-                setDisplayState={setDisplayState}
-                urlResource={urlResource}
-              />
+          {/* Display author fields */}
+          {config && !config.step_one && (
+            <div className="row no-gutter">
+              {authorFields && (
+                <AuthorFields
+                  authorFields={authorFields}
+                  setAuthorFields={setAuthorFields}
+                />
+              )}
             </div>
           )}
 
-        {/* TODO: Only show if user menu is requested */}
-        {/* <UserPanel config={config} /> */}
-
-        {/* Display author fields */}
-        {config && !config.step_one && (
-          <div className="row no-gutter">
-            {authorFields && (
-              <AuthorFields
-                authorFields={authorFields}
-                setAuthorFields={setAuthorFields}
+          {/* Display redirect button */}
+          {config && config.step_one && calendarSelection && (
+            <div className="row">
+              <RedirectButton
+                calendarSelection={calendarSelection}
+                config={config}
               />
-            )}
-          </div>
-        )}
-
-        {/* Display redirect button */}
-        {config && config.step_one && calendarSelection && (
-          <div className="row">
-            <RedirectButton
-              calendarSelection={calendarSelection}
-              config={config}
-            />
-          </div>
-        )}
+            </div>
+          )}
       </div>
     </div>
   );

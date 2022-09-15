@@ -21,30 +21,37 @@ function AuthorFields({ authorFields, setAuthorFields }) {
 
   return (
     <div className="col-md-12">
-      <div className="form-item">
-        <label htmlFor="email-input" className="form-item__label">
-          <span className="form-item-label">Booking subject</span>
-          <input
-            id="subject-input"
-            type="text"
-            placeholder="Booking title"
-            required
-            value={authorFields.subject}
-            onChange={onChangeSubject}
-            className="form-element"
-          />
-          <span className="form-item-label">Email</span>
-          <input
-            id="email-input"
-            type="email"
-            autoComplete="email"
-            placeholder="Email"
-            required
-            value={authorFields.email}
-            onChange={onChangeEmail}
-            className="form-element"
-          />
-        </label>
+      <h2 className="webform-section-title">Nødvendig information: </h2>
+      <div className="webform-section-wrapper">
+        <div className="form-item">
+          <label htmlFor="subject-input" className="form-item__label">
+            <span className="form-item-label">Booking subject</span>
+            <input
+              id="subject-input"
+              type="text"
+              placeholder="Booking title"
+              required
+              value={authorFields.subject}
+              onChange={onChangeSubject}
+              className="form-element"
+            />
+          </label>
+        </div>
+        <div className="form-item">
+          <label htmlFor="email-input" className="form-item__label">
+            <span className="form-item-label">Email</span>
+            <input
+              id="email-input"
+              type="email"
+              autoComplete="email"
+              placeholder="Email"
+              required
+              value={authorFields.email}
+              onChange={onChangeEmail}
+              className="form-element"
+            />
+          </label>
+        </div>
       </div>
     </div>
   );
