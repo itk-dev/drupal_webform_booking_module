@@ -50,7 +50,7 @@ function App() {
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
-  const [authorFields, setAuthorFields] = useState({ email: "" }); // Additional fields for author information.
+  const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState(null); // The selection of a time span in calendar.
 
   // Get configuration.
@@ -213,10 +213,28 @@ function App() {
   // Set selection as json.
   useEffect(() => {
     if (config) {
-      document.getElementById(config.output_field_id).value = JSON.stringify({
+      let resourceData = {};
+
+      if (calendarSelection) {
+        const filteredResources = resources.filter((el) => el.id === parseInt(calendarSelection.resourceId));
+
+        if (filteredResources.length === 1) {
+          resourceData = {
+            resourceMail: filteredResources[0].resourceMail,
+            resourceName: filteredResources[0].resourceName,
+          };
+        }
+      }
+
+      const data = JSON.stringify({
         ...calendarSelection,
         ...authorFields,
+        ...resourceData,
       });
+
+      console.log(data);
+
+      document.getElementById(config.output_field_id).value = data;
     }
   }, [calendarSelection, authorFields]);
 

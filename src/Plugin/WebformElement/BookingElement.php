@@ -111,12 +111,14 @@ class BookingElement extends Hidden
    */
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
+    $p = 1;
+
     $params = [
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
-      'enable_booking' => (isset($element['#enable_booking'])),
-      'enable_resource_tooltips' => (isset($element['#enable_booking'])),
+      'enable_booking' => isset($element['#enable_booking']),
+      'enable_resource_tooltips' => isset($element['#enable_booking']),
       'output_field_id' => 'submit-values',
       'step_one' => isset($element['#step1']),
       'redirect_url' => $element['#redirect_url'] ?? null,
@@ -135,7 +137,14 @@ class BookingElement extends Hidden
       $form['elements'][$element['#webform_key']]['#attributes']['id'] = 'submit-values';
       $form['elements'][$element['#webform_key']]['#default_value'] = json_encode([]);
       $form['#validate'][] = [$this, 'validateBooking'];
+
+      // Attach user on submit
+      $form["actions"]["submit"]["#submit"] = array_merge([$this, 'attachUserToBooking'], $form["actions"]["submit"]["#submit"]);
     }
+  }
+
+  public function attachUserToBooking() {
+    $p = 1;
   }
 
   /**
@@ -147,26 +156,33 @@ class BookingElement extends Hidden
    *   The state of the form.
    */
   public function validateBooking(&$form, FormStateInterface $form_state) {
+    $p = 1;
+
     // @todo handle validation after react submisison.
     $elements = $form['elements'];
     foreach ($elements as $key => $form_element) {
       if (is_array($form_element) && isset($form_element['#type']) && 'booking_element' === $form_element['#type']) {
-        $bookingValues = json_decode($form_state->getValues()[$key], TRUE);
+        try {
+          $bookingValues = json_decode($form_state->getValues()[$key], TRUE, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $exception) {
+          $form_state->setError($form, t('Error in decoding booking data.'));
+          return;
+        }
+
+        $a = 1;
+
         foreach ($bookingValues as $bookingKey => $bookingValue) {
           if (empty($bookingValue)) {
             switch ($bookingKey) {
               case 'subject':
                 $form_state->setError($form, t('Error in "Booking title"'));
                 break;
-              case 'authorName':
-                $form_state->setError($form, t('Error in "Your Name"'));
-                break;
-              case 'authorEmail':
+              case 'bookerEmail':
                 $form_state->setError($form, t('Error in "Your email"'));
                 break;
               case 'resourceEmail':
-              case 'startTime':
-              case 'endTime':
+              case 'start':
+              case 'end':
                 $form_state->setError($form, t('Error in booking selection'));
                 break;
               default:
