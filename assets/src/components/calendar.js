@@ -110,7 +110,7 @@ function Calendar({
           });
       }, 1);
     }
-  }, [calendarSelection]);
+  }, [calendarSelection, events]);
 
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
     return (
@@ -160,6 +160,7 @@ function Calendar({
               navLinks
               slotDuration="00:15:00"
               allDaySlot={false}
+              resourcesInitiallyExpanded={false}
               selectable
               unselectAuto={false}
               schedulerLicenseKey={config.license_key}
