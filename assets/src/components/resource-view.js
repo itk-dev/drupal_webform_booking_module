@@ -56,12 +56,18 @@ ResourceView.propTypes = {
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  resource: PropTypes.arrayOf(PropTypes.shape({})),
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  facilities: PropTypes.arrayOf(PropTypes.shape({})),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string.isRequired,
+  showResourceViewId: PropTypes.string,
   setShowResourceViewId: PropTypes.func.isRequired,
+};
+
+ResourceView.defaultProps = {
+  resource: null,
+  facilities: null,
+  showResourceViewId: null,
 };
 
 export default ResourceView;

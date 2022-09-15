@@ -42,7 +42,9 @@ class BookingElement extends Hidden
     return [
         'rooms' => [],
         'enable_booking' => false,
-        'enable_resource_tooltips' => false
+        'enable_resource_tooltips' => false,
+        'step1' => false,
+        'redirect_url' => ''
       ] + parent::defineDefaultProperties();
   }
 
@@ -81,6 +83,26 @@ class BookingElement extends Hidden
         ->t('Enable resource tooltips'),
     );
 
+    $form['element']['step1'] = array(
+      '#type' => 'checkbox',
+      '#title' => $this
+        ->t('Display mode only'),
+      '#description' => $this
+        ->t('If checked the form will perform a redirect with booking parameters when booking choices are made.'),
+    );
+
+    $form['element']['redirect_url'] = array(
+      '#type' => 'url',
+      '#title' => $this
+        ->t('Redirect url'),
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[step1]"]' => ['checked' => TRUE],
+        ],
+      ]
+    );
+
+
     return $form;
   }
 
@@ -95,7 +117,9 @@ class BookingElement extends Hidden
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
       'enable_booking' => (isset($element['#enable_booking'])),
       'enable_resource_tooltips' => (isset($element['#enable_booking'])),
-      'output_field_id' => 'submit-values'
+      'output_field_id' => 'submit-values',
+      'step_one' => isset($element['#step1']),
+      'redirect_url' => $element['#redirect_url'] ?? null,
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [

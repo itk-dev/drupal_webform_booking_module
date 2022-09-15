@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // FullCalendar must be imported before FullCalendar plugins
 import ReactDOMServer from "react-dom/server";
 import FullCalendar from "@fullcalendar/react";
@@ -25,8 +25,8 @@ import "./calendar.scss";
  * @param {Array} props.events Events to show in calendar.
  * @param {Date} props.date Date to show calendar for.
  * @param {Function} props.setDate Set date function.
- * @param {Function} props.calendarSelection Calendar selection function.
- * @param {Function} props.onCalendarSelection Set calendar selection function.
+ * @param {object} props.calendarSelection The current calendar selection.
+ * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
  * @returns {string} Calendar component.
@@ -37,20 +37,44 @@ function Calendar({
   date,
   setDate,
   calendarSelection,
-  onCalendarSelection,
+  setCalendarSelection,
   config,
   setShowResourceViewId,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
+  const [internalSelection, setInternalSelection] = useState();
+
+  const onCalendarSelection = (selection) => {
+    const newSelection = {
+      allDay: selection.allDay,
+      end: selection.end,
+      resourceId: selection.resource.id,
+      start: selection.start,
+    };
+
+    const serialized = JSON.stringify(newSelection);
+    setInternalSelection(serialized);
+    setCalendarSelection(newSelection);
+  };
 
   const getValidRange = () => {
     return { start: dateNow };
   };
 
+  // Set calendar selection.
+  useEffect(() => {
+    if (calendarSelection) {
+      calendarRef?.current?.getApi().select(calendarSelection);
+    }
+  }, [internalSelection]);
+
   // Go to calendar date when date changes.
   useEffect(() => {
-    calendarRef?.current?.getApi().gotoDate(date);
+    if (calendarSelection) {
+      calendarRef?.current?.getApi().gotoDate(date);
+      calendarRef?.current?.getApi().select(calendarSelection);
+    }
   }, [date]);
 
   /** @param {string} showResourceViewId Id of the resource to load */
@@ -96,6 +120,7 @@ function Calendar({
       />
     );
   };
+
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -186,12 +211,16 @@ Calendar.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
-  calendarSelection: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  onCalendarSelection: PropTypes.func.isRequired,
+  calendarSelection: PropTypes.shape({}),
+  setCalendarSelection: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
   }).isRequired,
   setShowResourceViewId: PropTypes.func.isRequired,
+};
+
+Calendar.defaultProps = {
+  calendarSelection: null,
 };
 
 export default Calendar;
