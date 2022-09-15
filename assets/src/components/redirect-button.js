@@ -30,11 +30,7 @@ function RedirectButton({ calendarSelection, config }) {
   };
 
   return (
-    <button
-      id="redirect-button"
-      type="button"
-      onClick={onRedirectClick}
-    >
+    <button id="redirect-button" type="button" onClick={onRedirectClick}>
       Log ind for at foretage booking
     </button>
   );

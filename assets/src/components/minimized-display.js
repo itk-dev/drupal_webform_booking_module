@@ -17,7 +17,8 @@ function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
     setDisplayState("maximized");
   };
 
-  const formatUrlDate = (dateString) => dayjs(dateString).format("DD/MM/YYYY - HH:mm");
+  const formatUrlDate = (dateString) =>
+    dayjs(dateString).format("DD/MM/YYYY - HH:mm");
 
   return (
     <div className="col-md-12">
@@ -29,13 +30,9 @@ function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
               <span className="subject">{urlResource.resourceName}</span>
             </div>
             <div>
-              <span>
-                {formatUrlDate(validUrlParams.get("from"))}
-              </span>
+              <span>{formatUrlDate(validUrlParams.get("from"))}</span>
               <span>→</span>
-              <span>
-                {formatUrlDate(validUrlParams.get("to"))}
-              </span>
+              <span>{formatUrlDate(validUrlParams.get("to"))}</span>
             </div>
             <div>
               <button
