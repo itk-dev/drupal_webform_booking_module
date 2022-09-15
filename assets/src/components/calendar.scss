@@ -7,14 +7,9 @@
         padding-top: 0 !important;
       }
     }
-
     table {
       margin-top: 0;
       margin-bottom: 0;
-
-      td {
-        height: 0;
-      }
 
       tr {
         background: unset !important;
@@ -23,7 +18,6 @@
         }
       }
     }
-
     .fc-timegrid-slots > table {
       background: #fff;
     }
