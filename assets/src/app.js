@@ -235,7 +235,7 @@ function App() {
       <div className="container-fluid">
         {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
-          <>
+          <div className="app-content">
             <div
               className={`row filters-wrapper ${
                 showResourceViewId !== null ? "disable-filters" : ""
@@ -309,7 +309,7 @@ function App() {
                 setShowResourceViewId={setShowResourceViewId}
               />
             </div>
-          </>
+          </div>
         )}
         {config &&
           validUrlParams &&
