@@ -59,6 +59,13 @@ function Calendar({
     setCalendarSelection(newSelection);
   };
 
+  const getScrollTime = () => {
+    let dateTimeNow = new Date();
+    dateTimeNow.setHours(dateTimeNow.getHours()-2);
+    let scrollTimeString = dateTimeNow.getHours()+":00:00"
+    return scrollTimeString;
+  }
+
   const getValidRange = () => {
     return { start: dateNow };
   };
@@ -145,7 +152,7 @@ function Calendar({
               }}
               headerToolbar=""
               height="650px"
-              /* scrollTime=@todo */
+              scrollTime={getScrollTime()}
               initialView="resourceTimelineDay"
               duration="days: 3"
               selectConstraint="businessHours"

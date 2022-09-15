@@ -32,6 +32,9 @@
     #calendar-back {
       margin-right: 5px;
     }
+    .fc .fc-resource-timeline {
+      border: 1px solid #eee;
+    }
     .fc .fc-resource-timeline .fc-resource-group:not([rowspan]) {
       background-color: #e9ecef !important;
     }
