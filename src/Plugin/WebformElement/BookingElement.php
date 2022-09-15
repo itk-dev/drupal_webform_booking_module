@@ -2,11 +2,15 @@
 
 namespace Drupal\itkdev_booking\Plugin\WebformElement;
 
+use Drupal;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Http\RequestStack;
+use Drupal\itkdev_booking\Helper\UserHelper;
 use Drupal\webform\Annotation\WebformElement;
 use Drupal\webform\Plugin\WebformElement\Hidden;
 use Drupal\Core\Site\Settings;
 use Drupal\webform\WebformInterface;
+use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 
@@ -23,7 +27,6 @@ use Drupal\Core\Url;
  */
 class BookingElement extends Hidden
 {
-
   /**
    * {@inheritdoc}
    */
@@ -111,12 +114,14 @@ class BookingElement extends Hidden
    */
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
+    $p = 1;
+
     $params = [
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
-      'enable_booking' => (isset($element['#enable_booking'])),
-      'enable_resource_tooltips' => (isset($element['#enable_booking'])),
+      'enable_booking' => isset($element['#enable_booking']),
+      'enable_resource_tooltips' => isset($element['#enable_booking']),
       'output_field_id' => 'submit-values',
       'step_one' => isset($element['#step1']),
       'redirect_url' => $element['#redirect_url'] ?? null,
@@ -139,6 +144,30 @@ class BookingElement extends Hidden
   }
 
   /**
+   * Attach userId and name to webform submit.
+   *
+   * @throws \JsonException
+   */
+  public function preSave(array &$element, WebformSubmissionInterface $webform_submission) {
+    $data = json_decode($webform_submission->getData()['booking'], TRUE, 512, JSON_THROW_ON_ERROR);
+
+    $request = Drupal::request();
+
+    $userHelper = new UserHelper();
+    $userArray = $userHelper->getUserValues($request);
+
+    $data['name'] = $userArray['name'];
+    $data['userId'] = $userArray['userId'];
+
+    $webform_submission->setData(
+      ['booking' => json_encode($data)]
+    );
+
+    parent::preSave($element, $webform_submission);
+  }
+
+
+  /**
    * Validate booking data in hidden field.
    *
    * @param $form
@@ -147,30 +176,31 @@ class BookingElement extends Hidden
    *   The state of the form.
    */
   public function validateBooking(&$form, FormStateInterface $form_state) {
-    // @todo handle validation after react submisison.
     $elements = $form['elements'];
     foreach ($elements as $key => $form_element) {
       if (is_array($form_element) && isset($form_element['#type']) && 'booking_element' === $form_element['#type']) {
-        $bookingValues = json_decode($form_state->getValues()[$key], TRUE);
+        try {
+          $bookingValues = json_decode($form_state->getValues()[$key], TRUE, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $exception) {
+          $form_state->setError($form, t('Error in decoding booking data.'));
+          return;
+        }
+
         foreach ($bookingValues as $bookingKey => $bookingValue) {
           if (empty($bookingValue)) {
             switch ($bookingKey) {
               case 'subject':
                 $form_state->setError($form, t('Error in "Booking title"'));
                 break;
-              case 'authorName':
-                $form_state->setError($form, t('Error in "Your Name"'));
-                break;
-              case 'authorEmail':
+              case 'email':
                 $form_state->setError($form, t('Error in "Your email"'));
                 break;
-              case 'resourceEmail':
-              case 'startTime':
-              case 'endTime':
+              case 'resourceId':
+              case 'start':
+              case 'end':
                 $form_state->setError($form, t('Error in booking selection'));
                 break;
               default:
-                $form_state->setError($form, t('Error in form. Please reload page and try again.'));
             }
           }
         }

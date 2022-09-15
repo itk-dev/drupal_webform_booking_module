@@ -52,7 +52,7 @@ function App() {
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
-  const [authorFields, setAuthorFields] = useState({ email: "" }); // Additional fields for author information.
+  const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState(null); // The selection of a time span in calendar.
 
   // Get configuration.
@@ -140,6 +140,7 @@ function App() {
   useEffect(() => {
     if (config) {
       const urlSearchParams = new URLSearchParams();
+
       Object.entries(filterParams).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           value.forEach((arrayValue) =>
@@ -149,6 +150,7 @@ function App() {
           urlSearchParams.append(key, value.toString());
         }
       });
+
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResources(loadedResources);
@@ -171,6 +173,7 @@ function App() {
         value,
       ]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
+
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResourcesOptions(
@@ -191,6 +194,7 @@ function App() {
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
+
     setFilterParams({
       ...filterParams,
       ...{ "resourceMail[]": resourceValues },
@@ -218,7 +222,9 @@ function App() {
   useEffect(() => {
     if (config) {
       document.getElementById(config.output_field_id).value = JSON.stringify({
-        ...calendarSelection,
+        start: calendarSelection.start,
+        end: calendarSelection.end,
+        resourceId: calendarSelection.resourceId,
         ...authorFields,
       });
     }
