@@ -44,9 +44,7 @@ function Calendar({
   const calendarRef = useRef();
   const dateNow = new Date();
   const [internalSelection, setInternalSelection] = useState();
-
   const onCalendarSelection = (selection) => {
-    console.log(selection);
     const newSelection = {
       resource: selection.resource,
       allDay: selection.allDay,

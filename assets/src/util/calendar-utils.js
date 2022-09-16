@@ -73,23 +73,18 @@ export function handleBusyIntervals(value) {
  */
 export function handleResources(value, calendarRef) {
   // TODO: Add business hours.
-  value.businessHours = "";
   const currentCalendarDate = calendarRef.current.getApi().getDate();
+  const businessHoursArray = []; // eslint-disable-line no-param-reassign
+  // reformatting openHours to fullcalendar-readable format
   value.openHours.forEach((v) => {
-    // reformatting openHours to fullcalendar-readable format
     const startTime = dayjs(v.open).format("HH:mm");
     const endTime = dayjs(v.close).format("HH:mm");
-    value.businessHours = [
-      ...value.businessHours,
-      {
-        daysOfWeek: [v.weekday],
-        startTime: businessHoursOrNearestHalfHour(
-          startTime,
-          currentCalendarDate
-        ),
-        endTime,
-      },
-    ];
+    const businessHours = {
+      daysOfWeek: [v.weekday],
+      startTime: businessHoursOrNearestHalfHour(startTime, currentCalendarDate),
+      endTime,
+    };
+    businessHoursArray.push(businessHours);
   });
   return {
     resourceId: value.id,
@@ -99,6 +94,6 @@ export function handleResources(value, calendarRef) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
-    businessHours: value.businessHours,
+    businessHours: businessHoursArray,
   };
 }
