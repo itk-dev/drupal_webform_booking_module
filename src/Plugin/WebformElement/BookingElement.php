@@ -158,6 +158,7 @@ class BookingElement extends Hidden
 
     $data['name'] = $userArray['name'];
     $data['userId'] = $userArray['userId'];
+    $data['formElement'] = 'booking_element';
 
     $webform_submission->setData(
       ['booking' => json_encode($data)]
