@@ -121,8 +121,6 @@ class BookingElement extends Hidden
    */
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
-    $p = 1;
-
     $params = [
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
@@ -168,6 +166,7 @@ class BookingElement extends Hidden
 
     $data['name'] = $userArray['name'];
     $data['userId'] = $userArray['userId'];
+    $data['formElement'] = 'booking_element';
 
     $webform_submission->setData(
       ['booking' => json_encode($data)]
