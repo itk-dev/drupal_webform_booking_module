@@ -128,7 +128,7 @@ function Calendar({
       />
     );
   };
-
+  console.log(calendarRef);
   return (
     <div className="Calendar no-gutter col-md-12">
           <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -171,8 +171,8 @@ function Calendar({
                   selectable
                   unselectAuto={false}
                   schedulerLicenseKey={config.license_key}
-                  slotMinTime="07:00:00"
-                  slotMaxTime="21:00:00"
+                  slotMinTime="06:00:00"
+                  slotMaxTime="24:00:00"
                   selectOverlap={false}
                   nextDayThreshold="21:00:00"
                   editable={false}

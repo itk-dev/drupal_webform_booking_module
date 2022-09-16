@@ -31,10 +31,6 @@ function businessHoursOrNearestHalfHour(
   today = today.setHours(0, 0, 0, 0);
   const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
 
-  const businessStartHourFormatted =
-    businessStartHour.toString().length === 1
-      ? `0${businessStartHour}:00`
-      : `${businessStartHour}:00`;
   const currentClosestHalfAnHourFormatted = `${
     roundToNearest15(new Date()).getHours().toString().length === 1
       ? `0${roundToNearest15(new Date()).getHours()}`
@@ -45,12 +41,12 @@ function businessHoursOrNearestHalfHour(
       : roundToNearest15(new Date()).getMinutes()
   }`;
   if (today !== calendarDate) {
-    return businessStartHourFormatted;
+    return businessStartHour;
   }
-  if (currentClosestHalfAnHourFormatted > businessStartHourFormatted) {
+  if (currentClosestHalfAnHourFormatted > businessStartHour) {
     return currentClosestHalfAnHourFormatted;
   }
-  return businessStartHourFormatted;
+  return businessStartHour;
 }
 
 /**
@@ -79,13 +75,13 @@ export function handleResources(value, calendarRef) {
   // TODO: Add business hours.
   value.businessHours = "";
   const currentCalendarDate = calendarRef.current.getApi().getDate();
-  value.openHours.forEach((v) => {
+  value.openHours.forEach((v) => { //reformatting openHours to fullcalendar-readable format
     let startTime = dayjs(v.open).format("HH:mm");
     let endTime = dayjs(v.close).format("HH:mm");
     value.businessHours = [...value.businessHours,
     {
       daysOfWeek: [v.weekday],
-      startTime: startTime,
+      startTime: businessHoursOrNearestHalfHour(startTime, currentCalendarDate),
       endTime: endTime
     }
     ]
@@ -95,15 +91,11 @@ export function handleResources(value, calendarRef) {
     resourceId: value.id,
     id: value.resourceMail,
     title: value.resourceName,
+    testme: "test",
     capacity: value.capacity,
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
-    
-
-    businessHours: {
-      startTime: businessHoursOrNearestHalfHour("8", currentCalendarDate),
-      endTime: "19:00",
-    },
+    businessHours: value.businessHours
   };
 }
