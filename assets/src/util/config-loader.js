@@ -22,7 +22,7 @@ export default class ConfigLoader {
           info_box_header: "Bemærk Behandlingstid!",
           info_box_content:
             "Til godkendelse og nøgleudlevering. Det vil fremgå af lokalets information.",
-          step_one: true,
+          step_one: false,
           redirect_url: "http://google.com/",
         };
       });

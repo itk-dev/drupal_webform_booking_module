@@ -32,8 +32,8 @@ function App() {
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
 
   // Options for filters.
-  const [locationOptions, setLocationOptions] = useState([]);
-  const [resourcesOptions, setResourcesOptions] = useState([]);
+  const [locationOptions, setLocationOptions] = useState(null);
+  const [resourcesOptions, setResourcesOptions] = useState(null);
 
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
@@ -42,8 +42,8 @@ function App() {
   const [resourceFilter, setResourceFilter] = useState([]);
 
   // App display for calendar, list and map.
-  const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
-  const [resources, setResources] = useState([]); // The result after filtering resources
+  const [events, setEvents] = useState(null); // Events related to the displayed resources (free/busy).
+  const [resources, setResources] = useState(null); // The result after filtering resources
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?

@@ -75,17 +75,6 @@ class BookingElement extends Hidden
   {
     $form = parent::form($form, $form_state);
 
-    // $form['element']['enable_booking'] = array(
-    //   '#type' => 'checkbox',
-    //   '#title' => $this
-    //     ->t('Enable booking'),
-    // );
-    // $form['element']['enable_resource_tooltips'] = array(
-    //   '#type' => 'checkbox',
-    //   '#title' => $this
-    //     ->t('Enable resource tooltips'),
-    // );
-
     $form['element']['step1'] = array(
       '#type' => 'checkbox',
       '#title' => $this

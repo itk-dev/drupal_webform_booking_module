@@ -11,7 +11,6 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import LoadingSpinner from "./loading-spinner";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
@@ -129,97 +128,89 @@ function Calendar({
       />
     );
   };
- 
+
   return (
     <div className="Calendar no-gutter col-md-12">
-      {!resources && !events && <LoadingSpinner />}
-      
-      {resources && events && (
-        <div>
-      <CalendarHeader config={config} date={date} setDate={setDate} />
-      <div className="row">
-        <div className="col-md-12">
-          {
-            <FullCalendar
-              ref={calendarRef}
-              plugins={[
-                resourceTimegrid,
-                interactionPlugin,
-                dayGridPlugin,
-                timeGridPlugin,
-                listPlugin,
-                resourceTimelinePlugin,
-              ]}
-              titleFormat={{
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }}
-              headerToolbar=""
-              height="650px"
-              scrollTime={getScrollTime()}
-              initialView="resourceTimelineDay"
-              duration="days: 3"
-              selectConstraint="businessHours"
-              selectMirror
-              displayEventTime
-              scrollTimeReset={false}
-              slotLabelFormat={{
-                hour: "numeric",
-                omitZeroMinute: false,
-              }}
-              nowIndicator
-              navLinks
-              slotDuration="00:15:00"
-              allDaySlot={false}
-              resourcesInitiallyExpanded={false}
-              selectable
-              unselectAuto={false}
-              schedulerLicenseKey={config.license_key}
-              slotMinTime="07:00:00"
-              slotMaxTime="21:00:00"
-              selectOverlap={false}
-              nextDayThreshold="21:00:00"
-              editable={false}
-              dayMaxEvents
-              locale={daLocale}
-              select={onCalendarSelection}
-              validRange={getValidRange}
-              loading={false}
-              resources={resources.map((value) =>
-                handleResources(value, calendarRef)
-              )}
-              resourceGroupField="building"
-              resourceAreaColumns={[
-                {
-                  headerContent: "Ressourcer",
-                  cellContent(arg) {
-                    return renderCalendarCellInfoButton(
-                      arg.resource.title,
-                      // eslint-disable-next-line no-underscore-dangle
-                      arg.resource._resource.extendedProps.resourceId,
-                      triggerResourceView
-                    );
-                  },
-                },
-                {
-                  headerContent: <IconChair />,
-                  headerClassNames: "resource-calendar-capacity-header",
-                  width: "60px",
-                  cellClassNames: "resource-calendar-capacity-value",
-                  cellContent(arg) {
-                    return arg.resource.extendedProps.capacity;
-                  },
-                },
-              ]}
-              events={events.map((value) => handleBusyIntervals(value))}
-            />
-          }
-        </div>
-      </div>
-      </div>
-      )}
-
+          <CalendarHeader config={config} date={date} setDate={setDate} />
+          <div className="row">
+            <div className="col-md-12">
+              {
+                <FullCalendar
+                  ref={calendarRef}
+                  plugins={[
+                    resourceTimegrid,
+                    interactionPlugin,
+                    dayGridPlugin,
+                    timeGridPlugin,
+                    listPlugin,
+                    resourceTimelinePlugin,
+                  ]}
+                  titleFormat={{
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }}
+                  headerToolbar=""
+                  height="650px"
+                  scrollTime={getScrollTime()}
+                  initialView="resourceTimelineDay"
+                  duration="days: 3"
+                  selectConstraint="businessHours"
+                  selectMirror
+                  displayEventTime
+                  scrollTimeReset={false}
+                  slotLabelFormat={{
+                    hour: "numeric",
+                    omitZeroMinute: false,
+                  }}
+                  nowIndicator
+                  navLinks
+                  slotDuration="00:15:00"
+                  allDaySlot={false}
+                  resourcesInitiallyExpanded={false}
+                  selectable
+                  unselectAuto={false}
+                  schedulerLicenseKey={config.license_key}
+                  slotMinTime="07:00:00"
+                  slotMaxTime="21:00:00"
+                  selectOverlap={false}
+                  nextDayThreshold="21:00:00"
+                  editable={false}
+                  dayMaxEvents
+                  locale={daLocale}
+                  select={onCalendarSelection}
+                  validRange={getValidRange}
+                  resources={resources && resources.map((value) =>
+                    handleResources(value, calendarRef)
+                  )}
+                  resourceGroupField="building"
+                  resourceAreaColumns={[
+                    {
+                      headerContent: "Ressourcer",
+                      cellContent(arg) {
+                        return renderCalendarCellInfoButton(
+                          arg.resource.title,
+                          // eslint-disable-next-line no-underscore-dangle
+                          arg.resource._resource.extendedProps.resourceId,
+                          triggerResourceView
+                        );
+                      },
+                    },
+                    {
+                      headerContent: <IconChair />,
+                      headerClassNames: "resource-calendar-capacity-header",
+                      width: "60px",
+                      cellClassNames: "resource-calendar-capacity-value",
+                      cellContent(arg) {
+                        return arg.resource.extendedProps.capacity;
+                      },
+                    },
+                  ]}
+                  events={events && events.map((value) => handleBusyIntervals(value))}
+                />
+              }
+            </div>
+          </div>
     </div>
   );
 }
