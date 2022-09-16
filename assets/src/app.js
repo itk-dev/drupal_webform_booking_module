@@ -297,6 +297,7 @@ function App() {
                 setCalendarSelection={setCalendarSelection}
                 config={config}
                 setShowResourceViewId={setShowResourceViewId}
+                urlResource={urlResource}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView

@@ -71,12 +71,11 @@ export function handleBusyIntervals(value) {
  * Handle resources.
  *
  * @param {object} value Resource.
- * @param {object} calendarRef Fullcalendar instance
+ * @param {object} currentCalendarDate The current calendar date.
  * @returns {object} Resource formatted for fullcalendar.
  */
-export function handleResources(value, calendarRef) {
+export function handleResources(value, currentCalendarDate) {
   // TODO: Add business hours.
-  const currentCalendarDate = calendarRef.current.getApi().getDate();
   return {
     resourceId: value.id,
     id: value.resourceMail,
