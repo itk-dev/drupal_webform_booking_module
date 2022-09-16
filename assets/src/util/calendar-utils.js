@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 /**
  * Round to nearest 15 minutes.
  *
@@ -76,7 +77,20 @@ export function handleBusyIntervals(value) {
  */
 export function handleResources(value, calendarRef) {
   // TODO: Add business hours.
+  value.businessHours = "";
   const currentCalendarDate = calendarRef.current.getApi().getDate();
+  value.openHours.forEach((v) => {
+    let startTime = dayjs(v.open).format("HH:mm");
+    let endTime = dayjs(v.close).format("HH:mm");
+    value.businessHours = [...value.businessHours,
+    {
+      daysOfWeek: [v.weekday],
+      startTime: startTime,
+      endTime: endTime
+    }
+    ]
+  })
+  console.log(value);
   return {
     resourceId: value.id,
     id: value.resourceMail,
@@ -85,6 +99,8 @@ export function handleResources(value, calendarRef) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
+    
+
     businessHours: {
       startTime: businessHoursOrNearestHalfHour("8", currentCalendarDate),
       endTime: "19:00",

@@ -153,6 +153,55 @@ function App() {
 
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
+          loadedResources.forEach((resource, index) => {
+            resource['openHours'] = [
+              {
+                    "@type": "OpenHours",
+                    "@id": "_:916",
+                    "id": 51,
+                    "weekday": 1,
+                    "open": "2022-09-16T08:00:00+02:00",
+                    "close": "2022-09-16T23:00:00+02:00",
+                    "updateTimestamp": "2022-08-31T06:07:47+02:00"
+                  },
+                  {
+                    "@type": "OpenHours",
+                    "@id": "_:923",
+                    "id": 52,
+                    "weekday": 2,
+                    "open": "2022-09-16T08:00:00+02:00",
+                    "close": "2022-09-16T23:00:00+02:00",
+                    "updateTimestamp": "2022-08-31T06:07:47+02:00"
+                  },
+                  {
+                    "@type": "OpenHours",
+                    "@id": "_:927",
+                    "id": 53,
+                    "weekday": 3,
+                    "open": "2022-09-16T08:00:00+02:00",
+                    "close": "2022-09-16T23:00:00+02:00",
+                    "updateTimestamp": "2022-08-31T06:07:47+02:00"
+                  },
+                  {
+                    "@type": "OpenHours",
+                    "@id": "_:931",
+                    "id": 54,
+                    "weekday": 4,
+                    "open": "2022-09-16T08:00:00+02:00",
+                    "close": "2022-09-16T23:00:00+02:00",
+                    "updateTimestamp": "2022-08-31T06:07:47+02:00"
+                  },
+                  {
+                    "@type": "OpenHours",
+                    "@id": "_:935",
+                    "id": 55,
+                    "weekday": 5,
+                    "open": "2022-09-16T08:00:00+02:00",
+                    "close": "2022-09-16T23:00:00+02:00",
+                    "updateTimestamp": "2022-08-31T06:07:47+02:00"
+                  }
+            ]
+          })
           setResources(loadedResources);
         })
         .catch(() => {
