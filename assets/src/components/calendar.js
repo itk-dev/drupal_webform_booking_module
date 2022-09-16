@@ -94,7 +94,10 @@ function Calendar({
     if (highlightElement !== null) {
       setTimeout(() => {
         const calendarSelectionBox = ReactDOMServer.renderToString(
-          <CalendarSelectionBox calendarSelection={calendarSelection} />
+          <CalendarSelectionBox
+            config={config}
+            calendarSelection={calendarSelection}
+          />
         );
         document.querySelector("div.fc-highlight").innerHTML =
           calendarSelectionBox;
@@ -102,6 +105,21 @@ function Calendar({
           .getElementById("calendar-selection-choice-confirm")
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
+            const paramsObj = {
+              from: calendarSelection.start.toISOString(),
+              to: calendarSelection.end.toISOString(),
+              resource: calendarSelection.resourceId ?? undefined,
+            };
+            if (
+              paramsObj.from === undefined ||
+              paramsObj.to === undefined ||
+              paramsObj.resource === undefined
+            ) {
+              window.open(config.redirect_url, "_self");
+            } else {
+              const paramsStr = new URLSearchParams(paramsObj).toString();
+              window.open(`${config.redirect_url}?${paramsStr}`, "_self");
+            }
           });
         document
           .getElementById("calendar-selection-container")
@@ -215,12 +233,26 @@ Calendar.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
-  calendarSelection: PropTypes.shape({}),
+  calendarSelection: PropTypes.shape({
+    resource: PropTypes.shape({
+      _resource: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+    start: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    end: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    resourceId: PropTypes.string.isRequired,
+  }),
   setCalendarSelection: PropTypes.func.isRequired,
+  setShowResourceViewId: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
+    redirect_url: PropTypes.string.isRequired,
   }).isRequired,
-  setShowResourceViewId: PropTypes.func.isRequired,
 };
 
 Calendar.defaultProps = {

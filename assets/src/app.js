@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
-import RedirectButton from "./components/redirect-button";
+// import RedirectButton from "./components/redirect-button";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
@@ -153,7 +153,7 @@ function App() {
 
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
-          setResources(loadedResources);
+          setResources(loadedResources);  
         })
         .catch(() => {
           // TODO: Display error and retry option for user. (v0.1)
@@ -340,14 +340,14 @@ function App() {
         )}
 
         {/* Display redirect button */}
-        {config && config.step_one && calendarSelection && (
+        {/* {config && config.step_one && calendarSelection && (
           <div className="row">
             <RedirectButton
               calendarSelection={calendarSelection}
               config={config}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
