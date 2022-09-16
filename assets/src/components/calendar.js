@@ -190,8 +190,7 @@ function Calendar({
                       cellContent(arg) {
                         return renderCalendarCellInfoButton(
                           arg.resource.title,
-                          // eslint-disable-next-line no-underscore-dangle
-                          arg.resource._resource.extendedProps.resourceId,
+                          arg.resource.extendedProps.resourceId,
                           triggerResourceView
                         );
                       },
