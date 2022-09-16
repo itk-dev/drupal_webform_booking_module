@@ -75,27 +75,30 @@ export function handleResources(value, calendarRef) {
   // TODO: Add business hours.
   value.businessHours = "";
   const currentCalendarDate = calendarRef.current.getApi().getDate();
-  value.openHours.forEach((v) => { //reformatting openHours to fullcalendar-readable format
-    let startTime = dayjs(v.open).format("HH:mm");
-    let endTime = dayjs(v.close).format("HH:mm");
-    value.businessHours = [...value.businessHours,
-    {
-      daysOfWeek: [v.weekday],
-      startTime: businessHoursOrNearestHalfHour(startTime, currentCalendarDate),
-      endTime: endTime
-    }
-    ]
-  })
-  console.log(value);
+  value.openHours.forEach((v) => {
+    // reformatting openHours to fullcalendar-readable format
+    const startTime = dayjs(v.open).format("HH:mm");
+    const endTime = dayjs(v.close).format("HH:mm");
+    value.businessHours = [
+      ...value.businessHours,
+      {
+        daysOfWeek: [v.weekday],
+        startTime: businessHoursOrNearestHalfHour(
+          startTime,
+          currentCalendarDate
+        ),
+        endTime,
+      },
+    ];
+  });
   return {
     resourceId: value.id,
     id: value.resourceMail,
     title: value.resourceName,
-    testme: "test",
     capacity: value.capacity,
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
-    businessHours: value.businessHours
+    businessHours: value.businessHours,
   };
 }
