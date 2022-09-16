@@ -15,7 +15,8 @@ function RedirectButton({ calendarSelection, config }) {
     const paramsObj = {
       from: calendarSelection.start.toISOString(),
       to: calendarSelection.end.toISOString(),
-      resource: calendarSelection.resourceId ?? undefined,
+      resource:
+        calendarSelection.resource.extendedProps.resourceId ?? undefined,
     };
     if (
       paramsObj.from === undefined ||
@@ -38,6 +39,11 @@ function RedirectButton({ calendarSelection, config }) {
 
 RedirectButton.propTypes = {
   calendarSelection: PropTypes.shape({
+    resource: PropTypes.shape({
+      extendedProps: PropTypes.shape({
+        resourceId: PropTypes.number.isRequired,
+      }).isRequired,
+    }).isRequired,
     start: PropTypes.shape({
       toISOString: PropTypes.func.isRequired,
     }).isRequired,

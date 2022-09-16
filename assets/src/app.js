@@ -53,7 +53,7 @@ function App() {
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
-  const [calendarSelection, setCalendarSelection] = useState(null); // The selection of a time span in calendar.
+  const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
 
   // Get configuration.
   useEffect(() => {
@@ -235,7 +235,7 @@ function App() {
       <div className="container-fluid">
         {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
-          <>
+          <div className="app-content">
             <div
               className={`row filters-wrapper ${
                 showResourceViewId !== null ? "disable-filters" : ""
@@ -309,7 +309,7 @@ function App() {
                 setShowResourceViewId={setShowResourceViewId}
               />
             </div>
-          </>
+          </div>
         )}
         {config &&
           validUrlParams &&
