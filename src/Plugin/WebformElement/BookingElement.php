@@ -75,17 +75,6 @@ class BookingElement extends Hidden
   {
     $form = parent::form($form, $form_state);
 
-    $form['element']['enable_booking'] = array(
-      '#type' => 'checkbox',
-      '#title' => $this
-        ->t('Enable booking'),
-    );
-    $form['element']['enable_resource_tooltips'] = array(
-      '#type' => 'checkbox',
-      '#title' => $this
-        ->t('Enable resource tooltips'),
-    );
-
     $form['element']['step1'] = array(
       '#type' => 'checkbox',
       '#title' => $this
@@ -105,6 +94,24 @@ class BookingElement extends Hidden
       ]
     );
 
+    $form['element']['info_box_color'] = array(
+      '#type' => 'text',
+      '#title' => $this
+        ->t('Info boks baggrundsfarve (HEXCODE - f.eks. #0c6efd)')
+    );
+
+    $form['element']['info_box_header'] = array(
+      '#type' => 'text',
+      '#title' => $this
+        ->t('Info boks titel')
+    );
+
+    $form['element']['info_box_content'] = array(
+      '#type' => 'text',
+      '#title' => $this
+        ->t('Info boks indhold')
+    );
+
 
     return $form;
   }
@@ -118,11 +125,12 @@ class BookingElement extends Hidden
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
-      'enable_booking' => isset($element['#enable_booking']),
-      'enable_resource_tooltips' => isset($element['#enable_booking']),
       'output_field_id' => 'submit-values',
       'step_one' => isset($element['#step1']),
       'redirect_url' => $element['#redirect_url'] ?? null,
+      'info_box_color' => $element['info_box_color'] ?? null,
+      'info_box_header' => $element['info_box_header'] ?? null,
+      'info_box_content' => $element['info_box_content'] ?? null
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [
