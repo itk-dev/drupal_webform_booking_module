@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 /**
  * Round to nearest 15 minutes.
  *
@@ -30,10 +31,6 @@ function businessHoursOrNearestHalfHour(
   today = today.setHours(0, 0, 0, 0);
   const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
 
-  const businessStartHourFormatted =
-    businessStartHour.toString().length === 1
-      ? `0${businessStartHour}:00`
-      : `${businessStartHour}:00`;
   const currentClosestHalfAnHourFormatted = `${
     roundToNearest15(new Date()).getHours().toString().length === 1
       ? `0${roundToNearest15(new Date()).getHours()}`
@@ -44,12 +41,12 @@ function businessHoursOrNearestHalfHour(
       : roundToNearest15(new Date()).getMinutes()
   }`;
   if (today !== calendarDate) {
-    return businessStartHourFormatted;
+    return businessStartHour;
   }
-  if (currentClosestHalfAnHourFormatted > businessStartHourFormatted) {
+  if (currentClosestHalfAnHourFormatted > businessStartHour) {
     return currentClosestHalfAnHourFormatted;
   }
-  return businessStartHourFormatted;
+  return businessStartHour;
 }
 
 /**
@@ -75,7 +72,19 @@ export function handleBusyIntervals(value) {
  * @returns {object} Resource formatted for fullcalendar.
  */
 export function handleResources(value, currentCalendarDate) {
-  // TODO: Add business hours.
+  const businessHoursArray = []; // eslint-disable-line no-param-reassign
+  // reformatting openHours to fullcalendar-readable format
+  value.openHours.forEach((v) => {
+    const startTime = dayjs(v.open).format("HH:mm");
+    const endTime = dayjs(v.close).format("HH:mm");
+    const businessHours = {
+      daysOfWeek: [v.weekday],
+      startTime: businessHoursOrNearestHalfHour(startTime, currentCalendarDate),
+      endTime,
+    };
+    businessHoursArray.push(businessHours);
+  });
+
   return {
     resourceId: value.id,
     id: value.resourceMail,
@@ -84,9 +93,6 @@ export function handleResources(value, currentCalendarDate) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
-    businessHours: {
-      startTime: businessHoursOrNearestHalfHour("8", currentCalendarDate),
-      endTime: "19:00",
-    },
+    businessHours: businessHoursArray,
   };
 }
