@@ -29,7 +29,7 @@ import "./calendar.scss";
  * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
- * @param {object} props.urlResource The resource object loaded from URL id.
+ * @param {string} props.setDisplayState Calendar display state
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -41,32 +41,23 @@ function Calendar({
   setCalendarSelection,
   config,
   setShowResourceViewId,
-  urlResource,
+  setDisplayState,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
   const [internalSelection, setInternalSelection] = useState();
-  const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
-    useState();
   const onCalendarSelection = (selection) => {
     const newSelection = {
+      resource: selection.resource,
       allDay: selection.allDay,
-      resourceId: urlResource
-        ? urlResource.resourceMail
-        : selection.resource.id,
       end: selection.end,
+      resourceId: selection.resource.id,
       start: selection.start,
     };
 
     const serialized = JSON.stringify(newSelection);
     setInternalSelection(serialized);
     setCalendarSelection(newSelection);
-
-    if (selection.resource) {
-      setCalendarSelectionResourceTitle(selection.resource.title);
-    } else if (urlResource) {
-      setCalendarSelectionResourceTitle(urlResource.resourceName);
-    }
   };
 
   const getScrollTime = () => {
@@ -99,14 +90,15 @@ function Calendar({
   const triggerResourceView = (showResourceViewId) => {
     setShowResourceViewId(showResourceViewId);
   };
+
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
     if (highlightElement !== null) {
       setTimeout(() => {
         const calendarSelectionBox = ReactDOMServer.renderToString(
           <CalendarSelectionBox
+            config={config}
             calendarSelection={calendarSelection}
-            calendarSelectionResourceTitle={calendarSelectionResourceTitle}
           />
         );
         document.querySelector("div.fc-highlight").innerHTML =
@@ -115,6 +107,32 @@ function Calendar({
           .getElementById("calendar-selection-choice-confirm")
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
+            let paramsObj;
+            let paramsStr;
+            switch (config.step_one) {
+              case true:
+                paramsObj = {
+                  from: calendarSelection.start.toISOString(),
+                  to: calendarSelection.end.toISOString(),
+                  resource: calendarSelection.resourceId ?? undefined,
+                };
+                if (
+                  paramsObj.from === undefined ||
+                  paramsObj.to === undefined ||
+                  paramsObj.resource === undefined
+                ) {
+                  window.open(config.redirect_url, "_self");
+                } else {
+                  paramsStr = new URLSearchParams(paramsObj).toString();
+                  window.open(`${config.redirect_url}?${paramsStr}`, "_self");
+                }
+                break;
+              case false:
+              default:
+                setDisplayState("minimized");
+                break;
+            }
+            return false;
           });
         document
           .getElementById("calendar-selection-container")
@@ -126,7 +144,6 @@ function Calendar({
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
             calendarRef.current.getApi().unselect();
-            setCalendarSelection({});
           });
       }, 1);
     }
@@ -141,6 +158,7 @@ function Calendar({
       />
     );
   };
+
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -193,7 +211,7 @@ function Calendar({
             validRange={getValidRange}
             resources={
               resources &&
-              resources.map((value) => handleResources(value, calendarRef))
+              resources.map((value) => handleResources(value, date))
             }
             resourceGroupField="building"
             resourceAreaColumns={[
@@ -229,21 +247,32 @@ Calendar.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
-  calendarSelection: PropTypes.shape({}),
+  calendarSelection: PropTypes.shape({
+    resource: PropTypes.shape({
+      _resource: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+    start: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    end: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    resourceId: PropTypes.string.isRequired,
+  }),
   setCalendarSelection: PropTypes.func.isRequired,
+  setShowResourceViewId: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
+    redirect_url: PropTypes.string.isRequired,
+    step_one: PropTypes.bool.isRequired,
   }).isRequired,
-  setShowResourceViewId: PropTypes.func.isRequired,
-  urlResource: PropTypes.shape({
-    resourceMail: PropTypes.string.isRequired,
-    resourceName: PropTypes.string.isRequired,
-  }),
+  setDisplayState: PropTypes.string.isRequired,
 };
 
 Calendar.defaultProps = {
   calendarSelection: null,
-  urlResource: null,
 };
 
 export default Calendar;
