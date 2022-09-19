@@ -68,12 +68,10 @@ export function handleBusyIntervals(value) {
  * Handle resources.
  *
  * @param {object} value Resource.
- * @param {object} calendarRef Fullcalendar instance
+ * @param {object} currentCalendarDate The current calendar date.
  * @returns {object} Resource formatted for fullcalendar.
  */
-export function handleResources(value, calendarRef) {
-  // TODO: Add business hours.
-  const currentCalendarDate = calendarRef.current.getApi().getDate();
+export function handleResources(value, currentCalendarDate) {
   const businessHoursArray = []; // eslint-disable-line no-param-reassign
   // reformatting openHours to fullcalendar-readable format
   value.openHours.forEach((v) => {
@@ -86,6 +84,7 @@ export function handleResources(value, calendarRef) {
     };
     businessHoursArray.push(businessHours);
   });
+
   return {
     resourceId: value.id,
     id: value.resourceMail,

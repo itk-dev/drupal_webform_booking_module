@@ -29,6 +29,7 @@ import "./calendar.scss";
  * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
+ * @param {object} props.urlResource The resource object loaded from URL id.
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -40,22 +41,32 @@ function Calendar({
   setCalendarSelection,
   config,
   setShowResourceViewId,
+  urlResource,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
   const [internalSelection, setInternalSelection] = useState();
+  const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
+    useState();
   const onCalendarSelection = (selection) => {
     const newSelection = {
-      resource: selection.resource,
       allDay: selection.allDay,
+      resourceId: urlResource
+        ? urlResource.resourceMail
+        : selection.resource.id,
       end: selection.end,
-      resourceId: selection.resource.id,
       start: selection.start,
     };
 
     const serialized = JSON.stringify(newSelection);
     setInternalSelection(serialized);
     setCalendarSelection(newSelection);
+
+    if (selection.resource) {
+      setCalendarSelectionResourceTitle(selection.resource.title);
+    } else if (urlResource) {
+      setCalendarSelectionResourceTitle(urlResource.resourceName);
+    }
   };
 
   const getScrollTime = () => {
@@ -88,13 +99,15 @@ function Calendar({
   const triggerResourceView = (showResourceViewId) => {
     setShowResourceViewId(showResourceViewId);
   };
-
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
     if (highlightElement !== null) {
       setTimeout(() => {
         const calendarSelectionBox = ReactDOMServer.renderToString(
-          <CalendarSelectionBox calendarSelection={calendarSelection} />
+          <CalendarSelectionBox
+            calendarSelection={calendarSelection}
+            calendarSelectionResourceTitle={calendarSelectionResourceTitle}
+          />
         );
         document.querySelector("div.fc-highlight").innerHTML =
           calendarSelectionBox;
@@ -113,6 +126,7 @@ function Calendar({
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
             calendarRef.current.getApi().unselect();
+            setCalendarSelection({});
           });
       }, 1);
     }
@@ -221,10 +235,15 @@ Calendar.propTypes = {
     license_key: PropTypes.string.isRequired,
   }).isRequired,
   setShowResourceViewId: PropTypes.func.isRequired,
+  urlResource: PropTypes.shape({
+    resourceMail: PropTypes.string.isRequired,
+    resourceName: PropTypes.string.isRequired,
+  }),
 };
 
 Calendar.defaultProps = {
   calendarSelection: null,
+  urlResource: null,
 };
 
 export default Calendar;
