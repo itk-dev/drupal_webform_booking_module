@@ -193,7 +193,7 @@ function Calendar({
             validRange={getValidRange}
             resources={
               resources &&
-              resources.map((value) => handleResources(value, calendarRef))
+              resources.map((value) => handleResources(value, date))
             }
             resourceGroupField="building"
             resourceAreaColumns={[
