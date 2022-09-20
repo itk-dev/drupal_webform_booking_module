@@ -43,7 +43,7 @@ function App() {
 
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
-  const [resources, setResources] = useState([]); // The result after filtering resources
+  const [resources, setResources] = useState(false); // The result after filtering resources
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
@@ -137,7 +137,6 @@ function App() {
       });
     }
   }, [urlResource]);
-
   // Set resources from filterParams.
   useEffect(() => {
     if (config) {
@@ -152,63 +151,16 @@ function App() {
           urlSearchParams.append(key, value.toString());
         }
       });
-
-      Api.fetchResources(config.api_endpoint, urlSearchParams)
-        .then((loadedResources) => {
-          loadedResources.forEach((resource, index) => {
-            resource.openHours = [
-              {
-                "@type": "OpenHours",
-                "@id": "_:916",
-                id: 51,
-                weekday: 1,
-                open: "2022-09-16T08:00:00+02:00",
-                close: "2022-09-16T23:00:00+02:00",
-                updateTimestamp: "2022-08-31T06:07:47+02:00",
-              },
-              {
-                "@type": "OpenHours",
-                "@id": "_:923",
-                id: 52,
-                weekday: 2,
-                open: "2022-09-16T08:00:00+02:00",
-                close: "2022-09-16T23:00:00+02:00",
-                updateTimestamp: "2022-08-31T06:07:47+02:00",
-              },
-              {
-                "@type": "OpenHours",
-                "@id": "_:927",
-                id: 53,
-                weekday: 3,
-                open: "2022-09-16T08:00:00+02:00",
-                close: "2022-09-16T23:00:00+02:00",
-                updateTimestamp: "2022-08-31T06:07:47+02:00",
-              },
-              {
-                "@type": "OpenHours",
-                "@id": "_:931",
-                id: 54,
-                weekday: 4,
-                open: "2022-09-16T08:00:00+02:00",
-                close: "2022-09-16T23:00:00+02:00",
-                updateTimestamp: "2022-08-31T06:07:47+02:00",
-              },
-              {
-                "@type": "OpenHours",
-                "@id": "_:935",
-                id: 55,
-                weekday: 5,
-                open: "2022-09-16T08:00:00+02:00",
-                close: "2022-09-16T23:00:00+02:00",
-                updateTimestamp: "2022-08-31T06:07:47+02:00",
-              },
-            ];
+      if (Object.values(filterParams).length > 0) {
+        Api.fetchResources(config.api_endpoint, urlSearchParams)
+          .then((loadedResources) => {
+            setResources(loadedResources);
+          })
+          .catch(() => {
+            // TODO: Display error and retry option for user. (v0.1)
           });
-          setResources(loadedResources);
-        })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
-        });
+      }
+
     }
   }, [filterParams]);
 
@@ -248,7 +200,7 @@ function App() {
 
     setFilterParams({
       ...filterParams,
-      ...{ "resourceMail[]": resourceValues },
+      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : "")
     });
   }, [resourceFilter]);
 
@@ -287,9 +239,8 @@ function App() {
         {config && displayState === "maximized" && (
           <div className="app-content">
             <div
-              className={`row filters-wrapper ${
-                showResourceViewId !== null ? "disable-filters" : ""
-              }`}
+              className={`row filters-wrapper ${showResourceViewId !== null ? "disable-filters" : ""
+                }`}
             >
               <div className="col-md-3">
                 {/* Dropdown with locations */}
