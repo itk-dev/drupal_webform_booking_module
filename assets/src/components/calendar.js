@@ -11,10 +11,11 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources, setPlaceholderResources } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
+import Api from "../util/api";
 import "./calendar.scss";
 
 /**
@@ -29,6 +30,7 @@ import "./calendar.scss";
  * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
+ * @param {object} props.urlResource The resource object loaded from URL id.
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -40,25 +42,118 @@ function Calendar({
   setCalendarSelection,
   config,
   setShowResourceViewId,
+  urlResource,
+  setDisplayState,
+  locationFilter,
+  resourceFilter,
+  locations
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
   const [internalSelection, setInternalSelection] = useState();
+  const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
+    useState();
   const onCalendarSelection = (selection) => {
     const newSelection = {
-      resource: selection.resource,
       allDay: selection.allDay,
+      resourceId: urlResource
+        ? urlResource.resourceMail
+        : selection.resource.id,
       end: selection.end,
-      resourceId: selection.resource.id,
       start: selection.start,
     };
 
     const serialized = JSON.stringify(newSelection);
     setInternalSelection(serialized);
     setCalendarSelection(newSelection);
+
+    if (selection.resource) {
+      setCalendarSelectionResourceTitle(selection.resource.title);
+    } else if (urlResource) {
+      setCalendarSelectionResourceTitle(urlResource.resourceName);
+    }
   };
 
-  const getScrollTime = () => {
+  function fetchResourcesOnLocation(location, locationExpanderIdentifier) {
+    let searchParams = "location=" + location;
+    Api.fetchResources(config.api_endpoint, searchParams)
+      .then((loadedResources) => {
+        var resourceA = calendarRef.current?.getApi().getResourceById(locationExpanderIdentifier);
+        resourceA.remove();
+          setTimeout(function() {
+            loadedResources.forEach((resource) => {
+              resource.openHours = [
+                {
+                  "@type": "OpenHours",
+                  "@id": "_:916",
+                  id: 51,
+                  weekday: 1,
+                  open: "2022-09-16T08:00:00+02:00",
+                  close: "2022-09-16T23:00:00+02:00",
+                  updateTimestamp: "2022-08-31T06:07:47+02:00",
+                },
+                {
+                  "@type": "OpenHours",
+                  "@id": "_:923",
+                  id: 52,
+                  weekday: 2,
+                  open: "2022-09-16T08:00:00+02:00",
+                  close: "2022-09-16T23:00:00+02:00",
+                  updateTimestamp: "2022-08-31T06:07:47+02:00",
+                },
+                {
+                  "@type": "OpenHours",
+                  "@id": "_:927",
+                  id: 53,
+                  weekday: 3,
+                  open: "2022-09-16T08:00:00+02:00",
+                  close: "2022-09-16T23:00:00+02:00",
+                  updateTimestamp: "2022-08-31T06:07:47+02:00",
+                },
+                {
+                  "@type": "OpenHours",
+                  "@id": "_:931",
+                  id: 54,
+                  weekday: 4,
+                  open: "2022-09-16T08:00:00+02:00",
+                  close: "2022-09-16T23:00:00+02:00",
+                  updateTimestamp: "2022-08-31T06:07:47+02:00",
+                },
+                {
+                  "@type": "OpenHours",
+                  "@id": "_:935",
+                  id: 55,
+                  weekday: 5,
+                  open: "2022-09-16T08:00:00+02:00",
+                  close: "2022-09-16T23:00:00+02:00",
+                  updateTimestamp: "2022-08-31T06:07:47+02:00",
+                }
+              ];
+              let mappedResource = handleResources(resource, date);
+              calendarRef?.current?.getApi().addResource(mappedResource);
+              setTimeout(function() {
+                let newlyAddedElement = document.querySelector(".fc-datagrid-body > tbody > tr:last-child");
+                let wep = locationExpanderIdentifier+1;
+                let elementAfter = document.querySelector(".fc-datagrid-body > tbody > tr:nth-child("+wep+")");
+                setTimeout(function() {
+                  elementAfter.before(newlyAddedElement);
+                  console.log(calendarRef);
+                  console.log(calendarRef.current._calendarApi.currentDataManager.data.resourceStore);
+                  // _moveElementObject(calendarRef.current._calendarApi.currentDataManager.data.resourceStore, 10, locationExpanderIdentifier);
+                  setTimeout(function() {
+                    console.log(calendarRef.current._calendarApi.currentDataManager.data.resourceStore);
+                  }, 1000)
+                }, 1000)
+               
+                console.log(elementAfter);
+              }, 1)
+              
+          });
+        }, 1)
+      })
+    return false;
+  }
+  const getScrollTime = () => { 
     const dateTimeNow = new Date();
     dateTimeNow.setHours(dateTimeNow.getHours() - 2);
     const scrollTimeString = `${dateTimeNow.getHours()}:00:00`;
@@ -68,6 +163,43 @@ function Calendar({
   const getValidRange = () => {
     return { start: dateNow };
   };
+
+  useEffect(() => {
+    if (locationFilter.length === 0 && resourceFilter.length === 0 && locations !== null && locations.length !== 0 && typeof calendarRef != "undefined") {
+      let placeholderReources = setPlaceholderResources(locationFilter, resourceFilter, locations, calendarRef);
+      let placeholderResourcesMap = {};
+      placeholderReources.forEach((value) => {
+        placeholderResourcesMap[value.building] = value.id;
+        calendarRef?.current?.getApi().addResource({
+          id: value.id,
+          resourceId: value.id,
+          building: value.building,
+          title: value.title
+        });
+      })
+
+
+
+      let locationExpanders = document.querySelectorAll(".fc-datagrid-cell-frame > .fc-datagrid-cell-cushion > .fc-datagrid-expander");
+      for (let i = 0; i < locationExpanders.length; i++) {
+        let locationExpanderText = locationExpanders[i].nextElementSibling.innerText;
+        let locationExpanderIdentifier = "locationExpanderIdentifier_"+placeholderResourcesMap[locationExpanderText];
+        locationExpanders[i].setAttribute("id", locationExpanderIdentifier);
+        let parent = locationExpanders[i].parentElement.parentElement.parentElement.parentElement;
+        parent.setAttribute("sort-id", placeholderResourcesMap[locationExpanderText]);
+        document.getElementById(locationExpanderIdentifier).addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          let parent = e.target.parentElement;
+          let locationName = parent.nextElementSibling.innerText;
+          fetchResourcesOnLocation(locationName, placeholderResourcesMap[locationExpanderText], i, placeholderResourcesMap);
+        });
+      }
+    }
+
+   
+
+  }, [locations])
 
   // Set calendar selection.
   useEffect(() => {
@@ -88,15 +220,14 @@ function Calendar({
   const triggerResourceView = (showResourceViewId) => {
     setShowResourceViewId(showResourceViewId);
   };
-
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
     if (highlightElement !== null) {
       setTimeout(() => {
         const calendarSelectionBox = ReactDOMServer.renderToString(
           <CalendarSelectionBox
-            config={config}
             calendarSelection={calendarSelection}
+            calendarSelectionResourceTitle={calendarSelectionResourceTitle}
           />
         );
         document.querySelector("div.fc-highlight").innerHTML =
@@ -105,21 +236,29 @@ function Calendar({
           .getElementById("calendar-selection-choice-confirm")
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
-            const paramsObj = {
-              from: calendarSelection.start.toISOString(),
-              to: calendarSelection.end.toISOString(),
-              resource: calendarSelection.resourceId ?? undefined,
-            };
-            if (
-              paramsObj.from === undefined ||
-              paramsObj.to === undefined ||
-              paramsObj.resource === undefined
-            ) {
-              window.open(config.redirect_url, "_self");
-            } else {
-              const paramsStr = new URLSearchParams(paramsObj).toString();
-              window.open(`${config.redirect_url}?${paramsStr}`, "_self");
+            switch (config.step_one) {
+              case true:
+                const paramsObj = {
+                  from: calendarSelection.start.toISOString(),
+                  to: calendarSelection.end.toISOString(),
+                  resource: calendarSelection.resourceId ?? undefined,
+                };
+                if (
+                  paramsObj.from === undefined ||
+                  paramsObj.to === undefined ||
+                  paramsObj.resource === undefined
+                ) {
+                  window.open(config.redirect_url, "_self");
+                } else {
+                  const paramsStr = new URLSearchParams(paramsObj).toString();
+                  window.open(`${config.redirect_url}?${paramsStr}`, "_self");
+                }
+                break;
+              case false:
+                setDisplayState("minimized");
+                break;
             }
+            return false;
           });
         document
           .getElementById("calendar-selection-container")
@@ -131,6 +270,7 @@ function Calendar({
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
             calendarRef.current.getApi().unselect();
+            setCalendarSelection({});
           });
       }, 1);
     }
@@ -145,6 +285,10 @@ function Calendar({
       />
     );
   };
+
+  useEffect(() => {
+
+  }, [events])
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -195,10 +339,11 @@ function Calendar({
             locale={daLocale}
             select={onCalendarSelection}
             validRange={getValidRange}
-            resources={
-              resources &&
-              resources.map((value) => handleResources(value, calendarRef))
-            }
+            // resources={
+            //   resources &&
+            //   resources.map((value) => handleResources(value, date))
+            // }
+            resourceOrder="resourceId"
             resourceGroupField="building"
             resourceAreaColumns={[
               {
@@ -253,10 +398,65 @@ Calendar.propTypes = {
     license_key: PropTypes.string.isRequired,
     redirect_url: PropTypes.string.isRequired,
   }).isRequired,
+  setShowResourceViewId: PropTypes.func.isRequired,
+  urlResource: PropTypes.shape({
+    resourceMail: PropTypes.string.isRequired,
+    resourceName: PropTypes.string.isRequired,
+  }),
+  setDisplayState: PropTypes.string.isRequired
 };
 
 Calendar.defaultProps = {
   calendarSelection: null,
+  urlResource: null,
 };
 
 export default Calendar;
+
+function _moveElementObject(object, from, to) {
+  var newObjects = [];
+  var newObject = {};
+  var oldObject = {};
+  var firstObject = {};
+  var lastObject = {};
+  var toMoveKey = "";
+  var toMoveValue;
+  oldObject = object;
+  var objLength = _countProperties(oldObject);
+  var keyNo = 1;
+  for (var key in oldObject) {
+      if (keyNo == from) {
+          toMoveKey = key;
+          toMoveValue = oldObject[key];
+      }
+      keyNo++;
+  }
+  console.log(oldObject);
+
+  keyNo = 1;
+  for (var key in oldObject) {
+      if (keyNo < to) {
+          firstObject[key] = oldObject[key];
+          newObject[key] = firstObject[key];
+      }
+      keyNo++;
+  }
+  console.log(firstObject);
+
+  keyNo = 1;
+  for (var key in oldObject) {
+      if (to <= objLength) {
+          lastObject[key] = oldObject[key];
+      }
+      keyNo++;
+  }
+  delete lastObject[toMoveKey];
+  newObject[toMoveKey] = toMoveValue;
+
+  for (var key in lastObject) {
+      newObject[key] = lastObject[key];
+  }
+  console.log(newObject);
+  console.log("push");
+  return newObject;
+}

@@ -9,12 +9,17 @@ import dayjs from "dayjs";
  * @param {object} props Props.
  * @param {object} props.calendarSelection Object containing selection info
  *   returned by fullcalendar
+ * @param {string} props.calendarSelectionResourceTitle Title of selected
+ *   resource.
  * @returns {object} Calendar selection box
  */
-function CalendarSelectionBox({ calendarSelection }) {
+function CalendarSelectionBox({
+  calendarSelection,
+  calendarSelectionResourceTitle,
+}) {
   /**
    * @param {string} startStr String containing the start-dateTime of the
-   *   selection
+   *   selection.
    * @returns {string} Date formatted as string.
    */
   function getFormattedDate(startStr) {
@@ -43,7 +48,7 @@ function CalendarSelectionBox({ calendarSelection }) {
           </button>
           <span id="calendar-selection-choice">Dit valg</span>
           <span id="calendar-selection-choice-title">
-            <b>{calendarSelection.resource._resource.title}</b>
+            <b>{calendarSelectionResourceTitle}</b>
           </span>
           <span>
             <b>{getFormattedDate(calendarSelection.start)}</b>
@@ -73,6 +78,7 @@ CalendarSelectionBox.propTypes = {
     end: PropTypes.shape({}).isRequired,
     resourceId: PropTypes.string.isRequired,
   }).isRequired,
+  calendarSelectionResourceTitle: PropTypes.string.isRequired,
 };
 
 export default CalendarSelectionBox;

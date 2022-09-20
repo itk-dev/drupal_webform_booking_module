@@ -2,6 +2,38 @@ import dayjs from "dayjs";
 
 export default class Api {
   static async fetchLocations(apiEndpoint) {
+    return [
+      {
+        "name": "LOCATION1"
+      },
+      {
+        "name": "LOCATION2"
+      },
+      {
+        "name": "LOCATION3"
+      },
+      {
+        "name": "LOCATION4"
+      },
+      {
+        "name": "LOCATION5"
+      },
+      {
+        "name": "LOCATION6"
+      },
+      {
+        "name": "LOCATION7"
+      },
+      {
+        "name": "LOCATION8"
+      },
+      {
+        "name": "LOCATION9"
+      },
+      {
+        "name": "LOCATION10"
+      }
+    ]
     return fetch(`${apiEndpoint}itkdev_booking/locations`)
       .then((response) => {
         if (!response.ok) {

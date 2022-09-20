@@ -31,15 +31,13 @@ function businessHoursOrNearestHalfHour(
   today = today.setHours(0, 0, 0, 0);
   const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
 
-  const currentClosestHalfAnHourFormatted = `${
-    roundToNearest15(new Date()).getHours().toString().length === 1
+  const currentClosestHalfAnHourFormatted = `${roundToNearest15(new Date()).getHours().toString().length === 1
       ? `0${roundToNearest15(new Date()).getHours()}`
       : roundToNearest15(new Date()).getHours()
-  }:${
-    roundToNearest15(new Date()).getMinutes().toString().length === 1
+    }:${roundToNearest15(new Date()).getMinutes().toString().length === 1
       ? `0${roundToNearest15(new Date()).getMinutes()}`
       : roundToNearest15(new Date()).getMinutes()
-  }`;
+    }`;
   if (today !== calendarDate) {
     return businessStartHour;
   }
@@ -68,12 +66,11 @@ export function handleBusyIntervals(value) {
  * Handle resources.
  *
  * @param {object} value Resource.
- * @param {object} calendarRef Fullcalendar instance
+ * @param {object} currentCalendarDate The current calendar date.
  * @returns {object} Resource formatted for fullcalendar.
  */
-export function handleResources(value, calendarRef) {
+export function handleResources(value, currentCalendarDate) {
   // TODO: Add business hours.
-  const currentCalendarDate = calendarRef.current.getApi().getDate();
   const businessHoursArray = []; // eslint-disable-line no-param-reassign
   // reformatting openHours to fullcalendar-readable format
   value.openHours.forEach((v) => {
@@ -86,14 +83,46 @@ export function handleResources(value, calendarRef) {
     };
     businessHoursArray.push(businessHours);
   });
-  return {
-    resourceId: value.id,
-    id: value.resourceMail,
-    title: value.resourceName,
-    capacity: value.capacity,
-    building: value.location,
-    description: value.resourcedescription,
-    image: "http://placekitten.com/1920/1080",
-    businessHours: businessHoursArray,
-  };
+
+  if (businessHoursArray.length > 0) {
+    return {
+      resourceId: value.id,
+      id: value.resourceMail,
+      title: value.resourceName,
+      capacity: value.capacity,
+      building: value.location,
+      description: value.resourcedescription,
+      image: "http://placekitten.com/1920/1080",
+      businessHours: businessHoursArray,
+    };
+  } else {
+    return {
+      resourceId: value.id,
+      id: value.resourceMail,
+      title: value.resourceName,
+      capacity: value.capacity,
+      building: value.location,
+      description: value.resourcedescription,
+      image: "http://placekitten.com/1920/1080",
+    };
+  }
+}
+
+
+
+export function setPlaceholderResources(locationFilter, resourceFilter, locations) {
+  let placeholderReources = [];
+  if (locationFilter.length === 0 && resourceFilter.length === 0 && locations.length !== 0) {
+    locations.forEach((value, index) => {
+      placeholderReources.push(
+        {
+          id: index,
+          building: value.name,
+          title: "loading..."
+        }
+      )
+
+    })
+    return placeholderReources;
+  }
 }

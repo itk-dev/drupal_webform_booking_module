@@ -47,6 +47,7 @@ function App() {
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
+  const [locations, setLocations] = useState(null);
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
   const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
@@ -72,6 +73,7 @@ function App() {
     if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
+          setLocations(loadedLocations);
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -153,7 +155,56 @@ function App() {
 
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
-          setResources(loadedResources);  
+          loadedResources.forEach((resource, index) => {
+            resource.openHours = [
+              {
+                "@type": "OpenHours",
+                "@id": "_:916",
+                id: 51,
+                weekday: 1,
+                open: "2022-09-16T08:00:00+02:00",
+                close: "2022-09-16T23:00:00+02:00",
+                updateTimestamp: "2022-08-31T06:07:47+02:00",
+              },
+              {
+                "@type": "OpenHours",
+                "@id": "_:923",
+                id: 52,
+                weekday: 2,
+                open: "2022-09-16T08:00:00+02:00",
+                close: "2022-09-16T23:00:00+02:00",
+                updateTimestamp: "2022-08-31T06:07:47+02:00",
+              },
+              {
+                "@type": "OpenHours",
+                "@id": "_:927",
+                id: 53,
+                weekday: 3,
+                open: "2022-09-16T08:00:00+02:00",
+                close: "2022-09-16T23:00:00+02:00",
+                updateTimestamp: "2022-08-31T06:07:47+02:00",
+              },
+              {
+                "@type": "OpenHours",
+                "@id": "_:931",
+                id: 54,
+                weekday: 4,
+                open: "2022-09-16T08:00:00+02:00",
+                close: "2022-09-16T23:00:00+02:00",
+                updateTimestamp: "2022-08-31T06:07:47+02:00",
+              },
+              {
+                "@type": "OpenHours",
+                "@id": "_:935",
+                id: 55,
+                weekday: 5,
+                open: "2022-09-16T08:00:00+02:00",
+                close: "2022-09-16T23:00:00+02:00",
+                updateTimestamp: "2022-08-31T06:07:47+02:00",
+              },
+            ];
+          });
+          setResources(loadedResources);
         })
         .catch(() => {
           // TODO: Display error and retry option for user. (v0.1)
@@ -229,7 +280,6 @@ function App() {
       });
     }
   }, [calendarSelection, authorFields]);
-
   return (
     <div className="App">
       <div className="container-fluid">
@@ -297,6 +347,11 @@ function App() {
                 setCalendarSelection={setCalendarSelection}
                 config={config}
                 setShowResourceViewId={setShowResourceViewId}
+                urlResource={urlResource}
+                setDisplayState={setDisplayState}
+                locationFilter={locationFilter}
+                resourceFilter={resourceFilter}
+                locations={locations}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView
