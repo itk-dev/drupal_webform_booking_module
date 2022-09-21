@@ -119,11 +119,6 @@ export function handleResources(value, currentCalendarDate) {
 export function setPlaceholderResources(locations) {
   const placeholderReources = [];
   if (locations.length !== 0) {
-    placeholderReources.push({
-      id: 3,
-      building: "tester medtoord",
-      title: "loading...",
-    });
     locations.forEach((value, index) => {
       placeholderReources.push({
         id: index,
