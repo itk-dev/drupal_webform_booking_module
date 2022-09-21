@@ -43,7 +43,7 @@ function App() {
 
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
-  const [resources, setResources] = useState(false); // The result after filtering resource.
+  const [resources, setResources] = useState(false); // The result after filtering resources
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
