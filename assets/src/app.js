@@ -133,7 +133,7 @@ function App() {
         start: new Date(validUrlParams.get("from")),
         end: new Date(validUrlParams.get("to")),
         allDay: false,
-        resourceId: validUrlParams.get("resource"),
+        resource: validUrlParams.get("resource"),
       });
     }
   }, [urlResource]);
@@ -302,6 +302,7 @@ function App() {
                 setDisplayState={setDisplayState}
                 locations={locations}
                 setEvents={setEvents}
+                validUrlParams={validUrlParams}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView

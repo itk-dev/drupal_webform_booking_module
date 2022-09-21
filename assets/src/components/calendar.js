@@ -40,6 +40,7 @@ import "./calendar.scss";
  *   maximized
  * @param {object} props.locations Object containing available locations
  * @param {Function} props.setEvents Set calendar events
+ * @param {object} props.validUrlParams Validated url parameters from step1
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -55,6 +56,7 @@ function Calendar({
   setDisplayState,
   locations,
   setEvents,
+  validUrlParams,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
@@ -62,6 +64,8 @@ function Calendar({
   document.body.appendChild(internalStyling);
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
+    useState();
+  const [calendarSelectionResourceId, setCalendarSelectionResourceId] =
     useState();
   const [asyncEvents, setAsyncEvents] = useState();
   const internalAsyncEvents = [];
@@ -78,6 +82,14 @@ function Calendar({
 
     const serialized = JSON.stringify(newSelection);
     setInternalSelection(serialized);
+    if (
+      typeof selection.resource !== "undefined" &&
+      selection.resource !== null
+    ) {
+      setCalendarSelectionResourceId(
+        selection.resource.extendedProps.resourceId
+      );
+    }
     setCalendarSelection(newSelection);
 
     if (selection.resource) {
@@ -128,18 +140,30 @@ function Calendar({
     );
   }
   useEffect(() => {
-    let ascev = asyncEvents;
-    if (typeof asyncEvents === "undefined") {
-      ascev = [];
+    if (!validUrlParams) {
+      let ascev = asyncEvents;
+      if (typeof asyncEvents === "undefined") {
+        ascev = [];
+      }
+      events.forEach((ev) => {
+        internalAsyncEvents.push(ev);
+      });
+      ascev.forEach((asev) => {
+        internalAsyncEvents.push(asev);
+      });
+      setEvents(internalAsyncEvents);
     }
-    events.forEach((ev) => {
-      internalAsyncEvents.push(ev);
-    });
-    ascev.forEach((asev) => {
-      internalAsyncEvents.push(asev);
-    });
-    setEvents(internalAsyncEvents);
   }, [asyncEvents]);
+
+  useEffect(() => {
+    if (validUrlParams !== null) {
+      calendarRef.current._calendarApi.setOption(
+        /* eslint no-underscore-dangle: 0 */
+        "resourcesInitiallyExpanded",
+        "true"
+      );
+    }
+  }, [validUrlParams]);
 
   const getScrollTime = () => {
     const dateTimeNow = new Date();
@@ -173,12 +197,14 @@ function Calendar({
   };
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
+
     if (highlightElement !== null) {
       setTimeout(() => {
         const calendarSelectionBox = ReactDOMServer.renderToString(
           <CalendarSelectionBox
             calendarSelection={calendarSelection}
             calendarSelectionResourceTitle={calendarSelectionResourceTitle}
+            calendarSelectionResourceId={calendarSelectionResourceId}
           />
         );
         document.querySelector("div.fc-highlight").innerHTML =
@@ -187,16 +213,19 @@ function Calendar({
           .getElementById("calendar-selection-choice-confirm")
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
+            const resourceId = e.target.getAttribute("data-resource-id");
             const paramsObj = {
               from: calendarSelection.start.toISOString(),
               to: calendarSelection.end.toISOString(),
-              resource: calendarSelection.resourceId ?? undefined,
+              resourceMail: calendarSelection.resourceId ?? undefined,
+              resource: resourceId,
             };
             switch (config.step_one) {
               case true:
                 if (
                   paramsObj.from === undefined ||
                   paramsObj.to === undefined ||
+                  paramsObj.resourceMail === undefined ||
                   paramsObj.resource === undefined
                 ) {
                   window.open(config.redirect_url, "_self");
@@ -262,7 +291,8 @@ function Calendar({
     if (
       info.groupValue === "" ||
       alreadyHandledResourceIds.includes(info.groupValue) ||
-      resources
+      resources ||
+      validUrlParams !== null
     ) {
       return false;
     }
@@ -414,6 +444,7 @@ Calendar.propTypes = {
     length: PropTypes.number.isRequired,
   }).isRequired,
   setEvents: PropTypes.func.isRequired,
+  validUrlParams: PropTypes.shape({}).isRequired,
 };
 
 Calendar.defaultProps = {
