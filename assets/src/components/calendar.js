@@ -88,11 +88,13 @@ function Calendar({
 
   /** @param {string} locationName Name of the expanded location */
   function fetchResourcesOnLocation(locationName) {
-    if (locationName.trim().indexOf('___') != -1) { //locationName contains space and has been glued. Now unglue.
-      let ungluedLocationName = locationName.replace("___", " ")
-      locationName = ungluedLocationName;
+    let location = locationName;
+    if (location.trim().indexOf("___") !== -1) {
+      // locationName contains space and has been glued. Now unglue.
+      const ungluedLocationName = location.replace("___", " ");
+      location = ungluedLocationName;
     }
-    const searchParams = `location=${locationName}`;
+    const searchParams = `location=${location}`;
     Api.fetchResources(config.api_endpoint, searchParams).then(
       (loadedResources) => {
         setTimeout(() => {
@@ -116,12 +118,12 @@ function Calendar({
                 });
             }
             const expander = document.querySelector(
-              `.fc-datagrid-cell#${locationName} .fc-icon-plus-square`
+              `.fc-datagrid-cell#${location} .fc-icon-plus-square`
             );
             if (expander) {
               expander.click();
             }
-            internalStyling.innerHTML += `td.fc-resource[data-resource-id='${locationName}'] {display:none;}`;
+            internalStyling.innerHTML += `td.fc-resource[data-resource-id='${location}'] {display:none;}`;
           });
         }, 1);
       }
@@ -246,27 +248,32 @@ function Calendar({
     return false;
   };
   const handleAddedResource = (info) => {
-    if (info.groupValue === "" || alreadyHandledResourceIds.includes(info.groupValue) || resources) {
+    if (
+      info.groupValue === "" ||
+      alreadyHandledResourceIds.includes(info.groupValue) ||
+      resources
+    ) {
       return false;
     }
-    if (info.groupValue.trim().indexOf(' ') != -1) {
-      let gluedGroupValue = info.groupValue.replace(" ", "___")
-      info.groupValue = gluedGroupValue;
+    let location = info.groupValue;
+    if (location.trim().indexOf(" ") !== -1) {
+      const gluedGroupValue = location.replace(" ", "___");
+      location = gluedGroupValue;
     }
-    info.el.setAttribute("id", info.groupValue);
+    info.el.setAttribute("id", location);
     document
-      .querySelector(`#${info.groupValue} .fc-icon-plus-square`)
+      .querySelector(`#${location} .fc-icon-plus-square`)
       .addEventListener(
         "click",
         (e) => {
           e.preventDefault();
           e.stopPropagation();
-          const locationName = info.groupValue;
+          const locationName = location;
           fetchResourcesOnLocation(locationName);
         },
         { once: true }
       );
-    alreadyHandledResourceIds.push(info.groupValue);
+    alreadyHandledResourceIds.push(location);
     return false;
   };
   return (
