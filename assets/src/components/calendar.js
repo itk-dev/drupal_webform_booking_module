@@ -101,22 +101,7 @@ function Calendar({
           loadedResources.forEach((resource) => {
             const mappedResource = handleResources(resource, date);
             calendarRef?.current?.getApi().addResource(mappedResource);
-            if (config && date !== null) {
-              Api.fetchEvents(
-                config.api_endpoint,
-                loadedResources,
-                dayjs(date).startOf("day")
-              )
-                .then((loadedEvents) => {
-                  loadedEvents.forEach((value) => {
-                    internalAsyncEvents.push(value);
-                  });
-                  setEvents(internalAsyncEvents);
-                })
-                .catch(() => {
-                  // TODO: Display error and retry option for user. (v0.1)
-                });
-            }
+
             const expander = document.querySelector(
               `.fc-datagrid-cell#${location} .fc-icon-plus-square`
             );
@@ -125,6 +110,22 @@ function Calendar({
             }
             internalStyling.innerHTML += `td.fc-resource[data-resource-id='${location}'] {display:none;}`;
           });
+          if (config && date !== null) {
+            Api.fetchEvents(
+              config.api_endpoint,
+              loadedResources,
+              dayjs(date).startOf("day")
+            )
+              .then((loadedEvents) => {
+                loadedEvents.forEach((value) => {
+                  internalAsyncEvents.push(value);
+                });
+                setEvents(internalAsyncEvents);
+              })
+              .catch(() => {
+                // TODO: Display error and retry option for user. (v0.1)
+              });
+          }
         }, 1);
       }
     );
