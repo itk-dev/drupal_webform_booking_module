@@ -227,10 +227,7 @@ function Calendar({
       locations.length !== 0 &&
       typeof calendarRef !== "undefined"
     ) {
-      const placeholderResources = setPlaceholderResources(
-        locations,
-        calendarRef
-      );
+      const placeholderResources = setPlaceholderResources(locations);
       const placeholderResourcesArray = [];
       placeholderResources.forEach((value) => {
         placeholderResourcesArray.push({
@@ -245,7 +242,7 @@ function Calendar({
     return false;
   };
   const handleAddedResource = (info) => {
-    if (alreadyHandledResourceIds.includes(info.groupValue) || resources) {
+    if (info.groupValue === "" || alreadyHandledResourceIds.includes(info.groupValue) || resources) {
       return false;
     }
     info.el.setAttribute("id", info.groupValue);
