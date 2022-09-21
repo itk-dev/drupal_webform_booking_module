@@ -88,6 +88,10 @@ function Calendar({
 
   /** @param {string} locationName Name of the expanded location */
   function fetchResourcesOnLocation(locationName) {
+    if (locationName.trim().indexOf('___') != -1) { //locationName contains space and has been glued. Now unglue.
+      let ungluedLocationName = locationName.replace("___", " ")
+      locationName = ungluedLocationName;
+    }
     const searchParams = `location=${locationName}`;
     Api.fetchResources(config.api_endpoint, searchParams).then(
       (loadedResources) => {
@@ -244,6 +248,10 @@ function Calendar({
   const handleAddedResource = (info) => {
     if (info.groupValue === "" || alreadyHandledResourceIds.includes(info.groupValue) || resources) {
       return false;
+    }
+    if (info.groupValue.trim().indexOf(' ') != -1) {
+      let gluedGroupValue = info.groupValue.replace(" ", "___")
+      info.groupValue = gluedGroupValue;
     }
     info.el.setAttribute("id", info.groupValue);
     document
