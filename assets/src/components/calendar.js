@@ -41,6 +41,8 @@ import "./calendar.scss";
  * @param {object} props.locations Object containing available locations
  * @param {Function} props.setEvents Set calendar events
  * @param {object} props.validUrlParams Validated url parameters from step1
+ * @param {object} props.locationFilter Object containing selected filtered
+ *   locations
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -57,6 +59,7 @@ function Calendar({
   locations,
   setEvents,
   validUrlParams,
+  locationFilter,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
@@ -139,6 +142,17 @@ function Calendar({
       }
     );
   }
+  useEffect(() => {
+    setTimeout(() => {
+      if (locationFilter.length !== 0) {
+        calendarRef.current._calendarApi.setOption(
+          /* eslint no-underscore-dangle: 0 */
+          "resourcesInitiallyExpanded",
+          "true"
+        );
+      }
+    }, 800);
+  }, [locationFilter]);
   useEffect(() => {
     if (!validUrlParams) {
       let ascev = asyncEvents;
@@ -445,6 +459,9 @@ Calendar.propTypes = {
   }).isRequired,
   setEvents: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}).isRequired,
+  locationFilter: PropTypes.shape({
+    length: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 Calendar.defaultProps = {
