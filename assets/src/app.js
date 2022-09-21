@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
-import RedirectButton from "./components/redirect-button";
+// import RedirectButton from "./components/redirect-button";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
@@ -43,10 +43,11 @@ function App() {
 
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
-  const [resources, setResources] = useState([]); // The result after filtering resources
+  const [resources, setResources] = useState(false); // The result after filtering resources
 
   // Id of a specific resource to be displayed in resource view.
   // @todo Do we need the resource and facilities constant in app? Should they not be contained within component?
+  const [locations, setLocations] = useState(null);
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
   const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
@@ -72,6 +73,7 @@ function App() {
     if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
+          setLocations(loadedLocations);
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -135,7 +137,6 @@ function App() {
       });
     }
   }, [urlResource]);
-
   // Set resources from filterParams.
   useEffect(() => {
     if (config) {
@@ -150,14 +151,15 @@ function App() {
           urlSearchParams.append(key, value.toString());
         }
       });
-
-      Api.fetchResources(config.api_endpoint, urlSearchParams)
-        .then((loadedResources) => {
-          setResources(loadedResources);
-        })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
-        });
+      if (Object.values(filterParams).length > 0) {
+        Api.fetchResources(config.api_endpoint, urlSearchParams)
+          .then((loadedResources) => {
+            setResources(loadedResources);
+          })
+          .catch(() => {
+            // TODO: Display error and retry option for user. (v0.1)
+          });
+      }
     }
   }, [filterParams]);
 
@@ -197,7 +199,7 @@ function App() {
 
     setFilterParams({
       ...filterParams,
-      ...{ "resourceMail[]": resourceValues },
+      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
     });
   }, [resourceFilter]);
 
@@ -229,7 +231,6 @@ function App() {
       });
     }
   }, [calendarSelection, authorFields]);
-
   return (
     <div className="App">
       <div className="container-fluid">
@@ -298,6 +299,9 @@ function App() {
                 config={config}
                 setShowResourceViewId={setShowResourceViewId}
                 urlResource={urlResource}
+                setDisplayState={setDisplayState}
+                locations={locations}
+                setEvents={setEvents}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView
@@ -341,14 +345,14 @@ function App() {
         )}
 
         {/* Display redirect button */}
-        {config && config.step_one && calendarSelection && (
+        {/* {config && config.step_one && calendarSelection && (
           <div className="row">
             <RedirectButton
               calendarSelection={calendarSelection}
               config={config}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

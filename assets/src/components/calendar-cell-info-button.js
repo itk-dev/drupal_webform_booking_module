@@ -32,7 +32,7 @@ function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
 }
 CalendarCellInfoButton.propTypes = {
   title: PropTypes.string.isRequired,
-  showResourceViewId: PropTypes.string.isRequired,
+  showResourceViewId: PropTypes.number.isRequired,
   onClickEvent: PropTypes.func.isRequired,
 };
 

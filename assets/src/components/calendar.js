@@ -10,11 +10,17 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
+import dayjs from "dayjs";
 import CalendarHeader from "./calendar-header";
-import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
+import {
+  handleBusyIntervals,
+  handleResources,
+  setPlaceholderResources,
+} from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
+import Api from "../util/api";
 import "./calendar.scss";
 
 /**
@@ -30,6 +36,10 @@ import "./calendar.scss";
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
  * @param {object} props.urlResource The resource object loaded from URL id.
+ * @param {string} props.setDisplayState State of the calendar - minimized or
+ *   maximized
+ * @param {object} props.locations Object containing available locations
+ * @param {Function} props.setEvents Set calendar events
  * @returns {string} Calendar component.
  */
 function Calendar({
@@ -42,12 +52,19 @@ function Calendar({
   config,
   setShowResourceViewId,
   urlResource,
+  setDisplayState,
+  locations,
+  setEvents,
 }) {
   const calendarRef = useRef();
   const dateNow = new Date();
+  const internalStyling = document.createElement("style");
+  document.body.appendChild(internalStyling);
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
     useState();
+  const internalAsyncEvents = [];
+  const alreadyHandledResourceIds = [];
   const onCalendarSelection = (selection) => {
     const newSelection = {
       allDay: selection.allDay,
@@ -68,6 +85,44 @@ function Calendar({
       setCalendarSelectionResourceTitle(urlResource.resourceName);
     }
   };
+
+  /** @param {string} locationName Name of the expanded location */
+  function fetchResourcesOnLocation(locationName) {
+    const searchParams = `location=${locationName}`;
+    Api.fetchResources(config.api_endpoint, searchParams).then(
+      (loadedResources) => {
+        setTimeout(() => {
+          loadedResources.forEach((resource) => {
+            const mappedResource = handleResources(resource, date);
+            calendarRef?.current?.getApi().addResource(mappedResource);
+            if (config && date !== null) {
+              Api.fetchEvents(
+                config.api_endpoint,
+                loadedResources,
+                dayjs(date).startOf("day")
+              )
+                .then((loadedEvents) => {
+                  loadedEvents.forEach((value) => {
+                    internalAsyncEvents.push(value);
+                  });
+                  setEvents(internalAsyncEvents);
+                })
+                .catch(() => {
+                  // TODO: Display error and retry option for user. (v0.1)
+                });
+            }
+            const expander = document.querySelector(
+              `.fc-datagrid-cell#${locationName} .fc-icon-plus-square`
+            );
+            if (expander) {
+              expander.click();
+            }
+            internalStyling.innerHTML += `td.fc-resource[data-resource-id='${locationName}'] {display:none;}`;
+          });
+        }, 1);
+      }
+    );
+  }
 
   const getScrollTime = () => {
     const dateTimeNow = new Date();
@@ -115,6 +170,30 @@ function Calendar({
           .getElementById("calendar-selection-choice-confirm")
           .addEventListener("mousedown", (e) => {
             e.stopPropagation();
+            const paramsObj = {
+              from: calendarSelection.start.toISOString(),
+              to: calendarSelection.end.toISOString(),
+              resource: calendarSelection.resourceId ?? undefined,
+            };
+            switch (config.step_one) {
+              case true:
+                if (
+                  paramsObj.from === undefined ||
+                  paramsObj.to === undefined ||
+                  paramsObj.resource === undefined
+                ) {
+                  window.open(config.redirect_url, "_self");
+                } else {
+                  const paramsStr = new URLSearchParams(paramsObj).toString();
+                  window.open(`${config.redirect_url}?${paramsStr}`, "_self");
+                }
+                break;
+              case false:
+              default:
+                setDisplayState("minimized");
+                break;
+            }
+            return false;
           });
         document
           .getElementById("calendar-selection-container")
@@ -140,6 +219,50 @@ function Calendar({
         onClickEvent={triggerResourceViewEv}
       />
     );
+  };
+
+  const generateResourcePlaceholders = () => {
+    if (
+      locations !== null &&
+      locations.length !== 0 &&
+      typeof calendarRef !== "undefined"
+    ) {
+      const placeholderResources = setPlaceholderResources(
+        locations,
+        calendarRef
+      );
+      const placeholderResourcesArray = [];
+      placeholderResources.forEach((value) => {
+        placeholderResourcesArray.push({
+          id: value.building,
+          resourceId: value.id,
+          building: value.building,
+          title: value.title,
+        });
+      });
+      return placeholderResourcesArray;
+    }
+    return false;
+  };
+  const handleAddedResource = (info) => {
+    if (alreadyHandledResourceIds.includes(info.groupValue) || resources) {
+      return false;
+    }
+    info.el.setAttribute("id", info.groupValue);
+    document
+      .querySelector(`#${info.groupValue} .fc-icon-plus-square`)
+      .addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const locationName = info.groupValue;
+          fetchResourcesOnLocation(locationName);
+        },
+        { once: true }
+      );
+    alreadyHandledResourceIds.push(info.groupValue);
+    return false;
   };
   return (
     <div className="Calendar no-gutter col-md-12">
@@ -174,6 +297,8 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
+            resourceGroupLabelDidMount={handleAddedResource}
+            initialResources={generateResourcePlaceholders()}
             nowIndicator
             navLinks
             slotDuration="00:15:00"
@@ -190,11 +315,12 @@ function Calendar({
             dayMaxEvents
             locale={daLocale}
             select={onCalendarSelection}
+            /* eslint-disable react/jsx-props-no-spreading */
+            {...(resources && {
+              resources: resources.map((value) => handleResources(value, date)),
+            })}
             validRange={getValidRange}
-            resources={
-              resources &&
-              resources.map((value) => handleResources(value, date))
-            }
+            resourceOrder="resourceId"
             resourceGroupField="building"
             resourceAreaColumns={[
               {
@@ -229,16 +355,37 @@ Calendar.propTypes = {
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
-  calendarSelection: PropTypes.shape({}),
+  calendarSelection: PropTypes.shape({
+    resource: PropTypes.shape({
+      _resource: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+    start: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    end: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }).isRequired,
+    resourceId: PropTypes.string.isRequired,
+  }),
   setCalendarSelection: PropTypes.func.isRequired,
+  setShowResourceViewId: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
+    redirect_url: PropTypes.string.isRequired,
+    api_endpoint: PropTypes.string.isRequired,
+    step_one: PropTypes.bool.isRequired,
   }).isRequired,
-  setShowResourceViewId: PropTypes.func.isRequired,
   urlResource: PropTypes.shape({
     resourceMail: PropTypes.string.isRequired,
     resourceName: PropTypes.string.isRequired,
   }),
+  setDisplayState: PropTypes.string.isRequired,
+  locations: PropTypes.shape({
+    length: PropTypes.number.isRequired,
+  }).isRequired,
+  setEvents: PropTypes.func.isRequired,
 };
 
 Calendar.defaultProps = {

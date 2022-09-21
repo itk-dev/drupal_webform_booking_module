@@ -72,6 +72,7 @@ export function handleBusyIntervals(value) {
  * @returns {object} Resource formatted for fullcalendar.
  */
 export function handleResources(value, currentCalendarDate) {
+  // TODO: Add business hours.
   const businessHoursArray = []; // eslint-disable-line no-param-reassign
   // reformatting openHours to fullcalendar-readable format
   value.openHours.forEach((v) => {
@@ -84,7 +85,18 @@ export function handleResources(value, currentCalendarDate) {
     };
     businessHoursArray.push(businessHours);
   });
-
+  if (businessHoursArray.length > 0) {
+    return {
+      resourceId: value.id,
+      id: value.resourceMail,
+      title: value.resourceName,
+      capacity: value.capacity,
+      building: value.location,
+      description: value.resourcedescription,
+      image: "http://placekitten.com/1920/1080",
+      businessHours: businessHoursArray,
+    };
+  }
   return {
     resourceId: value.id,
     id: value.resourceMail,
@@ -93,6 +105,28 @@ export function handleResources(value, currentCalendarDate) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
-    businessHours: businessHoursArray,
+    businessHours: {
+      startTime: "00:00",
+      endTime: "24:00",
+    },
   };
+}
+
+/**
+ * @param {object} locations Object of locations retrieved from the database
+ * @returns {Array} Of placeholder resources based on locations
+ */
+export function setPlaceholderResources(locations) {
+  const placeholderReources = [];
+  if (locations.length !== 0) {
+    locations.forEach((value, index) => {
+      placeholderReources.push({
+        id: index,
+        building: value.name,
+        title: "loading...",
+      });
+    });
+    return placeholderReources;
+  }
+  return false;
 }

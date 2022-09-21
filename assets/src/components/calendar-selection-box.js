@@ -26,7 +26,6 @@ function CalendarSelectionBox({
     const formattedDate = dayjs(startStr).format("dddd [d.] D. MMMM YYYY");
     return formattedDate;
   }
-
   /**
    * @param {string} startStr String containing the start-dateTime of the
    *   selection
@@ -77,6 +76,7 @@ CalendarSelectionBox.propTypes = {
     }).isRequired,
     start: PropTypes.shape({}).isRequired,
     end: PropTypes.shape({}).isRequired,
+    resourceId: PropTypes.string.isRequired,
   }).isRequired,
   calendarSelectionResourceTitle: PropTypes.string.isRequired,
 };
