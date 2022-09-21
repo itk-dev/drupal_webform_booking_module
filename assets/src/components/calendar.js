@@ -63,6 +63,7 @@ function Calendar({
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
     useState();
+  const [asyncEvents, setAsyncEvents] = useState();
   const internalAsyncEvents = [];
   const alreadyHandledResourceIds = [];
   const onCalendarSelection = (selection) => {
@@ -95,19 +96,15 @@ function Calendar({
       location = ungluedLocationName;
     }
     const searchParams = `location=${location}`;
+    const expander = document.querySelector(
+      `.fc-datagrid-cell#${location} .fc-icon-plus-square`
+    );
     Api.fetchResources(config.api_endpoint, searchParams).then(
       (loadedResources) => {
         setTimeout(() => {
           loadedResources.forEach((resource) => {
             const mappedResource = handleResources(resource, date);
             calendarRef?.current?.getApi().addResource(mappedResource);
-
-            const expander = document.querySelector(
-              `.fc-datagrid-cell#${location} .fc-icon-plus-square`
-            );
-            if (expander) {
-              expander.click();
-            }
             internalStyling.innerHTML += `td.fc-resource[data-resource-id='${location}'] {display:none;}`;
           });
           if (config && date !== null) {
@@ -117,10 +114,10 @@ function Calendar({
               dayjs(date).startOf("day")
             )
               .then((loadedEvents) => {
-                loadedEvents.forEach((value) => {
-                  internalAsyncEvents.push(value);
-                });
-                setEvents(internalAsyncEvents);
+                setAsyncEvents(loadedEvents);
+                if (expander) {
+                  expander.click();
+                }
               })
               .catch(() => {
                 // TODO: Display error and retry option for user. (v0.1)
@@ -130,6 +127,19 @@ function Calendar({
       }
     );
   }
+  useEffect(() => {
+    let ascev = asyncEvents;
+    if (typeof asyncEvents === "undefined") {
+      ascev = [];
+    }
+    events.forEach((ev) => {
+      internalAsyncEvents.push(ev);
+    });
+    ascev.forEach((asev) => {
+      internalAsyncEvents.push(asev);
+    });
+    setEvents(internalAsyncEvents);
+  }, [asyncEvents]);
 
   const getScrollTime = () => {
     const dateTimeNow = new Date();
@@ -269,8 +279,13 @@ function Calendar({
         (e) => {
           e.preventDefault();
           e.stopPropagation();
+          if (e.target.classList.contains("loading")) {
+            return false;
+          }
+          e.target.setAttribute("class", "fc-icon fc-icon-plus-square loading");
           const locationName = location;
           fetchResourcesOnLocation(locationName);
+          return false;
         },
         { once: true }
       );

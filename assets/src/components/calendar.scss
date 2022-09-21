@@ -178,6 +178,20 @@
     .fc-icon.fc-icon-plus-square {
       height: 18px !important;
     }
+    .fc-icon.fc-icon-plus-square.loading {
+      animation: loadingAnim 1s linear infinite;
+    }
+    .fc-icon.fc-icon-plus-square.loading:before {
+      content: "|";
+    }
+    @keyframes loadingAnim {
+      from {
+        rotate: 0deg;
+      }
+      to {
+        rotate: 365deg;
+      }
+    }
   }
 }
 .booking-btn-inv {
