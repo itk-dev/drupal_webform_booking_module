@@ -154,7 +154,10 @@ function App() {
       if (Object.values(filterParams).length > 0) {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
-            setResources(loadedResources);
+            setResources([]);
+            setTimeout(() => {
+              setResources(loadedResources);
+            }, 1);
           })
           .catch(() => {
             // TODO: Display error and retry option for user. (v0.1)
@@ -303,6 +306,7 @@ function App() {
                 locations={locations}
                 setEvents={setEvents}
                 validUrlParams={validUrlParams}
+                locationFilter={locationFilter}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView

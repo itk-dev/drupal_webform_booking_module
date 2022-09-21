@@ -183,6 +183,7 @@
     }
     .fc-icon.fc-icon-plus-square.loading:before {
       content: "|";
+      margin: auto;
     }
     @keyframes loadingAnim {
       from {
