@@ -160,7 +160,6 @@ function App() {
             // TODO: Display error and retry option for user. (v0.1)
           });
       }
-
     }
   }, [filterParams]);
 
@@ -200,7 +199,7 @@ function App() {
 
     setFilterParams({
       ...filterParams,
-      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : "")
+      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
     });
   }, [resourceFilter]);
 
@@ -239,8 +238,9 @@ function App() {
         {config && displayState === "maximized" && (
           <div className="app-content">
             <div
-              className={`row filters-wrapper ${showResourceViewId !== null ? "disable-filters" : ""
-                }`}
+              className={`row filters-wrapper ${
+                showResourceViewId !== null ? "disable-filters" : ""
+              }`}
             >
               <div className="col-md-3">
                 {/* Dropdown with locations */}
@@ -300,9 +300,8 @@ function App() {
                 setShowResourceViewId={setShowResourceViewId}
                 urlResource={urlResource}
                 setDisplayState={setDisplayState}
-                locationFilter={locationFilter}
-                resourceFilter={resourceFilter}
                 locations={locations}
+                setEvents={setEvents}
               />
               {/* TODO: Only show if resource view is requested */}
               <ResourceView

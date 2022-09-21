@@ -31,13 +31,15 @@ function businessHoursOrNearestHalfHour(
   today = today.setHours(0, 0, 0, 0);
   const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
 
-  const currentClosestHalfAnHourFormatted = `${roundToNearest15(new Date()).getHours().toString().length === 1
+  const currentClosestHalfAnHourFormatted = `${
+    roundToNearest15(new Date()).getHours().toString().length === 1
       ? `0${roundToNearest15(new Date()).getHours()}`
       : roundToNearest15(new Date()).getHours()
-    }:${roundToNearest15(new Date()).getMinutes().toString().length === 1
+  }:${
+    roundToNearest15(new Date()).getMinutes().toString().length === 1
       ? `0${roundToNearest15(new Date()).getMinutes()}`
       : roundToNearest15(new Date()).getMinutes()
-    }`;
+  }`;
   if (today !== calendarDate) {
     return businessStartHour;
   }
@@ -94,38 +96,37 @@ export function handleResources(value, currentCalendarDate) {
       image: "http://placekitten.com/1920/1080",
       businessHours: businessHoursArray,
     };
-  } else {
-    return {
-      resourceId: value.id,
-      id: value.resourceMail,
-      title: value.resourceName,
-      capacity: value.capacity,
-      building: value.location,
-      description: value.resourcedescription,
-      image: "http://placekitten.com/1920/1080",
-      businessHours: {
-        startTime: "00:00",
-        endTime: "24:00"
-      }
-    };
   }
+  return {
+    resourceId: value.id,
+    id: value.resourceMail,
+    title: value.resourceName,
+    capacity: value.capacity,
+    building: value.location,
+    description: value.resourcedescription,
+    image: "http://placekitten.com/1920/1080",
+    businessHours: {
+      startTime: "00:00",
+      endTime: "24:00",
+    },
+  };
 }
 
-
-
-export function setPlaceholderResources(locationFilter, resourceFilter, locations) {
-  let placeholderReources = [];
-  if (locationFilter.length === 0 && resourceFilter.length === 0 && locations.length !== 0) {
+/**
+ * @param {object} locations Object of locations retrieved from the database
+ * @returns {Array} Of placeholder resources based on locations
+ */
+export function setPlaceholderResources(locations) {
+  const placeholderReources = [];
+  if (locations.length !== 0) {
     locations.forEach((value, index) => {
-      placeholderReources.push(
-        {
-          id: index,
-          building: value.name,
-          title: "loading..."
-        }
-      )
-
-    })
+      placeholderReources.push({
+        id: index,
+        building: value.name,
+        title: "loading...",
+      });
+    });
     return placeholderReources;
   }
+  return false;
 }
