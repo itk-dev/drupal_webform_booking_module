@@ -8,6 +8,7 @@ export default class UrlValidator {
       // Check for existing values
       case urlParams.get("from") === null:
       case urlParams.get("to") === null:
+      case urlParams.get("resourceMail") === null:
       case urlParams.get("resource") === null:
         invalid = true;
         break;
