@@ -63,6 +63,7 @@ function Calendar({
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] =
     useState();
+  const [asyncEvents, setAsyncEvents] = useState();
   const internalAsyncEvents = [];
   const alreadyHandledResourceIds = [];
   const onCalendarSelection = (selection) => {
@@ -117,10 +118,7 @@ function Calendar({
               dayjs(date).startOf("day")
             )
               .then((loadedEvents) => {
-                loadedEvents.forEach((value) => {
-                  internalAsyncEvents.push(value);
-                });
-                setEvents(internalAsyncEvents);
+                setAsyncEvents(loadedEvents);
               })
               .catch(() => {
                 // TODO: Display error and retry option for user. (v0.1)
@@ -130,6 +128,19 @@ function Calendar({
       }
     );
   }
+  useEffect(() => {
+    let ascev = asyncEvents;
+    if (typeof asyncEvents === "undefined") {
+      ascev = [];
+    }
+    events.forEach((ev) => {
+      internalAsyncEvents.push(ev);
+    });
+    ascev.forEach((asev) => {
+      internalAsyncEvents.push(asev);
+    });
+    setEvents(internalAsyncEvents);
+  }, [asyncEvents]);
 
   const getScrollTime = () => {
     const dateTimeNow = new Date();

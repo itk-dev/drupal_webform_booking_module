@@ -72,6 +72,9 @@ export function handleBusyIntervals(value) {
  * @returns {object} Resource formatted for fullcalendar.
  */
 export function handleResources(value, currentCalendarDate) {
+  if (value.location === "") {
+    return false;
+  }
   // TODO: Add business hours.
   const businessHoursArray = []; // eslint-disable-line no-param-reassign
   // reformatting openHours to fullcalendar-readable format
