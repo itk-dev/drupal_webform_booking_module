@@ -25,6 +25,7 @@ use Drupal\Core\Url;
  *   category = @Translation("Advanced elements"),
  * )
  */
+
 class BookingElement extends Hidden
 {
   /**
@@ -47,7 +48,10 @@ class BookingElement extends Hidden
         'enable_booking' => false,
         'enable_resource_tooltips' => false,
         'step1' => false,
-        'redirect_url' => ''
+        'redirect_url' => '',
+        'info_box_color' => '',
+        'info_box_header' => '',
+        'info_box_content' => ''
       ] + parent::defineDefaultProperties();
   }
 
@@ -95,19 +99,19 @@ class BookingElement extends Hidden
     );
 
     $form['element']['info_box_color'] = array(
-      '#type' => 'text',
+      '#type' => 'url',
       '#title' => $this
         ->t('Info boks baggrundsfarve (HEXCODE - f.eks. #0c6efd)')
     );
 
     $form['element']['info_box_header'] = array(
-      '#type' => 'text',
+      '#type' => 'url',
       '#title' => $this
         ->t('Info boks titel')
     );
 
     $form['element']['info_box_content'] = array(
-      '#type' => 'text',
+      '#type' => 'url',
       '#title' => $this
         ->t('Info boks indhold')
     );
