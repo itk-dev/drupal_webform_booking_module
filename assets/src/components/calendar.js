@@ -16,6 +16,7 @@ import {
   handleBusyIntervals,
   handleResources,
   setPlaceholderResources,
+  adjustAsyncResourcesBusinessHours,
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
@@ -74,6 +75,9 @@ function Calendar({
   const internalAsyncEvents = [];
   const alreadyHandledResourceIds = [];
   const onCalendarSelection = (selection) => {
+    if (selection.start < dateNow) {
+      return false;
+    }
     const newSelection = {
       allDay: selection.allDay,
       resourceId: urlResource
@@ -100,6 +104,7 @@ function Calendar({
     } else if (urlResource) {
       setCalendarSelectionResourceTitle(urlResource.resourceName);
     }
+    return false;
   };
 
   /** @param {string} locationName Name of the expanded location */
@@ -114,6 +119,7 @@ function Calendar({
     const expander = document.querySelector(
       `.fc-datagrid-cell#${location} .fc-icon-plus-square`
     );
+    // Load resources for the clicked location
     Api.fetchResources(config.api_endpoint, searchParams).then(
       (loadedResources) => {
         setTimeout(() => {
@@ -122,6 +128,18 @@ function Calendar({
             calendarRef?.current?.getApi().addResource(mappedResource);
             internalStyling.innerHTML += `td.fc-resource[data-resource-id='${location}'] {display:none;}`;
           });
+
+          // As these resources are loaded async, we need to manually update their business hours.
+          const currentlyLoadedResources = calendarRef?.current
+            ?.getApi()
+            .getResources();
+          adjustAsyncResourcesBusinessHours(
+            currentlyLoadedResources,
+            calendarRef,
+            date
+          );
+
+          // Load events for newly added resources, and finally expand location group.
           if (config && date !== null) {
             Api.fetchEvents(
               config.api_endpoint,
@@ -202,6 +220,17 @@ function Calendar({
     if (calendarSelection) {
       calendarRef?.current?.getApi().gotoDate(date);
       calendarRef?.current?.getApi().select(calendarSelection);
+    }
+
+    if (calendarRef) {
+      const currentlyLoadedResources = calendarRef?.current
+        ?.getApi()
+        .getResources();
+      adjustAsyncResourcesBusinessHours(
+        currentlyLoadedResources,
+        calendarRef,
+        date
+      );
     }
   }, [date]);
 

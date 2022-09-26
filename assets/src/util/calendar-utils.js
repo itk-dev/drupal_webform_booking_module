@@ -1,4 +1,10 @@
 import dayjs from "dayjs";
+
+const internalOpeningHours = [];
+
+// Disabling no-underscore-dangle due to having to accessing the fullcalendar api through (calendarref.current._calendarApi)
+/* eslint no-underscore-dangle: 0 */
+
 /**
  * Round to nearest 15 minutes.
  *
@@ -19,14 +25,17 @@ function roundToNearest15(date = new Date()) {
  * @param {number} businessStartHour The hour the resource is available from
  * @param {object} currentCalendarDate Datetime object of the current
  *   Fullcalendar instance
+ * @param {boolean} returnMilliseconds Return value in ms
  * @returns {string} : formatted date to represent the start of when the
  *   resource is available from, either direct resourcedata or the current time
  *   rounded up to the next half an hour, depending on which is largest.
  */
-function businessHoursOrNearestHalfHour(
+function businessHoursOrNearestFifteenMinutes(
   businessStartHour,
-  currentCalendarDate
+  currentCalendarDate,
+  returnMilliseconds
 ) {
+  let adjustedBusinessHour = businessStartHour;
   let today = new Date();
   today = today.setHours(0, 0, 0, 0);
   const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
@@ -40,13 +49,18 @@ function businessHoursOrNearestHalfHour(
       ? `0${roundToNearest15(new Date()).getMinutes()}`
       : roundToNearest15(new Date()).getMinutes()
   }`;
-  if (today !== calendarDate) {
-    return businessStartHour;
+  if (
+    currentClosestHalfAnHourFormatted > adjustedBusinessHour &&
+    calendarDate === today
+  ) {
+    adjustedBusinessHour = currentClosestHalfAnHourFormatted;
   }
-  if (currentClosestHalfAnHourFormatted > businessStartHour) {
-    return currentClosestHalfAnHourFormatted;
+
+  if (returnMilliseconds) {
+    const timeParts = adjustedBusinessHour.split(":");
+    adjustedBusinessHour = timeParts[0] * (60000 * 60) + timeParts[1] * 60000;
   }
-  return businessStartHour;
+  return adjustedBusinessHour;
 }
 
 /**
@@ -83,11 +97,16 @@ export function handleResources(value, currentCalendarDate) {
     const endTime = dayjs(v.close).format("HH:mm");
     const businessHours = {
       daysOfWeek: [v.weekday],
-      startTime: businessHoursOrNearestHalfHour(startTime, currentCalendarDate),
+      startTime: businessHoursOrNearestFifteenMinutes(
+        startTime,
+        currentCalendarDate,
+        false
+      ),
       endTime,
     };
     businessHoursArray.push(businessHours);
   });
+
   if (businessHoursArray.length > 0) {
     return {
       resourceId: value.id,
@@ -109,7 +128,7 @@ export function handleResources(value, currentCalendarDate) {
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
     businessHours: {
-      startTime: "00:00",
+      startTime: "08:00",
       endTime: "24:00",
     },
   };
@@ -131,5 +150,91 @@ export function setPlaceholderResources(locations) {
     });
     return placeholderReources;
   }
+  return false;
+}
+
+/**
+ * Pads the given number, until the length is 2. ex. 8 becomes 08
+ *
+ * @param {number} number Number to pad
+ * @returns {string} Padded number
+ */
+function padTo2Digits(number) {
+  return number.toString().padStart(2, "0");
+}
+
+/**
+ * Converts milliseconds to formatted time (hh:mm)
+ *
+ * @param {number} milliseconds OpeningHours ms timestamp
+ * @returns {string} Formatted time
+ */
+function convertMsToTime(milliseconds) {
+  const seconds = Math.floor(milliseconds / 1000);
+  let minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  minutes %= 60;
+
+  return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
+}
+
+/**
+ * Updates the currently expanded placeholder locations, to prevent selection
+ * before now, if openinghour is lower than now..
+ *
+ * @param {Array} resources Currently loaded resources
+ * @param {object} calendarRef Reference to the calendar instance
+ * @param {Date} date The current date of the calendar instance
+ * @returns {boolean} False
+ */
+export function adjustAsyncResourcesBusinessHours(
+  resources,
+  calendarRef,
+  date
+) {
+  resources.forEach((resource) => {
+    if (resource.title !== "loading...") {
+      const resourceId = resource.id;
+
+      // def index is variable
+      const def = Object.keys(
+        calendarRef.current._calendarApi.currentDataManager.data.resourceStore[
+          resourceId
+        ].businessHours.defs
+      )[0];
+
+      let startTime;
+
+      // Startime of the resource in ms. If the openingHours are already modified in this session, refer to internal object for original openingHours.
+      if (resourceId in internalOpeningHours) {
+        startTime = internalOpeningHours[resourceId];
+      } else {
+        startTime =
+          calendarRef.current._calendarApi.currentDataManager.data
+            .resourceStore[resourceId].businessHours.defs[def].recurringDef
+            .typeData.startTime.milliseconds;
+        internalOpeningHours[resourceId] = startTime;
+      }
+
+      // Converts ms to formatted time
+      startTime = convertMsToTime(startTime);
+
+      const adjustedBusinessStartTime = businessHoursOrNearestFifteenMinutes(
+        startTime,
+        date,
+        true
+      );
+
+      // Modifying the resource object to reflect the adjusted business start time
+      // Disabling no-param-reassign because we are modifying the internal calendar data storage provided by FullCalendar
+      /* eslint-disable no-param-reassign */
+      calendarRef.current._calendarApi.currentDataManager.data.resourceStore[
+        resourceId
+      ].businessHours.defs[def].recurringDef.typeData.startTime.milliseconds =
+        adjustedBusinessStartTime;
+      /* eslint-enable no-param-reassign */
+    }
+  });
   return false;
 }
