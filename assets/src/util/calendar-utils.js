@@ -2,9 +2,8 @@ import dayjs from "dayjs";
 
 const internalOpeningHours = [];
 
-// Linting exceptions
+// Disabling no-underscore-dangle due to having to accessing the fullcalendar api through (calendarref.current._calendarApi)
 /* eslint no-underscore-dangle: 0 */
-/* eslint no-param-reassign: 0 */
 
 /**
  * Round to nearest 15 minutes.
@@ -59,7 +58,7 @@ function businessHoursOrNearestFifteenMinutes(
 
   if (returnMilliseconds) {
     const timeParts = adjustedBusinessHour.split(":");
-    adjustedBusinessHour = +timeParts[0] * (60000 * 60) + +timeParts[1] * 60000;
+    adjustedBusinessHour = timeParts[0] * (60000 * 60) + timeParts[1] * 60000;
   }
   return adjustedBusinessHour;
 }
@@ -228,10 +227,13 @@ export function adjustAsyncResourcesBusinessHours(
       );
 
       // Modifying the resource object to reflect the adjusted business start time
+      // Disabling no-param-reassign because we're modifying with the internal calendar data storage provided by FullCalendar
+      /* eslint-disable no-param-reassign */
       calendarRef.current._calendarApi.currentDataManager.data.resourceStore[
         resourceId
       ].businessHours.defs[def].recurringDef.typeData.startTime.milliseconds =
         adjustedBusinessStartTime;
+      /* eslint-enable no-param-reassign */
     }
   });
   return false;
