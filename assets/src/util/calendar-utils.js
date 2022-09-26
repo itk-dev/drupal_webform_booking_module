@@ -227,7 +227,7 @@ export function adjustAsyncResourcesBusinessHours(
       );
 
       // Modifying the resource object to reflect the adjusted business start time
-      // Disabling no-param-reassign because we're modifying with the internal calendar data storage provided by FullCalendar
+      // Disabling no-param-reassign because we are modifying the internal calendar data storage provided by FullCalendar
       /* eslint-disable no-param-reassign */
       calendarRef.current._calendarApi.currentDataManager.data.resourceStore[
         resourceId
