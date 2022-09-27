@@ -151,16 +151,11 @@ ResourceDetails.propTypes = {
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
   hideResourceView: PropTypes.func.isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})),
+  resource: PropTypes.shape({}),
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(
-    PropTypes.shape({
-      icon: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-    })
-  ),
+  facilities: PropTypes.shape({}),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
+  showResourceViewId: PropTypes.number,
 };
 
 ResourceDetails.defaultProps = {

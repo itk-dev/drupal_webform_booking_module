@@ -26,7 +26,7 @@ function ResourceView({
   /** Hide resource view */
   const hideResourceView = () => {
     setShowResourceViewId(null);
-    setResource(false);
+    setResource(null);
     setFacilities(null);
   };
 
@@ -52,11 +52,11 @@ ResourceView.propTypes = {
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})),
+  resource: PropTypes.shape({}),
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(PropTypes.shape({})),
+  facilities: PropTypes.shape({}),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
+  showResourceViewId: PropTypes.number,
   setShowResourceViewId: PropTypes.func.isRequired,
 };
 
