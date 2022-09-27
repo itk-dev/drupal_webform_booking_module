@@ -35,6 +35,7 @@ function App() {
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
   const [capacityOptions, setCapacityOptions] = useState([]);
+  const [facilityOptions, setFacilityOptions] = useState([]);
 
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
@@ -42,6 +43,7 @@ function App() {
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]);
   const [capacityFilter, setCapacityFilter] = useState([]);
+  const [facilityFilter, setFacilityFilter] = useState([]);
 
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
@@ -75,6 +77,12 @@ function App() {
       { value: "21..30", label: "21 - 30", type: "between" },
       { value: "31..80", label: "31 - 80", type: "between" },
       { value: "81", label: "81+", type: "gt" },
+    ]);
+    setFacilityOptions([
+      { value: "monitorEquipment", label: "Projektor/Skærm" },
+      { value: "wheelchairAccessible", label: "Handikapvenligt" },
+      { value: "videoConferenceEquipment", label: "Videokonference" },
+      { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
     ]);
   }, []);
 
@@ -204,6 +212,15 @@ function App() {
         });
     }
   }, [locationFilter]);
+  // Set resource filter.
+  useEffect(() => {
+    const resourceValues = resourceFilter.map(({ value }) => value);
+
+    setFilterParams({
+      ...filterParams,
+      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
+    });
+  }, [resourceFilter]);
 
   // Set capacity filter.
   useEffect(() => {
@@ -226,15 +243,19 @@ function App() {
     setFilterParams({ ...filterParams, ...capacity });
   }, [capacityFilter]);
 
-  // Set resource filter.
+  // Set facility filter.
   useEffect(() => {
-    const resourceValues = resourceFilter.map(({ value }) => value);
-
-    setFilterParams({
-      ...filterParams,
-      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
+    delete filterParams.monitorEquipment;
+    delete filterParams.wheelchairAccessible;
+    delete filterParams.videoConferenceEquipment;
+    delete filterParams.catering;
+    const facilitiesObj = {};
+    facilityFilter.forEach((value) => {
+      facilitiesObj[value.value] = "true";
     });
-  }, [resourceFilter]);
+
+    setFilterParams({ ...filterParams, ...facilitiesObj });
+  }, [facilityFilter]);
 
   // Get events for the given resources.
   useEffect(() => {
@@ -283,8 +304,8 @@ function App() {
                   placeholder="lokationer..."
                   closeMenuOnSelect={false}
                   options={locationOptions}
-                  onChange={(newValue) => {
-                    setLocationFilter(newValue);
+                  onChange={(selectedLocations) => {
+                    setLocationFilter(selectedLocations);
                   }}
                   isMulti
                 />
@@ -297,27 +318,36 @@ function App() {
                   placeholder="ressourcer..."
                   closeMenuOnSelect={false}
                   options={resourcesOptions}
-                  onChange={(newValue) => {
-                    setResourceFilter(newValue);
+                  onChange={(selectedResources) => {
+                    setResourceFilter(selectedResources);
                   }}
                   isMulti
                 />
               </div>
               {/* Dropdown with facilities */}
               <div className="col-md-3">
-                {/* TODO: Add dropdown with options from facilities (v1) */}
+                <Select
+                  styles={{}}
+                  defaultValue={facilityFilter}
+                  placeholder="Facilitieter..."
+                  closeMenuOnSelect={false}
+                  options={facilityOptions}
+                  onChange={(selectedFacilities) => {
+                    setFacilityFilter(selectedFacilities);
+                  }}
+                  isMulti
+                />
               </div>
               {/* Dropdown with capacity */}
               <div className="col-md-3">
-                {/* TODO: Add dropdown with options from capacity (v1) */}
                 <Select
                   styles={{}}
                   defaultValue={{ value: "0", label: "Alle", type: "gt" }}
                   placeholder="Siddepladser..."
                   closeMenuOnSelect
                   options={capacityOptions}
-                  onChange={(newValue) => {
-                    setCapacityFilter(newValue);
+                  onChange={(selectedCapacity) => {
+                    setCapacityFilter(selectedCapacity);
                   }}
                 />
               </div>

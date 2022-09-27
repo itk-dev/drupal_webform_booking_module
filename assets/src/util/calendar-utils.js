@@ -106,7 +106,6 @@ export function handleResources(value, currentCalendarDate) {
     };
     businessHoursArray.push(businessHours);
   });
-
   if (businessHoursArray.length > 0) {
     return {
       resourceId: value.id,
@@ -119,6 +118,7 @@ export function handleResources(value, currentCalendarDate) {
       businessHours: businessHoursArray,
     };
   }
+
   return {
     resourceId: value.id,
     id: value.resourceMail,
@@ -128,7 +128,11 @@ export function handleResources(value, currentCalendarDate) {
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
     businessHours: {
-      startTime: "08:00",
+      startTime: businessHoursOrNearestFifteenMinutes(
+        "08:00",
+        currentCalendarDate,
+        false
+      ),
       endTime: "24:00",
     },
   };
@@ -205,7 +209,6 @@ export function adjustAsyncResourcesBusinessHours(
       )[0];
 
       let startTime;
-
       // Startime of the resource in ms. If the openingHours are already modified in this session, refer to internal object for original openingHours.
       if (resourceId in internalOpeningHours) {
         startTime = internalOpeningHours[resourceId];
