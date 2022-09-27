@@ -30,6 +30,7 @@ function App() {
   const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
+  const [bookingView, setBookingView] = useState("calendar");
 
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -285,6 +286,11 @@ function App() {
       });
     }
   }, [calendarSelection, authorFields]);
+
+  const viewSwapHandler = (event) => {
+    const view = event.target.getAttribute("data-view");
+    setBookingView(view);
+  };
   return (
     <div className="App">
       <div className="container-fluid">
@@ -360,35 +366,87 @@ function App() {
                 config.info_box_content && <InfoBox config={config} />}
             </div>
 
-            {/* Display calendar for selections */}
-            <div className="row no-gutter calendar-container">
-              <Calendar
-                resources={resources}
-                events={events}
-                date={date}
-                setDate={setDate}
-                calendarSelection={calendarSelection}
-                setCalendarSelection={setCalendarSelection}
-                config={config}
-                setShowResourceViewId={setShowResourceViewId}
-                urlResource={urlResource}
-                setDisplayState={setDisplayState}
-                locations={locations}
-                setEvents={setEvents}
-                validUrlParams={validUrlParams}
-                locationFilter={locationFilter}
-              />
-              {/* TODO: Only show if resource view is requested */}
-              <ResourceView
-                config={config}
-                resource={resource}
-                setResource={setResource}
-                facilities={facilities}
-                setFacilities={setFacilities}
-                showResourceViewId={showResourceViewId}
-                setShowResourceViewId={setShowResourceViewId}
-              />
+            {/* Add viewswapper */}
+            <div className="row viewswapper-wrapper">
+              <div>
+                <button
+                  type="button"
+                  onClick={viewSwapHandler}
+                  data-view="map"
+                  className={
+                    bookingView === "map" ? "active booking-btn" : "booking-btn"
+                  }
+                >
+                  Kort
+                </button>
+                <button
+                  type="button"
+                  onClick={viewSwapHandler}
+                  data-view="calendar"
+                  className={
+                    bookingView === "calendar"
+                      ? "active booking-btn"
+                      : "booking-btn"
+                  }
+                >
+                  Kalender
+                </button>
+                <button
+                  type="button"
+                  onClick={viewSwapHandler}
+                  data-view="list"
+                  className={
+                    bookingView === "list"
+                      ? "active booking-btn"
+                      : "booking-btn"
+                  }
+                >
+                  Liste
+                </button>
+              </div>
             </div>
+
+            {bookingView === "map" && (
+              <div className="row no-gutter calendar-container">
+                <h2>Map view!</h2>
+              </div>
+            )}
+            {bookingView === "list" && (
+              <div className="row no-gutter calendar-container">
+                <h2>List view!</h2>
+              </div>
+            )}
+            {bookingView === "calendar" && (
+              // {/* Display calendar for selections */}
+              <div className="row no-gutter calendar-container">
+                <Calendar
+                  resources={resources}
+                  events={events}
+                  date={date}
+                  setDate={setDate}
+                  calendarSelection={calendarSelection}
+                  setCalendarSelection={setCalendarSelection}
+                  config={config}
+                  setShowResourceViewId={setShowResourceViewId}
+                  urlResource={urlResource}
+                  setDisplayState={setDisplayState}
+                  locations={locations}
+                  setEvents={setEvents}
+                  validUrlParams={validUrlParams}
+                  locationFilter={locationFilter}
+                />
+                {/* TODO: Only show if resource view is requested */}
+                <ResourceView
+                  config={config}
+                  resource={resource}
+                  setResource={setResource}
+                  facilities={facilities}
+                  setFacilities={setFacilities}
+                  showResourceViewId={showResourceViewId}
+                  setShowResourceViewId={setShowResourceViewId}
+                />
+              </div>
+            )}
           </div>
         )}
         {config &&

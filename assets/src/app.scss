@@ -68,3 +68,14 @@ body {
     opacity: 1;
   }
 }
+.viewswapper-wrapper {
+  margin: 30px 0px 15px 0px !important;
+  > div {
+    > button {
+      margin-right: 5px;
+    }
+    > .active {
+      background-color: #343a40;
+    }
+  }
+}
