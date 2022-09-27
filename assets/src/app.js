@@ -211,7 +211,7 @@ function App() {
 
   // Set selection as json.
   useEffect(() => {
-    if (config) {
+    if (config?.output_field_id) {
       document.getElementById(config.output_field_id).value = JSON.stringify({
         start: calendarSelection.start,
         end: calendarSelection.end,
@@ -220,6 +220,7 @@ function App() {
       });
     }
   }, [calendarSelection, authorFields]);
+
   return (
     <div className="App">
       <div className="container-fluid">
