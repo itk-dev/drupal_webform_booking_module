@@ -132,6 +132,7 @@ function App() {
       });
     }
   }, [urlResource]);
+
   // Set resources from filterParams.
   useEffect(() => {
     if (config) {
@@ -144,6 +145,7 @@ function App() {
           urlSearchParams.append(key, value.toString());
         }
       });
+
       if (Object.values(filterParams).length > 0) {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
