@@ -12,7 +12,7 @@ import "./resource-view.scss";
  * @param {Function} props.setFacilities Facilities data setter
  * @param {string} props.showResourceViewId Id of the resource to load
  * @param {Function} props.setShowResourceViewId ShowResourceViewId data setter
- * @returns {string} Component.
+ * @returns {JSX.Element} Component.
  */
 function ResourceView({
   config,

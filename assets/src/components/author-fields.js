@@ -8,7 +8,7 @@ import "./author-fields.scss";
  * @param {object} props Props.
  * @param {object} props.authorFields Author fields.
  * @param {Function} props.setAuthorFields Set author fields function.
- * @returns {string} Author fields component.
+ * @returns {JSX.Element} Author fields component.
  */
 function AuthorFields({ authorFields, setAuthorFields }) {
   const onChangeEmail = (event) => {

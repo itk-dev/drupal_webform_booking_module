@@ -1,4 +1,7 @@
 {
+  "globals": {
+    "JSX": "readonly"
+  },
   "plugins": ["react", "jsx", "prettier", "only-warn"],
   "extends": [
     "airbnb",

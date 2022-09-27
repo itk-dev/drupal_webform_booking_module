@@ -44,7 +44,7 @@ import "./calendar.scss";
  * @param {object} props.validUrlParams Validated url parameters from step1
  * @param {object} props.locationFilter Object containing selected filtered
  *   locations
- * @returns {string} Calendar component.
+ * @returns {JSX.Element} Calendar component.
  */
 function Calendar({
   resources,

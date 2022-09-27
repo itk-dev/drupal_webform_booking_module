@@ -8,7 +8,7 @@ import * as PropTypes from "prop-types";
  * @param {object} props.calendarSelection The selected timeslot in booking
  *   calendar.
  * @param {object} props.config Config for the app.
- * @returns {string} Redirect button.
+ * @returns {JSX.Element} Redirect button.
  */
 function RedirectButton({ calendarSelection, config }) {
   const onRedirectClick = () => {

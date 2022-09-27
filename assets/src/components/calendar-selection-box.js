@@ -32,7 +32,7 @@ function CalendarSelectionBox({
    * @param {string} startStr String containing the start-dateTime of the
    *   selection
    * @param {string} endStr String containing the end-dateTime of the selection
-   * @returns {string} Time formatted as string.
+   * @returns {JSX.Element} Time formatted as string.
    */
   function getFormattedTime(startStr, endStr) {
     const formattedTimeStart = dayjs(startStr).format("HH:mm");
