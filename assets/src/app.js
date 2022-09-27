@@ -21,7 +21,7 @@ dayjs.locale("da");
 /**
  * App component.
  *
- * @returns {string} App component.
+ * @returns {JSX.Element} App component.
  */
 function App() {
   // App configuration and behavior.

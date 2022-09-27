@@ -9,7 +9,7 @@ import "./calendar-header.scss";
  * @param {object} props Props.
  * @param {object} props.date Date.
  * @param {Function} props.setDate Set date function.
- * @returns {string} Calendar header component.
+ * @returns {JSX.Element} Calendar header component.
  */
 function CalendarHeader({ date, setDate }) {
   const onChangeDate = (event) => {

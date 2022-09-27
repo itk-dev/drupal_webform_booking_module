@@ -9,7 +9,7 @@ import "./user-panel.scss";
  *
  * @param {object} props Props.
  * @param {object} props.config App config.
- * @returns {string} User panel component.
+ * @returns {JSX.Element} User panel component.
  */
 function UserPanel({ config }) {
   /** @param {string} bookingId Booking id to request deletion of. */

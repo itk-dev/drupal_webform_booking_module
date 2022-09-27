@@ -7,7 +7,7 @@ import "./info-box.scss";
  *
  * @param {object} props Props.
  * @param {object} props.config Object containing configuration from drupal
- * @returns {object} Info box component
+ * @returns {JSX.Element} Info box component
  */
 function InfoBox({ config }) {
   const [infoBoxColor, setInfoBoxColor] = useState("");

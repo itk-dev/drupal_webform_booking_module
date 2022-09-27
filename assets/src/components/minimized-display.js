@@ -10,7 +10,7 @@ import "./minimized-display.scss";
  * @param {object} props.validUrlParams Validated parameters.
  * @param {Function} props.setDisplayState Set display state function.
  * @param {object} props.urlResource Resource fetched from URL.
- * @returns {string} Calendar header component.
+ * @returns {JSX.Element} Calendar header component.
  */
 function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
   const onChangeBooking = () => {

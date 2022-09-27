@@ -4,7 +4,7 @@ import "./loading-spinner.scss";
 /**
  * Loading spinner component.
  *
- * @returns {string} Loading spinner component.
+ * @returns {JSX.Element} Loading spinner component.
  */
 function LoadingSpinner() {
   return (

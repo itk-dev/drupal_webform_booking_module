@@ -19,7 +19,7 @@ import { ReactComponent as IconCandles } from "../assets/candles.svg";
  * @param {Function} props.facilities Facilities information object
  * @param {Function} props.setFacilities Facilities information object setter
  * @param {string} props.showResourceViewId Id of the resource to load
- * @returns {object} Component.
+ * @returns {JSX.Element} Component.
  */
 function ResourceDetails({
   config,
