@@ -5,8 +5,7 @@ import * as PropTypes from "prop-types";
  * Redirect button component.
  *
  * @param {object} props Props.
- * @param {object} props.calendarSelection The selected timeslot in booking
- *   calendar.
+ * @param {object} props.calendarSelection The selected timeslot in booking calendar.
  * @param {object} props.config Config for the app.
  * @returns {JSX.Element} Redirect button.
  */
@@ -15,14 +14,9 @@ function RedirectButton({ calendarSelection, config }) {
     const paramsObj = {
       from: calendarSelection.start.toISOString(),
       to: calendarSelection.end.toISOString(),
-      resource:
-        calendarSelection.resource.extendedProps.resourceId ?? undefined,
+      resource: calendarSelection.resource.extendedProps.resourceId ?? undefined,
     };
-    if (
-      paramsObj.from === undefined ||
-      paramsObj.to === undefined ||
-      paramsObj.resource === undefined
-    ) {
+    if (paramsObj.from === undefined || paramsObj.to === undefined || paramsObj.resource === undefined) {
       window.open(config.redirect_url, "_self");
     } else {
       const paramsStr = new URLSearchParams(paramsObj).toString();

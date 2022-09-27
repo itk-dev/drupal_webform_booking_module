@@ -103,23 +103,13 @@ function ResourceDetails({
   }
 
   return (
-    <div
-      className={
-        showResourceViewId !== null
-          ? "fade-in-content resource-container"
-          : "  resource-container"
-      }
-    >
+    <div className={showResourceViewId !== null ? "fade-in-content resource-container" : "  resource-container"}>
       {!resource && <LoadingSpinner />}
       {resource && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
-            <button
-              type="button"
-              className="booking-btn-inv"
-              onClick={hideResourceView}
-            >
+            <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
           </div>

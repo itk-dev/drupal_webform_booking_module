@@ -32,11 +32,7 @@ function ResourceView({
 
   return (
     <div
-      className={
-        showResourceViewId !== null
-          ? "fade-in-background resource-view"
-          : "resource-view"
-      }
+      className={showResourceViewId !== null ? "fade-in-background resource-view" : "resource-view"}
       style={{ display: showResourceViewId !== null ? "block" : "none" }}
     >
       <ResourceDetails

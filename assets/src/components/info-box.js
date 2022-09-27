@@ -23,22 +23,14 @@ function InfoBox({ config }) {
 
   const hideInfoBox = () => setShowInfoBox("none");
   return (
-    <div
-      className="row info-box"
-      style={{ backgroundColor: `${infoBoxColor}em`, display: showInfoBox }}
-    >
+    <div className="row info-box" style={{ backgroundColor: `${infoBoxColor}em`, display: showInfoBox }}>
       <div className="col-md-11 info-box-content">
         <span className="info-box-content-header">
           <b>{infoBoxHeader}</b>
         </span>
         <span className="info-box-content-text">{infoBoxContent}</span>
       </div>
-      <div
-        className="col-md-1 info-box-close"
-        onClick={hideInfoBox}
-        onKeyPress={hideInfoBox}
-        role="presentation"
-      >
+      <div className="col-md-1 info-box-close" onClick={hideInfoBox} onKeyPress={hideInfoBox} role="presentation">
         <span>x</span>
       </div>
     </div>

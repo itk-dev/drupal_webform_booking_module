@@ -19,9 +19,7 @@ function CalendarHeader({ date, setDate }) {
         break;
       case "calendar-back":
         if (new Date() < date) {
-          setDate(
-            new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD"))
-          );
+          setDate(new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD")));
         }
         break;
       case "calendar-forward":
@@ -39,12 +37,7 @@ function CalendarHeader({ date, setDate }) {
       <div className="col-md-12 no-gutter">
         <div className="row calendar-header-wrapper">
           <div className="col-md-4">
-            <button
-              id="calendar-today"
-              className="booking-btn"
-              type="button"
-              onClick={onChangeDate}
-            >
+            <button id="calendar-today" className="booking-btn" type="button" onClick={onChangeDate}>
               I dag
             </button>
           </div>
@@ -75,12 +68,7 @@ function CalendarHeader({ date, setDate }) {
               >
                 ‹
               </button>
-              <button
-                id="calendar-forward"
-                className="booking-btn"
-                type="button"
-                onClick={onChangeDate}
-              >
+              <button id="calendar-forward" className="booking-btn" type="button" onClick={onChangeDate}>
                 ›
               </button>
             </div>
