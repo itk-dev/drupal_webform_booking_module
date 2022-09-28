@@ -115,11 +115,9 @@ function Calendar({
    */
   function fetchResourcesOnLocation(locationName) {
     let location = locationName;
-    if (location.trim().indexOf("___") !== -1) {
-      // locationName contains space and has been glued. Now unglue.
-      const ungluedLocationName = location.replace("___", " ");
-      location = ungluedLocationName;
-    }
+    // locationName contains space and has been glued. Now unglue.
+    const ungluedLocationName = location.replaceAll("___", " ");
+    location = ungluedLocationName;
     const searchParams = `location=${location}`;
     const expander = document.querySelector(`.fc-datagrid-cell#${location} .fc-icon-plus-square`);
     // Load resources for the clicked location
@@ -311,10 +309,8 @@ function Calendar({
       return false;
     }
     let location = info.groupValue;
-    if (location.trim().indexOf(" ") !== -1) {
-      const gluedGroupValue = location.replace(" ", "___");
-      location = gluedGroupValue;
-    }
+    const gluedGroupValue = location.replaceAll(" ", "___");
+    location = gluedGroupValue;
     info.el.setAttribute("id", location);
     document.querySelector(`#${location} .fc-icon-plus-square`).addEventListener(
       "click",
