@@ -103,23 +103,13 @@ function ResourceDetails({
   }
 
   return (
-    <div
-      className={
-        showResourceViewId !== null
-          ? "fade-in-content resource-container"
-          : "  resource-container"
-      }
-    >
+    <div className={showResourceViewId !== null ? "fade-in-content resource-container" : "  resource-container"}>
       {!resource && <LoadingSpinner />}
       {resource && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
-            <button
-              type="button"
-              className="booking-btn-inv"
-              onClick={hideResourceView}
-            >
+            <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
           </div>
@@ -161,16 +151,16 @@ ResourceDetails.propTypes = {
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
   hideResourceView: PropTypes.func.isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})),
+  resource: PropTypes.shape({
+    capacity: PropTypes.number,
+    resourceName: PropTypes.string,
+    location: PropTypes.string,
+    resourceDescription: PropTypes.string,
+  }),
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(
-    PropTypes.shape({
-      icon: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-    })
-  ),
+  facilities: PropTypes.shape({}),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
+  showResourceViewId: PropTypes.number,
 };
 
 ResourceDetails.defaultProps = {

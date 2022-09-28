@@ -14,11 +14,7 @@ import "./calendar-cell-info-button.scss";
 function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
   return (
     <span className="calendar-cell-info">
-      <button
-        className="calendar-cell-info-button"
-        type="button"
-        onClick={() => onClickEvent(showResourceViewId)}
-      >
+      <button className="calendar-cell-info-button" type="button" onClick={() => onClickEvent(showResourceViewId)}>
         {title}
         <img
           height="15"

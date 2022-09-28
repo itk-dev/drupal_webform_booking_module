@@ -33,12 +33,7 @@ function UserPanel({ config }) {
       <hr />
       <br />
       <h1>User Panel:</h1>
-      <UserBookingsList
-        config={config}
-        userId="userId"
-        key="hallo"
-        onDeleteBooking={requestDeletion}
-      />
+      <UserBookingsList config={config} userId="userId" key="hallo" onDeleteBooking={requestDeletion} />
     </div>
   );
 }
