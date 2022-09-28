@@ -32,12 +32,14 @@ function App() {
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
+  const [capacityOptions, setCapacityOptions] = useState([]);
 
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]);
+  const [capacityFilter, setCapacityFilter] = useState([]);
 
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
@@ -64,6 +66,14 @@ function App() {
       setValidUrlParams(urlParams);
       setDisplayState("minimized");
     }
+    setCapacityOptions([
+      { value: "0", label: "Alle", type: "gt" },
+      { value: "0..10", label: "0 - 10", type: "between" },
+      { value: "11..20", label: "11 - 20", type: "between" },
+      { value: "21..30", label: "21 - 30", type: "between" },
+      { value: "31..80", label: "31 - 80", type: "between" },
+      { value: "81", label: "81+", type: "gt" },
+    ]);
   }, []);
 
   // Effects to run when config is loaded. This should only happen once at app initialisation.
@@ -170,7 +180,6 @@ function App() {
     if (config) {
       const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
-
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResourcesOptions(
@@ -187,6 +196,27 @@ function App() {
         });
     }
   }, [locationFilter]);
+
+  // Set capacity filter.
+  useEffect(() => {
+    const capacityType = capacityFilter.type ?? undefined;
+    const capacityValue = capacityFilter.value ?? 0;
+    let capacity = {};
+
+    // Check type of selection. delete opposite entry to prevent both capacity[between] and capacity[gt] being set, causing a dead end.
+    switch (capacityType) {
+      case "between":
+        delete filterParams["capacity[gt]"];
+        capacity = { "capacity[between]": capacityValue };
+        break;
+      case "gt":
+      default:
+        delete filterParams["capacity[between]"];
+        capacity = { "capacity[gt]": capacityValue };
+        break;
+    }
+    setFilterParams({ ...filterParams, ...capacity });
+  }, [capacityFilter]);
 
   // Set resource filter.
   useEffect(() => {
@@ -261,7 +291,18 @@ function App() {
               {/* Dropdown with facilities */}
               <div className="col-md-3">{/* TODO: Add dropdown with options from facilities (v1) */}</div>
               {/* Dropdown with capacity */}
-              <div className="col-md-3">{/* TODO: Add dropdown with options from capacity (v1) */}</div>
+              <div className="col-md-3">
+                <Select
+                  styles={{}}
+                  defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                  placeholder="Siddepladser..."
+                  closeMenuOnSelect
+                  options={capacityOptions}
+                  onChange={(newValue) => {
+                    setCapacityFilter(newValue);
+                  }}
+                />
+              </div>
             </div>
 
             {/* Add info box */}
