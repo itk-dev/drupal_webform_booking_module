@@ -7,21 +7,14 @@ import dayjs from "dayjs";
  * Calendar selection box component.
  *
  * @param {object} props Props.
- * @param {object} props.calendarSelection Object containing selection info
- *   returned by fullcalendar
- * @param {string} props.calendarSelectionResourceTitle Title of selected
- *   resource.
+ * @param {object} props.calendarSelection Object containing selection info returned by fullcalendar
+ * @param {string} props.calendarSelectionResourceTitle Title of selected resource.
  * @param {number} props.calendarSelectionResourceId Id of selected resource
  * @returns {object} Calendar selection box
  */
-function CalendarSelectionBox({
-  calendarSelection,
-  calendarSelectionResourceTitle,
-  calendarSelectionResourceId,
-}) {
+function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitle, calendarSelectionResourceId }) {
   /**
-   * @param {string} startStr String containing the start-dateTime of the
-   *   selection.
+   * @param {string} startStr String containing the start-dateTime of the selection.
    * @returns {string} Date formatted as string.
    */
   function getFormattedDate(startStr) {
@@ -29,10 +22,9 @@ function CalendarSelectionBox({
     return formattedDate;
   }
   /**
-   * @param {string} startStr String containing the start-dateTime of the
-   *   selection
+   * @param {string} startStr String containing the start-dateTime of the selection
    * @param {string} endStr String containing the end-dateTime of the selection
-   * @returns {string} Time formatted as string.
+   * @returns {JSX.Element} Time formatted as string.
    */
   function getFormattedTime(startStr, endStr) {
     const formattedTimeStart = dayjs(startStr).format("HH:mm");
@@ -56,15 +48,9 @@ function CalendarSelectionBox({
             <b>{getFormattedDate(calendarSelection.start)}</b>
           </span>
           <span>
-            <b>
-              {getFormattedTime(calendarSelection.start, calendarSelection.end)}
-            </b>
+            <b>{getFormattedTime(calendarSelection.start, calendarSelection.end)}</b>
           </span>
-          <button
-            id="calendar-selection-choice-confirm"
-            data-resource-id={calendarSelectionResourceId}
-            type="button"
-          >
+          <button id="calendar-selection-choice-confirm" data-resource-id={calendarSelectionResourceId} type="button">
             Fortsæt med dette valg
           </button>
         </div>

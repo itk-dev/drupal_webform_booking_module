@@ -5,9 +5,7 @@ export default class Api {
     return fetch(`${apiEndpoint}itkdev_booking/locations`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-          );
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
         }
         return response.json();
       })
@@ -18,9 +16,7 @@ export default class Api {
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-          );
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
         }
         return response.json();
       })
@@ -39,14 +35,10 @@ export default class Api {
     });
 
     // Events on resource.
-    return fetch(
-      `${apiEndpoint}itkdev_booking/busy_intervals?${urlSearchParams}`
-    )
+    return fetch(`${apiEndpoint}itkdev_booking/busy_intervals?${urlSearchParams}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-          );
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
         }
 
         return response.json();
@@ -55,18 +47,14 @@ export default class Api {
   }
 
   static async fetchResource(apiEndpoint, resourceId) {
-    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`).then(
-      (response) => response.json()
-    );
+    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`).then((response) => response.json());
   }
 
   static async fetchUserBookings(apiEndpoint) {
     return fetch(`${apiEndpoint}itkdev_booking/user-bookings`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-          );
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
         }
         return response.json();
       })
@@ -79,9 +67,7 @@ export default class Api {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            `This is an HTTP error: The status is ${response.status}`
-          );
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
         }
         return response.json();
       })
