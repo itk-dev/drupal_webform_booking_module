@@ -1,0 +1,47 @@
+.list-resource {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    
+    &:not(:last-child) {
+        margin-bottom: 10px;
+    }
+
+    .list-resource-image {
+        width: 150px;
+        display: flex;
+        justify-content: center;
+
+        img {
+            margin: auto;
+            min-height: 100%;
+            width: auto;
+        }
+    }
+
+    .list-resource-details {
+        display: flex;
+        flex-direction: column;
+
+        >span:first-child {
+            margin: 0 0 0 0;
+        }
+
+        >div {
+            margin: 15px 0 auto 0;
+        }
+
+        >span:last-child {
+            margin: 0 0 0 0;
+        }
+
+    }
+
+    .list-resource-actions {
+        display: flex;
+        flex-direction: column;
+        button {
+            margin: auto;
+        }
+    }
+}

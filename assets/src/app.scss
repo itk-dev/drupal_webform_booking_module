@@ -23,12 +23,12 @@ body {
   border: none !important;
 }
 
-.calendar-container,
-.resource-container {
+.main-container,
+.resource-container{
   position: relative;
 }
 
-.calendar-container {
+.main-container {
   background: #fff;
   border-radius: 5px;
 }
@@ -78,4 +78,8 @@ body {
       background-color: #343a40;
     }
   }
+}
+
+.resourceview-visible {
+  min-height: 782px !important;
 }

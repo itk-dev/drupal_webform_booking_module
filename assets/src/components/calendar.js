@@ -364,6 +364,11 @@ function Calendar({
     alreadyHandledResourceIds.push(location);
     return false;
   };
+
+  useEffect(() => {
+        console.log(resources);
+  }, [resources]);
+
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />

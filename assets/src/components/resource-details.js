@@ -32,47 +32,11 @@ function ResourceDetails({
 }) {
   useEffect(() => {
     if (config && showResourceViewId !== null) {
-      Api.fetchResource(config.api_endpoint, showResourceViewId)
-        .then((data) => {
-          const resourceData = { ...data };
-          resourceData.facilities = {
-            ...(data.monitorequipment && {
-              monitorequipment: {
-                title: "Projektor / Skærm",
-                icon: <IconProjector />,
-              },
-            }),
-            ...(data.wheelchairaccessible && {
-              wheelchairaccessible: {
-                title: "Handicapvenligt",
-                icon: <IconWheelchair />,
-              },
-            }),
-            ...(data.videoconferenceequipment && {
-              videoconferenceequipment: {
-                title: "Videoconference",
-                icon: <IconVideocamera />,
-              },
-            }),
-            ...(data.catering && {
-              catering: {
-                title: "Forplejning",
-                icon: <IconFood />,
-              },
-            }),
-            ...(data.holidayOpeningHours && {
-              holidayOpeningHours: {
-                title: "Tilgængelig på helligdag",
-                icon: <IconCandles />,
-              },
-            }),
-          };
-          setResource(resourceData);
-          setFacilities(resourceData.facilities);
-        })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
-        });
+      Api.fetchResourceFacilities(config.api_endpoint, showResourceViewId).then((resourceData) => {
+        console.log(resourceData);
+        setResource(resourceData);
+        setFacilities(resourceData.facilities);
+      });
     }
   }, [showResourceViewId, config]);
 
@@ -81,7 +45,7 @@ function ResourceDetails({
    *
    * @returns {string} Facilities list.
    */
-  function getFacilitiesList() {
+  const getFacilitiesList = () => {
     return (
       <div className="facility-container">
         <div className="facility-item">

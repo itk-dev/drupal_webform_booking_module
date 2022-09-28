@@ -11,6 +11,7 @@ import MinimizedDisplay from "./components/minimized-display";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
+import ListContainer from "./components/list-container";
 // import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
@@ -171,16 +172,20 @@ function App() {
         }
       });
       if (Object.values(filterParams).length > 0) {
-        Api.fetchResources(config.api_endpoint, urlSearchParams)
-          .then((loadedResources) => {
-            setResources([]);
-            setTimeout(() => {
-              setResources(loadedResources);
-            }, 1);
-          })
-          .catch(() => {
-            // TODO: Display error and retry option for user. (v0.1)
-          });
+        console.log("hallo");
+        Api.fetchResources(config.api_endpoint, urlSearchParams).then((loadedResources) => {
+          console.log(loadedResources);
+        })
+        
+          // .then((loadedResources) => {
+          //   setResources([]);
+          //   setTimeout(() => {
+          //     setResources(loadedResources);
+          //   }, 1);
+          // })
+          // .catch(() => {
+          //   // TODO: Display error and retry option for user. (v0.1)
+          // });
       }
     }
   }, [filterParams]);
@@ -407,18 +412,34 @@ function App() {
             </div>
 
             {bookingView === "map" && (
-              <div className="row no-gutter calendar-container">
+              <div className="row no-gutter main-container map">
                 <h2>Map view!</h2>
               </div>
             )}
             {bookingView === "list" && (
-              <div className="row no-gutter calendar-container">
-                <h2>List view!</h2>
+              <div className={`row no-gutter main-container list ${
+                showResourceViewId !== null ? "resourceview-visible" : ""
+              }`}>
+                <ListContainer 
+                  resources={resources}
+                  setShowResourceViewId={setShowResourceViewId}
+                />
+                <ResourceView
+                  config={config}
+                  resource={resource}
+                  setResource={setResource}
+                  facilities={facilities}
+                  setFacilities={setFacilities}
+                  showResourceViewId={showResourceViewId}
+                  setShowResourceViewId={setShowResourceViewId}
+                />
               </div>
             )}
             {bookingView === "calendar" && (
               // {/* Display calendar for selections */}
-              <div className="row no-gutter calendar-container">
+              <div className={`row no-gutter main-container calendar ${
+                showResourceViewId !== null ? "resourceview-visible" : ""
+              }`}>
                 <Calendar
                   resources={resources}
                   events={events}
