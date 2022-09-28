@@ -151,7 +151,12 @@ ResourceDetails.propTypes = {
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
   hideResourceView: PropTypes.func.isRequired,
-  resource: PropTypes.shape({}),
+  resource: PropTypes.shape({
+    capacity: PropTypes.number,
+    resourceName: PropTypes.string,
+    location: PropTypes.string,
+    resourceDescription: PropTypes.string,
+  }),
   setResource: PropTypes.func.isRequired,
   facilities: PropTypes.shape({}),
   setFacilities: PropTypes.func.isRequired,

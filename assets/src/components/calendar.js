@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 // FullCalendar must be imported before FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
@@ -20,7 +20,7 @@ import {
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import {ReactComponent as IconChair} from "../assets/chair.svg";
+import { ReactComponent as IconChair } from "../assets/chair.svg";
 import Api from "../util/api";
 import "./calendar.scss";
 
@@ -33,18 +33,15 @@ import "./calendar.scss";
  * @param {Date} props.date Date to show calendar for.
  * @param {Function} props.setDate Set date function.
  * @param {object} props.calendarSelection The current calendar selection.
- * @param {Function} props.setCalendarSelection Set calendar selection
- *   function.
+ * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
  * @param {object} props.urlResource The resource object loaded from URL id.
- * @param {string} props.setDisplayState State of the calendar - minimized or
- *   maximized
+ * @param {string} props.setDisplayState State of the calendar - minimized or maximized
  * @param {object} props.locations Object containing available locations
  * @param {Function} props.setEvents Set calendar events
  * @param {object} props.validUrlParams Validated url parameters from step1
- * @param {object} props.locationFilter Object containing selected filtered
- *   locations
+ * @param {object} props.locationFilter Object containing selected filtered locations
  * @returns {JSX.Element} Calendar component.
  */
 function Calendar({
@@ -78,8 +75,8 @@ function Calendar({
   /**
    * OnCalenderSelection.
    *
-   * @param selection
-   * @returns {boolean}
+   * @param {object} selection The new selection object.
+   * @returns {boolean} TODO: Why return boolean?
    */
   const onCalendarSelection = (selection) => {
     if (selection.start < dateNow) {
@@ -112,7 +109,7 @@ function Calendar({
   };
 
   /**
-   * Fetc
+   * Fetch resources for locations.
    *
    * @param {string} locationName Name of the expanded location
    */
@@ -457,19 +454,16 @@ Calendar.propTypes = {
     resourceName: PropTypes.string.isRequired,
   }),
   setDisplayState: PropTypes.func.isRequired,
-  locations: PropTypes.arrayOf(
-    PropTypes.shape({})
-  ),
+  locations: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setEvents: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}),
-  locationFilter: PropTypes.arrayOf(
-    PropTypes.shape({})
-  ).isRequired,
+  locationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 Calendar.defaultProps = {
   calendarSelection: null,
   urlResource: null,
+  validUrlParams: {},
 };
 
 export default Calendar;
