@@ -305,10 +305,10 @@ function Calendar({
     );
   };
     /** @param {string} resource object of the resource to load */
-    const triggerResourceView = (resource) => {
-      console.log("clicked! Hallo :D");
-      console.log(resource);
-      setShowResourceDetails(resource);
+    const triggerResourceView = (res) => {
+      console.log(res);
+      console.log(resources);
+      setShowResourceDetails(res);
     };
 
   const generateResourcePlaceholders = () => {
@@ -366,10 +366,6 @@ function Calendar({
     alreadyHandledResourceIds.push(location);
     return false;
   };
-
-  useEffect(() => {
-        console.log(resources);
-  }, [resources]);
 
   return (
     <div className="Calendar no-gutter col-md-12">
@@ -433,8 +429,9 @@ function Calendar({
               {
                 headerContent: "Ressourcer",
                 cellContent(arg) {
+                  console.log(arg);
                   return renderCalendarCellInfoButton(
-                    arg.resource,
+                    arg.resource._resource,
                     triggerResourceView
                   );
                 },

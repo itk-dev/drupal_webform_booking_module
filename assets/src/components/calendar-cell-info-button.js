@@ -16,7 +16,7 @@ function CalendarCellInfoButton({ resource, onClickEvent }) {
       <button
         className="calendar-cell-info-button"
         type="button"
-        onClick={() => onClickEvent(resource)}
+        onClick={() => {console.log(resource); onClickEvent(resource)}}
       >
         {resource.title}
         <img

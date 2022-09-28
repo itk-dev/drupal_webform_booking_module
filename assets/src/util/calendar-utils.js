@@ -106,7 +106,7 @@ export function handleResources(value, currentCalendarDate) {
     };
     businessHoursArray.push(businessHours);
   });
-  console.log(value);
+
   if (businessHoursArray.length > 0) {
     return {
       resourceId: value.id,
