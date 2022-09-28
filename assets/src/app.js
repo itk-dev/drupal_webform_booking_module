@@ -309,7 +309,6 @@ function App() {
               </div>
               {/* Dropdown with capacity */}
               <div className="col-md-3">
-                {/* TODO: Add dropdown with options from capacity (v1) */}
                 <Select
                   styles={{}}
                   defaultValue={{ value: "0", label: "Alle", type: "gt" }}
