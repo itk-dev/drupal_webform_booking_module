@@ -4,11 +4,6 @@ import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
 import "./resource-details.scss";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
-import { ReactComponent as IconProjector } from "../assets/projector.svg";
-import { ReactComponent as IconWheelchair } from "../assets/wheelchair.svg";
-import { ReactComponent as IconVideocamera } from "../assets/videocamera.svg";
-import { ReactComponent as IconFood } from "../assets/food.svg";
-import { ReactComponent as IconCandles } from "../assets/candles.svg";
 
 /**
  * @param {object} props Props.
@@ -18,27 +13,22 @@ import { ReactComponent as IconCandles } from "../assets/candles.svg";
  * @param {Function} props.setResource Resource information object setter
  * @param {Function} props.facilities Facilities information object
  * @param {Function} props.setFacilities Facilities information object setter
- * @param {string} props.showResourceViewId Id of the resource to load
  * @returns {object} Component.
  */
 function ResourceDetails({
-  config,
   hideResourceView,
   resource,
   setResource,
   facilities,
   setFacilities,
-  showResourceViewId,
+  showResourceDetails
 }) {
   useEffect(() => {
-    if (config && showResourceViewId !== null) {
-      Api.fetchResourceFacilities(config.api_endpoint, showResourceViewId).then((resourceData) => {
-        console.log(resourceData);
-        setResource(resourceData);
-        setFacilities(resourceData.facilities);
-      });
+    if ( showResourceDetails !== null) {
+      setResource(showResourceDetails);
+      setFacilities(showResourceDetails.facilities);
     }
-  }, [showResourceViewId, config]);
+  }, [showResourceDetails]);
 
   /**
    * Get facilities list.
@@ -69,7 +59,7 @@ function ResourceDetails({
   return (
     <div
       className={
-        showResourceViewId !== null
+        showResourceDetails !== null
           ? "fade-in-content resource-container"
           : "  resource-container"
       }
@@ -134,13 +124,13 @@ ResourceDetails.propTypes = {
     })
   ),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
+  showResourceDetails: PropTypes.shape({}),
 };
 
 ResourceDetails.defaultProps = {
   resource: null,
   facilities: null,
-  showResourceViewId: null,
+  showResourceDetails: null,
 };
 
 export default ResourceDetails;

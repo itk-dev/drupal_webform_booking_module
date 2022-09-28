@@ -106,6 +106,7 @@ export function handleResources(value, currentCalendarDate) {
     };
     businessHoursArray.push(businessHours);
   });
+  console.log(value);
   if (businessHoursArray.length > 0) {
     return {
       resourceId: value.id,
@@ -115,6 +116,7 @@ export function handleResources(value, currentCalendarDate) {
       building: value.location,
       description: value.resourcedescription,
       image: "http://placekitten.com/1920/1080",
+      facilities: value.facilities,
       businessHours: businessHoursArray,
     };
   }
@@ -127,6 +129,7 @@ export function handleResources(value, currentCalendarDate) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
+    facilities: value.facilities,
     businessHours: {
       startTime: businessHoursOrNearestFifteenMinutes(
         "08:00",

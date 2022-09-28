@@ -20,12 +20,12 @@ function ResourceView({
   setResource,
   facilities,
   setFacilities,
-  showResourceViewId,
-  setShowResourceViewId,
+  showResourceDetails,
+  setShowResourceDetails,
 }) {
   /** Hide resource view */
   const hideResourceView = () => {
-    setShowResourceViewId(null);
+    setShowResourceDetails(null);
     setResource(false);
     setFacilities(null);
   };
@@ -33,20 +33,19 @@ function ResourceView({
   return (
     <div
       className={
-        showResourceViewId !== null
+        showResourceDetails !== null
           ? "fade-in-background resource-view"
           : "resource-view"
       }
-      style={{ display: showResourceViewId !== null ? "block" : "none" }}
+      style={{ display: showResourceDetails !== null ? "block" : "none" }}
     >
       <ResourceDetails
-        config={config}
         hideResourceView={hideResourceView}
         resource={resource}
         setResource={setResource}
         facilities={facilities}
         setFacilities={setFacilities}
-        showResourceViewId={showResourceViewId}
+        showResourceDetails={showResourceDetails}
       />
     </div>
   );
@@ -60,14 +59,14 @@ ResourceView.propTypes = {
   setResource: PropTypes.func.isRequired,
   facilities: PropTypes.arrayOf(PropTypes.shape({})),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
-  setShowResourceViewId: PropTypes.func.isRequired,
+  showResourceDetails: PropTypes.shape({}),
+  setShowResourceDetails: PropTypes.func.isRequired,
 };
 
 ResourceView.defaultProps = {
   resource: null,
   facilities: null,
-  showResourceViewId: null,
+  showResourceDetails: null,
 };
 
 export default ResourceView;

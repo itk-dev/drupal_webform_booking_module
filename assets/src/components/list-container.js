@@ -4,7 +4,8 @@ import "./list-container.scss";
 
 function ListContainer({ 
     resources,
-    setShowResourceViewId
+    setShowResourceDetails,
+    facilities
  }) {
 
     useEffect(() => {
@@ -15,7 +16,7 @@ function ListContainer({
             <div className="row">
                 <div className="col-md-12">
                     {!resources && <span>Vælg filtre for at vise liste over resourcer..</span>}
-                    {resources && <List resources={resources} setShowResourceViewId={setShowResourceViewId}/>}
+                    {resources && <List resources={resources} setShowResourceDetails={setShowResourceDetails} facilities={facilities}/>}
                 </div>
             </div>    
         </div>

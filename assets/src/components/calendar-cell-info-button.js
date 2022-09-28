@@ -6,20 +6,19 @@ import "./calendar-cell-info-button.scss";
  * Calendar cell information button component.
  *
  * @param {object} props Props.
- * @param {string} props.title Resource title.
- * @param {string} props.showResourceViewId Resource id.
+ * @param {string} props.resource Resource object.
  * @param {Function} props.onClickEvent Resource click event
  * @returns {string} Calendar cell information button component.
  */
-function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
+function CalendarCellInfoButton({ resource, onClickEvent }) {
   return (
     <span className="calendar-cell-info">
       <button
         className="calendar-cell-info-button"
         type="button"
-        onClick={() => onClickEvent(showResourceViewId)}
+        onClick={() => onClickEvent(resource)}
       >
-        {title}
+        {resource.title}
         <img
           height="15"
           width="15"
@@ -31,8 +30,7 @@ function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
   );
 }
 CalendarCellInfoButton.propTypes = {
-  title: PropTypes.string.isRequired,
-  showResourceViewId: PropTypes.number.isRequired,
+  resource: PropTypes.shape({}).isRequired,
   onClickEvent: PropTypes.func.isRequired,
 };
 

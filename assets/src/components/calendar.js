@@ -35,7 +35,7 @@ import "./calendar.scss";
  * @param {object} props.calendarSelection The current calendar selection.
  * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
- * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
+ * @param {Function} props.setShowResourceDetails Setter for showResourceDetails
  * @param {object} props.urlResource The resource object loaded from URL id.
  * @param {string} props.setDisplayState State of the calendar - minimized or
  *   maximized
@@ -54,7 +54,7 @@ function Calendar({
   calendarSelection,
   setCalendarSelection,
   config,
-  setShowResourceViewId,
+  setShowResourceDetails,
   urlResource,
   setDisplayState,
   locations,
@@ -233,10 +233,7 @@ function Calendar({
     }
   }, [date]);
 
-  /** @param {string} showResourceViewId Id of the resource to load */
-  const triggerResourceView = (showResourceViewId) => {
-    setShowResourceViewId(showResourceViewId);
-  };
+
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
 
@@ -299,15 +296,20 @@ function Calendar({
     }
   }, [calendarSelection, events]);
 
-  const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
+  const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
     return (
       <CalendarCellInfoButton
-        title={title}
-        showResourceViewId={id}
+        resource={resource}
         onClickEvent={triggerResourceViewEv}
       />
     );
   };
+    /** @param {string} resource object of the resource to load */
+    const triggerResourceView = (resource) => {
+      console.log("clicked! Hallo :D");
+      console.log(resource);
+      setShowResourceDetails(resource);
+    };
 
   const generateResourcePlaceholders = () => {
     if (
@@ -432,8 +434,7 @@ function Calendar({
                 headerContent: "Ressourcer",
                 cellContent(arg) {
                   return renderCalendarCellInfoButton(
-                    arg.resource.title,
-                    arg.resource.extendedProps.resourceId,
+                    arg.resource,
                     triggerResourceView
                   );
                 },
@@ -475,7 +476,7 @@ Calendar.propTypes = {
     resourceId: PropTypes.string.isRequired,
   }),
   setCalendarSelection: PropTypes.func.isRequired,
-  setShowResourceViewId: PropTypes.func.isRequired,
+  setShowResourceDetails: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
     redirect_url: PropTypes.string.isRequired,

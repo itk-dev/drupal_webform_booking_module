@@ -56,7 +56,7 @@ function App() {
   const [locations, setLocations] = useState(null);
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
   const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
-  const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
+  const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
@@ -172,20 +172,14 @@ function App() {
         }
       });
       if (Object.values(filterParams).length > 0) {
-        console.log("hallo");
         Api.fetchResources(config.api_endpoint, urlSearchParams).then((loadedResources) => {
-          console.log(loadedResources);
-        })
-        
-          // .then((loadedResources) => {
-          //   setResources([]);
-          //   setTimeout(() => {
-          //     setResources(loadedResources);
-          //   }, 1);
-          // })
-          // .catch(() => {
-          //   // TODO: Display error and retry option for user. (v0.1)
-          // });
+          setResources([]);
+            setTimeout(() => {
+              setResources(loadedResources);
+            }, 1);
+        }).catch(() => {
+            // TODO: Display error and retry option for user. (v0.1)
+          });
       }
     }
   }, [filterParams]);
@@ -304,7 +298,7 @@ function App() {
           <div className="app-content">
             <div
               className={`row filters-wrapper ${
-                showResourceViewId !== null ? "disable-filters" : ""
+                showResourceDetails !== null ? "disable-filters" : ""
               }`}
             >
               <div className="col-md-3">
@@ -418,11 +412,12 @@ function App() {
             )}
             {bookingView === "list" && (
               <div className={`row no-gutter main-container list ${
-                showResourceViewId !== null ? "resourceview-visible" : ""
+                showResourceDetails !== null ? "resourceview-visible" : ""
               }`}>
                 <ListContainer 
                   resources={resources}
-                  setShowResourceViewId={setShowResourceViewId}
+                  setShowResourceDetails={setShowResourceDetails}
+                  facilities={facilities}
                 />
                 <ResourceView
                   config={config}
@@ -430,15 +425,15 @@ function App() {
                   setResource={setResource}
                   facilities={facilities}
                   setFacilities={setFacilities}
-                  showResourceViewId={showResourceViewId}
-                  setShowResourceViewId={setShowResourceViewId}
+                  showResourceDetails={showResourceDetails}
+                  setShowResourceDetails={setShowResourceDetails}
                 />
               </div>
             )}
             {bookingView === "calendar" && (
               // {/* Display calendar for selections */}
               <div className={`row no-gutter main-container calendar ${
-                showResourceViewId !== null ? "resourceview-visible" : ""
+                showResourceDetails !== null ? "resourceview-visible" : ""
               }`}>
                 <Calendar
                   resources={resources}
@@ -448,7 +443,7 @@ function App() {
                   calendarSelection={calendarSelection}
                   setCalendarSelection={setCalendarSelection}
                   config={config}
-                  setShowResourceViewId={setShowResourceViewId}
+                  setShowResourceDetails={setShowResourceDetails}
                   urlResource={urlResource}
                   setDisplayState={setDisplayState}
                   locations={locations}
@@ -463,8 +458,8 @@ function App() {
                   setResource={setResource}
                   facilities={facilities}
                   setFacilities={setFacilities}
-                  showResourceViewId={showResourceViewId}
-                  setShowResourceViewId={setShowResourceViewId}
+                  showResourceDetails={showResourceDetails}
+                  setShowResourceDetails={setShowResourceDetails}
                 />
               </div>
             )}
