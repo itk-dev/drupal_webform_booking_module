@@ -1,9 +1,9 @@
 import "./app.scss";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
-import { useSearchParams } from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
@@ -13,6 +13,7 @@ import InfoBox from "./components/info-box";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
+import UserPanel from "./components/user-panel";
 
 dayjs.locale("da");
 
@@ -25,9 +26,9 @@ function App() {
   // App configuration and behavior.
   const [config, setConfig] = useState(null); // Config imported from an external source.
   const [displayState, setDisplayState] = useState("maximized"); // The app display mode to be used.
-  const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
+  const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
 
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
@@ -51,7 +52,7 @@ function App() {
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
-  const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
+  const [authorFields, setAuthorFields] = useState({subject: "", email: ""}); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
 
   // Get configuration.
@@ -163,12 +164,12 @@ function App() {
 
   // Set location filter and resource dropdown options.
   useEffect(() => {
-    const locationValues = locationFilter.map(({ value }) => value);
-    setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
+    const locationValues = locationFilter.map(({value}) => value);
+    setFilterParams({...filterParams, ...{"location[]": locationValues}});
 
     // Set resource dropdown options.
     if (config) {
-      const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
+      const dropdownParams = locationFilter.map(({value}) => ["location[]", value]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
 
       Api.fetchResources(config.api_endpoint, urlSearchParams)
@@ -190,11 +191,11 @@ function App() {
 
   // Set resource filter.
   useEffect(() => {
-    const resourceValues = resourceFilter.map(({ value }) => value);
+    const resourceValues = resourceFilter.map(({value}) => value);
 
     setFilterParams({
       ...filterParams,
-      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
+      ...(resourceValues.length ? {"resourceMail[]": resourceValues} : ""),
     });
   }, [resourceFilter]);
 
@@ -226,7 +227,7 @@ function App() {
   return (
     <div className="App">
       <div className="container-fluid">
-        {!config && <LoadingSpinner />}
+        {!config && <LoadingSpinner/>}
         {config && displayState === "maximized" && (
           <div className="app-content">
             <div className={`row filters-wrapper ${showResourceViewId !== null ? "disable-filters" : ""}`}>
@@ -267,7 +268,7 @@ function App() {
             {/* Add info box */}
             <div className="row info-box-wrapper">
               {config.info_box_color && config.info_box_header && config.info_box_content && (
-                <InfoBox config={config} />
+                <InfoBox config={config}/>
               )}
             </div>
 
@@ -313,12 +314,15 @@ function App() {
         )}
 
         {/* TODO: Only show if user menu is requested */}
-        {/* <UserPanel config={config} /> */}
+        <br />
+        <hr />
+        <br />
+        <UserPanel config={config} />
 
         {/* Display author fields */}
         {config && !config.step_one && (
           <div className="row no-gutter">
-            {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+            {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields}/>}
           </div>
         )}
 
