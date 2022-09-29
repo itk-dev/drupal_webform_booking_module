@@ -114,11 +114,7 @@ function App() {
     }
 
     // Set resource filter.
-    if (
-      urlResource &&
-      hasOwnProperty(urlResource, "resourceMail") &&
-      hasOwnProperty(urlResource, "resourceName")
-    ) {
+    if (urlResource && hasOwnProperty(urlResource, "resourceMail") && hasOwnProperty(urlResource, "resourceName")) {
       setResourceFilter([
         {
           value: urlResource.resourceMail,
