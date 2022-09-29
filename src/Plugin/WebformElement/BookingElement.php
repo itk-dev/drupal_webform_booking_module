@@ -159,28 +159,25 @@ class BookingElement extends Hidden
    * @throws \JsonException
    */
   public function preSave(array &$element, WebformSubmissionInterface $webform_submission) {
-    $bookingKey = NULL;
-    foreach ($webform_submission->getWebform()->getElementsDecoded() as $elementName => $element) {
-      if('booking_element' === $element['#type']) {
-        $bookingKey = $elementName;
-      }
-    }
-    $data = json_decode($webform_submission->getData()[$bookingKey], TRUE, 512, JSON_THROW_ON_ERROR);
-
     $request = Drupal::request();
-
     $userHelper = new UserHelper();
+
     $userArray = $userHelper->getUserValues($request);
 
-    $data['name'] = $userArray['name'];
-    $data['userId'] = $userArray['userId'];
-    $data['formElement'] = 'booking_element';
+    foreach ($webform_submission->getWebform()->getElementsDecoded() as $elementName => $element) {
+      if('booking_element' === $element['#type']) {
+        $data = json_decode($webform_submission->getData()[$elementName], TRUE, 512, JSON_THROW_ON_ERROR);
 
-    $webform_submission->setElementData($bookingKey, json_encode($data));
+        $data['name'] = $userArray['name'];
+        $data['userId'] = $userArray['userId'];
+        $data['formElement'] = 'booking_element';
+
+        $webform_submission->setElementData($elementName, json_encode($data));
+      }
+    }
 
     parent::preSave($element, $webform_submission);
   }
-
 
   /**
    * Validate booking data in hidden field.
