@@ -1,7 +1,6 @@
 import React from "react";
 import * as PropTypes from "prop-types";
 import dayjs from "dayjs";
-/* eslint no-underscore-dangle: 0 */
 
 /**
  * Calendar selection box component.
@@ -18,13 +17,13 @@ function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitl
    * @returns {string} Date formatted as string.
    */
   function getFormattedDate(startStr) {
-    const formattedDate = dayjs(startStr).format("dddd [d.] D. MMMM YYYY");
-    return formattedDate;
+    return dayjs(startStr).format("dddd [d.] D. MMMM YYYY");
   }
+
   /**
    * @param {string} startStr String containing the start-dateTime of the selection
    * @param {string} endStr String containing the end-dateTime of the selection
-   * @returns {JSX.Element} Time formatted as string.
+   * @returns {string} Time formatted as string.
    */
   function getFormattedTime(startStr, endStr) {
     const formattedTimeStart = dayjs(startStr).format("HH:mm");
@@ -61,13 +60,8 @@ function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitl
 
 CalendarSelectionBox.propTypes = {
   calendarSelection: PropTypes.shape({
-    resource: PropTypes.shape({
-      _resource: PropTypes.shape({
-        title: PropTypes.string.isRequired,
-      }).isRequired,
-    }).isRequired,
-    start: PropTypes.shape({}).isRequired,
-    end: PropTypes.shape({}).isRequired,
+    start: PropTypes.string.isRequired,
+    end: PropTypes.string.isRequired,
     resourceId: PropTypes.string.isRequired,
   }).isRequired,
   calendarSelectionResourceTitle: PropTypes.string.isRequired,
