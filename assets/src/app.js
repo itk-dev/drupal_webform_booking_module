@@ -14,6 +14,7 @@ import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import capacityOptions from "./util/filter-utils";
+import hasOwnProperty from "./util/helpers";
 
 dayjs.locale("da");
 
@@ -103,7 +104,7 @@ function App() {
   // Effects to run when urlResource is set. This should only happen once in extension of app initialisation.
   useEffect(() => {
     // Set location filter.
-    if (urlResource && Object.prototype.hasOwnProperty.call(urlResource, "location")) {
+    if (urlResource && hasOwnProperty(urlResource, "location")) {
       setLocationFilter([
         {
           value: urlResource.location,
@@ -115,8 +116,8 @@ function App() {
     // Set resource filter.
     if (
       urlResource &&
-      Object.prototype.hasOwnProperty.call(urlResource, "resourceMail") &&
-      Object.prototype.hasOwnProperty.call(urlResource, "resourceName")
+      hasOwnProperty(urlResource, "resourceMail") &&
+      hasOwnProperty(urlResource, "resourceName")
     ) {
       setResourceFilter([
         {
