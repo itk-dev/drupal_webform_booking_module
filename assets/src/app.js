@@ -13,6 +13,7 @@ import InfoBox from "./components/info-box";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
+import capacityOptions from "./util/filter-utils";
 
 dayjs.locale("da");
 
@@ -52,15 +53,6 @@ function App() {
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
-
-  const capacityOptions = [
-    { value: "0", label: "Alle", type: "gt" },
-    { value: "0..10", label: "0 - 10", type: "between" },
-    { value: "11..20", label: "11 - 20", type: "between" },
-    { value: "21..30", label: "21 - 30", type: "between" },
-    { value: "31..80", label: "31 - 80", type: "between" },
-    { value: "81", label: "81+", type: "gt" },
-  ];
 
   // Get configuration.
   useEffect(() => {
