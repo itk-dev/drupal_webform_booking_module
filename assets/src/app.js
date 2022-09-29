@@ -32,7 +32,6 @@ function App() {
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
-  const [capacityOptions, setCapacityOptions] = useState([]);
 
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
@@ -43,19 +42,25 @@ function App() {
 
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
-  // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources
+  // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
+  // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(false); // The result after filtering resources
 
-  // Id of a specific resource to be displayed in resource view.
-  // TODO: Do we need the resource and facilities constant in app? Should they not be contained within component?
   const [locations, setLocations] = useState(null);
-  const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
-  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
 
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+
+  const capacityOptions = [
+    { value: "0", label: "Alle", type: "gt" },
+    { value: "0..10", label: "0 - 10", type: "between" },
+    { value: "11..20", label: "11 - 20", type: "between" },
+    { value: "21..30", label: "21 - 30", type: "between" },
+    { value: "31..80", label: "31 - 80", type: "between" },
+    { value: "81", label: "81+", type: "gt" },
+  ];
 
   // Get configuration.
   useEffect(() => {
@@ -67,14 +72,6 @@ function App() {
       setValidUrlParams(urlParams);
       setDisplayState("minimized");
     }
-    setCapacityOptions([
-      { value: "0", label: "Alle", type: "gt" },
-      { value: "0..10", label: "0 - 10", type: "between" },
-      { value: "11..20", label: "11 - 20", type: "between" },
-      { value: "21..30", label: "21 - 30", type: "between" },
-      { value: "31..80", label: "31 - 80", type: "between" },
-      { value: "81", label: "81+", type: "gt" },
-    ]);
   }, []);
 
   // Effects to run when config is loaded. This should only happen once at app initialisation.
@@ -113,6 +110,7 @@ function App() {
 
   // Effects to run when urlResource is set. This should only happen once in extension of app initialisation.
   useEffect(() => {
+    // Set location filter.
     if (urlResource && Object.prototype.hasOwnProperty.call(urlResource, "location")) {
       setLocationFilter([
         {
@@ -121,6 +119,8 @@ function App() {
         },
       ]);
     }
+
+    // Set resource filter.
     if (
       urlResource &&
       Object.prototype.hasOwnProperty.call(urlResource, "resourceMail") &&
@@ -133,6 +133,8 @@ function App() {
         },
       ]);
     }
+
+    // Use data from url parameters.
     if (validUrlParams) {
       setDate(new Date(validUrlParams.get("from")));
       setCalendarSelection({
@@ -175,12 +177,14 @@ function App() {
   // Set location filter and resource dropdown options.
   useEffect(() => {
     const locationValues = locationFilter.map(({ value }) => value);
+
     setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
 
     // Set resource dropdown options.
     if (config) {
       const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
+
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResourcesOptions(
@@ -200,23 +204,28 @@ function App() {
 
   // Set capacity filter.
   useEffect(() => {
-    const capacityType = capacityFilter.type ?? undefined;
-    const capacityValue = capacityFilter.value ?? 0;
-    let capacity = {};
+    const newFilterParams = { ...filterParams };
 
-    // Check type of selection. delete opposite entry to prevent both capacity[between] and capacity[gt] being set, causing a dead end.
+    const capacityType = capacityFilter.type ?? null;
+    const capacityValue = capacityFilter.value ?? 0;
+
+    // Delete opposite entry to prevent both capacity[between] and capacity[gt] being set, causing a dead end.
+    delete newFilterParams["capacity[between]"];
+    delete newFilterParams["capacity[gt]"];
+
+    // Set capacity filter according to capacityType.
+    let capacity;
     switch (capacityType) {
       case "between":
-        delete filterParams["capacity[gt]"];
         capacity = { "capacity[between]": capacityValue };
         break;
       case "gt":
       default:
-        delete filterParams["capacity[between]"];
         capacity = { "capacity[gt]": capacityValue };
         break;
     }
-    setFilterParams({ ...filterParams, ...capacity });
+
+    setFilterParams({ ...newFilterParams, ...capacity });
   }, [capacityFilter]);
 
   // Set resource filter.
@@ -332,15 +341,13 @@ function App() {
                 locationFilter={locationFilter}
               />
               {/* TODO: Only show if resource view is requested */}
-              <ResourceView
-                config={config}
-                resource={resource}
-                setResource={setResource}
-                facilities={facilities}
-                setFacilities={setFacilities}
-                showResourceViewId={showResourceViewId}
-                setShowResourceViewId={setShowResourceViewId}
-              />
+              {showResourceViewId && (
+                <ResourceView
+                  config={config}
+                  showResourceViewId={showResourceViewId}
+                  setShowResourceViewId={setShowResourceViewId}
+                />
+              )}
             </div>
           </div>
         )}
