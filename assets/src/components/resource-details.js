@@ -10,14 +10,14 @@ import getResourceFacilities from "../util/resource-utils";
  * @param {object} props Props.
  * @param {object} props.config App config.
  * @param {Function} props.hideResourceView Hides and resets resource view
- * @param {string} props.showResourceViewId Id of the resource to load
+ * @param {number} props.showResourceViewId Id of the resource to load
  * @returns {JSX.Element} Component.
  */
 function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
   const [facilities, setFacilities] = useState({});
   const [resource, setResource] = useState([]);
 
-  // Load
+  // Load resource details.
   useEffect(() => {
     if (config && showResourceViewId) {
       Api.fetchResource(config.api_endpoint, showResourceViewId)

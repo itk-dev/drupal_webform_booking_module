@@ -1,5 +1,5 @@
 import React from "react";
-import * as dayjs from 'dayjs'
+import * as dayjs from "dayjs";
 import * as PropTypes from "prop-types";
 import "./calendar-header.scss";
 
