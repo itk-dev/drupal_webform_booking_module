@@ -49,7 +49,7 @@ function UserPanel({ config }) {
         })
         .finally(() => {
           setLoading(false);
-        }) ;
+        });
     }
   }, [config]);
 
@@ -57,8 +57,9 @@ function UserPanel({ config }) {
     <div className="userpanel">
       <h1>User Panel:</h1>
       <div className="userbookings-container">
-        {loading && <LoadingSpinner/>}
-        {!loading && userBookings &&
+        {loading && <LoadingSpinner />}
+        {!loading &&
+          userBookings &&
           Object.values(userBookings).map((obj) => (
             <div className="user-booking" key={obj.id}>
               <div>
