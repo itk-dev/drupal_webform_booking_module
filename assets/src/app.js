@@ -13,7 +13,6 @@ import InfoBox from "./components/info-box";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
-import UserPanel from "./components/user-panel";
 
 dayjs.locale("da");
 
