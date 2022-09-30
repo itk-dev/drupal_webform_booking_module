@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 // FullCalendar must be imported before FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
@@ -20,7 +20,7 @@ import {
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import {ReactComponent as IconChair} from "../assets/chair.svg";
+import { ReactComponent as IconChair } from "../assets/chair.svg";
 import Api from "../util/api";
 import "./calendar.scss";
 
