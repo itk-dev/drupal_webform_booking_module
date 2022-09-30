@@ -28,12 +28,12 @@ function roundToNearest15(date = new Date()) {
  *   resourcedata or the current time rounded up to the next half an hour, depending on which is largest.
  */
 function businessHoursOrNearestFifteenMinutes(businessStartHour, currentCalendarDate, returnMilliseconds) {
+  const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
+
   let adjustedBusinessHour = businessStartHour;
   let today = new Date();
 
   today = today.setHours(0, 0, 0, 0);
-
-  const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
 
   const currentClosestHalfAnHourFormatted = `${
     roundToNearest15(new Date()).getHours().toString().length === 1
@@ -170,12 +170,11 @@ function padTo2Digits(number) {
  */
 function convertMsToTime(milliseconds) {
   const seconds = Math.floor(milliseconds / 1000);
-  let minutes = Math.floor(seconds / 60);
+  const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
+  const minutesLeft = minutes % 60;
 
-  minutes %= 60;
-
-  return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
+  return `${padTo2Digits(hours)}:${padTo2Digits(minutesLeft)}`;
 }
 
 /**

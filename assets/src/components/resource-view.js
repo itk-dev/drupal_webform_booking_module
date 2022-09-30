@@ -11,7 +11,6 @@ import "./resource-view.scss";
  * @returns {JSX.Element} Component.
  */
 function ResourceView({ config, showResourceViewId, setShowResourceViewId }) {
-  /** Hide resource view */
   const hideResourceView = () => {
     setShowResourceViewId(null);
   };
