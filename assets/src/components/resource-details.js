@@ -23,7 +23,9 @@ function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
       Api.fetchResource(config.api_endpoint, showResourceViewId)
         .then((data) => {
           const newFacilities = getResourceFacilities(data);
+
           setResource(data);
+
           setFacilities(newFacilities);
         })
         .catch(() => {

@@ -18,6 +18,7 @@ function UserPanel({ config }) {
   const requestDeletion = (bookingId) => {
     if (bookingId) {
       const requestBookingId = btoa(bookingId);
+
       Api.deleteBooking(config.api_endpoint, requestBookingId)
         .then(() => {
           // TODO: Report delete success.

@@ -26,6 +26,19 @@
       {
         "extensions": [".js", ".jsx"]
       }
+    ],
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "return" },
+      { "blankLine": "always", "prev": ["const", "let", "var", "import"], "next": "*"},
+      { "blankLine": "never", "prev": ["const", "let", "var", "import"], "next": ["const", "let", "var", "import"]},
+      { "blankLine": "always", "prev": ["*"], "next": ["multiline-const"]},
+      { "blankLine": "always", "prev": ["multiline-const"], "next": ["*"]},
+      { "blankLine": "always", "prev": ["expression"], "next": ["*"]},
+      { "blankLine": "always", "prev": ["*"], "next": ["expression"]}
+    ],
+    "lines-around-comment": [
+      "error"
     ]
   }
 }

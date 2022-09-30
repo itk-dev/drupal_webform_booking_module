@@ -16,17 +16,21 @@ function CalendarHeader({ date, setDate }) {
     switch (event.target.id) {
       case "calendar-today":
         setDate(new Date());
+
         break;
       case "calendar-back":
         if (new Date() < date) {
           setDate(new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD")));
         }
+
         break;
       case "calendar-forward":
         setDate(new Date(dayjs(date).add(1, "day").format("YYYY-MM-DD")));
+
         break;
       case "calendar-datepicker":
         setDate(new Date(event.target.value));
+
         break;
       default:
     }

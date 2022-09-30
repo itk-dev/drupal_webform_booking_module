@@ -65,9 +65,10 @@ function Calendar({
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
   const [asyncEvents, setAsyncEvents] = useState();
-
   const internalStyling = document.createElement("style");
+
   document.body.appendChild(internalStyling);
+
   const dateNow = new Date();
   const internalAsyncEvents = [];
   const alreadyHandledResourceIds = [];
@@ -91,6 +92,7 @@ function Calendar({
     };
 
     const serialized = JSON.stringify(newSelection);
+
     setInternalSelection(serialized);
 
     if (typeof selection.resource !== "undefined" && selection.resource !== null) {
@@ -123,12 +125,15 @@ function Calendar({
       setTimeout(() => {
         loadedResources.forEach((resource) => {
           const mappedResource = handleResources(resource, date);
+
           calendarRef?.current?.getApi().addResource(mappedResource);
+
           internalStyling.innerHTML += `td.fc-resource[data-resource-id='${location}'] {display:none;}`;
         });
 
         // As these resources are loaded async, we need to manually update their business hours.
         const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
+
         adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
 
         // Load events for newly added resources, and finally expand location group.
@@ -136,6 +141,7 @@ function Calendar({
           Api.fetchEvents(config.api_endpoint, loadedResources, dayjs(date).startOf("day"))
             .then((loadedEvents) => {
               setAsyncEvents(loadedEvents);
+
               if (expander) {
                 expander.click();
               }
@@ -163,15 +169,19 @@ function Calendar({
   useEffect(() => {
     if (!validUrlParams) {
       let ascev = asyncEvents;
+
       if (typeof asyncEvents === "undefined") {
         ascev = [];
       }
+
       events.forEach((ev) => {
         internalAsyncEvents.push(ev);
       });
+
       ascev.forEach((asev) => {
         internalAsyncEvents.push(asev);
       });
+
       setEvents(internalAsyncEvents);
     }
   }, [asyncEvents]);
@@ -188,7 +198,9 @@ function Calendar({
 
   const getScrollTime = () => {
     const dateTimeNow = new Date();
+
     dateTimeNow.setHours(dateTimeNow.getHours() - 2);
+
     return `${dateTimeNow.getHours()}:00:00`;
   };
 
@@ -207,11 +219,13 @@ function Calendar({
   useEffect(() => {
     if (calendarSelection) {
       calendarRef?.current?.getApi().gotoDate(date);
+
       calendarRef?.current?.getApi().select(calendarSelection);
     }
 
     if (calendarRef) {
       const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
+
       adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
     }
   }, [date]);
@@ -233,15 +247,19 @@ function Calendar({
             calendarSelectionResourceId={calendarSelectionResourceId}
           />
         );
+
         document.getElementById("calendar-selection-choice-confirm").addEventListener("mousedown", (e) => {
           e.stopPropagation();
+
           const resourceId = e.target.getAttribute("data-resource-id");
+
           const paramsObj = {
             from: calendarSelection.start.toISOString(),
             to: calendarSelection.end.toISOString(),
             resourceMail: calendarSelection.resourceId ?? undefined,
             resource: resourceId,
           };
+
           switch (config.step_one) {
             case true:
               if (
@@ -253,22 +271,30 @@ function Calendar({
                 window.open(config.redirect_url, "_self");
               } else {
                 const paramsStr = new URLSearchParams(paramsObj).toString();
+
                 window.open(`${config.redirect_url}?${paramsStr}`, "_self");
               }
+
               break;
             case false:
             default:
               setDisplayState("minimized");
+
               break;
           }
+
           return false;
         });
+
         document.getElementById("calendar-selection-container").addEventListener("mousedown", (e) => {
           e.stopPropagation();
         });
+
         document.getElementById("calendar-selection-close").addEventListener("mousedown", (e) => {
           e.stopPropagation();
+
           calendarRef.current.getApi().unselect();
+
           setCalendarSelection({});
         });
       }, 1);
@@ -283,6 +309,7 @@ function Calendar({
     if (locations !== null && locations.length !== 0 && typeof calendarRef !== "undefined") {
       const placeholderResources = setPlaceholderResources(locations);
       const placeholderResourcesArray = [];
+
       placeholderResources.forEach((value) => {
         placeholderResourcesArray.push({
           id: value.building,
@@ -291,8 +318,10 @@ function Calendar({
           title: value.title,
         });
       });
+
       return placeholderResourcesArray;
     }
+
     return false;
   };
 
@@ -305,13 +334,18 @@ function Calendar({
     ) {
       return false;
     }
+
     let location = info.groupValue;
+
     location = location.replaceAll(" ", "___");
+
     info.el.setAttribute("id", location);
+
     document.querySelector(`#${location} .fc-icon-plus-square`).addEventListener(
       "click",
       (e) => {
         e.preventDefault();
+
         e.stopPropagation();
 
         if (e.target.classList.contains("loading")) {
@@ -326,7 +360,9 @@ function Calendar({
       },
       { once: true }
     );
+
     alreadyHandledResourceIds.push(location);
+
     return false;
   };
 

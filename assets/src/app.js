@@ -30,27 +30,22 @@ function App() {
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
   const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
-
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
-
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]);
   const [capacityFilter, setCapacityFilter] = useState([]);
-
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(false); // The result after filtering resources
-
   const [locations, setLocations] = useState(null);
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
-
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -63,6 +58,7 @@ function App() {
 
     if (UrlValidator.valid(urlParams) !== null) {
       setValidUrlParams(urlParams);
+
       setDisplayState("minimized");
     }
   }, []);
@@ -73,6 +69,7 @@ function App() {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocations(loadedLocations);
+
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -83,6 +80,7 @@ function App() {
               })
               .sort()
           );
+
           setResourceFilter([]);
         })
         .catch(() => {
@@ -126,6 +124,7 @@ function App() {
     // Use data from url parameters.
     if (validUrlParams) {
       setDate(new Date(validUrlParams.get("from")));
+
       setCalendarSelection({
         start: new Date(validUrlParams.get("from")),
         end: new Date(validUrlParams.get("to")),
@@ -152,6 +151,7 @@ function App() {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
             setResources([]);
+
             setTimeout(() => {
               setResources(loadedResources);
             }, 1);
@@ -194,23 +194,26 @@ function App() {
   // Set capacity filter.
   useEffect(() => {
     const newFilterParams = { ...filterParams };
-
     const capacityType = capacityFilter.type ?? null;
     const capacityValue = capacityFilter.value ?? 0;
 
     // Delete opposite entry to prevent both capacity[between] and capacity[gt] being set, causing a dead end.
     delete newFilterParams["capacity[between]"];
+
     delete newFilterParams["capacity[gt]"];
 
     // Set capacity filter according to capacityType.
     let capacity;
+
     switch (capacityType) {
       case "between":
         capacity = { "capacity[between]": capacityValue };
+
         break;
       case "gt":
       default:
         capacity = { "capacity[gt]": capacityValue };
+
         break;
     }
 

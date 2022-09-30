@@ -30,7 +30,9 @@ function roundToNearest15(date = new Date()) {
 function businessHoursOrNearestFifteenMinutes(businessStartHour, currentCalendarDate, returnMilliseconds) {
   let adjustedBusinessHour = businessStartHour;
   let today = new Date();
+
   today = today.setHours(0, 0, 0, 0);
+
   const calendarDate = currentCalendarDate.setHours(0, 0, 0, 0);
 
   const currentClosestHalfAnHourFormatted = `${
@@ -42,14 +44,17 @@ function businessHoursOrNearestFifteenMinutes(businessStartHour, currentCalendar
       ? `0${roundToNearest15(new Date()).getMinutes()}`
       : roundToNearest15(new Date()).getMinutes()
   }`;
+
   if (currentClosestHalfAnHourFormatted > adjustedBusinessHour && calendarDate === today) {
     adjustedBusinessHour = currentClosestHalfAnHourFormatted;
   }
 
   if (returnMilliseconds) {
     const timeParts = adjustedBusinessHour.split(":");
+
     adjustedBusinessHour = timeParts[0] * (60000 * 60) + timeParts[1] * 60000;
   }
+
   return adjustedBusinessHour;
 }
 
@@ -79,17 +84,21 @@ export function handleResources(value, currentCalendarDate) {
   if (value.location === "") {
     return false;
   }
+
   // TODO: Add business hours.
   const businessHoursArray = []; // eslint-disable-line no-param-reassign
+
   // reformatting openHours to fullcalendar-readable format
   value.openHours.forEach((v) => {
     const startTime = dayjs(v.open).format("HH:mm");
     const endTime = dayjs(v.close).format("HH:mm");
+
     const businessHours = {
       daysOfWeek: [v.weekday],
       startTime: businessHoursOrNearestFifteenMinutes(startTime, currentCalendarDate, false),
       endTime,
     };
+
     businessHoursArray.push(businessHours);
   });
 
@@ -105,6 +114,7 @@ export function handleResources(value, currentCalendarDate) {
       businessHours: businessHoursArray,
     };
   }
+
   return {
     resourceId: value.id,
     id: value.resourceMail,
@@ -126,6 +136,7 @@ export function handleResources(value, currentCalendarDate) {
  */
 export function setPlaceholderResources(locations) {
   const placeholderReources = [];
+
   if (locations.length !== 0) {
     locations.forEach((value, index) => {
       placeholderReources.push({
@@ -134,8 +145,10 @@ export function setPlaceholderResources(locations) {
         title: "loading...",
       });
     });
+
     return placeholderReources;
   }
+
   return false;
 }
 
@@ -193,6 +206,7 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
         startTime =
           calendarRef.current._calendarApi.currentDataManager.data.resourceStore[resourceId].businessHours.defs[def]
             .recurringDef.typeData.startTime.milliseconds;
+
         internalOpeningHours[resourceId] = startTime;
       }
 
@@ -210,5 +224,6 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
       /* eslint-enable no-param-reassign */
     }
   });
+
   return false;
 }

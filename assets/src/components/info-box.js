@@ -14,12 +14,13 @@ function InfoBox({ config }) {
   const [infoBoxHeader, setInfoBoxHeader] = useState("");
   const [infoBoxContent, setInfoBoxContent] = useState("");
   const [showInfoBox, setShowInfoBox] = useState("flex");
-
   const hideInfoBox = () => setShowInfoBox("none");
 
   useEffect(() => {
     setInfoBoxColor(config.info_box_color);
+
     setInfoBoxHeader(config.info_box_header);
+
     setInfoBoxContent(config.info_box_content);
   }, [config]);
 

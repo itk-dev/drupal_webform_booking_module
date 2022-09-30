@@ -21,6 +21,7 @@ function RedirectButton({ calendarSelection, config }) {
       window.open(config.redirect_url, "_self");
     } else {
       const paramsStr = new URLSearchParams(paramsObj).toString();
+
       window.open(`${config.redirect_url}?${paramsStr}`, "_self");
     }
   };
