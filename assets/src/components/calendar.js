@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import ReactDOMServer from "react-dom/server";
 // FullCalendar must be imported before FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
@@ -20,7 +20,7 @@ import {
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import { ReactComponent as IconChair } from "../assets/chair.svg";
+import {ReactComponent as IconChair} from "../assets/chair.svg";
 import Api from "../util/api";
 import "./calendar.scss";
 
@@ -37,7 +37,7 @@ import "./calendar.scss";
  * @param {object} props.config Config for the app.
  * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
  * @param {object} props.urlResource The resource object loaded from URL id.
- * @param {string} props.setDisplayState State of the calendar - minimized or maximized
+ * @param {Function} props.setDisplayState State of the calendar - "minimized" or "maximized"
  * @param {object} props.locations Object containing available locations
  * @param {Function} props.setEvents Set calendar events
  * @param {object} props.validUrlParams Validated url parameters from step1
@@ -114,10 +114,10 @@ function Calendar({
    * @param {string} locationName Name of the expanded location
    */
   function fetchResourcesOnLocation(locationName) {
-    let location = locationName;
-    location = location.replaceAll("___", " ");
+    const location = locationName.replaceAll("___", " ");
     const searchParams = `location=${location}`;
     const expander = document.querySelector(`.fc-datagrid-cell#${location} .fc-icon-plus-square`);
+
     // Load resources for the clicked location
     Api.fetchResources(config.api_endpoint, searchParams).then((loadedResources) => {
       setTimeout(() => {
@@ -226,14 +226,13 @@ function Calendar({
 
     if (highlightElement !== null) {
       setTimeout(() => {
-        const calendarSelectionBox = ReactDOMServer.renderToString(
+        document.querySelector("div.fc-highlight").innerHTML = ReactDOMServer.renderToString(
           <CalendarSelectionBox
             calendarSelection={calendarSelection}
             calendarSelectionResourceTitle={calendarSelectionResourceTitle}
             calendarSelectionResourceId={calendarSelectionResourceId}
           />
         );
-        document.querySelector("div.fc-highlight").innerHTML = calendarSelectionBox;
         document.getElementById("calendar-selection-choice-confirm").addEventListener("mousedown", (e) => {
           e.stopPropagation();
           const resourceId = e.target.getAttribute("data-resource-id");
@@ -314,12 +313,15 @@ function Calendar({
       (e) => {
         e.preventDefault();
         e.stopPropagation();
+
         if (e.target.classList.contains("loading")) {
           return false;
         }
+
         e.target.setAttribute("class", "fc-icon fc-icon-plus-square loading");
-        const locationName = location;
-        fetchResourcesOnLocation(locationName);
+
+        fetchResourcesOnLocation(location);
+
         return false;
       },
       { once: true }
