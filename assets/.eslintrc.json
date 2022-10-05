@@ -1,4 +1,7 @@
 {
+  "globals": {
+    "JSX": "readonly"
+  },
   "plugins": ["react", "jsx", "prettier", "only-warn"],
   "extends": [
     "airbnb",
@@ -23,6 +26,23 @@
       {
         "extensions": [".js", ".jsx"]
       }
+    ],
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "return" },
+      { "blankLine": "always", "prev": ["const", "let", "var", "import"], "next": "*"},
+      { "blankLine": "never", "prev": ["const"], "next": ["const"]},
+      { "blankLine": "never", "prev": ["let"], "next": ["let"]},
+      { "blankLine": "never", "prev": ["var"], "next": ["var"]},
+      { "blankLine": "never", "prev": ["import"], "next": ["import"]},
+      { "blankLine": "always", "prev": ["*"], "next": ["multiline-const"]},
+      { "blankLine": "always", "prev": ["multiline-const"], "next": ["*"]},
+      { "blankLine": "always", "prev": ["expression"], "next": ["*"]},
+      { "blankLine": "always", "prev": ["*"], "next": ["expression"]}
+    ],
+    "lines-around-comment": [
+      "error",
+      { "beforeBlockComment": true, "allowClassStart": true, "allowBlockStart": true }
     ]
   }
 }

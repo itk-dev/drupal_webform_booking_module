@@ -10,14 +10,14 @@ import "./minimized-display.scss";
  * @param {object} props.validUrlParams Validated parameters.
  * @param {Function} props.setDisplayState Set display state function.
  * @param {object} props.urlResource Resource fetched from URL.
- * @returns {string} Calendar header component.
+ * @returns {JSX.Element} Calendar header component.
  */
 function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
   const onChangeBooking = () => {
     setDisplayState("maximized");
   };
-  const formatUrlDate = (dateString) =>
-    dayjs(dateString).format("DD/MM/YYYY - HH:mm");
+
+  const formatUrlDate = (dateString) => dayjs(dateString).format("DD/MM/YYYY - HH:mm");
 
   return (
     <div className="col-md-12">
@@ -34,11 +34,7 @@ function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
               <span>{formatUrlDate(validUrlParams.get("to"))}</span>
             </div>
             <div>
-              <button
-                id="change-booking"
-                type="button"
-                onClick={onChangeBooking}
-              >
+              <button id="change-booking" type="button" onClick={onChangeBooking}>
                 Change booking
               </button>
             </div>

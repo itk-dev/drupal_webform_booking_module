@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
@@ -13,7 +13,7 @@ import { ReactComponent as IconChair } from "../assets/chair.svg";
  * @param {Function} props.setResource Resource information object setter
  * @param {Function} props.facilities Facilities information object
  * @param {Function} props.setFacilities Facilities information object setter
- * @returns {object} Component.
+ * @returns {JSX.Element} Component.
  */
 function ResourceDetails({
   hideResourceView,
@@ -57,23 +57,13 @@ function ResourceDetails({
   }
 
   return (
-    <div
-      className={
-        showResourceDetails !== null
-          ? "fade-in-content resource-container"
-          : "  resource-container"
-      }
-    >
+    <div className={showResourceViewId !== null ? "fade-in-content resource-container" : "  resource-container"}>
       {!resource && <LoadingSpinner />}
       {resource && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
-            <button
-              type="button"
-              className="booking-btn-inv"
-              onClick={hideResourceView}
-            >
+            <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
           </div>
@@ -86,7 +76,22 @@ function ResourceDetails({
             </div>
             <div className="facilities">
               <span>Faciliteter</span>
-              {facilities && getFacilitiesList()}
+              <div className="facility-container">
+                <div className="facility-item">
+                  <div className="facility-icon">
+                    <IconChair />
+                  </div>
+                  <span>{resource.capacity} siddepladser</span>
+                </div>
+                {Object.keys(facilities).map((key) => {
+                  return (
+                    <div className="facility-item" key={key}>
+                      <div className="facility-icon">{facilities[key].icon}</div>
+                      <span>{facilities[key].title}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="location">
               <span>Lokation</span>

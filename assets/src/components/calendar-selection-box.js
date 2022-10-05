@@ -1,36 +1,27 @@
 import React from "react";
 import * as PropTypes from "prop-types";
 import dayjs from "dayjs";
-/* eslint no-underscore-dangle: 0 */
 
 /**
  * Calendar selection box component.
  *
  * @param {object} props Props.
- * @param {object} props.calendarSelection Object containing selection info
- *   returned by fullcalendar
- * @param {string} props.calendarSelectionResourceTitle Title of selected
- *   resource.
+ * @param {object} props.calendarSelection Object containing selection info returned by fullcalendar
+ * @param {string} props.calendarSelectionResourceTitle Title of selected resource.
  * @param {number} props.calendarSelectionResourceId Id of selected resource
  * @returns {object} Calendar selection box
  */
-function CalendarSelectionBox({
-  calendarSelection,
-  calendarSelectionResourceTitle,
-  calendarSelectionResourceId,
-}) {
+function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitle, calendarSelectionResourceId }) {
   /**
-   * @param {string} startStr String containing the start-dateTime of the
-   *   selection.
+   * @param {string} startStr String containing the start-dateTime of the selection.
    * @returns {string} Date formatted as string.
    */
   function getFormattedDate(startStr) {
-    const formattedDate = dayjs(startStr).format("dddd [d.] D. MMMM YYYY");
-    return formattedDate;
+    return dayjs(startStr).format("dddd [d.] D. MMMM YYYY");
   }
+
   /**
-   * @param {string} startStr String containing the start-dateTime of the
-   *   selection
+   * @param {string} startStr String containing the start-dateTime of the selection
    * @param {string} endStr String containing the end-dateTime of the selection
    * @returns {string} Time formatted as string.
    */
@@ -56,15 +47,9 @@ function CalendarSelectionBox({
             <b>{getFormattedDate(calendarSelection.start)}</b>
           </span>
           <span>
-            <b>
-              {getFormattedTime(calendarSelection.start, calendarSelection.end)}
-            </b>
+            <b>{getFormattedTime(calendarSelection.start, calendarSelection.end)}</b>
           </span>
-          <button
-            id="calendar-selection-choice-confirm"
-            data-resource-id={calendarSelectionResourceId}
-            type="button"
-          >
+          <button id="calendar-selection-choice-confirm" data-resource-id={calendarSelectionResourceId} type="button">
             Fortsæt med dette valg
           </button>
         </div>
@@ -75,13 +60,8 @@ function CalendarSelectionBox({
 
 CalendarSelectionBox.propTypes = {
   calendarSelection: PropTypes.shape({
-    resource: PropTypes.shape({
-      _resource: PropTypes.shape({
-        title: PropTypes.string.isRequired,
-      }).isRequired,
-    }).isRequired,
-    start: PropTypes.shape({}).isRequired,
-    end: PropTypes.shape({}).isRequired,
+    start: PropTypes.string.isRequired,
+    end: PropTypes.string.isRequired,
     resourceId: PropTypes.string.isRequired,
   }).isRequired,
   calendarSelectionResourceTitle: PropTypes.string.isRequired,

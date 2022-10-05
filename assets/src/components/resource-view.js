@@ -6,13 +6,9 @@ import "./resource-view.scss";
 /**
  * @param {object} props Props
  * @param {object} props.config App config.
- * @param {object} props.resource Resource data
- * @param {Function} props.setResource Resource data setter
- * @param {object} props.facilities Facilities data
- * @param {Function} props.setFacilities Facilities data setter
- * @param {string} props.showResourceViewId Id of the resource to load
+ * @param {number} props.showResourceViewId Id of the resource to load
  * @param {Function} props.setShowResourceViewId ShowResourceViewId data setter
- * @returns {string} Component.
+ * @returns {JSX.Element} Component.
  */
 function ResourceView({
   config,

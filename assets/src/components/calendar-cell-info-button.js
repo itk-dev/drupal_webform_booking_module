@@ -8,7 +8,7 @@ import "./calendar-cell-info-button.scss";
  * @param {object} props Props.
  * @param {string} props.resource Resource object.
  * @param {Function} props.onClickEvent Resource click event
- * @returns {string} Calendar cell information button component.
+ * @returns {JSX.Element} Calendar cell information button component.
  */
 function CalendarCellInfoButton({ resource, onClickEvent }) {
   return (
@@ -29,6 +29,7 @@ function CalendarCellInfoButton({ resource, onClickEvent }) {
     </span>
   );
 }
+
 CalendarCellInfoButton.propTypes = {
   resource: PropTypes.shape({}).isRequired,
   onClickEvent: PropTypes.func.isRequired,

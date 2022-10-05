@@ -1,5 +1,5 @@
 import React from "react";
-import dayjs from "dayjs";
+import * as dayjs from "dayjs";
 import * as PropTypes from "prop-types";
 import "./calendar-header.scss";
 
@@ -9,26 +9,28 @@ import "./calendar-header.scss";
  * @param {object} props Props.
  * @param {object} props.date Date.
  * @param {Function} props.setDate Set date function.
- * @returns {string} Calendar header component.
+ * @returns {JSX.Element} Calendar header component.
  */
 function CalendarHeader({ date, setDate }) {
   const onChangeDate = (event) => {
     switch (event.target.id) {
       case "calendar-today":
         setDate(new Date());
+
         break;
       case "calendar-back":
         if (new Date() < date) {
-          setDate(
-            new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD"))
-          );
+          setDate(new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD")));
         }
+
         break;
       case "calendar-forward":
         setDate(new Date(dayjs(date).add(1, "day").format("YYYY-MM-DD")));
+
         break;
       case "calendar-datepicker":
         setDate(new Date(event.target.value));
+
         break;
       default:
     }
@@ -39,12 +41,7 @@ function CalendarHeader({ date, setDate }) {
       <div className="col-md-12 no-gutter">
         <div className="row calendar-header-wrapper">
           <div className="col-md-4">
-            <button
-              id="calendar-today"
-              className="booking-btn"
-              type="button"
-              onClick={onChangeDate}
-            >
+            <button id="calendar-today" className="booking-btn" type="button" onClick={onChangeDate}>
               I dag
             </button>
           </div>
@@ -75,12 +72,7 @@ function CalendarHeader({ date, setDate }) {
               >
                 ‹
               </button>
-              <button
-                id="calendar-forward"
-                className="booking-btn"
-                type="button"
-                onClick={onChangeDate}
-              >
+              <button id="calendar-forward" className="booking-btn" type="button" onClick={onChangeDate}>
                 ›
               </button>
             </div>
