@@ -9,8 +9,7 @@ const internalOpeningHours = [];
  * Round to nearest 15 minutes.
  *
  * @param {object} date - Date object
- * @returns {object} - Date object representing the current datetime, rounded up
- *   to the next half an hour.
+ * @returns {object} - Date object representing the current datetime, rounded up to the next half an hour.
  */
 function roundToNearest15(date = new Date()) {
   const minutes = 15;
@@ -23,18 +22,12 @@ function roundToNearest15(date = new Date()) {
  * Round business hours to nearest half hour.
  *
  * @param {number} businessStartHour The hour the resource is available from
- * @param {object} currentCalendarDate Datetime object of the current
- *   Fullcalendar instance
+ * @param {object} currentCalendarDate Datetime object of the current Fullcalendar instance
  * @param {boolean} returnMilliseconds Return value in ms
- * @returns {string} : formatted date to represent the start of when the
- *   resource is available from, either direct resourcedata or the current time
- *   rounded up to the next half an hour, depending on which is largest.
+ * @returns {string} : formatted date to represent the start of when the resource is available from, either direct
+ *   resourcedata or the current time rounded up to the next half an hour, depending on which is largest.
  */
-function businessHoursOrNearestFifteenMinutes(
-  businessStartHour,
-  currentCalendarDate,
-  returnMilliseconds
-) {
+function businessHoursOrNearestFifteenMinutes(businessStartHour, currentCalendarDate, returnMilliseconds) {
   let adjustedBusinessHour = businessStartHour;
   let today = new Date();
   today = today.setHours(0, 0, 0, 0);
@@ -49,10 +42,7 @@ function businessHoursOrNearestFifteenMinutes(
       ? `0${roundToNearest15(new Date()).getMinutes()}`
       : roundToNearest15(new Date()).getMinutes()
   }`;
-  if (
-    currentClosestHalfAnHourFormatted > adjustedBusinessHour &&
-    calendarDate === today
-  ) {
+  if (currentClosestHalfAnHourFormatted > adjustedBusinessHour && calendarDate === today) {
     adjustedBusinessHour = currentClosestHalfAnHourFormatted;
   }
 
@@ -97,11 +87,7 @@ export function handleResources(value, currentCalendarDate) {
     const endTime = dayjs(v.close).format("HH:mm");
     const businessHours = {
       daysOfWeek: [v.weekday],
-      startTime: businessHoursOrNearestFifteenMinutes(
-        startTime,
-        currentCalendarDate,
-        false
-      ),
+      startTime: businessHoursOrNearestFifteenMinutes(startTime, currentCalendarDate, false),
       endTime,
     };
     businessHoursArray.push(businessHours);
@@ -128,11 +114,7 @@ export function handleResources(value, currentCalendarDate) {
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
     businessHours: {
-      startTime: businessHoursOrNearestFifteenMinutes(
-        "08:00",
-        currentCalendarDate,
-        false
-      ),
+      startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
     },
   };
@@ -184,28 +166,22 @@ function convertMsToTime(milliseconds) {
 }
 
 /**
- * Updates the currently expanded placeholder locations, to prevent selection
- * before now, if openinghour is lower than now..
+ * Updates the currently expanded placeholder locations, to prevent selection before now, if openinghour is lower than
+ * now..
  *
  * @param {Array} resources Currently loaded resources
  * @param {object} calendarRef Reference to the calendar instance
  * @param {Date} date The current date of the calendar instance
  * @returns {boolean} False
  */
-export function adjustAsyncResourcesBusinessHours(
-  resources,
-  calendarRef,
-  date
-) {
+export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) {
   resources.forEach((resource) => {
     if (resource.title !== "loading...") {
       const resourceId = resource.id;
 
       // def index is variable
       const def = Object.keys(
-        calendarRef.current._calendarApi.currentDataManager.data.resourceStore[
-          resourceId
-        ].businessHours.defs
+        calendarRef.current._calendarApi.currentDataManager.data.resourceStore[resourceId].businessHours.defs
       )[0];
 
       let startTime;
@@ -214,28 +190,22 @@ export function adjustAsyncResourcesBusinessHours(
         startTime = internalOpeningHours[resourceId];
       } else {
         startTime =
-          calendarRef.current._calendarApi.currentDataManager.data
-            .resourceStore[resourceId].businessHours.defs[def].recurringDef
-            .typeData.startTime.milliseconds;
+          calendarRef.current._calendarApi.currentDataManager.data.resourceStore[resourceId].businessHours.defs[def]
+            .recurringDef.typeData.startTime.milliseconds;
         internalOpeningHours[resourceId] = startTime;
       }
 
       // Converts ms to formatted time
       startTime = convertMsToTime(startTime);
 
-      const adjustedBusinessStartTime = businessHoursOrNearestFifteenMinutes(
-        startTime,
-        date,
-        true
-      );
+      const adjustedBusinessStartTime = businessHoursOrNearestFifteenMinutes(startTime, date, true);
 
       // Modifying the resource object to reflect the adjusted business start time
       // Disabling no-param-reassign because we are modifying the internal calendar data storage provided by FullCalendar
       /* eslint-disable no-param-reassign */
-      calendarRef.current._calendarApi.currentDataManager.data.resourceStore[
-        resourceId
-      ].businessHours.defs[def].recurringDef.typeData.startTime.milliseconds =
-        adjustedBusinessStartTime;
+      calendarRef.current._calendarApi.currentDataManager.data.resourceStore[resourceId].businessHours.defs[
+        def
+      ].recurringDef.typeData.startTime.milliseconds = adjustedBusinessStartTime;
       /* eslint-enable no-param-reassign */
     }
   });

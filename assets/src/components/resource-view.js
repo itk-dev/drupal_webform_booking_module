@@ -12,7 +12,7 @@ import "./resource-view.scss";
  * @param {Function} props.setFacilities Facilities data setter
  * @param {string} props.showResourceViewId Id of the resource to load
  * @param {Function} props.setShowResourceViewId ShowResourceViewId data setter
- * @returns {string} Component.
+ * @returns {JSX.Element} Component.
  */
 function ResourceView({
   config,
@@ -26,17 +26,13 @@ function ResourceView({
   /** Hide resource view */
   const hideResourceView = () => {
     setShowResourceViewId(null);
-    setResource(false);
+    setResource(null);
     setFacilities(null);
   };
 
   return (
     <div
-      className={
-        showResourceViewId !== null
-          ? "fade-in-background resource-view"
-          : "resource-view"
-      }
+      className={showResourceViewId !== null ? "fade-in-background resource-view" : "resource-view"}
       style={{ display: showResourceViewId !== null ? "block" : "none" }}
     >
       <ResourceDetails
@@ -56,11 +52,11 @@ ResourceView.propTypes = {
   config: PropTypes.shape({
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})),
+  resource: PropTypes.shape({}),
   setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(PropTypes.shape({})),
+  facilities: PropTypes.shape({}),
   setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
+  showResourceViewId: PropTypes.number,
   setShowResourceViewId: PropTypes.func.isRequired,
 };
 

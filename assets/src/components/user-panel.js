@@ -9,7 +9,7 @@ import "./user-panel.scss";
  *
  * @param {object} props Props.
  * @param {object} props.config App config.
- * @returns {string} User panel component.
+ * @returns {JSX.Element} User panel component.
  */
 function UserPanel({ config }) {
   /** @param {string} bookingId Booking id to request deletion of. */
@@ -33,12 +33,7 @@ function UserPanel({ config }) {
       <hr />
       <br />
       <h1>User Panel:</h1>
-      <UserBookingsList
-        config={config}
-        userId="userId"
-        key="hallo"
-        onDeleteBooking={requestDeletion}
-      />
+      <UserBookingsList config={config} userId="userId" key="hallo" onDeleteBooking={requestDeletion} />
     </div>
   );
 }

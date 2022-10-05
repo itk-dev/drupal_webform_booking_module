@@ -9,16 +9,12 @@ import "./calendar-cell-info-button.scss";
  * @param {string} props.title Resource title.
  * @param {string} props.showResourceViewId Resource id.
  * @param {Function} props.onClickEvent Resource click event
- * @returns {string} Calendar cell information button component.
+ * @returns {JSX.Element} Calendar cell information button component.
  */
 function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
   return (
     <span className="calendar-cell-info">
-      <button
-        className="calendar-cell-info-button"
-        type="button"
-        onClick={() => onClickEvent(showResourceViewId)}
-      >
+      <button className="calendar-cell-info-button" type="button" onClick={() => onClickEvent(showResourceViewId)}>
         {title}
         <img
           height="15"

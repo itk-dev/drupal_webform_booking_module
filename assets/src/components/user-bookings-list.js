@@ -8,7 +8,7 @@ import Api from "../util/api";
  * @param {string} props.userId User id.
  * @param {Function} props.onDeleteBooking OnDeleteBooking handler.
  * @param {object} props.config App config.
- * @returns {string} Component.
+ * @returns {JSX.Element} Component.
  */
 function UserBookingsList({ userId, onDeleteBooking, config }) {
   const [userBookings, setUserBookings] = useState();
