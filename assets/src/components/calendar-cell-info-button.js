@@ -16,6 +16,7 @@ function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
     <span className="calendar-cell-info">
       <button className="calendar-cell-info-button" type="button" onClick={() => onClickEvent(showResourceViewId)}>
         {title}
+        {/* TODO: Replace with svg */}
         <img
           height="15"
           width="15"
@@ -26,6 +27,7 @@ function CalendarCellInfoButton({ title, showResourceViewId, onClickEvent }) {
     </span>
   );
 }
+
 CalendarCellInfoButton.propTypes = {
   title: PropTypes.string.isRequired,
   showResourceViewId: PropTypes.number.isRequired,

@@ -13,6 +13,8 @@ import InfoBox from "./components/info-box";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
+import { capacityOptions, facilityOptions } from "./util/filter-utils";
+import hasOwnProperty from "./util/helpers";
 
 dayjs.locale("da");
 
@@ -25,16 +27,12 @@ function App() {
   // App configuration and behavior.
   const [config, setConfig] = useState(null); // Config imported from an external source.
   const [displayState, setDisplayState] = useState("maximized"); // The app display mode to be used.
-  const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
-
+  const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
-  const [capacityOptions, setCapacityOptions] = useState([]);
-  const [facilityOptions, setFacilityOptions] = useState([]);
-
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
@@ -42,19 +40,13 @@ function App() {
   const [resourceFilter, setResourceFilter] = useState([]);
   const [capacityFilter, setCapacityFilter] = useState([]);
   const [facilityFilter, setFacilityFilter] = useState([]);
-
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
-  // Resources needs to be false until we set it the first time, because [] equals no results and false triggers placeholder resources
+  // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
+  // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(false); // The result after filtering resources
-
-  // Id of a specific resource to be displayed in resource view.
-  // TODO: Do we need the resource and facilities constant in app? Should they not be contained within component?
   const [locations, setLocations] = useState(null);
-  const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
-  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
-
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -67,22 +59,9 @@ function App() {
 
     if (UrlValidator.valid(urlParams) !== null) {
       setValidUrlParams(urlParams);
+
       setDisplayState("minimized");
     }
-    setCapacityOptions([
-      { value: "0", label: "Alle", type: "gt" },
-      { value: "0..10", label: "0 - 10", type: "between" },
-      { value: "11..20", label: "11 - 20", type: "between" },
-      { value: "21..30", label: "21 - 30", type: "between" },
-      { value: "31..80", label: "31 - 80", type: "between" },
-      { value: "81", label: "81+", type: "gt" },
-    ]);
-    setFacilityOptions([
-      { value: "monitorEquipment", label: "Projektor/Skærm" },
-      { value: "wheelchairAccessible", label: "Handikapvenligt" },
-      { value: "videoConferenceEquipment", label: "Videokonference" },
-      { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
-    ]);
   }, []);
 
   // Effects to run when config is loaded. This should only happen once at app initialisation.
@@ -91,6 +70,7 @@ function App() {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocations(loadedLocations);
+
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -101,6 +81,7 @@ function App() {
               })
               .sort()
           );
+
           setResourceFilter([]);
         })
         .catch(() => {
@@ -121,7 +102,8 @@ function App() {
 
   // Effects to run when urlResource is set. This should only happen once in extension of app initialisation.
   useEffect(() => {
-    if (urlResource && Object.prototype.hasOwnProperty.call(urlResource, "location")) {
+    // Set location filter.
+    if (urlResource && hasOwnProperty(urlResource, "location")) {
       setLocationFilter([
         {
           value: urlResource.location,
@@ -129,11 +111,9 @@ function App() {
         },
       ]);
     }
-    if (
-      urlResource &&
-      Object.prototype.hasOwnProperty.call(urlResource, "resourceMail") &&
-      Object.prototype.hasOwnProperty.call(urlResource, "resourceName")
-    ) {
+
+    // Set resource filter.
+    if (urlResource && hasOwnProperty(urlResource, "resourceMail") && hasOwnProperty(urlResource, "resourceName")) {
       setResourceFilter([
         {
           value: urlResource.resourceMail,
@@ -141,8 +121,11 @@ function App() {
         },
       ]);
     }
+
+    // Use data from url parameters.
     if (validUrlParams) {
       setDate(new Date(validUrlParams.get("from")));
+
       setCalendarSelection({
         start: new Date(validUrlParams.get("from")),
         end: new Date(validUrlParams.get("to")),
@@ -169,6 +152,7 @@ function App() {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
             setResources([]);
+
             setTimeout(() => {
               setResources(loadedResources);
             }, 1);
@@ -183,12 +167,14 @@ function App() {
   // Set location filter and resource dropdown options.
   useEffect(() => {
     const locationValues = locationFilter.map(({ value }) => value);
+
     setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
 
     // Set resource dropdown options.
     if (config) {
       const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
+
       Api.fetchResources(config.api_endpoint, urlSearchParams)
         .then((loadedResources) => {
           setResourcesOptions(
@@ -205,6 +191,7 @@ function App() {
         });
     }
   }, [locationFilter]);
+
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
@@ -217,32 +204,45 @@ function App() {
 
   // Set capacity filter.
   useEffect(() => {
-    const capacityType = capacityFilter.type ?? undefined;
+    const newFilterParams = { ...filterParams };
+    const capacityType = capacityFilter.type ?? null;
     const capacityValue = capacityFilter.value ?? 0;
-    let capacity = {};
 
-    // Check type of selection. delete opposite entry to prevent both capacity[between] and capacity[gt] being set, causing a dead end.
+    // Delete opposite entry to prevent both capacity[between] and capacity[gt] being set, causing a dead end.
+    delete newFilterParams["capacity[between]"];
+
+    delete newFilterParams["capacity[gt]"];
+
+    // Set capacity filter according to capacityType.
+    let capacity;
+
     switch (capacityType) {
       case "between":
-        delete filterParams["capacity[gt]"];
         capacity = { "capacity[between]": capacityValue };
+
         break;
       case "gt":
       default:
-        delete filterParams["capacity[between]"];
         capacity = { "capacity[gt]": capacityValue };
+
         break;
     }
-    setFilterParams({ ...filterParams, ...capacity });
+
+    setFilterParams({ ...newFilterParams, ...capacity });
   }, [capacityFilter]);
 
   // Set facility filter.
   useEffect(() => {
     delete filterParams.monitorEquipment;
+
     delete filterParams.wheelchairAccessible;
+
     delete filterParams.videoConferenceEquipment;
+
     delete filterParams.catering;
+
     const facilitiesObj = {};
+
     facilityFilter.forEach((value) => {
       facilitiesObj[value.value] = "true";
     });
@@ -365,18 +365,17 @@ function App() {
                 locationFilter={locationFilter}
               />
               {/* TODO: Only show if resource view is requested */}
-              <ResourceView
-                config={config}
-                resource={resource}
-                setResource={setResource}
-                facilities={facilities}
-                setFacilities={setFacilities}
-                showResourceViewId={showResourceViewId}
-                setShowResourceViewId={setShowResourceViewId}
-              />
+              {showResourceViewId && (
+                <ResourceView
+                  config={config}
+                  showResourceViewId={showResourceViewId}
+                  setShowResourceViewId={setShowResourceViewId}
+                />
+              )}
             </div>
           </div>
         )}
+
         {config && validUrlParams && urlResource && displayState === "minimized" && (
           <div className="row">
             <MinimizedDisplay
@@ -388,7 +387,12 @@ function App() {
         )}
 
         {/* TODO: Only show if user menu is requested */}
-        {/* <UserPanel config={config} /> */}
+        {/*
+          <br />
+          <hr />
+          <br />
+          <UserPanel config={config} />
+        */}
 
         {/* Display author fields */}
         {config && !config.step_one && (

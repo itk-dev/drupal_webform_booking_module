@@ -5,6 +5,7 @@ export default class ConfigLoader {
     if (window?.drupalSettings?.booking_app) {
       return window.drupalSettings.booking_app;
     }
+
     // Loading from config file in public folder.
     return fetch("config.json")
       .then((response) => response.json())
