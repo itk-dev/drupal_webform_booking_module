@@ -16,6 +16,7 @@ function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
   const onChangeBooking = () => {
     setDisplayState("maximized");
   };
+
   const formatUrlDate = (dateString) => dayjs(dateString).format("DD/MM/YYYY - HH:mm");
 
   return (

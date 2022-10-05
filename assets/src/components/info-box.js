@@ -14,14 +14,17 @@ function InfoBox({ config }) {
   const [infoBoxHeader, setInfoBoxHeader] = useState("");
   const [infoBoxContent, setInfoBoxContent] = useState("");
   const [showInfoBox, setShowInfoBox] = useState("flex");
+  const hideInfoBox = () => setShowInfoBox("none");
 
   useEffect(() => {
     setInfoBoxColor(config.info_box_color);
+
     setInfoBoxHeader(config.info_box_header);
+
     setInfoBoxContent(config.info_box_content);
   }, [config]);
 
-  const hideInfoBox = () => setShowInfoBox("none");
+  // TODO: Handle "onKeyPress" deprecation.
   return (
     <div className="row info-box" style={{ backgroundColor: `${infoBoxColor}em`, display: showInfoBox }}>
       <div className="col-md-11 info-box-content">
@@ -40,4 +43,5 @@ function InfoBox({ config }) {
 InfoBox.propTypes = {
   config: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
+
 export default InfoBox;
