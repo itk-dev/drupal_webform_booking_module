@@ -47,6 +47,7 @@ function App() {
   const [resources, setResources] = useState(false); // The result after filtering resources
   const [locations, setLocations] = useState(null);
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
+  const [loadAllResources, setLoadAllResources] = useState(false); // Bool to enable resource loading regardless of filters set
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -148,7 +149,7 @@ function App() {
         }
       });
 
-      if (Object.values(filterParams).length > 0) {
+      if (Object.values(filterParams).length > 0 || loadAllResources === true) {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
             setResources([]);
@@ -160,6 +161,8 @@ function App() {
           .catch(() => {
             // TODO: Display error and retry option for user. (v0.1)
           });
+
+        setLoadAllResources(false);
       }
     }
   }, [filterParams]);
@@ -244,6 +247,10 @@ function App() {
     delete filterParamsObj.catering;
 
     const facilitiesObj = {};
+
+    if (facilityFilter.length === 0) {
+      setLoadAllResources(true);
+    }
 
     facilityFilter.forEach((value) => {
       facilitiesObj[value.value] = "true";
