@@ -22,46 +22,8 @@ export default class Api {
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
     .then((response) => response.json())
     .then((data) => {
-      let resourcesObj = [];
       data = data["hydra:member"];
-      data.forEach((res) => {
-        const resourceData = { ...res };
-        resourceData.facilities = {
-          ...(!res.monitorequipment && {
-            monitorequipment: {
-              title: "Projektor / Skærm",
-              icon: <IconProjector />,
-            },
-          }),
-          ...(!res.wheelchairaccessible && {
-            wheelchairaccessible: {
-              title: "Handicapvenligt",
-              icon: <IconWheelchair />,
-            },
-          }),
-          ...(!res.videoconferenceequipment && {
-            videoconferenceequipment: {
-              title: "Videoconference",
-              icon: <IconVideocamera />,
-            },
-          }),
-          ...(!res.catering && {
-            catering: {
-              title: "Forplejning",
-              icon: <IconFood />,
-            },
-          }),
-          ...(!res.holidayOpeningHours && {
-            holidayOpeningHours: {
-              title: "Tilgængelig på helligdag",
-              icon: <IconCandles />,
-            },
-          }),
-        };
-        resourcesObj.push(resourceData);
-      })
-      console.log(resourcesObj);
-      return resourcesObj;
+      return data;
     });
   }
 

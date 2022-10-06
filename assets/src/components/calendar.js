@@ -58,8 +58,7 @@ function Calendar({
   locations,
   setEvents,
   validUrlParams,
-  locationFilter,
-  showResourceDetails
+  locationFilter
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -365,7 +364,6 @@ function Calendar({
 
     return false;
   };
-
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -428,7 +426,6 @@ function Calendar({
               {
                 headerContent: "Ressourcer",
                 cellContent(arg) {
-                  console.log(arg);
                   return renderCalendarCellInfoButton(
                     arg.resource._resource,
                     triggerResourceView

@@ -11,19 +11,12 @@ import "./resource-view.scss";
  * @returns {JSX.Element} Component.
  */
 function ResourceView({
-  config,
-  resource,
-  setResource,
-  facilities,
-  setFacilities,
   showResourceDetails,
   setShowResourceDetails,
 }) {
   /** Hide resource view */
   const hideResourceView = () => {
     setShowResourceDetails(null);
-    setResource(false);
-    setFacilities(null);
   };
   return (
     <div
@@ -36,10 +29,6 @@ function ResourceView({
     >
       <ResourceDetails
         hideResourceView={hideResourceView}
-        resource={resource}
-        setResource={setResource}
-        facilities={facilities}
-        setFacilities={setFacilities}
         showResourceDetails={showResourceDetails}
       />
     </div>
@@ -47,21 +36,12 @@ function ResourceView({
 }
 
 ResourceView.propTypes = {
-  config: PropTypes.shape({
-    api_endpoint: PropTypes.string.isRequired,
-  }).isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})),
-  setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(PropTypes.shape({})),
-  setFacilities: PropTypes.func.isRequired,
   showResourceDetails: PropTypes.shape({}),
   setShowResourceDetails: PropTypes.func.isRequired,
 };
 
 ResourceView.defaultProps = {
-  resource: null,
-  facilities: null,
-  showResourceDetails: null,
+  showResourceDetails: null
 };
 
 export default ResourceView;
