@@ -233,13 +233,15 @@ function App() {
 
   // Set facility filter.
   useEffect(() => {
-    delete filterParams.monitorEquipment;
+    const filterParamsObj = filterParams;
 
-    delete filterParams.wheelchairAccessible;
+    delete filterParamsObj.monitorEquipment;
 
-    delete filterParams.videoConferenceEquipment;
+    delete filterParamsObj.wheelchairAccessible;
 
-    delete filterParams.catering;
+    delete filterParamsObj.videoConferenceEquipment;
+
+    delete filterParamsObj.catering;
 
     const facilitiesObj = {};
 
@@ -247,7 +249,7 @@ function App() {
       facilitiesObj[value.value] = "true";
     });
 
-    setFilterParams({ ...filterParams, ...facilitiesObj });
+    setFilterParams({ ...filterParamsObj, ...facilitiesObj });
   }, [facilityFilter]);
 
   // Get events for the given resources.
