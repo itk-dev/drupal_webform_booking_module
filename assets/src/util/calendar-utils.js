@@ -124,7 +124,7 @@ export function handleResources(value, currentCalendarDate) {
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
     businessHours: {
-      startTime: "08:00",
+      startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
     },
   };

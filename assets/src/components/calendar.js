@@ -222,7 +222,6 @@ function Calendar({
 
       calendarRef?.current?.getApi().select(calendarSelection);
     }
-
     if (calendarRef) {
       const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
 
