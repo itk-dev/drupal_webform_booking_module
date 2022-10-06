@@ -17,6 +17,7 @@ import {
   handleBusyIntervals,
   handleResources,
   setPlaceholderResources,
+  removeDuplicateEvents,
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
@@ -182,7 +183,9 @@ function Calendar({
         internalAsyncEvents.push(asev);
       });
 
-      setEvents(internalAsyncEvents);
+      const eventObj = removeDuplicateEvents(internalAsyncEvents);
+
+      setEvents(eventObj);
     }
   }, [asyncEvents]);
 

@@ -23,8 +23,12 @@ function ListContainer({ resources, setShowResourceDetails }) {
 }
 
 ListContainer.propTypes = {
-  resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  resources: PropTypes.arrayOf(PropTypes.shape({})),
   setShowResourceDetails: PropTypes.func.isRequired,
+};
+
+ListContainer.defaultProps = {
+  resources: {},
 };
 
 export default ListContainer;

@@ -228,3 +228,23 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
 
   return false;
 }
+
+/**
+ * @param {object} internalAsyncEvents Object of all resource events gathered async
+ * @returns {object} Object of all resource events gatered async, cleaned for duplicates
+ */
+export function removeDuplicateEvents(internalAsyncEvents) {
+  internalAsyncEvents.forEach((ev1, ix1) => {
+    const eventLeft = ev1.resource + ev1.startTime + ev1.endTime;
+
+    internalAsyncEvents.forEach((ev2, ix2) => {
+      const eventRight = ev2.resource + ev2.startTime + ev2.endTime;
+
+      if (eventLeft === eventRight && ix1 !== ix2) {
+        internalAsyncEvents.splice(ix2, 1);
+      }
+    });
+  });
+
+  return internalAsyncEvents;
+}
