@@ -1,4 +1,4 @@
-const capacityOptions = [
+export const capacityOptions = [
   { value: "0", label: "Alle", type: "gt" },
   { value: "0..10", label: "0 - 10", type: "between" },
   { value: "11..20", label: "11 - 20", type: "between" },
@@ -7,4 +7,9 @@ const capacityOptions = [
   { value: "81", label: "81+", type: "gt" },
 ];
 
-export default capacityOptions;
+export const facilityOptions = [
+  { value: "monitorEquipment", label: "Projektor/Skærm" },
+  { value: "wheelchairAccessible", label: "Handikapvenligt" },
+  { value: "videoConferenceEquipment", label: "Videokonference" },
+  { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
+];

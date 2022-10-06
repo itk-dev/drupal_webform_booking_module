@@ -13,7 +13,7 @@ import InfoBox from "./components/info-box";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
-import capacityOptions from "./util/filter-utils";
+import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 
 dayjs.locale("da");
@@ -30,6 +30,7 @@ function App() {
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
   const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
+  const [bookingView, setBookingView] = useState([]);
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
@@ -44,7 +45,7 @@ function App() {
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
-  const [resources, setResources] = useState(false); // The result after filtering resources
+  const [resources, setResources] = useState(null); // The result after filtering resources
   const [locations, setLocations] = useState(null);
   const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
@@ -233,13 +234,15 @@ function App() {
 
   // Set facility filter.
   useEffect(() => {
-    delete filterParams.monitorEquipment;
+    const filterParamsObj = { ...filterParams };
 
-    delete filterParams.wheelchairAccessible;
+    delete filterParamsObj.monitorEquipment;
 
-    delete filterParams.videoConferenceEquipment;
+    delete filterParamsObj.wheelchairAccessible;
 
-    delete filterParams.catering;
+    delete filterParamsObj.videoConferenceEquipment;
+
+    delete filterParamsObj.catering;
 
     const facilitiesObj = {};
 
@@ -247,7 +250,7 @@ function App() {
       facilitiesObj[value.value] = "true";
     });
 
-    setFilterParams({ ...filterParams, ...facilitiesObj });
+    setFilterParams({ ...filterParamsObj, ...facilitiesObj });
   }, [facilityFilter]);
 
   // Get events for the given resources.
@@ -414,10 +417,6 @@ function App() {
                 {/* TODO: Only show if resource view is requested */}
                 <ResourceView
                   config={config}
-                  resource={resource}
-                  setResource={setResource}
-                  facilities={facilities}
-                  setFacilities={setFacilities}
                   showResourceViewId={showResourceViewId}
                   setShowResourceViewId={setShowResourceViewId}
                 />
