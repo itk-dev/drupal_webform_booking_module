@@ -13,31 +13,31 @@ import { ReactComponent as IconCandles } from "../assets/candles.svg";
  */
 export default function getResourceFacilities(resource) {
   return {
-    ...(!resource.monitorequipment && {
+    ...(resource.monitorequipment && {
       monitorequipment: {
         title: "Projektor / Skærm",
         icon: <IconProjector />,
       },
     }),
-    ...(!resource.wheelchairaccessible && {
+    ...(resource.wheelchairaccessible && {
       wheelchairaccessible: {
         title: "Handicapvenligt",
         icon: <IconWheelchair />,
       },
     }),
-    ...(!resource.videoconferenceequipment && {
+    ...(resource.videoconferenceequipment && {
       videoconferenceequipment: {
         title: "Videoconference",
         icon: <IconVideoCamera />,
       },
     }),
-    ...(!resource.catering && {
+    ...(resource.catering && {
       catering: {
         title: "Forplejning",
         icon: <IconFood />,
       },
     }),
-    ...(!resource.holidayOpeningHours && {
+    ...(resource.holidayOpeningHours && {
       holidayOpeningHours: {
         title: "Tilgængelig på helligdag",
         icon: <IconCandles />,
