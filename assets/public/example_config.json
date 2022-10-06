@@ -4,5 +4,8 @@
   "front_page_url": "https://selvbetjening.local.itkdev.dk/",
   "license_key": "",
   "enable_booking": true,
-  "enable_resource_tooltips": true
+  "enable_resource_tooltips": true,
+  "redirect_url": "http://bookingapp.local.itkdev.dk/",
+  "step_one": true,
+  "output_field_id": "submit-values"
 }

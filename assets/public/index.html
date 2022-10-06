@@ -2,10 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- Bootstrap
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    -->
     <!-- Claro theme styles -->
     <link rel="stylesheet" href="./assets/claro_theme/css/base/elements.css"/>
     <link rel="stylesheet" href="./assets/claro_theme/css/base/typography.css"/>
@@ -66,8 +62,6 @@
     <link rel="stylesheet" href="./assets/claro_theme/css/layout/local-actions.css"/>
     <link rel="stylesheet" href="./assets/claro_theme/css/layout/layout.css"/>
 
-
-
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
@@ -86,16 +80,34 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Booking App</title>
+    <!-- Hack to avoid hot reload in development -->
+    <script>
+      {
+        var WS = window.WebSocket;
+        function DevWebSocket(s) {
+          if (s === "ws://bookingapp.local.itkdev.dk:3000/ws") {
+            console.info("[DEV NOTICE] Live reload has been disabled (see index.html)");
+            return {};
+          } else {
+            // Pass through other usage of sockets
+            return new WS(s);
+          }
+        }
+        window.WebSocket = DevWebSocket;
+      }
+    </script>
   </head>
   <body>
+    <div style="background-color: yellow; font-weight: bold; text-align: center">Develop version</div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="react-booking-app"></div>
     <br>
     <br>
-    <div class="container-fluid">
+    <div class="container-fluid" style="background-color: yellow; font-weight: bold; text-align: center; padding: 1em">
       <div class="row">
         <div class="col-md-3">
-        <textarea id="submit-values" name="submit-values" rows="6" cols="200">
+          <label for="submit-values" style="display: block;">Submit values</label>
+          <textarea id="submit-values" name="submit-values" rows="6" cols="200">
         </textarea>
         </div>
       </div>

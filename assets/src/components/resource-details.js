@@ -1,74 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
 import "./resource-details.scss";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
-import { ReactComponent as IconProjector } from "../assets/projector.svg";
-import { ReactComponent as IconWheelchair } from "../assets/wheelchair.svg";
-import { ReactComponent as IconVideocamera } from "../assets/videocamera.svg";
-import { ReactComponent as IconFood } from "../assets/food.svg";
-import { ReactComponent as IconCandles } from "../assets/candles.svg";
+import getResourceFacilities from "../util/resource-utils";
 
 /**
  * @param {object} props Props.
  * @param {object} props.config App config.
  * @param {Function} props.hideResourceView Hides and resets resource view
- * @param {object} props.resource Resource information object
- * @param {Function} props.setResource Resource information object setter
- * @param {Function} props.facilities Facilities information object
- * @param {Function} props.setFacilities Facilities information object setter
- * @param {string} props.showResourceViewId Id of the resource to load
- * @returns {object} Component.
+ * @param {number} props.showResourceViewId Id of the resource to load
+ * @returns {JSX.Element} Component.
  */
-function ResourceDetails({
-  config,
-  hideResourceView,
-  resource,
-  setResource,
-  facilities,
-  setFacilities,
-  showResourceViewId,
-}) {
+function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
+  const [facilities, setFacilities] = useState({});
+  const [resource, setResource] = useState([]);
+
+  // Load resource details.
   useEffect(() => {
-    if (config && showResourceViewId !== null) {
+    if (config && showResourceViewId) {
       Api.fetchResource(config.api_endpoint, showResourceViewId)
         .then((data) => {
-          const resourceData = { ...data };
-          resourceData.facilities = {
-            ...(data.monitorequipment && {
-              monitorequipment: {
-                title: "Projektor / Skærm",
-                icon: <IconProjector />,
-              },
-            }),
-            ...(data.wheelchairaccessible && {
-              wheelchairaccessible: {
-                title: "Handicapvenligt",
-                icon: <IconWheelchair />,
-              },
-            }),
-            ...(data.videoconferenceequipment && {
-              videoconferenceequipment: {
-                title: "Videoconference",
-                icon: <IconVideocamera />,
-              },
-            }),
-            ...(data.catering && {
-              catering: {
-                title: "Forplejning",
-                icon: <IconFood />,
-              },
-            }),
-            ...(data.holidayOpeningHours && {
-              holidayOpeningHours: {
-                title: "Tilgængelig på helligdag",
-                icon: <IconCandles />,
-              },
-            }),
-          };
-          setResource(resourceData);
-          setFacilities(resourceData.facilities);
+          const newFacilities = getResourceFacilities(data);
+
+          setResource(data);
+
+          setFacilities(newFacilities);
         })
         .catch(() => {
           // TODO: Display error and retry option for user.
@@ -76,50 +34,14 @@ function ResourceDetails({
     }
   }, [showResourceViewId, config]);
 
-  /**
-   * Get facilities list.
-   *
-   * @returns {string} Facilities list.
-   */
-  function getFacilitiesList() {
-    return (
-      <div className="facility-container">
-        <div className="facility-item">
-          <div className="facility-icon">
-            <IconChair />
-          </div>
-          <span>{resource.capacity} siddepladser</span>
-        </div>
-        {Object.keys(facilities).map((key) => {
-          return (
-            <div className="facility-item" key={key}>
-              <div className="facility-icon">{facilities[key].icon}</div>
-              <span>{facilities[key].title}</span>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
   return (
-    <div
-      className={
-        showResourceViewId !== null
-          ? "fade-in-content resource-container"
-          : "  resource-container"
-      }
-    >
+    <div className={showResourceViewId !== null ? "fade-in-content resource-container" : "  resource-container"}>
       {!resource && <LoadingSpinner />}
       {resource && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
-            <button
-              type="button"
-              className="booking-btn-inv"
-              onClick={hideResourceView}
-            >
+            <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
           </div>
@@ -132,7 +54,22 @@ function ResourceDetails({
             </div>
             <div className="facilities">
               <span>Faciliteter</span>
-              {facilities && getFacilitiesList()}
+              <div className="facility-container">
+                <div className="facility-item">
+                  <div className="facility-icon">
+                    <IconChair />
+                  </div>
+                  <span>{resource.capacity} siddepladser</span>
+                </div>
+                {Object.keys(facilities).map((key) => {
+                  return (
+                    <div className="facility-item" key={key}>
+                      <div className="facility-icon">{facilities[key].icon}</div>
+                      <span>{facilities[key].title}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="location">
               <span>Lokation</span>
@@ -161,21 +98,10 @@ ResourceDetails.propTypes = {
     api_endpoint: PropTypes.string.isRequired,
   }).isRequired,
   hideResourceView: PropTypes.func.isRequired,
-  resource: PropTypes.arrayOf(PropTypes.shape({})),
-  setResource: PropTypes.func.isRequired,
-  facilities: PropTypes.arrayOf(
-    PropTypes.shape({
-      icon: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-    })
-  ),
-  setFacilities: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.string,
+  showResourceViewId: PropTypes.number,
 };
 
 ResourceDetails.defaultProps = {
-  resource: null,
-  facilities: null,
   showResourceViewId: null,
 };
 

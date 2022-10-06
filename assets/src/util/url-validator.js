@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 export default class UrlValidator {
   static valid(urlParams) {
     let invalid = false;
+
     switch (true) {
       // Check for existing values
       case urlParams.get("from") === null:
@@ -11,6 +12,7 @@ export default class UrlValidator {
       case urlParams.get("resourceMail") === null:
       case urlParams.get("resource") === null:
         invalid = true;
+
         break;
       default:
     }
@@ -22,6 +24,7 @@ export default class UrlValidator {
           if (!dayjs(value, "YYYY-MM-DDTHH:MN:SS", true).isValid()) {
             invalid = true;
           }
+
           break;
         default:
       }
@@ -30,6 +33,7 @@ export default class UrlValidator {
     if (invalid) {
       return null;
     }
+
     return urlParams;
   }
 }
