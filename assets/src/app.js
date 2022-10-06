@@ -233,7 +233,7 @@ function App() {
 
   // Set facility filter.
   useEffect(() => {
-    const filterParamsObj = filterParams;
+    const filterParamsObj = { ...filterParams };
 
     delete filterParamsObj.monitorEquipment;
 
