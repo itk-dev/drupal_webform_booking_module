@@ -126,11 +126,7 @@ export function handleResources(value, currentCalendarDate) {
     image: "http://placekitten.com/1920/1080",
     facilities: value.facilities,
     businessHours: {
-      startTime: businessHoursOrNearestFifteenMinutes(
-        "08:00",
-        currentCalendarDate,
-        false
-      ),
+      startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
     },
   };
@@ -203,6 +199,7 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
       )[0];
 
       let startTime;
+
       // Startime of the resource in ms. If the openingHours are already modified in this session, refer to internal object for original openingHours.
       if (resourceId in internalOpeningHours) {
         startTime = internalOpeningHours[resourceId];

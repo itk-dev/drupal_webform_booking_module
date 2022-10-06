@@ -297,13 +297,11 @@ function Calendar({
     }
   }, [calendarSelection, events]);
 
-  const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
-    return <CalendarCellInfoButton title={title} showResourceDetails={id} onClickEvent={triggerResourceViewEv} />;
+  const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
+    return <CalendarCellInfoButton  resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
     /** @param {string} resource object of the resource to load */
     const triggerResourceView = (res) => {
-      console.log(res);
-      console.log(resources);
       setShowResourceDetails(res);
     };
 

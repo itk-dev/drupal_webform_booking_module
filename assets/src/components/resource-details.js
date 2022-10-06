@@ -59,7 +59,7 @@ function ResourceDetails({
   return (
     <div className={showResourceDetails !== null ? "fade-in-content resource-container" : "  resource-container"}>
       {!resource && <LoadingSpinner />}
-      {resource && (
+      {resource && console.log(showResourceDetails) + (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>

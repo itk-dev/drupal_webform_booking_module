@@ -25,7 +25,6 @@ function ResourceView({
     setResource(false);
     setFacilities(null);
   };
-
   return (
     <div
       className={

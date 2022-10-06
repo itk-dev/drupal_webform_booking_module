@@ -14,7 +14,7 @@ import ListContainer from "./components/list-container";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
-import capacityOptions from "./util/filter-utils";
+import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 
 dayjs.locale("da");
@@ -35,7 +35,6 @@ function App() {
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
-  const [facilityOptions, setFacilityOptions] = useState([]);
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
@@ -43,12 +42,11 @@ function App() {
   const [resourceFilter, setResourceFilter] = useState([]);
   const [capacityFilter, setCapacityFilter] = useState([]);
   const [facilityFilter, setFacilityFilter] = useState([]);
-
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
-  const [resources, setResources] = useState(false); // The result after filtering resources
+  const [resources, setResources] = useState(null); // The result after filtering resources
   const [locations, setLocations] = useState(null);
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
   const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
@@ -195,6 +193,7 @@ function App() {
         });
     }
   }, [locationFilter]);
+
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
@@ -236,16 +235,23 @@ function App() {
 
   // Set facility filter.
   useEffect(() => {
-    delete filterParams.monitorEquipment;
-    delete filterParams.wheelchairAccessible;
-    delete filterParams.videoConferenceEquipment;
-    delete filterParams.catering;
+    const filterParamsObj = { ...filterParams };
+
+    delete filterParamsObj.monitorEquipment;
+
+    delete filterParamsObj.wheelchairAccessible;
+
+    delete filterParamsObj.videoConferenceEquipment;
+
+    delete filterParamsObj.catering;
+
     const facilitiesObj = {};
+
     facilityFilter.forEach((value) => {
       facilitiesObj[value.value] = "true";
     });
 
-    setFilterParams({ ...filterParams, ...facilitiesObj });
+    setFilterParams({ ...filterParamsObj, ...facilitiesObj });
   }, [facilityFilter]);
 
   // Get events for the given resources.
@@ -275,6 +281,7 @@ function App() {
 
   const viewSwapHandler = (event) => {
     const view = event.target.getAttribute("data-view");
+
     setBookingView(view);
   };
   return (
@@ -355,9 +362,7 @@ function App() {
                   type="button"
                   onClick={viewSwapHandler}
                   data-view="map"
-                  className={
-                    bookingView === "map" ? "active booking-btn" : "booking-btn"
-                  }
+                  className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
                 >
                   Kort
                 </button>
@@ -365,11 +370,7 @@ function App() {
                   type="button"
                   onClick={viewSwapHandler}
                   data-view="calendar"
-                  className={
-                    bookingView === "calendar"
-                      ? "active booking-btn"
-                      : "booking-btn"
-                  }
+                  className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
                 >
                   Kalender
                 </button>
@@ -377,11 +378,7 @@ function App() {
                   type="button"
                   onClick={viewSwapHandler}
                   data-view="list"
-                  className={
-                    bookingView === "list"
-                      ? "active booking-btn"
-                      : "booking-btn"
-                  }
+                  className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
                 >
                   Liste
                 </button>
