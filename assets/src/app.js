@@ -10,11 +10,7 @@ import MinimizedDisplay from "./components/minimized-display";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
-<<<<<<< HEAD
 import ListContainer from "./components/list-container";
-// import UserPanel from "./components/user-panel";
-=======
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
@@ -34,46 +30,30 @@ function App() {
   const [displayState, setDisplayState] = useState("maximized"); // The app display mode to be used.
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
-<<<<<<< HEAD
-  const [bookingView, setBookingView] = useState("calendar");
-
-  // Options for filters.
-  const [locationOptions, setLocationOptions] = useState([]);
-  const [resourcesOptions, setResourcesOptions] = useState([]);
-  const [capacityOptions, setCapacityOptions] = useState([]);
-  const [facilityOptions, setFacilityOptions] = useState([]);
-
-=======
   const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
+  const [bookingView, setBookingView] = useState("calendar");
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
+  const [facilityOptions, setFacilityOptions] = useState([]);
   // User selections in the filters.
   const [date, setDate] = useState(new Date()); // Date filter selected in calendar header component.
   const [filterParams, setFilterParams] = useState({}); // An object containing structured information about current filtering.
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]);
   const [capacityFilter, setCapacityFilter] = useState([]);
-<<<<<<< HEAD
   const [facilityFilter, setFacilityFilter] = useState([]);
 
-=======
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
   // App display for calendar, list and map.
   const [events, setEvents] = useState([]); // Events related to the displayed resources (free/busy).
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(false); // The result after filtering resources
   const [locations, setLocations] = useState(null);
-<<<<<<< HEAD
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
   const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
 
-=======
-  const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -89,23 +69,6 @@ function App() {
 
       setDisplayState("minimized");
     }
-<<<<<<< HEAD
-    setCapacityOptions([
-      { value: "0", label: "Alle", type: "gt" },
-      { value: "0..10", label: "0 - 10", type: "between" },
-      { value: "11..20", label: "11 - 20", type: "between" },
-      { value: "21..30", label: "21 - 30", type: "between" },
-      { value: "31..80", label: "31 - 80", type: "between" },
-      { value: "81", label: "81+", type: "gt" },
-    ]);
-    setFacilityOptions([
-      { value: "monitorEquipment", label: "Projektor/Skærm" },
-      { value: "wheelchairAccessible", label: "Handikapvenligt" },
-      { value: "videoConferenceEquipment", label: "Videokonference" },
-      { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
-    ]);
-=======
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
   }, []);
 
   // Effects to run when config is loaded. This should only happen once at app initialisation.
@@ -193,15 +156,8 @@ function App() {
       });
 
       if (Object.values(filterParams).length > 0) {
-<<<<<<< HEAD
         Api.fetchResources(config.api_endpoint, urlSearchParams).then((loadedResources) => {
           setResources([]);
-=======
-        Api.fetchResources(config.api_endpoint, urlSearchParams)
-          .then((loadedResources) => {
-            setResources([]);
-
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
             setTimeout(() => {
               setResources(loadedResources);
             }, 1);
@@ -317,28 +273,17 @@ function App() {
     }
   }, [calendarSelection, authorFields]);
 
-<<<<<<< HEAD
   const viewSwapHandler = (event) => {
     const view = event.target.getAttribute("data-view");
     setBookingView(view);
   };
-=======
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
   return (
     <div className="App">
       <div className="container-fluid">
         {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
           <div className="app-content">
-<<<<<<< HEAD
-            <div
-              className={`row filters-wrapper ${
-                showResourceDetails !== null ? "disable-filters" : ""
-              }`}
-            >
-=======
-            <div className={`row filters-wrapper ${showResourceViewId !== null ? "disable-filters" : ""}`}>
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
+            <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
               <div className="col-md-3">
                 {/* Dropdown with locations */}
                 <Select
@@ -368,7 +313,6 @@ function App() {
                 />
               </div>
               {/* Dropdown with facilities */}
-<<<<<<< HEAD
               <div className="col-md-3">
                 <Select
                   styles={{}}
@@ -382,9 +326,6 @@ function App() {
                   isMulti
                 />
               </div>
-=======
-              <div className="col-md-3">{/* TODO: Add dropdown with options from facilities (v1) */}</div>
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
               {/* Dropdown with capacity */}
               <div className="col-md-3">
                 <Select
@@ -407,7 +348,6 @@ function App() {
               )}
             </div>
 
-<<<<<<< HEAD
             {/* Add viewswapper */}
             <div className="row viewswapper-wrapper">
               <div>
@@ -446,34 +386,6 @@ function App() {
                   Liste
                 </button>
               </div>
-=======
-            {/* Display calendar for selections */}
-            <div className="row no-gutter calendar-container">
-              <Calendar
-                resources={resources}
-                events={events}
-                date={date}
-                setDate={setDate}
-                calendarSelection={calendarSelection}
-                setCalendarSelection={setCalendarSelection}
-                config={config}
-                setShowResourceViewId={setShowResourceViewId}
-                urlResource={urlResource}
-                setDisplayState={setDisplayState}
-                locations={locations}
-                setEvents={setEvents}
-                validUrlParams={validUrlParams}
-                locationFilter={locationFilter}
-              />
-              {/* TODO: Only show if resource view is requested */}
-              {showResourceViewId && (
-                <ResourceView
-                  config={config}
-                  showResourceViewId={showResourceViewId}
-                  setShowResourceViewId={setShowResourceViewId}
-                />
-              )}
->>>>>>> c50c6d213c6f7d207249a0164daac68f58166c08
             </div>
 
             {bookingView === "map" && (
@@ -521,6 +433,7 @@ function App() {
                   setEvents={setEvents}
                   validUrlParams={validUrlParams}
                   locationFilter={locationFilter}
+                  showResourceDetails={showResourceDetails}
                 />
                 {/* TODO: Only show if resource view is requested */}
                 <ResourceView

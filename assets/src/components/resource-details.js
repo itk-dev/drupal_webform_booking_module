@@ -57,7 +57,7 @@ function ResourceDetails({
   }
 
   return (
-    <div className={showResourceViewId !== null ? "fade-in-content resource-container" : "  resource-container"}>
+    <div className={showResourceDetails !== null ? "fade-in-content resource-container" : "  resource-container"}>
       {!resource && <LoadingSpinner />}
       {resource && (
         <div>

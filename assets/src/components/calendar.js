@@ -59,6 +59,7 @@ function Calendar({
   setEvents,
   validUrlParams,
   locationFilter,
+  showResourceDetails
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -297,7 +298,7 @@ function Calendar({
   }, [calendarSelection, events]);
 
   const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
-    return <CalendarCellInfoButton title={title} showResourceViewId={id} onClickEvent={triggerResourceViewEv} />;
+    return <CalendarCellInfoButton title={title} showResourceDetails={id} onClickEvent={triggerResourceViewEv} />;
   };
     /** @param {string} resource object of the resource to load */
     const triggerResourceView = (res) => {
