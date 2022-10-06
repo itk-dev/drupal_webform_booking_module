@@ -1,23 +1,20 @@
 import React from "react";
 import * as PropTypes from "prop-types";
 import LoadingSpinner from "./loading-spinner";
-import getResourceFacilities from "../util/resource-utils"
+import getResourceFacilities from "../util/resource-utils";
 import "./resource-details.scss";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 
 /**
  * @param {object} props Props.
  * @param {Function} props.hideResourceView Hides and resets resource view
- * @param {Object} props.showResourceDetails Object of the resource to show
+ * @param {object} props.showResourceDetails Object of the resource to show
  * @returns {JSX.Element} Component.
  */
-function ResourceDetails({
-  hideResourceView,
-  showResourceDetails
-}) {
-
+function ResourceDetails({ hideResourceView, showResourceDetails }) {
   const getFacilitiesList = (resource) => {
-    let facilities = getResourceFacilities(resource);
+    const facilities = getResourceFacilities(resource);
+
     return (
       <div className="facility-container">
         <div className="facility-item">
@@ -26,9 +23,9 @@ function ResourceDetails({
           </div>
           <span>{showResourceDetails.capacity ?? showResourceDetails.extendedProps.capacity} siddepladser</span>
         </div>
-        {Object.values(facilities).map((value, key) => {
+        {Object.values(facilities).map((value) => {
           return (
-            <div className="facility-item" key={key}>
+            <div className="facility-item" key={value.title}>
               <div className="facility-icon">{value.icon}</div>
               <span>{value.title}</span>
             </div>
@@ -36,7 +33,7 @@ function ResourceDetails({
         })}
       </div>
     );
-  }
+  };
 
   return (
     <div className={showResourceDetails !== null ? "fade-in-content resource-container" : "  resource-container"}>
@@ -58,9 +55,7 @@ function ResourceDetails({
             </div>
             <div className="facilities">
               <span>Faciliteter</span>
-              <div>
-              {getFacilitiesList(showResourceDetails)}
-              </div>
+              <div>{getFacilitiesList(showResourceDetails)}</div>
             </div>
             <div className="location">
               <span>Lokation</span>
@@ -86,11 +81,34 @@ function ResourceDetails({
 
 ResourceDetails.propTypes = {
   hideResourceView: PropTypes.func.isRequired,
-  showResourceDetails: PropTypes.shape({})
+  showResourceDetails: PropTypes.shape({
+    capacity: PropTypes.number,
+    extendedProps: PropTypes.shape({
+      capacity: PropTypes.number,
+      building: PropTypes.string,
+      description: PropTypes.string,
+    }),
+    title: PropTypes.string,
+    location: PropTypes.string,
+    building: PropTypes.string,
+    resourceDescription: PropTypes.string,
+    resourceName: PropTypes.string,
+  }),
 };
 
 ResourceDetails.defaultProps = {
-  showResourceDetails: null
+  showResourceDetails: {
+    capacity: 0,
+    extendedProps: {
+      capacity: 0,
+      building: "Lokation",
+      description: "Beskrivelse",
+    },
+    title: "Titel",
+    resourceName: "Titel",
+    location: "Lokation",
+    resourceDescription: "Beskrivelse",
+  },
 };
 
 export default ResourceDetails;

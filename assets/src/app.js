@@ -51,7 +51,6 @@ function App() {
   const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
   const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
-
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -154,12 +153,15 @@ function App() {
       });
 
       if (Object.values(filterParams).length > 0) {
-        Api.fetchResources(config.api_endpoint, urlSearchParams).then((loadedResources) => {
-          setResources([]);
+        Api.fetchResources(config.api_endpoint, urlSearchParams)
+          .then((loadedResources) => {
+            setResources([]);
+
             setTimeout(() => {
               setResources(loadedResources);
             }, 1);
-        }).catch(() => {
+          })
+          .catch(() => {
             // TODO: Display error and retry option for user. (v0.1)
           });
       }
@@ -284,6 +286,7 @@ function App() {
 
     setBookingView(view);
   };
+
   return (
     <div className="App">
       <div className="container-fluid">
@@ -391,20 +394,13 @@ function App() {
               </div>
             )}
             {bookingView === "list" && (
-              <div className={`row no-gutter main-container list ${
-                showResourceDetails !== null ? "resourceview-visible" : ""
-              }`}>
-                <ListContainer 
-                  resources={resources}
-                  setShowResourceDetails={setShowResourceDetails}
-                  facilities={facilities}
-                />
+              <div
+                className={`row no-gutter main-container list ${
+                  showResourceDetails !== null ? "resourceview-visible" : ""
+                }`}
+              >
+                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
                 <ResourceView
-                  config={config}
-                  resource={resource}
-                  setResource={setResource}
-                  facilities={facilities}
-                  setFacilities={setFacilities}
                   showResourceDetails={showResourceDetails}
                   setShowResourceDetails={setShowResourceDetails}
                 />
@@ -412,9 +408,11 @@ function App() {
             )}
             {bookingView === "calendar" && (
               // {/* Display calendar for selections */}
-              <div className={`row no-gutter main-container calendar ${
-                showResourceDetails !== null ? "resourceview-visible" : ""
-              }`}>
+              <div
+                className={`row no-gutter main-container calendar ${
+                  showResourceDetails !== null ? "resourceview-visible" : ""
+                }`}
+              >
                 <Calendar
                   resources={resources}
                   events={events}

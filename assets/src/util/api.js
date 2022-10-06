@@ -1,9 +1,4 @@
 import dayjs from "dayjs";
-import { ReactComponent as IconProjector } from "../assets/projector.svg";
-import { ReactComponent as IconWheelchair } from "../assets/wheelchair.svg";
-import { ReactComponent as IconVideocamera } from "../assets/videocamera.svg";
-import { ReactComponent as IconFood } from "../assets/food.svg";
-import { ReactComponent as IconCandles } from "../assets/candles.svg";
 
 export default class Api {
   static async fetchLocations(apiEndpoint) {
@@ -20,11 +15,14 @@ export default class Api {
 
   static async fetchResources(apiEndpoint, urlSearchParams) {
     return fetch(`${apiEndpoint}itkdev_booking/resources?${urlSearchParams}`)
-    .then((response) => response.json())
-    .then((data) => {
-      data = data["hydra:member"];
-      return data;
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((data) => data["hydra:member"]);
   }
 
   static async fetchEvents(apiEndpoint, resources, date) {

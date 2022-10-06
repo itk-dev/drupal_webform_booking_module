@@ -58,7 +58,7 @@ function Calendar({
   locations,
   setEvents,
   validUrlParams,
-  locationFilter
+  locationFilter,
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -229,7 +229,6 @@ function Calendar({
     }
   }, [date]);
 
-
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
 
@@ -297,12 +296,13 @@ function Calendar({
   }, [calendarSelection, events]);
 
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
-    return <CalendarCellInfoButton  resource={resource} onClickEvent={triggerResourceViewEv} />;
+    return <CalendarCellInfoButton resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
-    /** @param {string} resource object of the resource to load */
-    const triggerResourceView = (res) => {
-      setShowResourceDetails(res);
-    };
+
+  /** @param {string} resource Object of the resource to load */
+  const triggerResourceView = (resource) => {
+    setShowResourceDetails(resource);
+  };
 
   const generateResourcePlaceholders = () => {
     if (locations !== null && locations.length !== 0 && typeof calendarRef !== "undefined") {
@@ -364,6 +364,7 @@ function Calendar({
 
     return false;
   };
+
   return (
     <div className="Calendar no-gutter col-md-12">
       <CalendarHeader config={config} date={date} setDate={setDate} />
@@ -426,10 +427,7 @@ function Calendar({
               {
                 headerContent: "Ressourcer",
                 cellContent(arg) {
-                  return renderCalendarCellInfoButton(
-                    arg.resource._resource,
-                    triggerResourceView
-                  );
+                  return renderCalendarCellInfoButton(arg.resource._resource, triggerResourceView);
                 },
               },
               {
@@ -451,7 +449,7 @@ function Calendar({
 }
 
 Calendar.propTypes = {
-  resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  resources: PropTypes.arrayOf(PropTypes.shape({})),
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
@@ -482,7 +480,7 @@ Calendar.propTypes = {
     resourceName: PropTypes.string.isRequired,
   }),
   setDisplayState: PropTypes.func.isRequired,
-  locations: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  locations: PropTypes.arrayOf(PropTypes.shape({})),
   setEvents: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}),
   locationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
@@ -492,6 +490,8 @@ Calendar.defaultProps = {
   calendarSelection: null,
   urlResource: null,
   validUrlParams: {},
+  resources: {},
+  locations: {},
 };
 
 export default Calendar;

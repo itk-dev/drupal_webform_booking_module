@@ -16,7 +16,9 @@ function CalendarCellInfoButton({ resource, onClickEvent }) {
       <button
         className="calendar-cell-info-button"
         type="button"
-        onClick={() => {onClickEvent(resource)}}
+        onClick={() => {
+          onClickEvent(resource);
+        }}
       >
         {resource.title}
         <img
@@ -31,7 +33,9 @@ function CalendarCellInfoButton({ resource, onClickEvent }) {
 }
 
 CalendarCellInfoButton.propTypes = {
-  resource: PropTypes.shape({}).isRequired,
+  resource: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+  }).isRequired,
   onClickEvent: PropTypes.func.isRequired,
 };
 

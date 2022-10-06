@@ -5,32 +5,22 @@ import "./resource-view.scss";
 
 /**
  * @param {object} props Props
- * @param {object} props.config App config.
  * @param {number} props.showResourceDetails Object of the resource to load
- * @param {Function} props.setShowResourceDetails showResourceDetails data setter
+ * @param {Function} props.setShowResourceDetails ShowResourceDetails data setter
  * @returns {JSX.Element} Component.
  */
-function ResourceView({
-  showResourceDetails,
-  setShowResourceDetails,
-}) {
+function ResourceView({ showResourceDetails, setShowResourceDetails }) {
   /** Hide resource view */
   const hideResourceView = () => {
     setShowResourceDetails(null);
   };
+
   return (
     <div
-      className={
-        showResourceDetails !== null
-          ? "fade-in-background resource-view"
-          : "resource-view"
-      }
+      className={showResourceDetails !== null ? "fade-in-background resource-view" : "resource-view"}
       style={{ display: showResourceDetails !== null ? "block" : "none" }}
     >
-      <ResourceDetails
-        hideResourceView={hideResourceView}
-        showResourceDetails={showResourceDetails}
-      />
+      <ResourceDetails hideResourceView={hideResourceView} showResourceDetails={showResourceDetails} />
     </div>
   );
 }
@@ -41,7 +31,7 @@ ResourceView.propTypes = {
 };
 
 ResourceView.defaultProps = {
-  showResourceDetails: null
+  showResourceDetails: null,
 };
 
 export default ResourceView;
