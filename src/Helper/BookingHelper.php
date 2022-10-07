@@ -48,7 +48,7 @@ class BookingHelper {
     $query = [];
 
     // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+    $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
 
     $response = $client->get("{$endpoint}v1/locations", [
       'query' => $query,
@@ -84,8 +84,8 @@ class BookingHelper {
 
     $query = $request->query->all();
 
-    // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+    // Attach permission query parameters if user is logged in.
+    $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
 
     $response = $client->get("{$endpoint}v1/resources", [
       'query' => $query,
@@ -123,7 +123,7 @@ class BookingHelper {
     $query = [];
 
     // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+    $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
 
     $response = $client->get("{$endpoint}v1/resources/$resourceId", [
       'query' => $query,
@@ -160,7 +160,7 @@ class BookingHelper {
     $query = $request->query->all();
 
     // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query);
+    $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
 
     $response = $client->get("{$endpoint}v1/busy-intervals", [
       'query' => $query,
@@ -196,12 +196,11 @@ class BookingHelper {
 
     $query = [];
 
-    // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query, TRUE);
+    $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
 
     $response = $client->get("{$endpoint}v1/user-bookings", [
       'query' => $query,
-      'headers' => $this->headers,
+      'headers' => $headers,
     ]);
 
     $statusCode = $response->getStatusCode();
@@ -234,12 +233,11 @@ class BookingHelper {
 
     $query = [];
 
-    // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query, TRUE);
+    $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
 
     $response = $client->delete("{$endpoint}v1/user-bookings/$bookingId", [
       'query' => $query,
-      'headers' => $this->headers,
+      'headers' => $headers,
     ]);
 
     $statusCode = $response->getStatusCode();
@@ -272,12 +270,11 @@ class BookingHelper {
 
     $query = [];
 
-    // Attach user query parameters if user is logged in.
-    $query = $this->userHelper->attachUserToQueryParameters($request, $query, TRUE);
+    $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
 
     $response = $client->get("{$endpoint}v1/user-bookings/$hitId", [
       'query' => $query,
-      'headers' => $this->headers,
+      'headers' => $headers,
     ]);
 
     $statusCode = $response->getStatusCode();
