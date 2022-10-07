@@ -16,14 +16,24 @@ class UserHelper {
   /**
    * @throws \JsonException
    */
-  public function attachUserToQueryParameters(Request $request, array $query, bool $attachUserId = false): array {
+  public function attachUserToHeaders(Request $request, array $headers): array {
     $userArray = $this->getUserValues($request);
 
     if ($userArray != null) {
-      if ($attachUserId) {
-        $query['userId'] = $userArray['userId'];
-      }
+      $headers['Authorization-UserId'] = $userArray['userId'];
+      $headers['Authorization-UserPermission'] = $userArray['permission'];
+    }
 
+    return $headers;
+  }
+
+  /**
+   * @throws \JsonException
+   */
+  public function attachPermissionQueryParameters(Request $request, array $query, bool $attachUserId = false): array {
+    $userArray = $this->getUserValues($request);
+
+    if ($userArray != null) {
       $permission = $userArray['permission'];
 
       if ($permission == 'businessPartner') {
