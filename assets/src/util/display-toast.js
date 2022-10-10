@@ -11,7 +11,9 @@ import "react-toastify/dist/ReactToastify.css";
  * @param {object} error - The error
  */
 export function displayError(errorString, error) {
-  const displayText = `${errorString} ${error}`;
+  const displayText = `${errorString} 
+  
+  "${error}"`;
 
   toast.error(displayText, {
     autoClose: false,

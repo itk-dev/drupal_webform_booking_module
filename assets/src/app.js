@@ -18,7 +18,6 @@ import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
-import "react-toastify/dist/ReactToastify.css";
 
 dayjs.locale("da");
 
@@ -90,7 +89,7 @@ function App() {
           setResourceFilter([]);
         })
         .catch((fetchLocationsError) => {
-          displayError("Der opstod en fejl. Prøv igen senere...", fetchLocationsError);
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchLocationsError);
         });
     }
 
@@ -100,7 +99,7 @@ function App() {
           setUrlResource(loadedResource);
         })
         .catch((fetchResourceError) => {
-          displayError("Der opstod en fejl. Prøv igen senere...", fetchResourceError);
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
         });
     }
   }, [config]);
@@ -163,7 +162,7 @@ function App() {
             }, 1);
           })
           .catch((fetchResourcesError) => {
-            displayError("Der opstod en fejl. Prøv igen senere...", fetchResourcesError);
+            displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
           });
       }
     }
@@ -192,7 +191,7 @@ function App() {
           );
         })
         .catch((fetchResourcesError) => {
-          displayError("Der opstod en fejl. Prøv igen senere...", fetchResourcesError);
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
         });
     }
   }, [locationFilter]);
@@ -265,7 +264,7 @@ function App() {
           setEvents(loadedEvents);
         })
         .catch((fetchEventsError) => {
-          displayError("Der opstod en fejl. Prøv igen senere...", fetchEventsError);
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
   }, [resources, date]);
