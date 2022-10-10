@@ -8,15 +8,30 @@
     padding-left: 0;
     padding-right: 0;
   }
+
+  .app-content {
+    background: #e9ecef;
+    padding: 30px;
+    .viewswapper-wrapper {
+      margin: 30px 0px 15px 0px;
+      > div {
+        > button {
+          margin-right: 5px;
+        }
+        > .active {
+          background-color: #343a40;
+        }
+      }
+    }
+  }
+
+  .resourceview-visible {
+    min-height: 782px;
+  }
 }
 
 body {
   font-family: sans-serif;
-}
-
-.app-content {
-  background: #e9ecef;
-  padding: 30px;
 }
 
 .fc-scrollgrid {
@@ -67,19 +82,4 @@ body {
   to {
     opacity: 1;
   }
-}
-.viewswapper-wrapper {
-  margin: 30px 0px 15px 0px !important;
-  > div {
-    > button {
-      margin-right: 5px;
-    }
-    > .active {
-      background-color: #343a40;
-    }
-  }
-}
-
-.resourceview-visible {
-  min-height: 782px !important;
 }

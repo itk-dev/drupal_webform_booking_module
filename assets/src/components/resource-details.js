@@ -51,7 +51,7 @@ function ResourceDetails({ hideResourceView, showResourceDetails }) {
           </div>
           <div className="resource-details">
             <div className="image">
-              <img src="https://via.placeholder.com/500x300" alt="" />
+              <img alt="placeholder" src="https://via.placeholder.com/500x300" />
             </div>
             <div className="facilities">
               <span>Faciliteter</span>

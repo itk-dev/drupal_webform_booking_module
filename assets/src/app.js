@@ -48,8 +48,6 @@ function App() {
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
   const [locations, setLocations] = useState(null);
-  const [facilities, setFacilities] = useState(null); // Facilities displayed in the resource view component.
-  const [resource, setResource] = useState(null); // The resource displayed in the resource view component.
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
@@ -432,11 +430,6 @@ function App() {
                 />
                 {/* TODO: Only show if resource view is requested */}
                 <ResourceView
-                  config={config}
-                  resource={resource}
-                  setResource={setResource}
-                  facilities={facilities}
-                  setFacilities={setFacilities}
                   showResourceDetails={showResourceDetails}
                   setShowResourceDetails={setShowResourceDetails}
                 />

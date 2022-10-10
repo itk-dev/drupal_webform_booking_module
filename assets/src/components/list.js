@@ -54,13 +54,13 @@ function List({ resources, setShowResourceDetails }) {
         return (
           <div key={key} className="list-resource">
             <div className="list-resource-image">
-              <img alt="kitten" src="https://placekitten.com/150/150" />
+              <img alt="placeholder" src="https://via.placeholder.com/136x150" />
             </div>
             <div className="list-resource-details col-md-10">
-              <span>
+              <span className="resource-headline">
                 <b>{resources[key].resourceName}</b>
               </span>
-              <div>
+              <div className="resource-facilities">
                 <span className="">{resources[key].location}</span>
                 <div>{getFacilitiesList(resources[key])}</div>
               </div>

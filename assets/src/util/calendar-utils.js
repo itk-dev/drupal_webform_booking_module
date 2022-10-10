@@ -230,6 +230,9 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
 }
 
 /**
+ * RemoveDuplicateEvents - Checks if any events stored in the internal storage of events loaded asynchronously are
+ * dupliactes, and removes them.
+ *
  * @param {object} internalAsyncEvents Object of all resource events gathered async
  * @returns {object} Object of all resource events gatered async, cleaned for duplicates
  */
@@ -247,4 +250,18 @@ export function removeDuplicateEvents(internalAsyncEvents) {
   });
 
   return internalAsyncEvents;
+}
+
+/**
+ * GetScrollTime gets the time to horizontally scroll the calendar to on load
+ *
+ * @returns {string} A formatted string, containing the time to scroll to, format "xx:00:00"
+ */
+export function getScrollTime() {
+  // Calculates the time the calender should scroll to horizontally when the calendar loads (now - 2 hours)
+  const dateTimeNow = new Date();
+
+  dateTimeNow.setHours(dateTimeNow.getHours() - 2);
+
+  return `${dateTimeNow.getHours()}:00:00`;
 }

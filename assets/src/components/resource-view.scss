@@ -1,4 +1,4 @@
-div.resource-view {
+.resource-view {
   display: block;
   position: absolute;
   top: 0;
@@ -10,13 +10,13 @@ div.resource-view {
   background-color: #f9f9f9;
   z-index: 999;
 }
-div.resource-container {
+.resource-container {
   width: 100%;
   height: 100%;
   background-color: #f9f9f9;
   border: 1px solid #f1f1f1;
 
-  div.resource-headline {
+  .resource-headline {
     display: flex;
     width: 100%;
     background-color: #2d3e4f;
@@ -35,7 +35,7 @@ div.resource-container {
     }
   }
 
-  div.resource-title {
+  .resource-title {
     display: flex;
     padding: 20px 15px 5px 15px;
 
@@ -43,7 +43,7 @@ div.resource-container {
       font-weight: bold;
     }
   }
-  div.resource-description {
+  .resource-description {
     padding: 15px;
 
     > span {
@@ -55,18 +55,18 @@ div.resource-container {
     }
   }
 
-  div.resource-details {
+  .resource-details {
     display: flex;
     flex-direction: row;
 
-    div.image {
+    .image {
       display: block;
       height: 300px;
       flex: 3;
       padding: 0 15px;
     }
 
-    div.location {
+    .location {
       flex: 2;
       display: flex;
       flex-direction: column;
@@ -81,7 +81,7 @@ div.resource-container {
       }
     }
 
-    div.facilities {
+    .facilities {
       flex: 2;
       padding: 0 15px;
 
@@ -90,15 +90,15 @@ div.resource-container {
         margin-bottom: 5px;
       }
 
-      div.facility-container {
+      .facility-container {
         display: flex;
         flex-direction: column;
 
-        div.facility-item {
+        .facility-item {
           display: flex;
           padding: 10px 0 5px 0;
 
-          div.facility-icon {
+          .facility-icon {
             margin: auto 5px auto 0;
             width: 30px;
             height: 25px;
