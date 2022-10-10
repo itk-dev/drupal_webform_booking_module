@@ -74,12 +74,12 @@ function Calendar({
   const alreadyHandledResourceIds = [];
 
   /**
-   * Fullcalendar flow - Udelukkende når (resources = null): Hvis der ikke forefindes nogle resources, kaldes
-   * generateResourcePlaceholders via initialResources for at generere vores placeholder resources.
-   * setPlaceholderClickEvent kaldes på hver ressource via hooken resourceGroupLabelDidMount, som håndterer at opsætte
-   * et click event på hver placeholder til at folde den ud. fetchResourcesOnLocation kaldes ved klik på placeholderen,
-   * og henter de ressourcer som tilhører den lokation der er klikket på. asyncEvents sættes i bunden af
-   * fetchResourcesOnLocation, og trigger den tilhørende useEffect som sætter ressourcernes events.
+   * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
+   * via initialResources to generate resource placeholders based on locations. setPlaceholderClickEvent is called on
+   * every resource via the hook resourceGroupLabelDidMount, which handles creating click events, to expand them, for
+   * every placeholder. On placeholder click, fetchResourcesOnLocation is called, and all available resources for the
+   * given location is loaded. In the end of fetchResourcesOnLocation, asyncEvents is set, triggering the useEffect
+   * asyncEvents is subscribed to, loading the resource events.
    */
 
   /**

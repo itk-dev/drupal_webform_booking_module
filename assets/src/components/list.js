@@ -60,9 +60,9 @@ function List({ resources, setShowResourceDetails }) {
               <span className="resource-headline">
                 <b>{resources[key].resourceName}</b>
               </span>
-              <div className="resource-facilities">
-                <span className="">{resources[key].location}</span>
-                <div>{getFacilitiesList(resources[key])}</div>
+              <div className="details">
+                <span className="location">{resources[key].location}</span>
+                <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
               <span>{resources[key].resourceDescription}</span>
             </div>
