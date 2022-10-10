@@ -358,7 +358,7 @@ function App() {
 
             {/* Add viewswapper */}
             <div className="row viewswapper-wrapper">
-              <div>
+              <div className="viewswapper-container">
                 <button
                   type="button"
                   onClick={viewSwapHandler}

@@ -14,11 +14,11 @@
     padding: 30px;
     .viewswapper-wrapper {
       margin: 30px 0px 15px 0px;
-      > div {
-        > button {
+      .viewswapper-container {
+        .booking-btn {
           margin-right: 5px;
         }
-        > .active {
+        .booking-btn.active {
           background-color: #343a40;
         }
       }

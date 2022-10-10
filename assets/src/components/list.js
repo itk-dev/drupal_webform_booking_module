@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./list.scss";
 import * as PropTypes from "prop-types";
 import getResourceFacilities from "../util/resource-utils";
@@ -11,8 +11,6 @@ import { ReactComponent as IconChair } from "../assets/chair.svg";
  * @returns {JSX.Element} List of resources
  */
 function List({ resources, setShowResourceDetails }) {
-  useEffect(() => {}, [resources]);
-
   const showResourceView = (event) => {
     const key = event.target.getAttribute("data-key");
 
@@ -57,14 +55,14 @@ function List({ resources, setShowResourceDetails }) {
               <img alt="placeholder" src="https://via.placeholder.com/136x150" />
             </div>
             <div className="list-resource-details col-md-10">
-              <span className="resource-headline">
+              <span className="headline">
                 <b>{resources[key].resourceName}</b>
               </span>
               <div className="details">
                 <span className="location">{resources[key].location}</span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
-              <span>{resources[key].resourceDescription}</span>
+              <span className="description">{resources[key].resourceDescription}</span>
             </div>
             <div className="list-resource-actions col-md-2">
               <button type="button" className="booking-btn" data-key={key} onClick={showResourceView}>
