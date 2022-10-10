@@ -115,7 +115,7 @@ function Calendar({
   function fetchResourcesOnLocation(locationName) {
     const location = locationName.replaceAll("___", " ");
     const searchParams = `location=${location}`;
-    const expander = document.querySelector(`.fc-datagrid-cell#${location} .fc-icon-plus-square`);
+    const expander = document.querySelector(`.fc-datagrid-cell#${locationName} .fc-icon-plus-square`);
 
     // Load resources for the clicked location
     Api.fetchResources(config.api_endpoint, searchParams).then((loadedResources) => {
