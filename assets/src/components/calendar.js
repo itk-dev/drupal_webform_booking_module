@@ -24,6 +24,7 @@ import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 import Api from "../util/api";
+import { displayError } from "../util/display-toast";
 import "./calendar.scss";
 
 /**
@@ -118,35 +119,39 @@ function Calendar({
     const expander = document.querySelector(`.fc-datagrid-cell#${locationName} .fc-icon-plus-square`);
 
     // Load resources for the clicked location
-    Api.fetchResources(config.api_endpoint, searchParams).then((loadedResources) => {
-      setTimeout(() => {
-        loadedResources.forEach((resource) => {
-          const mappedResource = handleResources(resource, date);
+    Api.fetchResources(config.api_endpoint, searchParams)
+      .then((loadedResources) => {
+        setTimeout(() => {
+          loadedResources.forEach((resource) => {
+            const mappedResource = handleResources(resource, date);
 
-          calendarRef?.current?.getApi().addResource(mappedResource);
-        });
+            calendarRef?.current?.getApi().addResource(mappedResource);
+          });
 
-        // As these resources are loaded async, we need to manually update their business hours.
-        const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
+          // As these resources are loaded async, we need to manually update their business hours.
+          const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
 
-        adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
+          adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
 
-        // Load events for newly added resources, and finally expand location group.
-        if (config && date !== null) {
-          Api.fetchEvents(config.api_endpoint, loadedResources, dayjs(date).startOf("day"))
-            .then((loadedEvents) => {
-              setAsyncEvents(loadedEvents);
+          // Load events for newly added resources, and finally expand location group.
+          if (config && date !== null) {
+            Api.fetchEvents(config.api_endpoint, loadedResources, dayjs(date).startOf("day"))
+              .then((loadedEvents) => {
+                setAsyncEvents(loadedEvents);
 
-              if (expander) {
-                expander.click();
-              }
-            })
-            .catch(() => {
-              // TODO: Display error and retry option for user. (v0.1)
-            });
-        }
-      }, 1);
-    });
+                if (expander) {
+                  expander.click();
+                }
+              })
+              .catch((fetchEventsError) => {
+                displayError("Der opstod en fejl. Prøv igen senere...", fetchEventsError);
+              });
+          }
+        }, 1);
+      })
+      .catch((fetchResourcesError) => {
+        displayError("Der opstod en fejl. Prøv igen senere...", fetchResourcesError);
+      });
 
     const internalStylingArray = internalStyling;
 

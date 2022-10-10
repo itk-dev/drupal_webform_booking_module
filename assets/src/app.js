@@ -4,6 +4,7 @@ import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
@@ -16,6 +17,8 @@ import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
+import { displayError } from "./util/display-toast";
+import "react-toastify/dist/ReactToastify.css";
 
 dayjs.locale("da");
 
@@ -86,8 +89,8 @@ function App() {
 
           setResourceFilter([]);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchLocationsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", fetchLocationsError);
         });
     }
 
@@ -96,8 +99,8 @@ function App() {
         .then((loadedResource) => {
           setUrlResource(loadedResource);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
+        .catch((fetchResourceError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", fetchResourceError);
         });
     }
   }, [config]);
@@ -159,8 +162,8 @@ function App() {
               setResources(loadedResources);
             }, 1);
           })
-          .catch(() => {
-            // TODO: Display error and retry option for user. (v0.1)
+          .catch((fetchResourcesError) => {
+            displayError("Der opstod en fejl. Prøv igen senere...", fetchResourcesError);
           });
       }
     }
@@ -188,8 +191,8 @@ function App() {
             })
           );
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", fetchResourcesError);
         });
     }
   }, [locationFilter]);
@@ -261,8 +264,8 @@ function App() {
         .then((loadedEvents) => {
           setEvents(loadedEvents);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchEventsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", fetchEventsError);
         });
     }
   }, [resources, date]);
@@ -287,6 +290,15 @@ function App() {
 
   return (
     <div className="App">
+      <ToastContainer
+        autoClose="10000"
+        position="bottom-right"
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        progress={undefined}
+      />
       <div className="container-fluid">
         {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
