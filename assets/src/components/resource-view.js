@@ -5,33 +5,33 @@ import "./resource-view.scss";
 
 /**
  * @param {object} props Props
- * @param {object} props.config App config.
- * @param {number} props.showResourceViewId Id of the resource to load
- * @param {Function} props.setShowResourceViewId ShowResourceViewId data setter
+ * @param {number} props.showResourceDetails Object of the resource to load
+ * @param {Function} props.setShowResourceDetails ShowResourceDetails data setter
  * @returns {JSX.Element} Component.
  */
-function ResourceView({ config, showResourceViewId, setShowResourceViewId }) {
+function ResourceView({ showResourceDetails, setShowResourceDetails }) {
+  /** Hide resource view */
   const hideResourceView = () => {
-    setShowResourceViewId(null);
+    setShowResourceDetails(null);
   };
 
   return (
-    <div className="fade-in-background resource-view">
-      <ResourceDetails config={config} hideResourceView={hideResourceView} showResourceViewId={showResourceViewId} />
+    <div
+      className={showResourceDetails !== null ? "fade-in-background resource-view" : "resource-view"}
+      style={{ display: showResourceDetails !== null ? "block" : "none" }}
+    >
+      <ResourceDetails hideResourceView={hideResourceView} showResourceDetails={showResourceDetails} />
     </div>
   );
 }
 
 ResourceView.propTypes = {
-  config: PropTypes.shape({
-    api_endpoint: PropTypes.string.isRequired,
-  }).isRequired,
-  showResourceViewId: PropTypes.number,
-  setShowResourceViewId: PropTypes.func.isRequired,
+  showResourceDetails: PropTypes.shape({}),
+  setShowResourceDetails: PropTypes.func.isRequired,
 };
 
 ResourceView.defaultProps = {
-  showResourceViewId: null,
+  showResourceDetails: null,
 };
 
 export default ResourceView;

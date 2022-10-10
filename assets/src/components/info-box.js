@@ -41,7 +41,19 @@ function InfoBox({ config }) {
 }
 
 InfoBox.propTypes = {
-  config: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  config: PropTypes.shape({
+    info_box_color: PropTypes.string,
+    info_box_header: PropTypes.string,
+    info_box_content: PropTypes.string,
+  }),
+};
+
+InfoBox.defaultProps = {
+  config: {
+    info_box_color: "",
+    info_box_header: "",
+    info_box_content: "",
+  },
 };
 
 export default InfoBox;

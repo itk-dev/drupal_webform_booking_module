@@ -111,6 +111,7 @@ export function handleResources(value, currentCalendarDate) {
       building: value.location,
       description: value.resourcedescription,
       image: "http://placekitten.com/1920/1080",
+      facilities: value.facilities,
       businessHours: businessHoursArray,
     };
   }
@@ -123,6 +124,7 @@ export function handleResources(value, currentCalendarDate) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
+    facilities: value.facilities,
     businessHours: {
       startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
@@ -225,4 +227,41 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
   });
 
   return false;
+}
+
+/**
+ * RemoveDuplicateEvents - Checks if any events stored in the internal storage of events loaded asynchronously are
+ * dupliactes, and removes them.
+ *
+ * @param {object} internalAsyncEvents Object of all resource events gathered async
+ * @returns {object} Object of all resource events gatered async, cleaned for duplicates
+ */
+export function removeDuplicateEvents(internalAsyncEvents) {
+  internalAsyncEvents.forEach((event1, index1) => {
+    const eventLeft = event1.resource + event1.startTime + event1.endTime;
+
+    internalAsyncEvents.forEach((event2, index2) => {
+      const eventRight = event2.resource + event2.startTime + event2.endTime;
+
+      if (eventLeft === eventRight && index1 !== index2) {
+        internalAsyncEvents.splice(index2, 1);
+      }
+    });
+  });
+
+  return internalAsyncEvents;
+}
+
+/**
+ * GetScrollTime gets the time to horizontally scroll the calendar to on load
+ *
+ * @returns {string} A formatted string, containing the time to scroll to, format "xx:00:00"
+ */
+export function getScrollTime() {
+  // Calculates the time the calender should scroll to horizontally when the calendar loads (now - 2 hours)
+  const dateTimeNow = new Date();
+
+  dateTimeNow.setHours(dateTimeNow.getHours() - 2);
+
+  return `${dateTimeNow.getHours()}:00:00`;
 }

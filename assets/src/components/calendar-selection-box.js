@@ -60,8 +60,12 @@ function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitl
 
 CalendarSelectionBox.propTypes = {
   calendarSelection: PropTypes.shape({
-    start: PropTypes.string.isRequired,
-    end: PropTypes.string.isRequired,
+    start: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }),
+    end: PropTypes.shape({
+      toISOString: PropTypes.func.isRequired,
+    }),
     resourceId: PropTypes.string.isRequired,
   }).isRequired,
   calendarSelectionResourceTitle: PropTypes.string.isRequired,

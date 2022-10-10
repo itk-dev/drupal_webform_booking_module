@@ -1,43 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import * as PropTypes from "prop-types";
-import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
+import getResourceFacilities from "../util/resource-utils";
 import "./resource-details.scss";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
-import getResourceFacilities from "../util/resource-utils";
 
 /**
  * @param {object} props Props.
- * @param {object} props.config App config.
  * @param {Function} props.hideResourceView Hides and resets resource view
- * @param {number} props.showResourceViewId Id of the resource to load
+ * @param {object} props.showResourceDetails Object of the resource to show
  * @returns {JSX.Element} Component.
  */
-function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
-  const [facilities, setFacilities] = useState({});
-  const [resource, setResource] = useState([]);
+function ResourceDetails({ hideResourceView, showResourceDetails }) {
+  const getFacilitiesList = (resource) => {
+    const facilities = getResourceFacilities(resource);
 
-  // Load resource details.
-  useEffect(() => {
-    if (config && showResourceViewId) {
-      Api.fetchResource(config.api_endpoint, showResourceViewId)
-        .then((data) => {
-          const newFacilities = getResourceFacilities(data);
-
-          setResource(data);
-
-          setFacilities(newFacilities);
-        })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
-        });
-    }
-  }, [showResourceViewId, config]);
+    return (
+      <div className="facility-container">
+        <div className="facility-item">
+          <div className="facility-icon">
+            <IconChair />
+          </div>
+          <span>{showResourceDetails.capacity ?? showResourceDetails.extendedProps.capacity} siddepladser</span>
+        </div>
+        {Object.values(facilities).map((value) => {
+          return (
+            <div className="facility-item" key={value.title}>
+              <div className="facility-icon">{value.icon}</div>
+              <span>{value.title}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
-    <div className={showResourceViewId !== null ? "fade-in-content resource-container" : "  resource-container"}>
-      {!resource && <LoadingSpinner />}
-      {resource && (
+    <div className={showResourceDetails !== null ? "fade-in-content resource-container" : "  resource-container"}>
+      {!showResourceDetails && <LoadingSpinner />}
+      {showResourceDetails && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
@@ -46,35 +47,20 @@ function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
             </button>
           </div>
           <div className="resource-title">
-            <h2>{resource.resourceName}</h2>
+            <h2>{showResourceDetails.title ?? showResourceDetails.resourceName}</h2>
           </div>
           <div className="resource-details">
             <div className="image">
-              <img src="https://via.placeholder.com/500x300" alt="" />
+              <img alt="placeholder" src="https://via.placeholder.com/500x300" />
             </div>
             <div className="facilities">
               <span>Faciliteter</span>
-              <div className="facility-container">
-                <div className="facility-item">
-                  <div className="facility-icon">
-                    <IconChair />
-                  </div>
-                  <span>{resource.capacity} siddepladser</span>
-                </div>
-                {Object.keys(facilities).map((key) => {
-                  return (
-                    <div className="facility-item" key={key}>
-                      <div className="facility-icon">{facilities[key].icon}</div>
-                      <span>{facilities[key].title}</span>
-                    </div>
-                  );
-                })}
-              </div>
+              <div>{getFacilitiesList(showResourceDetails)}</div>
             </div>
             <div className="location">
               <span>Lokation</span>
               <div>
-                <span>{resource.location}</span>
+                <span>{showResourceDetails.location ?? showResourceDetails.extendedProps.building}</span>
               </div>
               <div>
                 <span>...</span>
@@ -84,7 +70,7 @@ function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
           <div className="resource-description">
             <span>Beskrivelse</span>
             <div>
-              <span>{resource.resourceDescription}</span>
+              <span>{showResourceDetails.resourceDescription ?? showResourceDetails.extendedProps.description}</span>
             </div>
           </div>
         </div>
@@ -94,15 +80,35 @@ function ResourceDetails({ config, hideResourceView, showResourceViewId }) {
 }
 
 ResourceDetails.propTypes = {
-  config: PropTypes.shape({
-    api_endpoint: PropTypes.string.isRequired,
-  }).isRequired,
   hideResourceView: PropTypes.func.isRequired,
-  showResourceViewId: PropTypes.number,
+  showResourceDetails: PropTypes.shape({
+    capacity: PropTypes.number,
+    extendedProps: PropTypes.shape({
+      capacity: PropTypes.number,
+      building: PropTypes.string,
+      description: PropTypes.string,
+    }),
+    title: PropTypes.string,
+    location: PropTypes.string,
+    building: PropTypes.string,
+    resourceDescription: PropTypes.string,
+    resourceName: PropTypes.string,
+  }),
 };
 
 ResourceDetails.defaultProps = {
-  showResourceViewId: null,
+  showResourceDetails: {
+    capacity: 0,
+    extendedProps: {
+      capacity: 0,
+      building: "Lokation",
+      description: "Beskrivelse",
+    },
+    title: "Titel",
+    resourceName: "Titel",
+    location: "Lokation",
+    resourceDescription: "Beskrivelse",
+  },
 };
 
 export default ResourceDetails;

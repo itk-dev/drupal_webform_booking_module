@@ -17,6 +17,8 @@ import {
   handleBusyIntervals,
   handleResources,
   setPlaceholderResources,
+  removeDuplicateEvents,
+  getScrollTime,
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
@@ -35,7 +37,7 @@ import "./calendar.scss";
  * @param {object} props.calendarSelection The current calendar selection.
  * @param {Function} props.setCalendarSelection Set calendar selection function.
  * @param {object} props.config Config for the app.
- * @param {Function} props.setShowResourceViewId Setter for showResourceViewId
+ * @param {Function} props.setShowResourceDetails Setter for showResourceDetails
  * @param {object} props.urlResource The resource object loaded from URL id.
  * @param {Function} props.setDisplayState State of the calendar - "minimized" or "maximized"
  * @param {object} props.locations Object containing available locations
@@ -52,7 +54,7 @@ function Calendar({
   calendarSelection,
   setCalendarSelection,
   config,
-  setShowResourceViewId,
+  setShowResourceDetails,
   urlResource,
   setDisplayState,
   locations,
@@ -64,20 +66,183 @@ function Calendar({
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
-  const [asyncEvents, setAsyncEvents] = useState();
-  const internalStyling = document.createElement("style");
-
-  document.body.appendChild(internalStyling);
-
+  const [asyncEvents, setAsyncEvents] = useState([]);
+  const [expandResourcesByDefault, setExpandResourcesByDefault] = useState(false);
+  const [internalStyling, setInternalStyling] = useState([]);
   const dateNow = new Date();
   const internalAsyncEvents = [];
   const alreadyHandledResourceIds = [];
 
   /**
+   * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
+   * via initialResources to generate resource placeholders based on locations. setPlaceholderClickEvent is called on
+   * every resource via the hook resourceGroupLabelDidMount, which handles creating click events, to expand them, for
+   * every placeholder. On placeholder click, fetchResourcesOnLocation is called, and all available resources for the
+   * given location is loaded. In the end of fetchResourcesOnLocation, asyncEvents is set, triggering the useEffect
+   * asyncEvents is subscribed to, loading the resource events.
+   */
+
+  /**
+   * GenerateResourcePlaceholders - generates an array of resources based on all locationnames
+   *
+   * @returns {Array} Of placeholder resources
+   */
+  const generateResourcePlaceholders = () => {
+    if (locations !== null && locations.length !== 0 && typeof calendarRef !== "undefined") {
+      const placeholderResources = setPlaceholderResources(locations);
+      const placeholderResourcesArray = [];
+
+      placeholderResources.forEach((value) => {
+        placeholderResourcesArray.push({
+          id: value.building,
+          resourceId: value.id,
+          building: value.building,
+          title: value.title,
+        });
+      });
+
+      return placeholderResourcesArray;
+    }
+
+    return false;
+  };
+
+  /**
+   * Fetch resources for locations.
+   *
+   * @param {string} locationName Name of the expanded location
+   */
+  function fetchResourcesOnLocation(locationName) {
+    const location = locationName.replaceAll("___", " ");
+    const searchParams = `location=${location}`;
+    const expander = document.querySelector(`.fc-datagrid-cell#${location} .fc-icon-plus-square`);
+
+    // Load resources for the clicked location
+    Api.fetchResources(config.api_endpoint, searchParams).then((loadedResources) => {
+      setTimeout(() => {
+        loadedResources.forEach((resource) => {
+          const mappedResource = handleResources(resource, date);
+
+          calendarRef?.current?.getApi().addResource(mappedResource);
+        });
+
+        // As these resources are loaded async, we need to manually update their business hours.
+        const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
+
+        adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
+
+        // Load events for newly added resources, and finally expand location group.
+        if (config && date !== null) {
+          Api.fetchEvents(config.api_endpoint, loadedResources, dayjs(date).startOf("day"))
+            .then((loadedEvents) => {
+              setAsyncEvents(loadedEvents);
+
+              if (expander) {
+                expander.click();
+              }
+            })
+            .catch(() => {
+              // TODO: Display error and retry option for user. (v0.1)
+            });
+        }
+      }, 1);
+    });
+
+    const internalStylingArray = internalStyling;
+
+    internalStylingArray.push(
+      `#react-booking-app .Calendar td.fc-resource[data-resource-id='${location}'] {display:none;}`
+    );
+
+    setInternalStyling(internalStylingArray);
+  }
+
+  /**
+   * SetPlaceholderClickEvent - Sets click events for placeholder resources, to load real resources upon click
+   *
+   * @param {object} resource Object of the added resource
+   * @returns {void} Nothing is returned
+   */
+  const setPlaceholderClickEvent = (resource) => {
+    if (
+      resource.groupValue === "" ||
+      alreadyHandledResourceIds.includes(resource.groupValue) ||
+      resources ||
+      validUrlParams !== null
+    ) {
+      return false;
+    }
+
+    let location = resource.groupValue;
+
+    location = location.replaceAll(" ", "___");
+
+    resource.el.setAttribute("id", location);
+
+    document.querySelector(`#${location} .fc-icon-plus-square`).addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        if (e.target.classList.contains("loading")) {
+          return false;
+        }
+
+        e.target.setAttribute("class", "fc-icon fc-icon-plus-square loading");
+
+        fetchResourcesOnLocation(location);
+
+        return undefined;
+      },
+      { once: true }
+    );
+
+    alreadyHandledResourceIds.push(location);
+
+    return undefined;
+  };
+
+  useEffect(() => {
+    // Called when events are loaded asynchronously and we need to set setEvents for FullCalendar
+
+    if (validUrlParams === null) {
+      // Only for step-1
+      /* 
+        asyncEvents only contains the events loaded for the resource expanded just now,
+        therefore we loop events, which contains all already loaded events, to ensure that they are not lost.
+        We add them to our object containing all the events we want to set.
+      */
+      events.forEach((event) => {
+        internalAsyncEvents.push(event);
+      });
+
+      /*
+        We loop our newly loaded events, and add them to the object aswell.
+      */
+      Object.values(asyncEvents).forEach((event) => {
+        internalAsyncEvents.push(event);
+      });
+
+      /* 
+        Now, internalAsyncEvents contains all previous loaded events, and our newly loaded events.
+        Events persists through "view swaps", but the state of our placeholders does not, which means that our placeholders reset after a viewswap, but events does not,
+        causing the same event to be added multiple times, if a placeholder is expanded, the view is swapped to "list" and back to "calendar" and the same placeholder is expanded once again.
+        Therefore, duplicates are removed via this method below
+      */
+      const eventObj = removeDuplicateEvents(internalAsyncEvents);
+
+      // The events are finally set, which triggers them to be rendered in fullcalendar.
+      setEvents(eventObj);
+    }
+  }, [asyncEvents]);
+
+  /**
    * OnCalenderSelection.
    *
    * @param {object} selection The new selection object.
-   * @returns {boolean} TODO: Why return boolean?
+   * @returns {void} Nothing is returned
    */
   const onCalendarSelection = (selection) => {
     if (selection.start < dateNow) {
@@ -107,106 +272,26 @@ function Calendar({
       setCalendarSelectionResourceTitle(urlResource.resourceName);
     }
 
-    return false;
+    return undefined;
   };
 
-  /**
-   * Fetch resources for locations.
-   *
-   * @param {string} locationName Name of the expanded location
-   */
-  function fetchResourcesOnLocation(locationName) {
-    const location = locationName.replaceAll("___", " ");
-    const searchParams = `location=${location}`;
-    const expander = document.querySelector(`.fc-datagrid-cell#${location} .fc-icon-plus-square`);
-
-    // Load resources for the clicked location
-    Api.fetchResources(config.api_endpoint, searchParams).then((loadedResources) => {
-      setTimeout(() => {
-        loadedResources.forEach((resource) => {
-          const mappedResource = handleResources(resource, date);
-
-          calendarRef?.current?.getApi().addResource(mappedResource);
-
-          internalStyling.innerHTML += `td.fc-resource[data-resource-id='${location}'] {display:none;}`;
-        });
-
-        // As these resources are loaded async, we need to manually update their business hours.
-        const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
-
-        adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
-
-        // Load events for newly added resources, and finally expand location group.
-        if (config && date !== null) {
-          Api.fetchEvents(config.api_endpoint, loadedResources, dayjs(date).startOf("day"))
-            .then((loadedEvents) => {
-              setAsyncEvents(loadedEvents);
-
-              if (expander) {
-                expander.click();
-              }
-            })
-            .catch(() => {
-              // TODO: Display error and retry option for user. (v0.1)
-            });
-        }
-      }, 1);
-    });
-  }
-
+  // Expands location groups if locations are selected
   useEffect(() => {
     setTimeout(() => {
       if (locationFilter.length !== 0) {
-        calendarRef.current._calendarApi.setOption(
-          /* eslint no-underscore-dangle: 0 */
-          "resourcesInitiallyExpanded",
-          "true"
-        );
+        setExpandResourcesByDefault(true);
+      } else {
+        setExpandResourcesByDefault(false);
       }
     }, 800);
-  }, [locationFilter]);
+  }, [locationFilter, asyncEvents]);
 
-  useEffect(() => {
-    if (!validUrlParams) {
-      let ascev = asyncEvents;
-
-      if (typeof asyncEvents === "undefined") {
-        ascev = [];
-      }
-
-      events.forEach((ev) => {
-        internalAsyncEvents.push(ev);
-      });
-
-      ascev.forEach((asev) => {
-        internalAsyncEvents.push(asev);
-      });
-
-      setEvents(internalAsyncEvents);
-    }
-  }, [asyncEvents]);
-
+  // Expands locations groups on step-2
   useEffect(() => {
     if (validUrlParams !== null) {
-      calendarRef.current._calendarApi.setOption(
-        /* eslint no-underscore-dangle: 0 */
-        "resourcesInitiallyExpanded",
-        "true"
-      );
+      setExpandResourcesByDefault(true);
     }
   }, [validUrlParams]);
-
-  const getScrollTime = () => {
-    const dateTimeNow = new Date();
-
-    dateTimeNow.setHours(dateTimeNow.getHours() - 2);
-
-    return `${dateTimeNow.getHours()}:00:00`;
-  };
-
-  const getValidRange = () => {
-    return { start: dateNow };
-  };
 
   // Set calendar selection.
   useEffect(() => {
@@ -228,11 +313,6 @@ function Calendar({
       adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
     }
   }, [date]);
-
-  /** @param {string} showResourceViewId Id of the resource to load */
-  const triggerResourceView = (showResourceViewId) => {
-    setShowResourceViewId(showResourceViewId);
-  };
 
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
@@ -300,73 +380,18 @@ function Calendar({
     }
   }, [calendarSelection, events]);
 
-  const renderCalendarCellInfoButton = (title, id, triggerResourceViewEv) => {
-    return <CalendarCellInfoButton title={title} showResourceViewId={id} onClickEvent={triggerResourceViewEv} />;
+  /** @param {string} resource Object of the resource to load */
+  const triggerResourceView = (resource) => {
+    setShowResourceDetails(resource);
   };
 
-  const generateResourcePlaceholders = () => {
-    if (locations !== null && locations.length !== 0 && typeof calendarRef !== "undefined") {
-      const placeholderResources = setPlaceholderResources(locations);
-      const placeholderResourcesArray = [];
-
-      placeholderResources.forEach((value) => {
-        placeholderResourcesArray.push({
-          id: value.building,
-          resourceId: value.id,
-          building: value.building,
-          title: value.title,
-        });
-      });
-
-      return placeholderResourcesArray;
-    }
-
-    return false;
-  };
-
-  const handleAddedResource = (info) => {
-    if (
-      info.groupValue === "" ||
-      alreadyHandledResourceIds.includes(info.groupValue) ||
-      resources ||
-      validUrlParams !== null
-    ) {
-      return false;
-    }
-
-    let location = info.groupValue;
-
-    location = location.replaceAll(" ", "___");
-
-    info.el.setAttribute("id", location);
-
-    document.querySelector(`#${location} .fc-icon-plus-square`).addEventListener(
-      "click",
-      (e) => {
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        if (e.target.classList.contains("loading")) {
-          return false;
-        }
-
-        e.target.setAttribute("class", "fc-icon fc-icon-plus-square loading");
-
-        fetchResourcesOnLocation(location);
-
-        return false;
-      },
-      { once: true }
-    );
-
-    alreadyHandledResourceIds.push(location);
-
-    return false;
+  const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
+    return <CalendarCellInfoButton resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
 
   return (
     <div className="Calendar no-gutter col-md-12">
+      <style>{internalStyling}</style>
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
         <div className="col-md-12">
@@ -398,13 +423,13 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
-            resourceGroupLabelDidMount={handleAddedResource}
+            resourceGroupLabelDidMount={setPlaceholderClickEvent}
             initialResources={generateResourcePlaceholders()}
             nowIndicator
             navLinks
             slotDuration="00:15:00"
             allDaySlot={false}
-            resourcesInitiallyExpanded={false}
+            resourcesInitiallyExpanded={expandResourcesByDefault}
             selectable
             unselectAuto={false}
             schedulerLicenseKey={config.license_key}
@@ -420,18 +445,16 @@ function Calendar({
             {...(resources && {
               resources: resources.map((value) => handleResources(value, date)),
             })}
-            validRange={getValidRange}
+            validRange={{
+              start: dateNow,
+            }}
             resourceOrder="resourceId"
             resourceGroupField="building"
             resourceAreaColumns={[
               {
                 headerContent: "Ressourcer",
                 cellContent(arg) {
-                  return renderCalendarCellInfoButton(
-                    arg.resource.title,
-                    arg.resource.extendedProps.resourceId,
-                    triggerResourceView
-                  );
+                  return renderCalendarCellInfoButton(arg.resource, triggerResourceView);
                 },
               },
               {
@@ -453,7 +476,7 @@ function Calendar({
 }
 
 Calendar.propTypes = {
-  resources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  resources: PropTypes.arrayOf(PropTypes.shape({})),
   events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
@@ -472,7 +495,7 @@ Calendar.propTypes = {
     resourceId: PropTypes.string,
   }),
   setCalendarSelection: PropTypes.func.isRequired,
-  setShowResourceViewId: PropTypes.func.isRequired,
+  setShowResourceDetails: PropTypes.func.isRequired,
   config: PropTypes.shape({
     license_key: PropTypes.string.isRequired,
     redirect_url: PropTypes.string.isRequired,
@@ -484,7 +507,7 @@ Calendar.propTypes = {
     resourceName: PropTypes.string.isRequired,
   }),
   setDisplayState: PropTypes.func.isRequired,
-  locations: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  locations: PropTypes.arrayOf(PropTypes.shape({})),
   setEvents: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}),
   locationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
@@ -494,6 +517,8 @@ Calendar.defaultProps = {
   calendarSelection: null,
   urlResource: null,
   validUrlParams: {},
+  resources: {},
+  locations: {},
 };
 
 export default Calendar;

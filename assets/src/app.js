@@ -10,6 +10,7 @@ import MinimizedDisplay from "./components/minimized-display";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
+import ListContainer from "./components/list-container";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
@@ -30,6 +31,7 @@ function App() {
   const [urlResource, setUrlResource] = useState(null); // A resource fetched from API if validUrlParams are set.
   const [validUrlParams, setValidUrlParams] = useState(null); // Validated url params through url-validator.js.
   const [urlParams] = useSearchParams(); // Url parameters when the app is loaded.
+  const [bookingView, setBookingView] = useState("calendar");
   // Options for filters.
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
@@ -46,7 +48,7 @@ function App() {
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
   const [locations, setLocations] = useState(null);
-  const [showResourceViewId, setShowResourceViewId] = useState(null); // ID of the displayed resource.
+  const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -277,13 +279,19 @@ function App() {
     }
   }, [calendarSelection, authorFields]);
 
+  const viewSwapHandler = (event) => {
+    const view = event.target.getAttribute("data-view");
+
+    setBookingView(view);
+  };
+
   return (
     <div className="App">
       <div className="container-fluid">
         {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
           <div className="app-content">
-            <div className={`row filters-wrapper ${showResourceViewId !== null ? "disable-filters" : ""}`}>
+            <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
               <div className="col-md-3">
                 {/* Dropdown with locations */}
                 <Select
@@ -348,33 +356,85 @@ function App() {
               )}
             </div>
 
-            {/* Display calendar for selections */}
-            <div className="row no-gutter calendar-container">
-              <Calendar
-                resources={resources}
-                events={events}
-                date={date}
-                setDate={setDate}
-                calendarSelection={calendarSelection}
-                setCalendarSelection={setCalendarSelection}
-                config={config}
-                setShowResourceViewId={setShowResourceViewId}
-                urlResource={urlResource}
-                setDisplayState={setDisplayState}
-                locations={locations}
-                setEvents={setEvents}
-                validUrlParams={validUrlParams}
-                locationFilter={locationFilter}
-              />
-              {/* TODO: Only show if resource view is requested */}
-              {showResourceViewId && (
-                <ResourceView
-                  config={config}
-                  showResourceViewId={showResourceViewId}
-                  setShowResourceViewId={setShowResourceViewId}
-                />
-              )}
+            {/* Add viewswapper */}
+            <div className="row viewswapper-wrapper">
+              <div className="viewswapper-container">
+                <button
+                  type="button"
+                  onClick={viewSwapHandler}
+                  data-view="map"
+                  className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
+                >
+                  Kort
+                </button>
+                <button
+                  type="button"
+                  onClick={viewSwapHandler}
+                  data-view="calendar"
+                  className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
+                >
+                  Kalender
+                </button>
+                <button
+                  type="button"
+                  onClick={viewSwapHandler}
+                  data-view="list"
+                  className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
+                >
+                  Liste
+                </button>
+              </div>
             </div>
+
+            {bookingView === "map" && (
+              <div className="row no-gutter main-container map">
+                <h2>Map view!</h2>
+              </div>
+            )}
+            {bookingView === "list" && (
+              <div
+                className={`row no-gutter main-container list ${
+                  showResourceDetails !== null ? "resourceview-visible" : ""
+                }`}
+              >
+                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
+                <ResourceView
+                  showResourceDetails={showResourceDetails}
+                  setShowResourceDetails={setShowResourceDetails}
+                />
+              </div>
+            )}
+            {bookingView === "calendar" && (
+              // {/* Display calendar for selections */}
+              <div
+                className={`row no-gutter main-container calendar ${
+                  showResourceDetails !== null ? "resourceview-visible" : ""
+                }`}
+              >
+                <Calendar
+                  resources={resources}
+                  events={events}
+                  date={date}
+                  setDate={setDate}
+                  calendarSelection={calendarSelection}
+                  setCalendarSelection={setCalendarSelection}
+                  config={config}
+                  setShowResourceDetails={setShowResourceDetails}
+                  urlResource={urlResource}
+                  setDisplayState={setDisplayState}
+                  locations={locations}
+                  setEvents={setEvents}
+                  validUrlParams={validUrlParams}
+                  locationFilter={locationFilter}
+                  showResourceDetails={showResourceDetails}
+                />
+                {/* TODO: Only show if resource view is requested */}
+                <ResourceView
+                  showResourceDetails={showResourceDetails}
+                  setShowResourceDetails={setShowResourceDetails}
+                />
+              </div>
+            )}
           </div>
         )}
 
