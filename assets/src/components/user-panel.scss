@@ -3,10 +3,10 @@ div.userbookings-container {
   flex-direction: row;
   flex-wrap: wrap;
   min-height: 300px;
-  width: 800px;
 }
 
 div.userbookings-container > div.user-booking {
+  box-sizing: border-box;
   display: inline-flex;
   flex: 0 0 100%;
   flex-direction: row;

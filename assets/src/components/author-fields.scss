@@ -4,4 +4,8 @@
 
 .author-fields-wrapper {
   margin: 0 -1rem;
+
+  &.hidden {
+    display: none;
+  }
 }

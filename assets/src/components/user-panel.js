@@ -15,6 +15,8 @@ function UserPanel({ config }) {
   const [userBookings, setUserBookings] = useState();
 
   /** @param {string} bookingId Booking id to request deletion of. */
+  /* @todo Add when we are ready */
+  /*
   const requestDeletion = (bookingId) => {
     if (bookingId) {
       const requestBookingId = btoa(bookingId);
@@ -29,7 +31,7 @@ function UserPanel({ config }) {
         });
     }
   };
-
+  */
   /**
    * @param {Date} dateObj Date for format.
    * @returns {string} Date formatted as string.
@@ -55,7 +57,7 @@ function UserPanel({ config }) {
   }, [config]);
 
   return (
-    <div className="userpanel">
+    <div className="userpanel col col-lg-6">
       <h1>User Panel:</h1>
       <div className="userbookings-container">
         {loading && <LoadingSpinner />}
@@ -72,11 +74,13 @@ function UserPanel({ config }) {
                 <span>→</span>
                 <span>{getFormattedDateTime(obj.end)}</span>
               </div>
+              {/*
               <div>
                 <button type="button" onClick={() => requestDeletion(obj.hitId)}>
                   Anmod om sletning
                 </button>
               </div>
+                */}
             </div>
           ))}
       </div>

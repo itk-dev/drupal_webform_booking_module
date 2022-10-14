@@ -4,8 +4,10 @@ import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
+import AppMenu from "./components/app-menu";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
+import UserPanel from "./components/user-panel";
 import MinimizedDisplay from "./components/minimized-display";
 import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
@@ -287,7 +289,10 @@ function App() {
 
   return (
     <div className="App">
-      <div className="container-fluid">
+      {config && displayState && (
+        <AppMenu config={config} displayState={displayState} setDisplayState={setDisplayState} />
+      )}
+      <div className="container-fluid app-wrapper">
         {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
           <div className="app-content">
@@ -438,6 +443,14 @@ function App() {
           </div>
         )}
 
+        {config && displayState === "userPanel" && (
+          <div className="user-panel-content">
+            <div className="row no-gutter main-container">
+              <UserPanel config={config} />
+            </div>
+          </div>
+        )}
+
         {config && validUrlParams && urlResource && displayState === "minimized" && (
           <div className="row">
             <MinimizedDisplay
@@ -447,14 +460,6 @@ function App() {
             />
           </div>
         )}
-
-        {/* TODO: Only show if user menu is requested */}
-        {/*
-          <br />
-          <hr />
-          <br />
-          <UserPanel config={config} />
-        */}
 
         {/* Display author fields */}
         {config && !config.step_one && (

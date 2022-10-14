@@ -1,0 +1,42 @@
+.app-menu {
+  background: #e9ecef;
+  padding: 1em 30px;
+
+  ul {
+    list-style-type: none;
+    list-style-image: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  li {
+    margin-right: 2em;
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.user-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+  }
+
+  button {
+    background: none;
+    color: #003cc5;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+
+    &.active {
+      text-decoration: underline;
+    }
+  }
+}
