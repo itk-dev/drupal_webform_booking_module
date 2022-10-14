@@ -125,6 +125,10 @@ class BookingElement extends Hidden
    */
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
+    $request = Drupal::request();
+    $userHelper = new UserHelper();
+
+    $userArray = $userHelper->getUserValues($request);
     $params = [
       'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
@@ -134,7 +138,8 @@ class BookingElement extends Hidden
       'redirect_url' => $element['#redirect_url'] ?? null,
       'info_box_color' => $element['info_box_color'] ?? null,
       'info_box_header' => $element['info_box_header'] ?? null,
-      'info_box_content' => $element['info_box_content'] ?? null
+      'info_box_content' => $element['info_box_content'] ?? null,
+      'user_name' => $userArray['name'] ?? null
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [
