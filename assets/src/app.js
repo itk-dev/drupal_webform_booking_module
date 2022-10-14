@@ -289,7 +289,7 @@ function App() {
 
   return (
     <div className="App">
-      {config && displayState && (
+      {config && config.user_name && displayState && (
         <AppMenu config={config} displayState={displayState} setDisplayState={setDisplayState} />
       )}
       <div className="container-fluid app-wrapper">
