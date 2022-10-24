@@ -58,7 +58,7 @@
   font-size: 15px;
   border: 1px solid #ccc;
 }
-.tooltip:before {
+.tooltip:before:not(:empty) {
   content: "";
   position: absolute;
   width: 20px;
@@ -78,4 +78,16 @@
  a {
   margin-top: auto;
  }
+}
+.tooltip-btn {
+  cursor: pointer;
+}
+
+.tooltip-closer {
+  position: absolute;
+  right: 0px;
+  top: 2px;
+  padding: 5px;
+  line-height: 15px;
+  cursor: pointer;
 }
