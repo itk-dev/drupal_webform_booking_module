@@ -58,7 +58,7 @@
   font-size: 15px;
   border: 1px solid #ccc;
 }
-.tooltip:before:not(:empty) {
+.tooltip:not(:empty):before {
   content: "";
   position: absolute;
   width: 20px;
