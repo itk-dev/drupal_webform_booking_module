@@ -12,12 +12,14 @@ import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
+import MapWrapper from "./components/map-wrapper";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
+
 
 dayjs.locale("da");
 
@@ -53,7 +55,7 @@ function App() {
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
-  const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+  const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar. 
 
   // Get configuration.
   useEffect(() => {
@@ -399,7 +401,7 @@ function App() {
 
             {bookingView === "map" && (
               <div className="row no-gutter main-container map">
-                <h2>Map view!</h2>
+                <MapWrapper props={{}} resources={resources} />
               </div>
             )}
             {bookingView === "list" && (
