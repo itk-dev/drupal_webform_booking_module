@@ -1,0 +1,35 @@
+.main-navigation-content {
+  margin-bottom: 1em;
+  background: #2d3e4f;
+  padding: 1em;
+
+  ul {
+    display: flex;
+    list-style-type: none;
+    list-style-image: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin-right: 2em;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    &:hover,
+    &:active {
+      color: #fff;
+    }
+
+    &.active {
+      text-decoration: underline;
+    }
+  }
+}

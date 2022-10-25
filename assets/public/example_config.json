@@ -5,7 +5,10 @@
   "license_key": "",
   "enable_booking": true,
   "enable_resource_tooltips": true,
-  "redirect_url": "http://bookingapp.local.itkdev.dk/",
   "step_one": true,
-  "output_field_id": "submit-values"
+  "redirect_url": "http://bookingapp.local.itkdev.dk/",
+  "output_field_id": "submit-values",
+  "create_booking_mode": true,
+  "create_booking_url": "http://bookingapp.local.itkdev.dk/createbookingurl",
+  "change_booking_url": "http://bookingapp.local.itkdev.dk/changebookingurl"
 }
