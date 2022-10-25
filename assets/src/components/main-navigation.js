@@ -3,7 +3,7 @@ import * as PropTypes from "prop-types";
 import "./main-navigation.scss";
 
 /**
- * Information box component.
+ * Main navigation component.
  *
  * @param {object} props Props.
  * @param {object} props.config Object containing configuration from drupal
