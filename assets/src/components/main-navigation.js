@@ -29,7 +29,7 @@ function MainNavigation({ config }) {
 
   return (
     <div className="row">
-      <div className="col-md-12 main-navigation-content">
+      <div className="col main-navigation-content">
         <ul>
           <li>
             <a href={createBookingUrl} className={window.location.href === createBookingUrl ? "active" : "inactive"}>
