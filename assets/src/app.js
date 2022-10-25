@@ -11,6 +11,8 @@ import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
+import MainNavigation from "./components/main-navigation";
+import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
@@ -286,193 +288,187 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <div className="container-fluid">
-        {!config && <LoadingSpinner />}
-        {config && displayState === "maximized" && (
-          <div className="app-content">
-            <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
-              <div className="col-md-3">
-                {/* Dropdown with locations */}
-                <Select
-                  styles={{}}
-                  defaultValue={locationFilter}
-                  placeholder="lokationer..."
-                  closeMenuOnSelect={false}
-                  options={locationOptions}
-                  onChange={(selectedLocations) => {
-                    setLocationFilter(selectedLocations);
-                  }}
-                  isMulti
-                />
-              </div>
-              <div className="col-md-3">
-                {/* Dropdown with resources */}
-                <Select
-                  styles={{}}
-                  defaultValue={resourceFilter}
-                  placeholder="ressourcer..."
-                  closeMenuOnSelect={false}
-                  options={resourcesOptions}
-                  onChange={(selectedResources) => {
-                    setResourceFilter(selectedResources);
-                  }}
-                  isMulti
-                />
-              </div>
-              {/* Dropdown with facilities */}
-              <div className="col-md-3">
-                <Select
-                  styles={{}}
-                  defaultValue={facilityFilter}
-                  placeholder="Facilitieter..."
-                  closeMenuOnSelect={false}
-                  options={facilityOptions}
-                  onChange={(selectedFacilities) => {
-                    setFacilityFilter(selectedFacilities);
-                  }}
-                  isMulti
-                />
-              </div>
-              {/* Dropdown with capacity */}
-              <div className="col-md-3">
-                <Select
-                  styles={{}}
-                  defaultValue={{ value: "0", label: "Alle", type: "gt" }}
-                  placeholder="Siddepladser..."
-                  closeMenuOnSelect
-                  options={capacityOptions}
-                  onChange={(selectedCapacity) => {
-                    setCapacityFilter(selectedCapacity);
-                  }}
-                />
-              </div>
-            </div>
+    <div>
+      <div className="App">
+        <div className="container-fluid">
+          {config && <MainNavigation config={config} />}
+          <div className="app-wrapper">
+            {config && config.create_booking_mode && (
+              <div>
+                {!config && <LoadingSpinner />}
 
-            {/* Add info box */}
-            <div className="row info-box-wrapper">
-              {config.info_box_color && config.info_box_header && config.info_box_content && (
-                <InfoBox config={config} />
-              )}
-            </div>
+                {config && config && displayState === "maximized" && (
+                  <div className="app-content">
+                    <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
+                      <div className="col-md-3">
+                        {/* Dropdown with locations */}
+                        <Select
+                          styles={{}}
+                          defaultValue={locationFilter}
+                          placeholder="lokationer..."
+                          closeMenuOnSelect={false}
+                          options={locationOptions}
+                          onChange={(selectedLocations) => {
+                            setLocationFilter(selectedLocations);
+                          }}
+                          isMulti
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        {/* Dropdown with resources */}
+                        <Select
+                          styles={{}}
+                          defaultValue={resourceFilter}
+                          placeholder="ressourcer..."
+                          closeMenuOnSelect={false}
+                          options={resourcesOptions}
+                          onChange={(selectedResources) => {
+                            setResourceFilter(selectedResources);
+                          }}
+                          isMulti
+                        />
+                      </div>
+                      {/* Dropdown with facilities */}
+                      <div className="col-md-3">
+                        <Select
+                          styles={{}}
+                          defaultValue={facilityFilter}
+                          placeholder="Facilitieter..."
+                          closeMenuOnSelect={false}
+                          options={facilityOptions}
+                          onChange={(selectedFacilities) => {
+                            setFacilityFilter(selectedFacilities);
+                          }}
+                          isMulti
+                        />
+                      </div>
+                      {/* Dropdown with capacity */}
+                      <div className="col-md-3">
+                        <Select
+                          styles={{}}
+                          defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                          placeholder="Siddepladser..."
+                          closeMenuOnSelect
+                          options={capacityOptions}
+                          onChange={(selectedCapacity) => {
+                            setCapacityFilter(selectedCapacity);
+                          }}
+                        />
+                      </div>
+                    </div>
 
-            {/* Add viewswapper */}
-            <div className="row viewswapper-wrapper">
-              <div className="viewswapper-container">
-                <button
-                  type="button"
-                  onClick={viewSwapHandler}
-                  data-view="map"
-                  className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
-                >
-                  Kort
-                </button>
-                <button
-                  type="button"
-                  onClick={viewSwapHandler}
-                  data-view="calendar"
-                  className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
-                >
-                  Kalender
-                </button>
-                <button
-                  type="button"
-                  onClick={viewSwapHandler}
-                  data-view="list"
-                  className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
-                >
-                  Liste
-                </button>
-              </div>
-            </div>
+                    {/* Add info box */}
+                    <div className="row info-box-wrapper">
+                      {config.info_box_color && config.info_box_header && config.info_box_content && (
+                        <InfoBox config={config} />
+                      )}
+                    </div>
 
-            {bookingView === "map" && (
-              <div className="row no-gutter main-container map">
-                <h2>Map view!</h2>
+                    {/* Add viewswapper */}
+                    <div className="row viewswapper-wrapper">
+                      <div className="viewswapper-container">
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="map"
+                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kort
+                        </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="calendar"
+                          className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kalender
+                        </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="list"
+                          className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Liste
+                        </button>
+                      </div>
+                    </div>
+
+                    {bookingView === "map" && (
+                      <div className="row no-gutter main-container map">
+                        <h2>Map view!</h2>
+                      </div>
+                    )}
+                    {bookingView === "list" && (
+                      <div
+                        className={`row no-gutter main-container list ${
+                          showResourceDetails !== null ? "resourceview-visible" : ""
+                        }`}
+                      >
+                        <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
+                        <ResourceView
+                          showResourceDetails={showResourceDetails}
+                          setShowResourceDetails={setShowResourceDetails}
+                        />
+                      </div>
+                    )}
+                    {bookingView === "calendar" && (
+                      // {/* Display calendar for selections */}
+                      <div
+                        className={`row no-gutter main-container calendar ${
+                          showResourceDetails !== null ? "resourceview-visible" : ""
+                        }`}
+                      >
+                        <Calendar
+                          resources={resources}
+                          events={events}
+                          date={date}
+                          setDate={setDate}
+                          calendarSelection={calendarSelection}
+                          setCalendarSelection={setCalendarSelection}
+                          config={config}
+                          setShowResourceDetails={setShowResourceDetails}
+                          urlResource={urlResource}
+                          setDisplayState={setDisplayState}
+                          locations={locations}
+                          setEvents={setEvents}
+                          validUrlParams={validUrlParams}
+                          locationFilter={locationFilter}
+                          showResourceDetails={showResourceDetails}
+                        />
+                        {/* TODO: Only show if resource view is requested */}
+                        <ResourceView
+                          showResourceDetails={showResourceDetails}
+                          setShowResourceDetails={setShowResourceDetails}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {config && validUrlParams && urlResource && displayState === "minimized" && (
+                  <div className="row">
+                    <MinimizedDisplay
+                      validUrlParams={validUrlParams}
+                      setDisplayState={setDisplayState}
+                      urlResource={urlResource}
+                    />
+                  </div>
+                )}
               </div>
             )}
-            {bookingView === "list" && (
-              <div
-                className={`row no-gutter main-container list ${
-                  showResourceDetails !== null ? "resourceview-visible" : ""
-                }`}
-              >
-                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
-                <ResourceView
-                  showResourceDetails={showResourceDetails}
-                  setShowResourceDetails={setShowResourceDetails}
-                />
-              </div>
-            )}
-            {bookingView === "calendar" && (
-              // {/* Display calendar for selections */}
-              <div
-                className={`row no-gutter main-container calendar ${
-                  showResourceDetails !== null ? "resourceview-visible" : ""
-                }`}
-              >
-                <Calendar
-                  resources={resources}
-                  events={events}
-                  date={date}
-                  setDate={setDate}
-                  calendarSelection={calendarSelection}
-                  setCalendarSelection={setCalendarSelection}
-                  config={config}
-                  setShowResourceDetails={setShowResourceDetails}
-                  urlResource={urlResource}
-                  setDisplayState={setDisplayState}
-                  locations={locations}
-                  setEvents={setEvents}
-                  validUrlParams={validUrlParams}
-                  locationFilter={locationFilter}
-                  showResourceDetails={showResourceDetails}
-                />
-                {/* TODO: Only show if resource view is requested */}
-                <ResourceView
-                  showResourceDetails={showResourceDetails}
-                  setShowResourceDetails={setShowResourceDetails}
-                />
-              </div>
-            )}
-          </div>
-        )}
 
-        {config && validUrlParams && urlResource && displayState === "minimized" && (
-          <div className="row">
-            <MinimizedDisplay
-              validUrlParams={validUrlParams}
-              setDisplayState={setDisplayState}
-              urlResource={urlResource}
-            />
+            {config && !config.create_booking_mode && <UserPanel config={config} />}
           </div>
-        )}
 
-        {/* TODO: Only show if user menu is requested */}
-        {/*
-          <br />
-          <hr />
-          <br />
-          <UserPanel config={config} />
-        */}
-
-        {/* Display author fields */}
-        {config && !config.step_one && (
-          <div className="row no-gutter">
-            {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
-          </div>
-        )}
-
-        {/* Display redirect button */}
-        {/* {config && config.step_one && calendarSelection && (
-          <div className="row">
-            <RedirectButton
-              calendarSelection={calendarSelection}
-              config={config}
-            />
-          </div>
-        )} */}
+        </div>
       </div>
+      {/* Display author fields */}
+      {config && config.create_booking_mode && !config.step_one &&  (
+        <div className="row no-gutter">
+          {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+        </div>
+      )}
     </div>
   );
 }
