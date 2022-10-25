@@ -460,11 +460,10 @@ function App() {
 
             {config && !config.create_booking_mode && <UserPanel config={config} />}
           </div>
-
         </div>
       </div>
       {/* Display author fields */}
-      {config && config.create_booking_mode && !config.step_one &&  (
+      {config && config.create_booking_mode && !config.step_one && (
         <div className="row no-gutter">
           {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
         </div>
