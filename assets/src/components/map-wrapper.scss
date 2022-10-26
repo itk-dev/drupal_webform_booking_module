@@ -2,9 +2,9 @@
     height: 600px;
     width: 100%;
     display: block;
-    .ol-viewport:not(:nth-of-type(2)) {
-        display: none;
-    }
+    // .ol-viewport:not(:nth-of-type(2)) {
+    //     display: none;
+    // }
 }
 .ol-popup {
     position: absolute;
@@ -72,14 +72,16 @@
 }
 .tooltip-text {
  padding: 15px;
- height: 100px;
+ height: 65px;
  display: flex;
  flex-direction: column;
  a {
   margin-top: auto;
  }
-}
-.tooltip-btn {
+ span {
+  font-size: 13px;
+ }
+ .tooltip-btn {
   cursor: pointer;
 }
 
@@ -87,7 +89,9 @@
   position: absolute;
   right: 0px;
   top: 2px;
-  padding: 5px;
+  padding: 3px;
   line-height: 15px;
   cursor: pointer;
 }
+}
+

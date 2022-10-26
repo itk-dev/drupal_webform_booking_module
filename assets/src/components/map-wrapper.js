@@ -20,26 +20,35 @@ import { getFeatures } from '../util/map-utils';
 
 import "./map-wrapper.scss";
 
-function MapWrapper(props, resources) {
+function MapWrapper(resources) {
   const [map, setMap] = useState()
   const [featuresLayer, setFeaturesLayer] = useState()
-
-  const mapElement = useRef()
+  const initalFeaturesLayer = new VectorLayer({
+    source: new VectorSource()
+  })
+  const [vectorLayer, setVectorLayer] = useState(null);
+  const [currentFeatures, setCurrentFeatures] = useState(null);
+  const mapElement = useRef();
 
   useEffect(() => {
-    const tooltip = document.getElementById('tooltip');
-    const initalFeaturesLayer = new VectorLayer({
-      source: new VectorSource()
-    })
-    // Proj4 projection definition
-    Proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs ");
-    register(Proj4);
+    //Get resource location objects
+    let resourceData = getFeatures(resources);
+    let newFeatures = [];
+    if (resources.resources) {
+      resources.resources.forEach((value) => {
+        newFeatures.push(value.id);
+      })
+    }
 
-    // Projection settings for Denmark
-    const dkprojection = new Projection({
-      code: 'EPSG:25832',
-      extent: [-1877994.66, 3638086.74, 3473041.38, 9494203.2],
-    });
+    if (resources.resources // Resources are set
+      && (resources.resources.length === 0 // Number of resources are 0
+        || currentFeatures // Or currentFeatures exists
+        && (currentFeatures.length === resources.resources.length // And the length of currentFeatures and newFeatures are the same
+          && newFeatures !== currentFeatures) // And currentFeatures and newFeatures are now equal
+      )
+    ) { // Match current 
+      return;
+    }
 
     //Styling of the map marker
     const iconStyle = new Style({
@@ -51,11 +60,9 @@ function MapWrapper(props, resources) {
       }),
     });
 
-    //Get resource location objects
-    let resourceData = getFeatures(resources);
-
     //Define feature array and apply styling
     let features = [];
+    let featureIds = [];
     resourceData.forEach((value) => {
       let feature = new Feature({
         geometry: new Point([value.coordinates.easting, value.coordinates.northing]),
@@ -63,9 +70,47 @@ function MapWrapper(props, resources) {
         address: value.address,
         city: value.city
       });
+      featureIds.push(value.id);
       feature.setStyle(iconStyle);
       features.push(feature)
     })
+
+    let vLayer = new VectorLayer({ //Resource features
+      name: 'Vector',
+      source: new VectorSource({
+        features: features
+      })
+    })
+
+    if (map) {
+      setCurrentFeatures(featureIds);
+      setVectorLayer(vLayer);
+    }
+  }, [resources, map])
+
+  useEffect(() => {
+    if (map && vectorLayer) {
+      map.getLayers().getArray().forEach((value) => { // Loop vectorLayers and remove old
+        if (value.get('name') === "Vector") {
+          map.removeLayer(value);
+        }
+      })
+      map.addLayer(vectorLayer); // Add newly defined vectorLayer
+    }
+  }, [vectorLayer, map])
+
+  useEffect(() => {
+    const tooltip = document.getElementById('tooltip');
+
+    // Proj4 projection definition
+    Proj4.defs('EPSG:25832', "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs ");
+    register(Proj4);
+
+    // Projection settings for Denmark
+    const dkprojection = new Projection({
+      code: 'EPSG:25832',
+      extent: [-1877994.66, 3638086.74, 3473041.38, 9494203.2],
+    });
 
     const layers = [
       new TileLayer({ //Map tiles
@@ -83,15 +128,18 @@ function MapWrapper(props, resources) {
           },
           attributions: '<p>Kort fra <a href="https://datafordeler.dk" target="_blank">Datafordeleren</a>.'
         }),
-      }),
-      new VectorLayer({ //Resource features
-        source: new VectorSource({
-          features: features
-        })
       })
     ];
 
     //Map view config
+    let mapChildren = mapElement.current.children;
+    for (var i = 0; i < mapChildren.length; i++) {
+      if (mapChildren[i].className.indexOf("ol-viewport") > -1) {
+        mapChildren[i].parentNode.removeChild(mapChildren[i])
+      }
+    }
+
+    //Map definition
     const initialMap = new Map({
       layers: layers,
       target: mapElement.current,
@@ -123,7 +171,7 @@ function MapWrapper(props, resources) {
       tooltip.style.display = feature ? '' : 'none';
       if (feature) {
         overlay.setPosition(feature.values_.geometry.flatCoordinates);
-        tooltip.innerHTML = "<div class='tooltip-closer'>✖️</div><div class='tooltip-text'><span><b>" + feature.values_.name + "</b></span><span>" + feature.values_.address + "<br>" + feature.values_.city + "</span><a class='tooltip-btn'>Vis i kalender</a></div>";
+        tooltip.innerHTML = "<div class='tooltip-closer'>✖️</div><div class='tooltip-text'><span><b>" + feature.values_.name + "</b></span><br><a class='tooltip-btn'>Vis i kalender</a></div>";
       }
     });
 
@@ -136,6 +184,7 @@ function MapWrapper(props, resources) {
 
     initialMap.addOverlay(overlay);
 
+    // Tooltip closer click event
     document.getElementById("tooltip").addEventListener("click", (event) => {
       let target = event.target.className;
       if (target === "tooltip-closer") {
@@ -148,10 +197,9 @@ function MapWrapper(props, resources) {
     setFeaturesLayer(initalFeaturesLayer)
   }, [])
 
-
   return (
     <div className="map-container">
-      <div ref={mapElement} className="map">
+      <div ref={mapElement} className="map" id="map">
         <div id="tooltip" className="tooltip"></div>
       </div>
     </div>
