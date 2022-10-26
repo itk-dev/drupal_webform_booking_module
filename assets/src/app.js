@@ -20,7 +20,6 @@ import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
 
-
 dayjs.locale("da");
 
 /**
@@ -55,7 +54,7 @@ function App() {
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
-  const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar. 
+  const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
 
   // Get configuration.
   useEffect(() => {
