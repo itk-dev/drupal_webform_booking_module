@@ -6,13 +6,9 @@ import Proj4 from "proj4";
  * @returns {object} Proj object containing converted coordinates
  */
 export function latlngToUTM(lat, long) {
-  // Convert latitude, longitude to UTM formatted easting, northing.
-  // Not working correctly yet.
-  // TODO: Find the correct proj config for this to work from Google Maps lat,long to UTM
-  const utm = "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs";
-  const wgs84 = "+proj=longlat +zone=32 +ellps=GRS80 +units=m +no_defs ";
-
-  return Proj4(wgs84, utm, [lat, long]);
+  var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+  var utm = "+proj=utm +zone=32";
+  return Proj4(wgs84,utm,[long, lat]);
 }
 
 /**
@@ -21,22 +17,21 @@ export function latlngToUTM(lat, long) {
  */
 export function getFeatures(resources) {
   // Loop resources and build coordinates and tooltip content
+  // TODO: Add actual coordinates from API
   const featureObj = [];
 
   if (resources) {
     Object.values(resources).forEach((resource) => {
+    let utmCoordinates = latlngToUTM(56.153574168437295, 10.214342775668902);
       featureObj.push({
         id: resource.id,
         coordinates: {
-          easting: 575427 + Math.floor(Math.random() * 30) + 50,
-          northing: 6223823 + Math.floor(Math.random() * 30) + 50,
-          // 'easting': 575427.19,
-          // 'northing': 6223823.10
+          'easting': utmCoordinates[0],
+          'northing': utmCoordinates[1]
         },
         name: resource.resourceName,
       });
     });
   }
-
   return featureObj;
 }
