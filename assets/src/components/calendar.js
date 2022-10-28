@@ -214,7 +214,7 @@ function Calendar({
 
     if (validUrlParams === null) {
       // Only for step-1
-      /* 
+      /*
         asyncEvents only contains the events loaded for the resource expanded just now,
         therefore we loop events, which contains all already loaded events, to ensure that they are not lost.
         We add them to our object containing all the events we want to set.
@@ -230,7 +230,7 @@ function Calendar({
         internalAsyncEvents.push(event);
       });
 
-      /* 
+      /*
         Now, internalAsyncEvents contains all previous loaded events, and our newly loaded events.
         Events persists through "view swaps", but the state of our placeholders does not, which means that our placeholders reset after a viewswap, but events does not,
         causing the same event to be added multiple times, if a placeholder is expanded, the view is swapped to "list" and back to "calendar" and the same placeholder is expanded once again.
@@ -395,11 +395,11 @@ function Calendar({
   };
 
   return (
-    <div className="Calendar no-gutter col-md-12">
+    <div className="Calendar no-gutter col">
       <style>{internalStyling}</style>
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
-        <div className="col-md-12">
+        <div className="col">
           <FullCalendar
             ref={calendarRef}
             plugins={[

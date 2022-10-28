@@ -1,16 +1,21 @@
+.userpanel {
+  position: relative;
+}
+
 div.userbookings-container {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   min-height: 300px;
-  width: 800px;
 }
 
 div.userbookings-container > div.user-booking {
   display: inline-flex;
   flex: 0 0 100%;
   flex-direction: row;
+  background: #fff;
   border: 1px solid #dddddd;
+  box-sizing: border-box;
   padding: 30px;
   margin: 0 0 1% 0;
   min-height: 60px;

@@ -183,11 +183,7 @@ class BookingController extends ControllerBase {
    * @throws \JsonException
    */
   public function getUserInformation(Request $request): JsonResponse {
-    if ($this->bookingApiSampleData) {
-      $userArray = SampleDataHelper::getSampleData("user");
-    } else {
-      $userArray = $this->userHelper->getUserValues($request);
-    }
+    $userArray = $this->userHelper->getUserValues($request);
 
     return new JsonResponse([
       'userType' => $userArray['userType'],
