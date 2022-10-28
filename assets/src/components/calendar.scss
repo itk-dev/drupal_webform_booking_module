@@ -1,6 +1,8 @@
 .main-container {
   .Calendar {
     padding: 15px !important;
+    position: relative;
+    
     > div {
       padding-top: 0;
       > div {

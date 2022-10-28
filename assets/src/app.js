@@ -52,6 +52,7 @@ function App() {
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
 
   // Get configuration.
   useEffect(() => {
@@ -150,18 +151,21 @@ function App() {
         }
       });
 
-      if (Object.values(filterParams).length > 0) {
+      if (Object.values(filterParams).length > 0 && urlSearchParams != "") {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
             setResources([]);
-
+            
             setTimeout(() => {
               setResources(loadedResources);
+              setUserHasInteracted(true);
             }, 1);
           })
           .catch(() => {
             // TODO: Display error and retry option for user. (v0.1)
           });
+      } else {
+        setResources([]);
       }
     }
   }, [filterParams]);
@@ -169,9 +173,9 @@ function App() {
   // Set location filter and resource dropdown options.
   useEffect(() => {
     const locationValues = locationFilter.map(({ value }) => value);
-
+    
     setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
-
+    
     // Set resource dropdown options.
     if (config) {
       const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
@@ -197,10 +201,9 @@ function App() {
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
-
     setFilterParams({
       ...filterParams,
-      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
+      ...({ "resourceMail[]": resourceValues }),
     });
   }, [resourceFilter]);
 
@@ -224,14 +227,16 @@ function App() {
 
         break;
       case "gt":
-      default:
         capacity = { "capacity[gt]": capacityValue };
-
         break;
+      default:
+
+      break;
     }
 
     setFilterParams({ ...newFilterParams, ...capacity });
   }, [capacityFilter]);
+
 
   // Set facility filter.
   useEffect(() => {
@@ -338,7 +343,7 @@ function App() {
               <div className="col-md-3">
                 <Select
                   styles={{}}
-                  defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                  defaultValue={{label: "Alle"}}
                   placeholder="Siddepladser..."
                   closeMenuOnSelect
                   options={capacityOptions}
@@ -397,7 +402,7 @@ function App() {
                   showResourceDetails !== null ? "resourceview-visible" : ""
                 }`}
               >
-                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
+                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} userHasInteracted={userHasInteracted}/>
                 <ResourceView
                   showResourceDetails={showResourceDetails}
                   setShowResourceDetails={setShowResourceDetails}
@@ -427,6 +432,7 @@ function App() {
                   validUrlParams={validUrlParams}
                   locationFilter={locationFilter}
                   showResourceDetails={showResourceDetails}
+                  userHasInteracted={userHasInteracted}
                 />
                 {/* TODO: Only show if resource view is requested */}
                 <ResourceView

@@ -12,6 +12,11 @@
   .app-content {
     background: #e9ecef;
     padding: 30px;
+    .filters-wrapper {
+      div {
+        z-index: 3;
+      }
+    }
     .viewswapper-wrapper {
       margin: 30px 0px 15px 0px;
       .viewswapper-container {
@@ -24,7 +29,48 @@
       }
     }
   }
-
+  .no-result-overlay {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    top: 30px; bottom: 30px; right: 30px; left: 30px;
+    height: calc(100% - 60px);
+    width: calc(100% - 60px);
+    background-color: #fff;
+    z-index: 2;
+    background-color: #DEE2E6;
+    .no-initial-image {
+      margin: auto auto 15px auto;
+      width: 50%;
+      svg {
+        width: 100%;
+        height: auto;
+      }
+    }
+    .no-result-image {
+      margin: auto auto 15px auto;
+      width: 25%;
+      svg {
+        width: 100%;
+        height: auto;
+      }
+    }
+    
+    .no-result-text {
+      display: flex;
+      flex-direction: column;
+      font-size: 30px;
+      margin: 10px auto auto auto;
+      span:first-child {
+        text-align: center;
+      }
+      span:last-child {
+        text-align: center;
+        font-weight: bold;
+      }
+    }
+  }
   .resourceview-visible {
     min-height: 782px;
   }

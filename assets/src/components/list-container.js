@@ -1,6 +1,7 @@
 import React from "react";
 import * as PropTypes from "prop-types";
 import List from "./list";
+import NoResultOverlay from "./no-result-overlay";
 import "./list-container.scss";
 
 /**
@@ -9,9 +10,17 @@ import "./list-container.scss";
  * @param {object} props.setShowResourceDetails Resource object to show details for
  * @returns {JSX.Element} List element containing resources
  */
-function ListContainer({ resources, setShowResourceDetails }) {
+function ListContainer({ resources, setShowResourceDetails, userHasInteracted }) {
+  console.log(userHasInteracted);
   return (
     <div className="List no-gutter col-md-12">
+
+      {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
+      <NoResultOverlay state="initial" />
+      )}
+      {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
+      <NoResultOverlay state="noresult" />
+      )}
       <div className="row">
         <div className="col-md-12">
           {!resources && <span>Vælg filtre for at vise liste over resourcer..</span>}
