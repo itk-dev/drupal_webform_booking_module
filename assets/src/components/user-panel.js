@@ -55,30 +55,31 @@ function UserPanel({ config }) {
   }, [config]);
 
   return (
-    <div className="userpanel">
-      <h1>User Panel:</h1>
-      <div className="userbookings-container">
-        {loading && <LoadingSpinner />}
-        {!loading &&
-          userBookings &&
-          Object.values(userBookings).map((obj) => (
-            <div className="user-booking" key={obj.id}>
-              <div>
-                <span className="location">{obj.displayName}</span>
-                <span className="subject">{obj.subject}</span>
+    <div className="userpanel row">
+      <div className="col no-gutter">
+        <div className="userbookings-container">
+          {loading && <LoadingSpinner />}
+          {!loading &&
+            userBookings &&
+            Object.values(userBookings).map((obj) => (
+              <div className="user-booking" key={obj.id}>
+                <div>
+                  <span className="location">{obj.displayName}</span>
+                  <span className="subject">{obj.subject}</span>
+                </div>
+                <div>
+                  <span>{getFormattedDateTime(obj.start)}</span>
+                  <span>→</span>
+                  <span>{getFormattedDateTime(obj.end)}</span>
+                </div>
+                <div>
+                  <button type="button" onClick={() => requestDeletion(obj.hitId)}>
+                    Anmod om sletning
+                  </button>
+                </div>
               </div>
-              <div>
-                <span>{getFormattedDateTime(obj.start)}</span>
-                <span>→</span>
-                <span>{getFormattedDateTime(obj.end)}</span>
-              </div>
-              <div>
-                <button type="button" onClick={() => requestDeletion(obj.hitId)}>
-                  Anmod om sletning
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
     </div>
   );
