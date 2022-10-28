@@ -61,18 +61,11 @@ class UserHelper {
     $session = $request->getSession();
     $userToken = $session->get('os2forms_nemlogin_openid_connect.user_token');
 
-    if (is_null($userToken) ||
-      !array_key_exists('pid', $userToken) ||
-      !array_key_exists('name', $userToken) ||
-      !array_key_exists('given_name', $userToken)) {
-      return null;
-    }
-
     if (isset($userToken['cvr'])) {
       $permission = 'businessPartner';
       $whitelistKey = $userToken['cvr'];
       $userId = $this->generateUserId($userToken['cvr']);
-    } else if (isset($userToken['cpr'])) {
+    } else if (isset($userToken['cpr']) && isset($userToken['pid'])) {
       $permission = 'citizen';
       $userId = $this->generateUserId($userToken['pid']);
     } else {
@@ -80,8 +73,8 @@ class UserHelper {
     }
 
     return [
-      'name' => $userToken['name'],
-      'givenName' => $userToken['given_name'],
+      'name' => $userToken['name'] ?? null,
+      'givenName' => $userToken['given_name'] ?? null,
       'permission' => $permission,
       'userId' => $userId,
       'whitelistKey' => $whitelistKey ?? null,
