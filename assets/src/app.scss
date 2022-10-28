@@ -88,3 +88,6 @@ body {
     opacity: 1;
   }
 }
+.Toastify__toast-body > div:last-child {
+  white-space: pre-line;
+}
