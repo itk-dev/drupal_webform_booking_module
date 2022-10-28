@@ -67,14 +67,21 @@ export default class Api {
   static async deleteBooking(apiEndpoint, bookingId) {
     return fetch(`${apiEndpoint}itkdev_booking/user-booking/${bookingId}`, {
       method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`This is an HTTP error: The status is ${response.status}`);
-        }
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error(`This is an HTTP error: The status is ${response.status}`);
+      }
+    });
+  }
 
-        return response.json();
-      })
-      .then((data) => data["hydra:member"]);
+  static async patchBooking(apiEndpoint, bookingId, newData) {
+    return fetch(`${apiEndpoint}itkdev_booking/user-booking/${bookingId}`, {
+      method: "PATCH",
+      body: JSON.stringify(newData),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error(`This is an HTTP error: The status is ${response.status}`);
+      }
+    });
   }
 }

@@ -155,6 +155,25 @@ class BookingController extends ControllerBase {
   }
 
   /**
+   * Patch booking with given bookingId.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $bookingId
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   * @throws \JsonException
+   */
+  public function patchUserBooking(Request $request, string $bookingId): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      return new JsonResponse([], 201);
+    }
+
+    $response = $this->bookingHelper->patchUserBooking($request, $bookingId);
+
+    return new JsonResponse($response['data'], $response['statusCode']);
+  }
+
+  /**
    * Get booking details for a given hitId.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request

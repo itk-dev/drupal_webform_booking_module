@@ -16,6 +16,7 @@ import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
+import UserPanel from "./components/user-panel";
 
 dayjs.locale("da");
 
@@ -449,12 +450,10 @@ function App() {
         )}
 
         {/* TODO: Only show if user menu is requested */}
-        {/*
-          <br />
-          <hr />
-          <br />
-          <UserPanel config={config} />
-        */}
+        <br />
+        <hr />
+        <br />
+        <UserPanel config={config} />
 
         {/* Display author fields */}
         {config && !config.step_one && (

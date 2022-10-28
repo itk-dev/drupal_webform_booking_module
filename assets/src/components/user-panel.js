@@ -17,14 +17,46 @@ function UserPanel({ config }) {
   /** @param {string} bookingId Booking id to request deletion of. */
   const requestDeletion = (bookingId) => {
     if (bookingId) {
-      const requestBookingId = btoa(bookingId);
-
-      Api.deleteBooking(config.api_endpoint, requestBookingId)
-        .then(() => {
+      Api.deleteBooking(config.api_endpoint, bookingId)
+        .then((resp) => {
+          console.log("success deleting", resp);
           // TODO: Report delete success.
           // TODO: Update list of bookings.
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log("error deleting", err);
+          // TODO: Display error and retry option for user.
+        });
+    }
+  };
+
+  /**
+   * @param booking
+   * @param {object} data Data to patch.
+   */
+  const requestDateChange = (booking, data) => {
+    console.log(booking);
+
+    const newData = {
+/*
+      "@context": booking["@context"],
+      "@id": booking["@id"],
+      "@type": booking["@type"],
+*/
+      id: booking.id,
+      start: "2022-10-25T08:00:00.000Z",
+      end: "2022-10-25T08:30:00.000Z",
+    };
+
+    if (booking?.id) {
+      Api.patchBooking(config.api_endpoint, booking.id, newData)
+        .then((resp) => {
+          console.log("success patching", resp);
+          // TODO: Report delete success.
+          // TODO: Update list of bookings.
+        })
+        .catch((err) => {
+          console.log("error patching", err);
           // TODO: Display error and retry option for user.
         });
     }
@@ -73,8 +105,11 @@ function UserPanel({ config }) {
                 <span>{getFormattedDateTime(obj.end)}</span>
               </div>
               <div>
-                <button type="button" onClick={() => requestDeletion(obj.hitId)}>
+                <button type="button" onClick={() => requestDeletion(obj.id)}>
                   Anmod om sletning
+                </button>
+                <button type="button" onClick={() => requestDateChange(obj)}>
+                  Anmod om ændring af tidspunkt
                 </button>
               </div>
             </div>

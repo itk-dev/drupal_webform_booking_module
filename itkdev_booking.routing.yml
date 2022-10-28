@@ -46,6 +46,14 @@ itkdev_booking.user_bookings_delete:
   requirements:
     _access: 'TRUE'
 
+itkdev_booking.user_bookings_patch:
+  path: '/itkdev_booking/user-booking/{bookingId}'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\BookingController::patchUserBooking'
+  methods: [PATCH]
+  requirements:
+    _access: 'TRUE'
+
 itkdev_booking.booking_details:
   path: '/itkdev_booking/booking-details/{hitId}'
   defaults:

@@ -231,12 +231,46 @@ class BookingHelper {
     $endpoint = $this->bookingApiEndpoint;
     $client = new Client();
 
-    $query = [];
-
     $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
 
     $response = $client->delete("{$endpoint}v1/user-bookings/$bookingId", [
-      'query' => $query,
+      'headers' => $headers,
+    ]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
+  }
+
+  /**
+   * Delete user booking.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $bookingId
+   *
+   * @return array
+   * @throws \JsonException
+   */
+  public function patchUserBooking(Request $request, string $bookingId): array {
+    $endpoint = $this->bookingApiEndpoint;
+    $client = new Client();
+
+    $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+    $headers['content-type'] = "application/merge-patch+json";
+
+    $response = $client->patch("{$endpoint}v1/user-bookings/$bookingId", [
+      'json' => $request->getContent(),
       'headers' => $headers,
     ]);
 
