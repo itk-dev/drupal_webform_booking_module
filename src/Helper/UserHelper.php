@@ -68,17 +68,14 @@ class UserHelper {
       return null;
     }
 
-    $permission = null;
-
-    if (isset($userToken['cpr'])) {
-      $permission = 'citizen';
-    } else if (isset($userToken['cvr'])) {
-      // TODO: Test this.
+    if (isset($userToken['cvr'])) {
       $permission = 'businessPartner';
       $whitelistKey = $userToken['cvr'];
-    }
-
-    if ($permission == null) {
+      $userId = $this->generateUserId($userToken['cvr']);
+    } else if (isset($userToken['cpr'])) {
+      $permission = 'citizen';
+      $userId = $this->generateUserId($userToken['pid']);
+    } else {
       return null;
     }
 
@@ -86,12 +83,12 @@ class UserHelper {
       'name' => $userToken['name'],
       'givenName' => $userToken['given_name'],
       'permission' => $permission,
-      'userId' => $this->generateUserId($userToken),
+      'userId' => $userId,
       'whitelistKey' => $whitelistKey ?? null,
     ];
   }
 
-  private function generateUserId(array $userToken): string {
-    return Crypt::hashBase64($userToken['pid']);
+  private function generateUserId(string $uniqueIdentifier): string {
+    return Crypt::hashBase64($uniqueIdentifier);
   }
 }
