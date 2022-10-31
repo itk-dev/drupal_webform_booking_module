@@ -22,7 +22,7 @@ import {
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import {presentationTables, removeEmptyAriaLabelled} from "../util/dom-manipulation-utils";
+import {presentationTables, removeEmptyAriaLabelled, setAriaLabelFilters} from "../util/dom-manipulation-utils";
 import Api from "../util/api";
 import { displayError } from "../util/display-toast";
 import "./calendar.scss";
@@ -75,7 +75,7 @@ function Calendar({
   const alreadyHandledResourceIds = [];
 
   removeEmptyAriaLabelled();
-  presentationTables()
+  presentationTables();
 
   /**
    * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called

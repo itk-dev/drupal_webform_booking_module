@@ -20,6 +20,7 @@ import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
+import {setAriaLabelFilters} from "./util/dom-manipulation-utils";
 
 dayjs.locale("da");
 
@@ -56,6 +57,8 @@ function App() {
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+
+  setAriaLabelFilters();
 
   // Get configuration.
   useEffect(() => {
@@ -305,7 +308,7 @@ function App() {
           {config && <MainNavigation config={config} />}
           <div className="app-wrapper">
             {config && config.create_booking_mode && (
-              <main>
+              <div>
                 {!config && <LoadingSpinner />}
                 {config && config && displayState === "maximized" && (
                   <div className="app-content">
@@ -316,6 +319,8 @@ function App() {
                           {/* Dropdown with locations */}
                           <Select
                             styles={{}}
+                            id="location-filter"
+                            className="filter"
                             defaultValue={locationFilter}
                             placeholder="lokationer..."
                             placeholderClassName="dropdown-placeholder"
@@ -334,6 +339,8 @@ function App() {
                           {/* Dropdown with resources */}
                           <Select
                             styles={{}}
+                            id="resource-filter"
+                            className="filter"
                             defaultValue={resourceFilter}
                             placeholder="ressourcer..."
                             placeholderClassName="dropdown-placeholder"
@@ -352,6 +359,8 @@ function App() {
                           {/* Dropdown with facilities */}
                           <Select
                             styles={{}}
+                            id="facility-filter"
+                            className="filter"
                             defaultValue={facilityFilter}
                             placeholder="Facilitieter..."
                             placeholderClassName="dropdown-placeholder"
@@ -370,6 +379,8 @@ function App() {
                           {/* Dropdown with capacity */}
                           <Select
                             styles={{}}
+                            id="capacity-filter"
+                            className="filter"
                             defaultValue={{ value: "0", label: "Alle", type: "gt" }}
                             placeholder="Siddepladser..."
                             placeholderClassName="dropdown-placeholder"
@@ -481,7 +492,7 @@ function App() {
                     />
                   </div>
                 )}
-              </main>
+              </div>
             )}
 
             {config && !config.create_booking_mode && <UserPanel config={config} />}
