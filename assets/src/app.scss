@@ -9,6 +9,11 @@
     padding-right: 0;
   }
 
+  // Helper class for padding.
+  .small-padding {
+    padding: .5rem;
+  }
+
   .app-wrapper {
     position: relative;
     background: #e9ecef;
