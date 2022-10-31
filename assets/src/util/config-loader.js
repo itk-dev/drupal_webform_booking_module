@@ -26,9 +26,7 @@ export default class ConfigLoader {
           redirect_url: "http://google.com/",
           create_booking_mode: true,
           create_booking_url: "http://bookingapp.local.itkdev.dk/createbookingurl",
-          change_booking_url: "http://bookingapp.local.itkdev.dk/changebookingurl"
-          
-          
+          change_booking_url: "http://bookingapp.local.itkdev.dk/changebookingurl",
         };
       });
   }
