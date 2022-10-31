@@ -13,7 +13,9 @@
   .small-padding {
     padding: 0.5rem;
   }
-
+  .Toastify__toast-body > div:last-child {
+    white-space: pre-line;
+  }
   .app-wrapper {
     position: relative;
     background: #e9ecef;
@@ -27,7 +29,16 @@
       opacity: 1;
       transition: opacity 0.3s ease;
 
-      div {
+      div:nth-child(1) {
+        z-index: 6;
+      }
+      div:nth-child(2) {
+        z-index: 5;
+      }
+      div:nth-child(3) {
+        z-index: 4;
+      }
+      div:nth-child(4) {
         z-index: 3;
       }
     }
@@ -61,12 +72,12 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      top: 30px;
-      bottom: 30px;
-      right: 30px;
-      left: 30px;
-      height: calc(100% - 60px);
-      width: calc(100% - 60px);
+      top: 20px;
+      bottom: 20px;
+      right: 20px;
+      left: 20px;
+      height: calc(100% - 40px);
+      width: calc(100% - 40px);
       z-index: 2;
       background-color: #dee2e6;
 
@@ -126,6 +137,7 @@
   }
 
   .main-container {
+    display: block;
     background: #fff;
     border-radius: 5px;
   }
@@ -148,9 +160,5 @@
     to {
       opacity: 1;
     }
-  }
-
-  .Toastify__toast-body > div:last-child {
-    white-space: pre-line;
   }
 }
