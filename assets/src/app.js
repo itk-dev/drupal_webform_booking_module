@@ -311,7 +311,7 @@ function App() {
                 {config && config && displayState === "maximized" && (
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
-                      <div className="col-md-3">
+                      <div className="col-md-3 col-xs-12 small-padding">
                         {/* Dropdown with locations */}
                         <Select
                           styles={{}}
@@ -325,7 +325,7 @@ function App() {
                           isMulti
                         />
                       </div>
-                      <div className="col-md-3">
+                      <div className="col-md-3 col-xs-12 small-padding">
                         {/* Dropdown with resources */}
                         <Select
                           styles={{}}
@@ -340,7 +340,7 @@ function App() {
                         />
                       </div>
                       {/* Dropdown with facilities */}
-                      <div className="col-md-3">
+                      <div className="col-md-3 col-xs-12 small-padding">
                         <Select
                           styles={{}}
                           defaultValue={facilityFilter}
@@ -354,7 +354,7 @@ function App() {
                         />
                       </div>
                       {/* Dropdown with capacity */}
-                      <div className="col-md-3">
+                      <div className="col-md-3 col-xs-12 small-padding">
                         <Select
                           styles={{}}
                           defaultValue={{ value: "0", label: "Alle", type: "gt" }}

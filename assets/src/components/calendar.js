@@ -211,7 +211,7 @@ function Calendar({
       )}
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
-        <div className="col">
+        <div className="col small-padding">
           <FullCalendar
             ref={calendarRef}
             plugins={[
