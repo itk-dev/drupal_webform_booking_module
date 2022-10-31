@@ -431,19 +431,19 @@ function App() {
                         }`}
                       >
                         <Calendar
-                  resources={resources}
-                  events={events}
-                  date={date}
-                  setDate={setDate}
-                  calendarSelection={calendarSelection}
-                  setCalendarSelection={setCalendarSelection}
-                  config={config}
-                  setShowResourceDetails={setShowResourceDetails}
-                  urlResource={urlResource}
-                  setDisplayState={setDisplayState}
-                  showResourceDetails={showResourceDetails}
-                  userHasInteracted={userHasInteracted}
-                />
+                          resources={resources}
+                          events={events}
+                          date={date}
+                          setDate={setDate}
+                          calendarSelection={calendarSelection}
+                          setCalendarSelection={setCalendarSelection}
+                          config={config}
+                          setShowResourceDetails={setShowResourceDetails}
+                          urlResource={urlResource}
+                          setDisplayState={setDisplayState}
+                          showResourceDetails={showResourceDetails}
+                          userHasInteracted={userHasInteracted}
+                        />
                         {/* TODO: Only show if resource view is requested */}
                         <ResourceView
                           showResourceDetails={showResourceDetails}

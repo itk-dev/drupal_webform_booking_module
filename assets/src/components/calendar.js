@@ -21,7 +21,6 @@ import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 import NoResultOverlay from "./no-result-overlay";
-import { displayError } from "../util/display-toast";
 import "./calendar.scss";
 
 /**
