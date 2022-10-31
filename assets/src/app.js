@@ -293,7 +293,7 @@ function App() {
   return (
     <div className="App">
       <div className="container-fluid">
-        {!config && <LoadingSpinner />}
+      {!config && <LoadingSpinner />}
         {config && displayState === "maximized" && (
           <div className="app-content">
             <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
@@ -353,7 +353,7 @@ function App() {
                 />
               </div>
             </div>
-
+                  
             {/* Add info box */}
             <div className="row info-box-wrapper">
               {config.info_box_color && config.info_box_header && config.info_box_content && (
@@ -441,18 +441,28 @@ function App() {
                 />
               </div>
             )}
+            </div>
+            )}
+
+            {config && validUrlParams && urlResource && displayState === "minimized" && (
+                  <div className="row">
+                    <MinimizedDisplay
+                      validUrlParams={validUrlParams}
+                      setDisplayState={setDisplayState}
+                      urlResource={urlResource}
+                    />
+                  </div>
+                )}
 
             {config && !config.create_booking_mode && <UserPanel config={config} />}
+            {config && config.create_booking_mode && !config.step_one && (
+              <div className="row no-gutter">
+                {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+              </div>
+            )}
+
           </div>
-        </div>
       </div>
-      {/* Display author fields */}
-      {config && config.create_booking_mode && !config.step_one && (
-        <div className="row no-gutter">
-          {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
-        </div>
-      )}
-    </div>
   );
 }
 
