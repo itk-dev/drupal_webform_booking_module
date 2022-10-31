@@ -5,17 +5,17 @@ import * as PropTypes from "prop-types";
 import Map from "ol/Map";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
-import VectorLayer from "ol/layer/Vector";
-import Feature from "ol/Feature";
-import Point from "ol/geom/Point";
-import { Icon, Style } from "ol/style";
+// import VectorLayer from "ol/layer/Vector";
+// import Feature from "ol/Feature";
+// import Point from "ol/geom/Point";
+// import { Icon, Style } from "ol/style";
 import Overlay from "ol/Overlay";
-import VectorSource from "ol/source/Vector";
+// import VectorSource from "ol/source/Vector";
 import TileWMS from "ol/source/TileWMS";
 import Projection from "ol/proj/Projection";
 import Proj4 from "proj4";
 import { register } from "ol/proj/proj4";
-import { getFeatures } from "../util/map-utils";
+// import { getFeatures } from "../util/map-utils";
 import "./map-wrapper.scss";
 
 /**
@@ -27,16 +27,16 @@ import "./map-wrapper.scss";
  */
 function MapWrapper({ resources }) {
   const [map, setMap] = useState();
-  const [vectorLayer, setVectorLayer] = useState(null);
-  const [currentFeatures, setCurrentFeatures] = useState(null);
+  const [vectorLayer] = useState(null);
+  // const [vectorLayer, setVectorLayer] = useState(null);
+  // const [currentFeatures, setCurrentFeatures] = useState(null);
   const mapElement = useRef();
-  const resourceData = getFeatures(resources);
+  // const resourceData = getFeatures(resources);
 
   useEffect(() => {
     // TODO: Make map display correct locations:
     // Until then..
-    return;
-
+    /*
     // Get resource location objects
     const newFeatures = [];
 
@@ -99,6 +99,7 @@ function MapWrapper({ resources }) {
 
       setVectorLayer(vLayer);
     }
+    */
   }, [resources, map]);
 
   useEffect(() => {

@@ -6,9 +6,10 @@ import Proj4 from "proj4";
  * @returns {object} Proj object containing converted coordinates
  */
 export function latlngToUTM(lat, long) {
-  var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-  var utm = "+proj=utm +zone=32";
-  return Proj4(wgs84,utm,[long, lat]);
+  const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+  const utm = "+proj=utm +zone=32";
+
+  return Proj4(wgs84, utm, [long, lat]);
 }
 
 /**
@@ -22,16 +23,18 @@ export function getFeatures(resources) {
 
   if (resources) {
     Object.values(resources).forEach((resource) => {
-    let utmCoordinates = latlngToUTM(56.153574168437295, 10.214342775668902);
+      const utmCoordinates = latlngToUTM(56.153574168437295, 10.214342775668902);
+
       featureObj.push({
         id: resource.id,
         coordinates: {
-          'easting': utmCoordinates[0],
-          'northing': utmCoordinates[1]
+          easting: utmCoordinates[0],
+          northing: utmCoordinates[1],
         },
         name: resource.resourceName,
       });
     });
   }
+
   return featureObj;
 }
