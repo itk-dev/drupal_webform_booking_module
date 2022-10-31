@@ -38,14 +38,14 @@ function CalendarHeader({ date, setDate }) {
 
   return (
     <div className="row">
-      <div className="col-md-12 no-gutter">
+      <div className="col no-gutter">
         <div className="row calendar-header-wrapper">
-          <div className="col-md-4">
+          <div className="col-sm-4 small-padding">
             <button id="calendar-today" className="booking-btn" type="button" onClick={onChangeDate}>
               I dag
             </button>
           </div>
-          <div className="col-md-4 datepicker-container">
+          <div className="col-sm-4 small-padding datepicker-container">
             <div className="datepicker">
               <label htmlFor="calendar-datepicker" className="datepicker-label">
                 <input
@@ -61,7 +61,7 @@ function CalendarHeader({ date, setDate }) {
               </label>
             </div>
           </div>
-          <div className="col-md-4">
+          <div className="col-sm-4 small-padding">
             <div className="calendar-nav">
               <button
                 id="calendar-back"

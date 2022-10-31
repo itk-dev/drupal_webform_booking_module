@@ -9,9 +9,19 @@
     padding-right: 0;
   }
 
-  .app-content {
+  // Helper class for padding.
+  .small-padding {
+    padding: 0.5rem;
+  }
+
+  .app-wrapper {
+    position: relative;
     background: #e9ecef;
     padding: 30px;
+    min-height: 200px;
+  }
+
+  .app-content {
     .viewswapper-wrapper {
       margin: 30px 0px 15px 0px;
       .viewswapper-container {
