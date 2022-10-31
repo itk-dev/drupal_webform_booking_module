@@ -33,11 +33,12 @@ function ListContainer({ resources, setShowResourceDetails, userHasInteracted })
 ListContainer.propTypes = {
   resources: PropTypes.arrayOf(PropTypes.shape({})),
   setShowResourceDetails: PropTypes.func.isRequired,
-  userHasInteracted: PropTypes.bool.isRequired,
+  userHasInteracted: PropTypes.bool,
 };
 
 ListContainer.defaultProps = {
   resources: {},
+  userHasInteracted: false,
 };
 
 export default ListContainer;
