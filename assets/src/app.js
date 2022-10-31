@@ -305,65 +305,81 @@ function App() {
           {config && <MainNavigation config={config} />}
           <div className="app-wrapper">
             {config && config.create_booking_mode && (
-              <div>
+              <main>
                 {!config && <LoadingSpinner />}
                 {config && config && displayState === "maximized" && (
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        {/* Dropdown with locations */}
-                        <Select
-                          styles={{}}
-                          defaultValue={locationFilter}
-                          placeholder="lokationer..."
-                          closeMenuOnSelect={false}
-                          options={locationOptions}
-                          onChange={(selectedLocations) => {
-                            setLocationFilter(selectedLocations);
-                          }}
-                          isMulti
-                        />
+                        <label>
+                          Filtrér på lokationer
+                          {/* Dropdown with locations */}
+                          <Select
+                            styles={{}}
+                            defaultValue={locationFilter}
+                            placeholder="lokationer..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={locationOptions}
+                            onChange={(selectedLocations) => {
+                              setLocationFilter(selectedLocations);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        {/* Dropdown with resources */}
-                        <Select
-                          styles={{}}
-                          defaultValue={resourceFilter}
-                          placeholder="ressourcer..."
-                          closeMenuOnSelect={false}
-                          options={resourcesOptions}
-                          onChange={(selectedResources) => {
-                            setResourceFilter(selectedResources);
-                          }}
-                          isMulti
-                        />
+                        <label>
+                          Filtrér på lokaler/resource
+                          {/* Dropdown with resources */}
+                          <Select
+                            styles={{}}
+                            defaultValue={resourceFilter}
+                            placeholder="ressourcer..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={resourcesOptions}
+                            onChange={(selectedResources) => {
+                              setResourceFilter(selectedResources);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
-                      {/* Dropdown with facilities */}
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <Select
-                          styles={{}}
-                          defaultValue={facilityFilter}
-                          placeholder="Facilitieter..."
-                          closeMenuOnSelect={false}
-                          options={facilityOptions}
-                          onChange={(selectedFacilities) => {
-                            setFacilityFilter(selectedFacilities);
-                          }}
-                          isMulti
-                        />
+                        <label>
+                          Filtrér på faciliteter
+                          {/* Dropdown with facilities */}
+                          <Select
+                            styles={{}}
+                            defaultValue={facilityFilter}
+                            placeholder="Facilitieter..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={facilityOptions}
+                            onChange={(selectedFacilities) => {
+                              setFacilityFilter(selectedFacilities);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
-                      {/* Dropdown with capacity */}
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <Select
-                          styles={{}}
-                          defaultValue={{ value: "0", label: "Alle", type: "gt" }}
-                          placeholder="Siddepladser..."
-                          closeMenuOnSelect
-                          options={capacityOptions}
-                          onChange={(selectedCapacity) => {
-                            setCapacityFilter(selectedCapacity);
-                          }}
-                        />
+                        <label>
+                          Filtrér på kapacitet
+                          {/* Dropdown with capacity */}
+                          <Select
+                            styles={{}}
+                            defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                            placeholder="Siddepladser..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect
+                            options={capacityOptions}
+                            onChange={(selectedCapacity) => {
+                              setCapacityFilter(selectedCapacity);
+                            }}
+                          />
+                        </label>
                       </div>
                     </div>
 
@@ -465,7 +481,7 @@ function App() {
                     />
                   </div>
                 )}
-              </div>
+              </main>
             )}
 
             {config && !config.create_booking_mode && <UserPanel config={config} />}

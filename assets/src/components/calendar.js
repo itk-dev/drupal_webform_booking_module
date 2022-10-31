@@ -22,7 +22,7 @@ import {
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import { ReactComponent as IconChair } from "../assets/chair.svg";
+import {presentationTables, removeEmptyAriaLabelled} from "../util/dom-manipulation-utils";
 import Api from "../util/api";
 import { displayError } from "../util/display-toast";
 import "./calendar.scss";
@@ -73,6 +73,9 @@ function Calendar({
   const dateNow = new Date();
   const internalAsyncEvents = [];
   const alreadyHandledResourceIds = [];
+
+  removeEmptyAriaLabelled();
+  presentationTables()
 
   /**
    * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
@@ -463,9 +466,9 @@ function Calendar({
                 },
               },
               {
-                headerContent: <IconChair />,
+                headerContent: ['Kapacitet'],
                 headerClassNames: "resource-calendar-capacity-header",
-                width: "60px",
+                width: "85px",
                 cellClassNames: "resource-calendar-capacity-value",
                 cellContent(arg) {
                   return arg.resource.extendedProps.capacity;

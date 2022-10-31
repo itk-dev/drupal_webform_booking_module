@@ -42,6 +42,10 @@
 
 body {
   font-family: sans-serif;
+
+  *:focus {
+    border: 1px solid red!important;
+  }
 }
 
 .fc-scrollgrid {
@@ -65,7 +69,12 @@ body {
   border-radius: 5px;
   opacity: 1;
   transition: opacity 0.3s ease;
+
+  div {
+    color: hsl(0, 0%, 20%);
+  }
 }
+
 .filters-wrapper.disable-filters {
   pointer-events: none;
   opacity: 0.4;
