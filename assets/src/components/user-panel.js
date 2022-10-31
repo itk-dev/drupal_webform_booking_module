@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
+import { displayError } from "../util/display-toast";
 import "./user-panel.scss";
 
 /**
@@ -24,8 +25,8 @@ function UserPanel({ config }) {
           // TODO: Report delete success.
           // TODO: Update list of bookings.
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
+        .catch((deleteBookingError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", deleteBookingError);
         });
     }
   };
@@ -45,8 +46,8 @@ function UserPanel({ config }) {
         .then((loadedUserBookings) => {
           setUserBookings(loadedUserBookings);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
+        .catch((fetchUserBookingsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
         })
         .finally(() => {
           setLoading(false);
@@ -55,30 +56,31 @@ function UserPanel({ config }) {
   }, [config]);
 
   return (
-    <div className="userpanel">
-      <h1>User Panel:</h1>
-      <div className="userbookings-container">
-        {loading && <LoadingSpinner />}
-        {!loading &&
-          userBookings &&
-          Object.values(userBookings).map((obj) => (
-            <div className="user-booking" key={obj.id}>
-              <div>
-                <span className="location">{obj.displayName}</span>
-                <span className="subject">{obj.subject}</span>
+    <div className="userpanel row">
+      <div className="col no-gutter">
+        <div className="userbookings-container">
+          {loading && <LoadingSpinner />}
+          {!loading &&
+            userBookings &&
+            Object.values(userBookings).map((obj) => (
+              <div className="user-booking" key={obj.id}>
+                <div>
+                  <span className="location">{obj.displayName}</span>
+                  <span className="subject">{obj.subject}</span>
+                </div>
+                <div>
+                  <span>{getFormattedDateTime(obj.start)}</span>
+                  <span>→</span>
+                  <span>{getFormattedDateTime(obj.end)}</span>
+                </div>
+                <div>
+                  <button type="button" onClick={() => requestDeletion(obj.hitId)}>
+                    Anmod om sletning
+                  </button>
+                </div>
               </div>
-              <div>
-                <span>{getFormattedDateTime(obj.start)}</span>
-                <span>→</span>
-                <span>{getFormattedDateTime(obj.end)}</span>
-              </div>
-              <div>
-                <button type="button" onClick={() => requestDeletion(obj.hitId)}>
-                  Anmod om sletning
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
     </div>
   );

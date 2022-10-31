@@ -4,6 +4,7 @@ import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
@@ -11,11 +12,14 @@ import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
+import MainNavigation from "./components/main-navigation";
+import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
+import { displayError } from "./util/display-toast";
 
 dayjs.locale("da");
 
@@ -84,8 +88,8 @@ function App() {
 
           setResourceFilter([]);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchLocationsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchLocationsError);
         });
     }
 
@@ -94,8 +98,8 @@ function App() {
         .then((loadedResource) => {
           setUrlResource(loadedResource);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
+        .catch((fetchResourceError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
         });
     }
   }, [config]);
@@ -157,8 +161,8 @@ function App() {
               setUserHasInteracted(true);
             }, 1);
           })
-          .catch(() => {
-            // TODO: Display error and retry option for user. (v0.1)
+          .catch((fetchResourcesError) => {
+            displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
           });
       } else {
         setResources([]);
@@ -188,8 +192,8 @@ function App() {
             })
           );
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
         });
     }
   }, [locationFilter]);
@@ -262,8 +266,8 @@ function App() {
         .then((loadedEvents) => {
           setEvents(loadedEvents);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchEventsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
   }, [resources, date]);
@@ -437,44 +441,17 @@ function App() {
                 />
               </div>
             )}
-          </div>
-        )}
 
-        {config && validUrlParams && urlResource && displayState === "minimized" && (
-          <div className="row">
-            <MinimizedDisplay
-              validUrlParams={validUrlParams}
-              setDisplayState={setDisplayState}
-              urlResource={urlResource}
-            />
+            {config && !config.create_booking_mode && <UserPanel config={config} />}
           </div>
-        )}
-
-        {/* TODO: Only show if user menu is requested */}
-        {/*
-          <br />
-          <hr />
-          <br />
-          <UserPanel config={config} />
-        */}
-
-        {/* Display author fields */}
-        {config && !config.step_one && (
-          <div className="row no-gutter">
-            {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
-          </div>
-        )}
-
-        {/* Display redirect button */}
-        {/* {config && config.step_one && calendarSelection && (
-          <div className="row">
-            <RedirectButton
-              calendarSelection={calendarSelection}
-              config={config}
-            />
-          </div>
-        )} */}
+        </div>
       </div>
+      {/* Display author fields */}
+      {config && config.create_booking_mode && !config.step_one && (
+        <div className="row no-gutter">
+          {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+        </div>
+      )}
     </div>
   );
 }

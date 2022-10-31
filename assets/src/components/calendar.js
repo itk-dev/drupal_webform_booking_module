@@ -21,6 +21,7 @@ import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 import NoResultOverlay from "./no-result-overlay";
+import { displayError } from "../util/display-toast";
 import "./calendar.scss";
 
 /**
@@ -211,7 +212,7 @@ function Calendar({
       )}
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
-        <div className="col-md-12">
+        <div className="col">
           <FullCalendar
             ref={calendarRef}
             plugins={[

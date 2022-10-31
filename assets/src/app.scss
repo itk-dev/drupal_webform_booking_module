@@ -9,7 +9,8 @@
     padding-right: 0;
   }
 
-  .app-content {
+  .app-wrapper {
+    position: relative;
     background: #e9ecef;
     padding: 30px;
     .filters-wrapper {
@@ -30,6 +31,9 @@
       cursor: not-allowed;
       transition: opacity 0.3s ease;
     }
+
+
+  .app-content {
     .viewswapper-wrapper {
       margin: 30px 0px 15px 0px;
       .viewswapper-container {
@@ -127,4 +131,7 @@ body {
   to {
     opacity: 1;
   }
+}
+.Toastify__toast-body > div:last-child {
+  white-space: pre-line;
 }

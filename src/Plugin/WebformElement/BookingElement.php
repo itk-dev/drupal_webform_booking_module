@@ -47,6 +47,9 @@ class BookingElement extends Hidden
         'rooms' => [],
         'enable_booking' => false,
         'enable_resource_tooltips' => false,
+        'booking_mode' => '',
+        'create_booking_url' => '',
+        'change_booking_url' => '',
         'step1' => false,
         'redirect_url' => '',
         'info_box_color' => '',
@@ -79,12 +82,58 @@ class BookingElement extends Hidden
   {
     $form = parent::form($form, $form_state);
 
+    $form['element']['booking_mode'] = array(
+      '#type' => 'radios',
+      '#required' => TRUE,
+      '#title' => $this
+        ->t('Form mode'),
+      '#options' => array(
+        'create_booking_mode' => $this
+          ->t('Crate booking mode'),
+        'change_booking_mode' => $this
+          ->t('List bookings mode'),
+      ),
+      '#description' => $this
+        ->t('Use the element for either creating a new booking or view a list of existing bookings.'),
+    );
+
+    $form['element']['create_booking_url'] = array(
+      '#type' => 'url',
+      '#title' => $this
+        ->t('Create booking url'),
+      '#description' => $this
+        ->t('This is needed for the app menu to work properly.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[booking_mode]"]' => ['value' => 'change_booking_mode'],
+        ],
+      ]
+    );
+
+    $form['element']['change_booking_url'] = array(
+      '#type' => 'url',
+      '#title' => $this
+        ->t('List bookings url'),
+      '#description' => $this
+        ->t('This is needed for the app menu to work properly.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[booking_mode]"]' => ['value' => 'create_booking_mode'],
+        ],
+      ]
+    );
+
     $form['element']['step1'] = array(
       '#type' => 'checkbox',
       '#title' => $this
-        ->t('Display mode only'),
+        ->t('View only (No booking)'),
       '#description' => $this
         ->t('If checked the form will perform a redirect with booking parameters when booking choices are made.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="properties[booking_mode]"]' => ['value' => 'create_booking_mode'],
+        ],
+      ]
     );
 
     $form['element']['redirect_url'] = array(
@@ -130,6 +179,9 @@ class BookingElement extends Hidden
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
       'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
       'output_field_id' => 'submit-values',
+      'create_booking_mode' => $element['#booking_mode'] === 'create_booking_mode',
+      'create_booking_url' => $element['#create_booking_url'] ?? null,
+      'change_booking_url' => $element['#change_booking_url'] ?? null,
       'step_one' => isset($element['#step1']),
       'redirect_url' => $element['#redirect_url'] ?? null,
       'info_box_color' => $element['info_box_color'] ?? null,
