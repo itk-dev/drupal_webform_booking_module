@@ -406,9 +406,9 @@ function App() {
                     </div>
 
                     {bookingView === "map" && (
-                     <div className="row no-gutter main-container map">
-                <MapWrapper resources={resources} />
-              </div>
+                      <div className="row no-gutter main-container map">
+                        <MapWrapper resources={resources} />
+                      </div>
                     )}
                     {bookingView === "list" && (
                       <div
@@ -466,7 +466,6 @@ function App() {
                     />
                   </div>
                 )}
-
               </div>
             )}
 
