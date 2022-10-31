@@ -8,18 +8,17 @@ import "./list-container.scss";
  * @param {object} props Props.
  * @param {object} props.resources Resources object
  * @param {object} props.setShowResourceDetails Resource object to show details for
+ * @param {boolean} props.userHasInteracted Has the user interacted with filters
  * @returns {JSX.Element} List element containing resources
  */
 function ListContainer({ resources, setShowResourceDetails, userHasInteracted }) {
-  console.log(userHasInteracted);
   return (
     <div className="List no-gutter col-md-12">
-
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
-      <NoResultOverlay state="initial" />
+        <NoResultOverlay state="initial" />
       )}
       {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
-      <NoResultOverlay state="noresult" />
+        <NoResultOverlay state="noresult" />
       )}
       <div className="row">
         <div className="col-md-12">
@@ -34,6 +33,7 @@ function ListContainer({ resources, setShowResourceDetails, userHasInteracted })
 ListContainer.propTypes = {
   resources: PropTypes.arrayOf(PropTypes.shape({})),
   setShowResourceDetails: PropTypes.func.isRequired,
+  userHasInteracted: PropTypes.bool.isRequired,
 };
 
 ListContainer.defaultProps = {

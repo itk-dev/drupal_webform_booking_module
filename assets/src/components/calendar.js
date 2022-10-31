@@ -10,22 +10,17 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
-import dayjs from "dayjs";
 import CalendarHeader from "./calendar-header";
 import {
   adjustAsyncResourcesBusinessHours,
   handleBusyIntervals,
   handleResources,
-  setPlaceholderResources,
-  removeDuplicateEvents,
   getScrollTime,
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 import NoResultOverlay from "./no-result-overlay";
-
-import Api from "../util/api";
 import "./calendar.scss";
 
 /**
@@ -42,10 +37,7 @@ import "./calendar.scss";
  * @param {Function} props.setShowResourceDetails Setter for showResourceDetails
  * @param {object} props.urlResource The resource object loaded from URL id.
  * @param {Function} props.setDisplayState State of the calendar - "minimized" or "maximized"
- * @param {object} props.locations Object containing available locations
- * @param {Function} props.setEvents Set calendar events
- * @param {object} props.validUrlParams Validated url parameters from step1
- * @param {object} props.locationFilter Object containing selected filtered locations
+ * @param {boolean} props.userHasInteracted Has the user interacted with filters
  * @returns {JSX.Element} Calendar component.
  */
 function Calendar({
@@ -59,19 +51,13 @@ function Calendar({
   setShowResourceDetails,
   urlResource,
   setDisplayState,
-  locations,
-  setEvents,
-  validUrlParams,
-  locationFilter,
-  userHasInteracted
+  userHasInteracted,
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
-  
   const dateNow = new Date();
-
 
   /**
    * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
@@ -81,7 +67,6 @@ function Calendar({
    * given location is loaded. In the end of fetchResourcesOnLocation, asyncEvents is set, triggering the useEffect
    * asyncEvents is subscribed to, loading the resource events.
    */
-
 
   /**
    * OnCalenderSelection.
@@ -119,15 +104,6 @@ function Calendar({
 
     return undefined;
   };
-
-
-
-  // Expands locations groups on step-2
-  useEffect(() => {
-    if (validUrlParams !== null) {
-      setExpandResourcesByDefault(true);
-    }
-  }, [validUrlParams]);
 
   // Set calendar selection.
   useEffect(() => {
@@ -228,10 +204,10 @@ function Calendar({
   return (
     <div className="Calendar no-gutter col-md-12">
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
-      <NoResultOverlay state="initial" />
+        <NoResultOverlay state="initial" />
       )}
       {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
-      <NoResultOverlay state="noresult" />
+        <NoResultOverlay state="noresult" />
       )}
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
@@ -345,10 +321,8 @@ Calendar.propTypes = {
     resourceName: PropTypes.string.isRequired,
   }),
   setDisplayState: PropTypes.func.isRequired,
-  locations: PropTypes.arrayOf(PropTypes.shape({})),
-  setEvents: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}),
-  locationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  userHasInteracted: PropTypes.bool.isRequired,
 };
 
 Calendar.defaultProps = {
@@ -356,31 +330,6 @@ Calendar.defaultProps = {
   urlResource: null,
   validUrlParams: {},
   resources: {},
-  locations: {},
 };
 
 export default Calendar;
-
-
-function getCookie(cname) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(';');
-  for(let i = 0; i <ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
-function setCookie(cname, cvalue, exdays) {
-  const d = new Date();
-  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-  let expires = "expires="+d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}

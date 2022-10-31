@@ -47,7 +47,6 @@ function App() {
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
-  const [locations, setLocations] = useState(null);
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
@@ -72,8 +71,6 @@ function App() {
     if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
-          setLocations(loadedLocations);
-
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -151,13 +148,12 @@ function App() {
         }
       });
 
-      if (Object.values(filterParams).length > 0 && urlSearchParams != "") {
+      if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
-            setResources([]);
-            
             setTimeout(() => {
               setResources(loadedResources);
+
               setUserHasInteracted(true);
             }, 1);
           })
@@ -173,9 +169,9 @@ function App() {
   // Set location filter and resource dropdown options.
   useEffect(() => {
     const locationValues = locationFilter.map(({ value }) => value);
-    
+
     setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
-    
+
     // Set resource dropdown options.
     if (config) {
       const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
@@ -201,9 +197,10 @@ function App() {
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
+
     setFilterParams({
       ...filterParams,
-      ...({ "resourceMail[]": resourceValues }),
+      ...{ "resourceMail[]": resourceValues },
     });
   }, [resourceFilter]);
 
@@ -228,15 +225,14 @@ function App() {
         break;
       case "gt":
         capacity = { "capacity[gt]": capacityValue };
+
         break;
       default:
-
-      break;
+        break;
     }
 
     setFilterParams({ ...newFilterParams, ...capacity });
   }, [capacityFilter]);
-
 
   // Set facility filter.
   useEffect(() => {
@@ -343,7 +339,7 @@ function App() {
               <div className="col-md-3">
                 <Select
                   styles={{}}
-                  defaultValue={{label: "Alle"}}
+                  defaultValue={{ label: "Alle" }}
                   placeholder="Siddepladser..."
                   closeMenuOnSelect
                   options={capacityOptions}
@@ -402,7 +398,11 @@ function App() {
                   showResourceDetails !== null ? "resourceview-visible" : ""
                 }`}
               >
-                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} userHasInteracted={userHasInteracted}/>
+                <ListContainer
+                  resources={resources}
+                  setShowResourceDetails={setShowResourceDetails}
+                  userHasInteracted={userHasInteracted}
+                />
                 <ResourceView
                   showResourceDetails={showResourceDetails}
                   setShowResourceDetails={setShowResourceDetails}
@@ -427,10 +427,6 @@ function App() {
                   setShowResourceDetails={setShowResourceDetails}
                   urlResource={urlResource}
                   setDisplayState={setDisplayState}
-                  locations={locations}
-                  setEvents={setEvents}
-                  validUrlParams={validUrlParams}
-                  locationFilter={locationFilter}
                   showResourceDetails={showResourceDetails}
                   userHasInteracted={userHasInteracted}
                 />
