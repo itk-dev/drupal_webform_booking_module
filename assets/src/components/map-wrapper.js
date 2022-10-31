@@ -33,6 +33,10 @@ function MapWrapper({ resources }) {
   const resourceData = getFeatures(resources);
 
   useEffect(() => {
+    // TODO: Make map display correct locations:
+    // Until then..
+    return;
+
     // Get resource location objects
     const newFeatures = [];
 
@@ -117,10 +121,6 @@ function MapWrapper({ resources }) {
   useEffect(() => {
     // Initial setup of map - this only runs once
     const tooltip = document.getElementById("tooltip");
-   
-    var utm = "+proj=utm +zone=32";
-    var wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-    console.log(Proj4(wgs84, utm,[10.21434013377779, 56.15357294475398]));
 
     // Proj4 projection definition
     Proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs");
