@@ -398,10 +398,10 @@ function Calendar({
   };
 
   return (
-    <div className="Calendar no-gutter col">
+    <div className="Calendar no-gutter col" role="application">
       <style>{internalStyling}</style>
       <CalendarHeader config={config} date={date} setDate={setDate} />
-      <div className="row">
+      <div className="row" aria-hidden="true">
         <div className="col small-padding">
           <div hidden={true} id="calendar-caption">Kalender booking element</div>
           <FullCalendar
