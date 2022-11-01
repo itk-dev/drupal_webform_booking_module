@@ -408,7 +408,7 @@ function App() {
 
                     {bookingView === "map" && (
                       <div className="row no-gutter main-container map">
-                        <MapWrapper resources={resources} />
+                        <MapWrapper resources={resources} config={config} />
                       </div>
                     )}
                     {bookingView === "list" && (

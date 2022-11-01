@@ -25,7 +25,7 @@ import "./map-wrapper.scss";
  * @param {object} props.resources Resources array
  * @returns {JSX.Element} MapWrapper component
  */
-function MapWrapper({ resources }) {
+function MapWrapper({ resources, config }) {
   const [map, setMap] = useState();
   // const vectorLayer = useState(null);
   // const [vectorLayer, setVectorLayer] = useState(null);
@@ -119,6 +119,9 @@ function MapWrapper({ resources }) {
   // }, [vectorLayer, map]);
 
   useEffect(() => {
+    if (!config || (config.df_map_username === "" || config.df_map_password === "")) {
+      return;
+    }
     // Current map instances
     const mapChildren = mapElement.current.children;
 
@@ -126,14 +129,15 @@ function MapWrapper({ resources }) {
 
     // Check if map is already loaded
     Object.values(mapChildren).forEach((mapChild) => {
-      if (mapChild.className.indexOf("ol-viewport") > -1) {
+      if (mapChild.className.indexOf("ol-viewport") !== -1) {
         mapAlreadyLoaded = true;
+        return;
       }
     });
 
     // Return if map is already loaded
     if (mapAlreadyLoaded) {
-      return undefined;
+      return;
     }
 
     // Initial setup of map - this only runs once
@@ -157,7 +161,7 @@ function MapWrapper({ resources }) {
         type: "base",
         visible: true,
         source: new TileWMS({
-          url: "https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?username=PUBTLJWBTM&password=erh7bqw6ajw*QVB6evk",
+          url: "https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?username="+config.df_map_username+"&password="+config.df_map_password,
           params: {
             LAYERS: "dtk_skaermkort",
             VERSION: "1.1.1",

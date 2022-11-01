@@ -316,7 +316,7 @@
   cursor: move;
 }
 
-.tooltip {
+.tooltip:not(:empty) {
   position: relative;
   background-color: #fff;
   border-radius: 5px;
