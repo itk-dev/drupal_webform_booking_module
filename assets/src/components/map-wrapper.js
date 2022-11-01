@@ -27,15 +27,15 @@ import "./map-wrapper.scss";
  */
 function MapWrapper({ resources }) {
   const [map, setMap] = useState();
-  const [vectorLayer] = useState(null);
+  // const vectorLayer = useState(null);
   // const [vectorLayer, setVectorLayer] = useState(null);
   // const [currentFeatures, setCurrentFeatures] = useState(null);
   const mapElement = useRef();
   // const resourceData = getFeatures(resources);
 
   useEffect(() => {
-    // TODO: Make map display correct locations:
-    // Until then..
+    // TODO: Gather and loop locations
+    // Until then:
     /*
     // Get resource location objects
     const newFeatures = [];
@@ -51,9 +51,9 @@ function MapWrapper({ resources }) {
       (resources.length === 0 || // Number of resources are 0
         (currentFeatures && // Or currentFeatures exists
           currentFeatures.length === resources.length && // And the length of currentFeatures and newFeatures are the same
-          newFeatures !== currentFeatures)) // And currentFeatures and newFeatures are now equal
+          newFeatures === currentFeatures)) // And currentFeatures and newFeatures are not equal
     ) {
-      // Match current
+      // New features matches current features. Don't update.
       return;
     }
 
@@ -102,24 +102,40 @@ function MapWrapper({ resources }) {
     */
   }, [resources, map]);
 
-  useEffect(() => {
-    // Handles removing old layers and adding new ones
-    if (map && vectorLayer) {
-      map
-        .getLayers()
-        .getArray()
-        .forEach((value) => {
-          // Loop vectorLayers and remove old
-          if (value.get("name") === "Vector") {
-            map.removeLayer(value);
-          }
-        });
+  // useEffect(() => {
+  // Handles removing old layers and adding new ones
+  // if (map && vectorLayer) {
+  //   map
+  //     .getLayers()
+  //     .getArray()
+  //     .forEach((value) => {
+  //       // Loop vectorLayers and remove old
+  //       if (value.get("name") === "Vector") {
+  //         map.removeLayer(value);
+  //       }
+  //     });
+  //   map.addLayer(vectorLayer); // Add newly defined vectorLayer
+  // }
+  // }, [vectorLayer, map]);
 
-      map.addLayer(vectorLayer); // Add newly defined vectorLayer
+  useEffect(() => {
+    // Current map instances
+    const mapChildren = mapElement.current.children;
+
+    let mapAlreadyLoaded = false;
+
+    // Check if map is already loaded
+    Object.values(mapChildren).forEach((mapChild) => {
+      if (mapChild.className.indexOf("ol-viewport") > -1) {
+        mapAlreadyLoaded = true;
+      }
+    });
+
+    // Return if map is already loaded
+    if (mapAlreadyLoaded) {
+      return undefined;
     }
-  }, [vectorLayer, map]);
 
-  useEffect(() => {
     // Initial setup of map - this only runs once
     const tooltip = document.getElementById("tooltip");
 
@@ -153,16 +169,6 @@ function MapWrapper({ resources }) {
         }),
       }),
     ];
-
-    // Map view config
-
-    const mapChildren = mapElement.current.children;
-
-    Object.values(mapChildren).forEach((mapChild) => {
-      if (mapChild.className.indexOf("ol-viewport") > -1) {
-        mapChild.parentNode.removeChild(mapChild);
-      }
-    });
 
     // Map definition
     const initialMap = new Map({
@@ -214,8 +220,6 @@ function MapWrapper({ resources }) {
       initialMap.getTarget().style.cursor = hit ? "pointer" : "";
     });
 
-    initialMap.addOverlay(overlay);
-
     // Tooltip closer click event
     document.getElementById("tooltip").addEventListener("click", (event) => {
       const target = event.target.className;
@@ -226,7 +230,7 @@ function MapWrapper({ resources }) {
     });
 
     // save map and vector layer references to state
-    setMap(initialMap);
+    return setMap(initialMap);
   }, []);
 
   return (
