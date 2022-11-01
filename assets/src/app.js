@@ -51,11 +51,11 @@ function App() {
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
-  const [locations, setLocations] = useState(null);
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
 
   // Get configuration.
   useEffect(() => {
@@ -75,8 +75,6 @@ function App() {
     if (config) {
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
-          setLocations(loadedLocations);
-
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -154,18 +152,20 @@ function App() {
         }
       });
 
-      if (Object.values(filterParams).length > 0) {
+      if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
-            setResources([]);
-
             setTimeout(() => {
               setResources(loadedResources);
+
+              setUserHasInteracted(true);
             }, 1);
           })
           .catch((fetchResourcesError) => {
             displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
           });
+      } else {
+        setResources([]);
       }
     }
   }, [filterParams]);
@@ -204,7 +204,7 @@ function App() {
 
     setFilterParams({
       ...filterParams,
-      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
+      ...{ "resourceMail[]": resourceValues },
     });
   }, [resourceFilter]);
 
@@ -228,9 +228,10 @@ function App() {
 
         break;
       case "gt":
-      default:
         capacity = { "capacity[gt]": capacityValue };
 
+        break;
+      default:
         break;
     }
 
@@ -440,11 +441,8 @@ function App() {
                           setShowResourceDetails={setShowResourceDetails}
                           urlResource={urlResource}
                           setDisplayState={setDisplayState}
-                          locations={locations}
-                          setEvents={setEvents}
-                          validUrlParams={validUrlParams}
-                          locationFilter={locationFilter}
                           showResourceDetails={showResourceDetails}
+                          userHasInteracted={userHasInteracted}
                         />
                         {/* TODO: Only show if resource view is requested */}
                         <ResourceView

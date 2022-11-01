@@ -13,86 +13,152 @@
   .small-padding {
     padding: 0.5rem;
   }
-
+  .Toastify__toast-body > div:last-child {
+    white-space: pre-line;
+  }
   .app-wrapper {
     position: relative;
     background: #e9ecef;
     padding: 30px;
-    min-height: 200px;
-  }
 
-  .app-content {
-    .viewswapper-wrapper {
-      margin: 30px 0px 15px 0px;
-      .viewswapper-container {
-        .booking-btn {
-          margin-right: 5px;
-        }
-        .booking-btn.active {
-          background-color: #343a40;
+    .filters-wrapper {
+      margin-bottom: 30px;
+      padding: 20px 15px;
+      background: #fff;
+      border-radius: 5px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+
+      div:nth-child(1) {
+        z-index: 6;
+      }
+      div:nth-child(2) {
+        z-index: 5;
+      }
+      div:nth-child(3) {
+        z-index: 4;
+      }
+      div:nth-child(4) {
+        z-index: 3;
+      }
+    }
+
+    .filters-wrapper.disable-filters {
+      pointer-events: none;
+      opacity: 0.4;
+      user-select: none;
+      cursor: not-allowed;
+      transition: opacity 0.3s ease;
+    }
+
+    .app-content {
+      .viewswapper-wrapper {
+        margin: 30px 0px 15px 0px;
+
+        .viewswapper-container {
+          .booking-btn {
+            margin-right: 5px;
+          }
+
+          .booking-btn.active {
+            background-color: #343a40;
+          }
         }
       }
     }
+
+    .no-result-overlay {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      top: 20px;
+      bottom: 20px;
+      right: 20px;
+      left: 20px;
+      height: calc(100% - 40px);
+      width: calc(100% - 40px);
+      z-index: 2;
+      background-color: #dee2e6;
+
+      .no-initial-image {
+        margin: auto auto 15px auto;
+        width: 50%;
+
+        svg {
+          width: 100%;
+          height: auto;
+        }
+      }
+
+      .no-result-image {
+        margin: auto auto 15px auto;
+        width: 25%;
+
+        svg {
+          width: 100%;
+          height: auto;
+        }
+      }
+
+      .no-result-text {
+        display: flex;
+        flex-direction: column;
+        font-size: 30px;
+        margin: 10px auto auto auto;
+
+        span:first-child {
+          text-align: center;
+        }
+
+        span:last-child {
+          text-align: center;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .resourceview-visible {
+      min-height: 782px;
+    }
   }
 
-  .resourceview-visible {
-    min-height: 782px;
-  }
-}
-
-body {
-  font-family: sans-serif;
-}
-
-.fc-scrollgrid {
-  border: none !important;
-}
-
-.main-container,
-.resource-container {
-  position: relative;
-}
-
-.main-container {
-  background: #fff;
-  border-radius: 5px;
-}
-
-.filters-wrapper {
-  margin-bottom: 30px;
-  padding: 20px 15px;
-  background: #fff;
-  border-radius: 5px;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-.filters-wrapper.disable-filters {
-  pointer-events: none;
-  opacity: 0.4;
-  user-select: none;
-  cursor: not-allowed;
-  transition: opacity 0.3s ease;
-}
-
-.fade-in-background {
-  opacity: 1;
-  top: 0;
-}
-
-.fade-in-content {
-  opacity: 1;
-  animation: fadeInContent 0.3s ease;
-}
-
-@keyframes fadeInContent {
-  from {
-    opacity: 0;
+  body {
+    font-family: sans-serif;
   }
 
-  to {
+  .fc-scrollgrid {
+    border: none !important;
+  }
+
+  .main-container,
+  .resource-container {
+    position: relative;
+  }
+
+  .main-container {
+    display: block;
+    background: #fff;
+    border-radius: 5px;
+  }
+
+  .fade-in-background {
     opacity: 1;
+    top: 0;
   }
-}
-.Toastify__toast-body > div:last-child {
-  white-space: pre-line;
+
+  .fade-in-content {
+    opacity: 1;
+    animation: fadeInContent 0.3s ease;
+  }
+
+  @keyframes fadeInContent {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
 }
