@@ -20,7 +20,6 @@ import {
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { removeEmptyAriaLabelled, tabindexCalendar } from "../util/dom-manipulation-utils";
-import { ReactComponent as IconChair } from "../assets/chair.svg";
 import NoResultOverlay from "./no-result-overlay";
 import "./calendar.scss";
 
@@ -207,7 +206,7 @@ function Calendar({
   };
 
   return (
-      <div className="Calendar no-gutter col" role="application">
+    <div className="Calendar no-gutter col" role="application">
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
         <NoResultOverlay state="initial" />
       )}
