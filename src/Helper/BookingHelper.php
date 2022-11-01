@@ -108,6 +108,45 @@ class BookingHelper {
   }
 
   /**
+   * Get all resources.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return array
+   * @throws \JsonException
+   */
+  public function getAllResources(Request $request): array {
+    $endpoint = $this->bookingApiEndpoint;
+    $client = new Client();
+
+    $query = [];
+
+    // Attach permission query parameters if user is logged in.
+    $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
+
+    $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+    $response = $client->get("{$endpoint}v1/resources-all", [
+      'query' => $query,
+      'headers' => $headers,
+    ]);
+
+    $statusCode = $response->getStatusCode();
+    $content = $response->getBody()->getContents();
+
+    try {
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+    } catch (\JsonException $e) {
+      $data = [];
+    }
+
+    return [
+      'statusCode' => $statusCode,
+      'data' => $data,
+    ];
+  }
+
+  /**
    * Get resource by id.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request

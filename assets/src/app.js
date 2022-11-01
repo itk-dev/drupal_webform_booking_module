@@ -73,6 +73,14 @@ function App() {
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
+      Api.fetchAllResources(config.api_endpoint)
+        .then((allResources) => {
+          console.log(allResources);
+        })
+        .catch((fetchAllResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+        });
+
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocations(loadedLocations);

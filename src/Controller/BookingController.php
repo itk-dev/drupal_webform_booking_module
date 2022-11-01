@@ -77,6 +77,26 @@ class BookingController extends ControllerBase {
   }
 
   /**
+   * Get all resources.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *
+   * @throws \JsonException
+   */
+  public function getAllResources(Request $request): JsonResponse {
+    if ($this->bookingApiSampleData) {
+      $data = SampleDataHelper::getSampleData("resources");
+      return new JsonResponse($data, 200);
+    }
+
+    $response = $this->bookingHelper->getAllResources($request);
+
+    return new JsonResponse($response['data'], $response['statusCode']);
+  }
+
+  /**
    * Get resource by id.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request

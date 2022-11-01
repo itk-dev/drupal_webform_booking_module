@@ -6,6 +6,14 @@ itkdev_booking.resources:
   requirements:
     _access: 'TRUE'
 
+itkdev_booking.resources_all:
+  path: '/itkdev_booking/resources-all'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\BookingController::getAllResources'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
 itkdev_booking.resources_by_id:
   path: '/itkdev_booking/resources/{resourceId}'
   defaults:
