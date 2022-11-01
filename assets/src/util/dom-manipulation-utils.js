@@ -15,10 +15,12 @@ export function removeEmptyAriaLabelled() {
  * Mark tables in fullcalendar as presentation for accessibility tools to ignore it.
  */
 export function presentationTables() {
-    // Set all tables to be presented in tables.
+    // Set all tables in fullcalendar to be presentation tables.
     const selections = document.querySelectorAll('.fc table');
     selections.forEach((selection) => {
-        selection.setAttribute('role','presentation')
+        //selection.setAttribute('role','presentation')
+        selection.setAttribute('summary','layout table')
+        selection.setAttribute('aria-describedby','calendar-caption')
     });
     // Set table scroller to not be tab indexed.
     const scrollers = document.querySelectorAll('.fc-scroller');
@@ -34,6 +36,7 @@ export function setAriaLabelFilters() {
         const inputs = document.querySelectorAll('#'  + id + ' input');
         inputs.forEach((input) => {
             input.setAttribute('aria-label',id)
+            input.setAttribute('aria-controls',id)
         });
     });
 }

@@ -403,6 +403,7 @@ function Calendar({
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
         <div className="col small-padding">
+          <div hidden={true} id="calendar-caption">Kalender booking element</div>
           <FullCalendar
             ref={calendarRef}
             plugins={[
