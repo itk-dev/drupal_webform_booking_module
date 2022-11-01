@@ -1,5 +1,5 @@
 export const capacityOptions = [
-  { value: "0", label: "Alle", type: "gt" },
+  { label: "Alle" },
   { value: "0..10", label: "0 - 10", type: "between" },
   { value: "11..20", label: "11 - 20", type: "between" },
   { value: "21..30", label: "21 - 30", type: "between" },
