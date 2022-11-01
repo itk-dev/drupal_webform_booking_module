@@ -20,7 +20,7 @@ export function presentationTables() {
     selections.forEach((selection) => {
         //selection.setAttribute('role','presentation')
         selection.setAttribute('summary','layout table')
-        selection.setAttribute('aria-describedby','calendar-caption')
+        selection.setAttribute('aria-description','calendar-caption')
     });
     // Set table scroller to not be tab indexed.
     const scrollers = document.querySelectorAll('.fc-scroller');
