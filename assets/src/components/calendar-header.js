@@ -48,7 +48,7 @@ function CalendarHeader({ date, setDate }) {
           <div className="col-sm-4 small-padding datepicker-container">
             <div className="datepicker">
               <label htmlFor="calendar-datepicker" className="datepicker-label">
-                <span hidden={true}>Dato</span>
+                <span hidden>Dato</span>
                 <input
                   type="date"
                   id="calendar-datepicker"

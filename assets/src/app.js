@@ -20,7 +20,7 @@ import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
-import {setAriaLabelFilters} from "./util/dom-manipulation-utils";
+import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
 
 dayjs.locale("da");
 
@@ -314,7 +314,7 @@ function App() {
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <label>
+                        <label htmlFor="location-filter">
                           Filtrér på lokationer
                           {/* Dropdown with locations */}
                           <Select
@@ -334,7 +334,7 @@ function App() {
                         </label>
                       </div>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <label>
+                        <label htmlFor="resource-filter">
                           Filtrér på lokaler/resource
                           {/* Dropdown with resources */}
                           <Select
@@ -354,7 +354,7 @@ function App() {
                         </label>
                       </div>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <label>
+                        <label htmlFor="facility-filter">
                           Filtrér på faciliteter
                           {/* Dropdown with facilities */}
                           <Select
@@ -374,7 +374,7 @@ function App() {
                         </label>
                       </div>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <label>
+                        <label htmlFor="capacity-filter">
                           Filtrér på kapacitet
                           {/* Dropdown with capacity */}
                           <Select

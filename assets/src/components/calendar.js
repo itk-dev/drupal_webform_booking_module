@@ -22,7 +22,7 @@ import {
 } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import {presentationTables, removeEmptyAriaLabelled, setAriaLabelFilters} from "../util/dom-manipulation-utils";
+import { removeEmptyAriaLabelled, tabindexCalendar } from "../util/dom-manipulation-utils";
 import Api from "../util/api";
 import { displayError } from "../util/display-toast";
 import "./calendar.scss";
@@ -75,7 +75,8 @@ function Calendar({
   const alreadyHandledResourceIds = [];
 
   removeEmptyAriaLabelled();
-  presentationTables();
+
+  tabindexCalendar();
 
   /**
    * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
@@ -403,7 +404,9 @@ function Calendar({
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row" aria-hidden="true">
         <div className="col small-padding">
-          <div hidden={true} id="calendar-caption">Kalender booking element</div>
+          <div hidden id="calendar-caption">
+            Kalender booking element
+          </div>
           <FullCalendar
             ref={calendarRef}
             plugins={[
@@ -467,7 +470,7 @@ function Calendar({
                 },
               },
               {
-                headerContent: ['Kapacitet'],
+                headerContent: ["Kapacitet"],
                 headerClassNames: "resource-calendar-capacity-header",
                 width: "85px",
                 cellClassNames: "resource-calendar-capacity-value",
