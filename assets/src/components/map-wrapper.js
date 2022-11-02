@@ -25,6 +25,8 @@ import "./map-wrapper.scss";
  * @param {object} props Props.
  * @param {object} props.resources Resources array
  * @param {object} props.config Config
+ * @param {object} props.setLocationFilter Setter for location filter
+ * @param {string} props.setBookingView Setter for booking view
  * @returns {JSX.Element} MapWrapper component
  */
 function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
@@ -33,18 +35,17 @@ function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
   const [mapData, setMapData] = useState(null);
   const mapElement = useRef();
 
-
   useEffect(() => {
     setMapData(getFeatures(testData));
-  }, [resources])
+  }, [resources]);
 
   useEffect(() => {
     if (!mapData) {
       return;
     }
 
-    //TODO: prevent map from loading new vectorlayer with same results
-    
+    // TODO: prevent map from loading new vectorlayer with same results
+
     // Styling of the map marker
     const iconStyle = new Style({
       image: new Icon({
@@ -59,11 +60,10 @@ function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
     const features = [];
 
     Object.values(mapData).forEach((value) => {
-      console.log(value);
       const feature = new Feature({
         geometry: new Point([value.northing, value.easting]),
         name: value.location,
-        children: value.resource_count
+        children: value.resource_count,
       });
 
       feature.setStyle(iconStyle);
@@ -96,11 +96,10 @@ function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
             map.removeLayer(value);
           }
         });
+
       map.addLayer(vectorLayer); // Add newly defined vectorLayer
     }
   }, [vectorLayer, map]);
-
-
 
   useEffect(() => {
     if (!config || config.df_map_username === "" || config.df_map_password === "") {
@@ -215,12 +214,14 @@ function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
         tooltip.innerHTML = "";
       }
       if (target === "tooltip-btn") {
-        
-        setLocationFilter([{
-          value: event.target.getAttribute('data-location'),
-          label: event.target.getAttribute('data-location')
-        }]);
-        setBookingView('calendar');
+        setLocationFilter([
+          {
+            value: event.target.getAttribute("data-location"),
+            label: event.target.getAttribute("data-location"),
+          },
+        ]);
+
+        setBookingView("calendar");
       }
     });
 
@@ -243,6 +244,8 @@ MapWrapper.propTypes = {
     df_map_username: PropTypes.string.isRequired,
     df_map_password: PropTypes.string.isRequired,
   }).isRequired,
+  setLocationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setBookingView: PropTypes.string.isRequired,
 };
 
 MapWrapper.defaultProps = {
