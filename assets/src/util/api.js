@@ -1,6 +1,16 @@
 import dayjs from "dayjs";
 
 export default class Api {
+  static async fetchAllResources(apiEndpoint) {
+    return fetch(`${apiEndpoint}itkdev_booking/resources-all`).then((response) => {
+      if (!response.ok) {
+        throw new Error(`This is an HTTP error: The status is ${response.status}`);
+      }
+
+      return response.json();
+    });
+  }
+
   static async fetchLocations(apiEndpoint) {
     return fetch(`${apiEndpoint}itkdev_booking/locations`)
       .then((response) => {

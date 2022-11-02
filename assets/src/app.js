@@ -53,6 +53,8 @@ function App() {
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
+  // eslint-disable-next-line no-unused-vars
+  const [allResources, setAllResources] = useState([]);
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -74,6 +76,14 @@ function App() {
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
+      Api.fetchAllResources(config.api_endpoint)
+        .then((loadedResources) => {
+          setAllResources(loadedResources);
+        })
+        .catch((fetchAllResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+        });
+
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocationOptions(
