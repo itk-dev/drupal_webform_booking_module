@@ -27,7 +27,8 @@ export function getFeatures(resources) {
       if (value.location === "" || value.geoCoordinates === null) {
         return;
       }
-      const utmCoordinates = latlngToUTM(value.geoCoordinates[0], value.geoCoordinates[1]);
+      const geoCoordinates = value.geoCoordinates.split(",");
+      const utmCoordinates = latlngToUTM(geoCoordinates[0], geoCoordinates[1]);
 
       locations[value.location] = {
         location: value.location,
