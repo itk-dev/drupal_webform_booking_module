@@ -24,6 +24,9 @@ export default class ConfigLoader {
           info_box_content: "Til godkendelse og nøgleudlevering. Det vil fremgå af lokalets information.",
           step_one: false,
           redirect_url: "http://google.com/",
+          create_booking_mode: true,
+          create_booking_url: "http://bookingapp.local.itkdev.dk/createbookingurl",
+          change_booking_url: "http://bookingapp.local.itkdev.dk/changebookingurl",
         };
       });
   }

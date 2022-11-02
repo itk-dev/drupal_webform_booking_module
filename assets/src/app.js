@@ -4,6 +4,7 @@ import Select from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
@@ -11,12 +12,15 @@ import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
+import MapWrapper from "./components/map-wrapper";
+import MainNavigation from "./components/main-navigation";
+import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
-import UserPanel from "./components/user-panel";
+import { displayError } from "./util/display-toast";
 
 dayjs.locale("da");
 
@@ -48,11 +52,13 @@ function App() {
   // Resources need to be false until we set it the first time, because [] equals no results and false triggers placeholder resources.
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
-  const [locations, setLocations] = useState(null);
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
+  // eslint-disable-next-line no-unused-vars
+  const [allResources, setAllResources] = useState([]);
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
 
   // Get configuration.
   useEffect(() => {
@@ -70,10 +76,16 @@ function App() {
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
+      Api.fetchAllResources(config.api_endpoint)
+        .then((loadedResources) => {
+          setAllResources(loadedResources);
+        })
+        .catch((fetchAllResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+        });
+
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
-          setLocations(loadedLocations);
-
           setLocationOptions(
             loadedLocations
               .map((value) => {
@@ -87,8 +99,8 @@ function App() {
 
           setResourceFilter([]);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchLocationsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchLocationsError);
         });
     }
 
@@ -97,8 +109,8 @@ function App() {
         .then((loadedResource) => {
           setUrlResource(loadedResource);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
+        .catch((fetchResourceError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
         });
     }
   }, [config]);
@@ -151,18 +163,20 @@ function App() {
         }
       });
 
-      if (Object.values(filterParams).length > 0) {
+      if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
         Api.fetchResources(config.api_endpoint, urlSearchParams)
           .then((loadedResources) => {
-            setResources([]);
-
             setTimeout(() => {
               setResources(loadedResources);
+
+              setUserHasInteracted(true);
             }, 1);
           })
-          .catch(() => {
-            // TODO: Display error and retry option for user. (v0.1)
+          .catch((fetchResourcesError) => {
+            displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
           });
+      } else {
+        setResources([]);
       }
     }
   }, [filterParams]);
@@ -189,8 +203,8 @@ function App() {
             })
           );
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
         });
     }
   }, [locationFilter]);
@@ -201,7 +215,7 @@ function App() {
 
     setFilterParams({
       ...filterParams,
-      ...(resourceValues.length ? { "resourceMail[]": resourceValues } : ""),
+      ...{ "resourceMail[]": resourceValues },
     });
   }, [resourceFilter]);
 
@@ -225,9 +239,10 @@ function App() {
 
         break;
       case "gt":
-      default:
         capacity = { "capacity[gt]": capacityValue };
 
+        break;
+      default:
         break;
     }
 
@@ -262,8 +277,8 @@ function App() {
         .then((loadedEvents) => {
           setEvents(loadedEvents);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user. (v0.1)
+        .catch((fetchEventsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
   }, [resources, date]);
@@ -287,191 +302,191 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <div className="container-fluid">
-        {!config && <LoadingSpinner />}
-        {config && displayState === "maximized" && (
-          <div className="app-content">
-            <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
-              <div className="col-md-3">
-                {/* Dropdown with locations */}
-                <Select
-                  styles={{}}
-                  defaultValue={locationFilter}
-                  placeholder="lokationer..."
-                  closeMenuOnSelect={false}
-                  options={locationOptions}
-                  onChange={(selectedLocations) => {
-                    setLocationFilter(selectedLocations);
-                  }}
-                  isMulti
-                />
-              </div>
-              <div className="col-md-3">
-                {/* Dropdown with resources */}
-                <Select
-                  styles={{}}
-                  defaultValue={resourceFilter}
-                  placeholder="ressourcer..."
-                  closeMenuOnSelect={false}
-                  options={resourcesOptions}
-                  onChange={(selectedResources) => {
-                    setResourceFilter(selectedResources);
-                  }}
-                  isMulti
-                />
-              </div>
-              {/* Dropdown with facilities */}
-              <div className="col-md-3">
-                <Select
-                  styles={{}}
-                  defaultValue={facilityFilter}
-                  placeholder="Facilitieter..."
-                  closeMenuOnSelect={false}
-                  options={facilityOptions}
-                  onChange={(selectedFacilities) => {
-                    setFacilityFilter(selectedFacilities);
-                  }}
-                  isMulti
-                />
-              </div>
-              {/* Dropdown with capacity */}
-              <div className="col-md-3">
-                <Select
-                  styles={{}}
-                  defaultValue={{ value: "0", label: "Alle", type: "gt" }}
-                  placeholder="Siddepladser..."
-                  closeMenuOnSelect
-                  options={capacityOptions}
-                  onChange={(selectedCapacity) => {
-                    setCapacityFilter(selectedCapacity);
-                  }}
-                />
-              </div>
-            </div>
+    <div>
+      <div className="App">
+        <ToastContainer
+          autoClose="10000"
+          position="bottom-right"
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          progress={undefined}
+        />
+        <div className="container-fluid">
+          {config && <MainNavigation config={config} />}
+          <div className="app-wrapper">
+            {config && config.create_booking_mode && (
+              <div>
+                {!config && <LoadingSpinner />}
+                {config && config && displayState === "maximized" && (
+                  <div className="app-content">
+                    <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
+                      <div className="col-md-3 col-xs-12 small-padding">
+                        {/* Dropdown with locations */}
+                        <Select
+                          styles={{}}
+                          defaultValue={locationFilter}
+                          placeholder="lokationer..."
+                          closeMenuOnSelect={false}
+                          options={locationOptions}
+                          onChange={(selectedLocations) => {
+                            setLocationFilter(selectedLocations);
+                          }}
+                          isMulti
+                        />
+                      </div>
+                      <div className="col-md-3 col-xs-12 small-padding">
+                        {/* Dropdown with resources */}
+                        <Select
+                          styles={{}}
+                          defaultValue={resourceFilter}
+                          placeholder="ressourcer..."
+                          closeMenuOnSelect={false}
+                          options={resourcesOptions}
+                          onChange={(selectedResources) => {
+                            setResourceFilter(selectedResources);
+                          }}
+                          isMulti
+                        />
+                      </div>
+                      {/* Dropdown with facilities */}
+                      <div className="col-md-3 col-xs-12 small-padding">
+                        <Select
+                          styles={{}}
+                          defaultValue={facilityFilter}
+                          placeholder="Facilitieter..."
+                          closeMenuOnSelect={false}
+                          options={facilityOptions}
+                          onChange={(selectedFacilities) => {
+                            setFacilityFilter(selectedFacilities);
+                          }}
+                          isMulti
+                        />
+                      </div>
+                      {/* Dropdown with capacity */}
+                      <div className="col-md-3 col-xs-12 small-padding">
+                        <Select
+                          styles={{}}
+                          defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                          placeholder="Siddepladser..."
+                          closeMenuOnSelect
+                          options={capacityOptions}
+                          onChange={(selectedCapacity) => {
+                            setCapacityFilter(selectedCapacity);
+                          }}
+                        />
+                      </div>
+                    </div>
 
-            {/* Add info box */}
-            <div className="row info-box-wrapper">
-              {config.info_box_color && config.info_box_header && config.info_box_content && (
-                <InfoBox config={config} />
-              )}
-            </div>
+                    {/* Add info box */}
+                    <div className="row info-box-wrapper">
+                      {config.info_box_color && config.info_box_header && config.info_box_content && (
+                        <InfoBox config={config} />
+                      )}
+                    </div>
 
-            {/* Add viewswapper */}
-            <div className="row viewswapper-wrapper">
-              <div className="viewswapper-container">
-                <button
-                  type="button"
-                  onClick={viewSwapHandler}
-                  data-view="map"
-                  className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
-                >
-                  Kort
-                </button>
-                <button
-                  type="button"
-                  onClick={viewSwapHandler}
-                  data-view="calendar"
-                  className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
-                >
-                  Kalender
-                </button>
-                <button
-                  type="button"
-                  onClick={viewSwapHandler}
-                  data-view="list"
-                  className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
-                >
-                  Liste
-                </button>
-              </div>
-            </div>
+                    {/* Add viewswapper */}
+                    <div className="row viewswapper-wrapper">
+                      <div className="viewswapper-container">
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="map"
+                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kort
+                        </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="calendar"
+                          className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kalender
+                        </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="list"
+                          className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Liste
+                        </button>
+                      </div>
+                    </div>
 
-            {bookingView === "map" && (
-              <div className="row no-gutter main-container map">
-                <h2>Map view!</h2>
+                    {bookingView === "map" && (
+                      <div className="row no-gutter main-container map">
+                        <MapWrapper resources={resources} config={config} />
+                      </div>
+                    )}
+                    {bookingView === "list" && (
+                      <div
+                        className={`row no-gutter main-container list ${
+                          showResourceDetails !== null ? "resourceview-visible" : ""
+                        }`}
+                      >
+                        <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
+                        <ResourceView
+                          showResourceDetails={showResourceDetails}
+                          setShowResourceDetails={setShowResourceDetails}
+                        />
+                      </div>
+                    )}
+                    {bookingView === "calendar" && (
+                      // {/* Display calendar for selections */}
+                      <div
+                        className={`row no-gutter main-container calendar ${
+                          showResourceDetails !== null ? "resourceview-visible" : ""
+                        }`}
+                      >
+                        <Calendar
+                          resources={resources}
+                          events={events}
+                          date={date}
+                          setDate={setDate}
+                          calendarSelection={calendarSelection}
+                          setCalendarSelection={setCalendarSelection}
+                          config={config}
+                          setShowResourceDetails={setShowResourceDetails}
+                          urlResource={urlResource}
+                          setDisplayState={setDisplayState}
+                          showResourceDetails={showResourceDetails}
+                          userHasInteracted={userHasInteracted}
+                        />
+                        {/* TODO: Only show if resource view is requested */}
+                        <ResourceView
+                          showResourceDetails={showResourceDetails}
+                          setShowResourceDetails={setShowResourceDetails}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {config && validUrlParams && urlResource && displayState === "minimized" && (
+                  <div className="row">
+                    <MinimizedDisplay
+                      validUrlParams={validUrlParams}
+                      setDisplayState={setDisplayState}
+                      urlResource={urlResource}
+                    />
+                  </div>
+                )}
               </div>
             )}
-            {bookingView === "list" && (
-              <div
-                className={`row no-gutter main-container list ${
-                  showResourceDetails !== null ? "resourceview-visible" : ""
-                }`}
-              >
-                <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
-                <ResourceView
-                  showResourceDetails={showResourceDetails}
-                  setShowResourceDetails={setShowResourceDetails}
-                />
-              </div>
-            )}
-            {bookingView === "calendar" && (
-              // {/* Display calendar for selections */}
-              <div
-                className={`row no-gutter main-container calendar ${
-                  showResourceDetails !== null ? "resourceview-visible" : ""
-                }`}
-              >
-                <Calendar
-                  resources={resources}
-                  events={events}
-                  date={date}
-                  setDate={setDate}
-                  calendarSelection={calendarSelection}
-                  setCalendarSelection={setCalendarSelection}
-                  config={config}
-                  setShowResourceDetails={setShowResourceDetails}
-                  urlResource={urlResource}
-                  setDisplayState={setDisplayState}
-                  locations={locations}
-                  setEvents={setEvents}
-                  validUrlParams={validUrlParams}
-                  locationFilter={locationFilter}
-                  showResourceDetails={showResourceDetails}
-                />
-                {/* TODO: Only show if resource view is requested */}
-                <ResourceView
-                  showResourceDetails={showResourceDetails}
-                  setShowResourceDetails={setShowResourceDetails}
-                />
-              </div>
-            )}
-          </div>
-        )}
 
-        {config && validUrlParams && urlResource && displayState === "minimized" && (
-          <div className="row">
-            <MinimizedDisplay
-              validUrlParams={validUrlParams}
-              setDisplayState={setDisplayState}
-              urlResource={urlResource}
-            />
+            {config && !config.create_booking_mode && <UserPanel config={config} />}
           </div>
-        )}
-
-        {/* TODO: Only show if user menu is requested */}
-        <br />
-        <hr />
-        <br />
-        <UserPanel config={config} />
-
-        {/* Display author fields */}
-        {config && !config.step_one && (
-          <div className="row no-gutter">
-            {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
-          </div>
-        )}
-
-        {/* Display redirect button */}
-        {/* {config && config.step_one && calendarSelection && (
-          <div className="row">
-            <RedirectButton
-              calendarSelection={calendarSelection}
-              config={config}
-            />
-          </div>
-        )} */}
+        </div>
       </div>
+      {/* Display author fields */}
+      {config && config.create_booking_mode && !config.step_one && (
+        <div className="row no-gutter">
+          {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+        </div>
+      )}
     </div>
   );
 }

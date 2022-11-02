@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
+import {displayError} from "../util/display-toast";
 import "./user-panel.scss";
 
 /**
@@ -10,7 +11,7 @@ import "./user-panel.scss";
  * @param {object} props.config App config.
  * @returns {JSX.Element} Component.
  */
-function UserPanel({ config }) {
+function UserPanel({config}) {
   const [loading, setLoading] = useState(true);
   const [userBookings, setUserBookings] = useState();
 
@@ -38,11 +39,11 @@ function UserPanel({ config }) {
     console.log(booking);
 
     const newData = {
-/*
-      "@context": booking["@context"],
-      "@id": booking["@id"],
-      "@type": booking["@type"],
-*/
+      /*
+            "@context": booking["@context"],
+            "@id": booking["@id"],
+            "@type": booking["@type"],
+      */
       id: booking.id,
       start: "2022-10-25T08:00:00.000Z",
       end: "2022-10-25T08:30:00.000Z",
@@ -77,8 +78,8 @@ function UserPanel({ config }) {
         .then((loadedUserBookings) => {
           setUserBookings(loadedUserBookings);
         })
-        .catch(() => {
-          // TODO: Display error and retry option for user.
+        .catch((fetchUserBookingsError) => {
+          displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
         })
         .finally(() => {
           setLoading(false);
@@ -87,33 +88,35 @@ function UserPanel({ config }) {
   }, [config]);
 
   return (
-    <div className="userpanel">
-      <h1>User Panel:</h1>
-      <div className="userbookings-container">
-        {loading && <LoadingSpinner />}
-        {!loading &&
-          userBookings &&
-          Object.values(userBookings).map((obj) => (
-            <div className="user-booking" key={obj.id}>
-              <div>
-                <span className="location">{obj.displayName}</span>
-                <span className="subject">{obj.subject}</span>
+    <div className="userpanel row">
+      <div className="col no-gutter">
+        <div className="userbookings-container">
+          {loading && <LoadingSpinner/>}
+          {!loading &&
+            userBookings &&
+            Object.values(userBookings).map((obj) => (
+              <div className="user-booking" key={obj.id}>
+                <div>
+                  <span className="location">{obj.displayName}</span>
+                  <span className="subject">{obj.subject}</span>
+                </div>
+                <div>
+                  <span>{getFormattedDateTime(obj.start)}</span>
+                  <span>→</span>
+                  <span>{getFormattedDateTime(obj.end)}</span>
+                </div>
+                <div>
+                  <button type="button"
+                          onClick={() => requestDeletion(obj.hitId)}>
+                    Anmod om sletning
+                  </button>
+                  <button type="button" onClick={() => requestDateChange(obj)}>
+                    Anmod om ændring af tidspunkt
+                  </button>
+                </div>
               </div>
-              <div>
-                <span>{getFormattedDateTime(obj.start)}</span>
-                <span>→</span>
-                <span>{getFormattedDateTime(obj.end)}</span>
-              </div>
-              <div>
-                <button type="button" onClick={() => requestDeletion(obj.id)}>
-                  Anmod om sletning
-                </button>
-                <button type="button" onClick={() => requestDateChange(obj)}>
-                  Anmod om ændring af tidspunkt
-                </button>
-              </div>
-            </div>
           ))}
+        </div>
       </div>
     </div>
   );

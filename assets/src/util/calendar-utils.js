@@ -133,28 +133,6 @@ export function handleResources(value, currentCalendarDate) {
 }
 
 /**
- * @param {object} locations Object of locations retrieved from the database
- * @returns {Array} Of placeholder resources based on locations
- */
-export function setPlaceholderResources(locations) {
-  const placeholderReources = [];
-
-  if (locations.length !== 0) {
-    locations.forEach((value, index) => {
-      placeholderReources.push({
-        id: index,
-        building: value.name,
-        title: "loading...",
-      });
-    });
-
-    return placeholderReources;
-  }
-
-  return false;
-}
-
-/**
  * Pads the given number, until the length is 2. ex. 8 becomes 08
  *
  * @param {number} number Number to pad
@@ -227,29 +205,6 @@ export function adjustAsyncResourcesBusinessHours(resources, calendarRef, date) 
   });
 
   return false;
-}
-
-/**
- * RemoveDuplicateEvents - Checks if any events stored in the internal storage of events loaded asynchronously are
- * dupliactes, and removes them.
- *
- * @param {object} internalAsyncEvents Object of all resource events gathered async
- * @returns {object} Object of all resource events gatered async, cleaned for duplicates
- */
-export function removeDuplicateEvents(internalAsyncEvents) {
-  internalAsyncEvents.forEach((event1, index1) => {
-    const eventLeft = event1.resource + event1.startTime + event1.endTime;
-
-    internalAsyncEvents.forEach((event2, index2) => {
-      const eventRight = event2.resource + event2.startTime + event2.endTime;
-
-      if (eventLeft === eventRight && index1 !== index2) {
-        internalAsyncEvents.splice(index2, 1);
-      }
-    });
-  });
-
-  return internalAsyncEvents;
 }
 
 /**
