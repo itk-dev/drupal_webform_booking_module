@@ -5,17 +5,18 @@ import * as PropTypes from "prop-types";
 import Map from "ol/Map";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
-// import VectorLayer from "ol/layer/Vector";
-// import Feature from "ol/Feature";
-// import Point from "ol/geom/Point";
-// import { Icon, Style } from "ol/style";
+import VectorLayer from "ol/layer/Vector";
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import { Icon, Style } from "ol/style";
 import Overlay from "ol/Overlay";
-// import VectorSource from "ol/source/Vector";
+import VectorSource from "ol/source/Vector";
 import TileWMS from "ol/source/TileWMS";
 import Projection from "ol/proj/Projection";
 import Proj4 from "proj4";
 import { register } from "ol/proj/proj4";
-// import { getFeatures } from "../util/map-utils";
+import { getFeatures } from "../util/map-utils";
+import testData from "../util/testData.json";
 import "./map-wrapper.scss";
 
 /**
@@ -26,38 +27,24 @@ import "./map-wrapper.scss";
  * @param {object} props.config Config
  * @returns {JSX.Element} MapWrapper component
  */
-function MapWrapper({ resources, config }) {
+function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
   const [map, setMap] = useState();
-  // const vectorLayer = useState(null);
-  // const [vectorLayer, setVectorLayer] = useState(null);
-  // const [currentFeatures, setCurrentFeatures] = useState(null);
+  const [vectorLayer, setVectorLayer] = useState(null);
+  const [mapData, setMapData] = useState(null);
   const mapElement = useRef();
-  // const resourceData = getFeatures(resources);
+
 
   useEffect(() => {
-    // TODO: Gather and loop locations
-    // Until then:
-    /*
-    // Get resource location objects
-    const newFeatures = [];
+    setMapData(getFeatures(testData));
+  }, [resources])
 
-    if (resources) {
-      resources.forEach((value) => {
-        newFeatures.push(value.id);
-      });
-    }
-
-    if (
-      resources && // Resources are set
-      (resources.length === 0 || // Number of resources are 0
-        (currentFeatures && // Or currentFeatures exists
-          currentFeatures.length === resources.length && // And the length of currentFeatures and newFeatures are the same
-          newFeatures === currentFeatures)) // And currentFeatures and newFeatures are not equal
-    ) {
-      // New features matches current features. Don't update.
+  useEffect(() => {
+    if (!mapData) {
       return;
     }
 
+    //TODO: prevent map from loading new vectorlayer with same results
+    
     // Styling of the map marker
     const iconStyle = new Style({
       image: new Icon({
@@ -70,17 +57,14 @@ function MapWrapper({ resources, config }) {
 
     // Define feature array and apply styling
     const features = [];
-    const featureIds = [];
 
-    resourceData.forEach((value) => {
+    Object.values(mapData).forEach((value) => {
+      console.log(value);
       const feature = new Feature({
-        geometry: new Point([value.coordinates.easting, value.coordinates.northing]),
-        name: value.name,
-        address: value.address,
-        city: value.city,
+        geometry: new Point([value.northing, value.easting]),
+        name: value.location,
+        children: value.resource_count
       });
-
-      featureIds.push(value.id);
 
       feature.setStyle(iconStyle);
 
@@ -96,28 +80,27 @@ function MapWrapper({ resources, config }) {
     });
 
     if (map) {
-      setCurrentFeatures(featureIds);
-
       setVectorLayer(vLayer);
     }
-    */
-  }, [resources, map]);
+  }, [mapData, map]);
 
-  // useEffect(() => {
-  // Handles removing old layers and adding new ones
-  // if (map && vectorLayer) {
-  //   map
-  //     .getLayers()
-  //     .getArray()
-  //     .forEach((value) => {
-  //       // Loop vectorLayers and remove old
-  //       if (value.get("name") === "Vector") {
-  //         map.removeLayer(value);
-  //       }
-  //     });
-  //   map.addLayer(vectorLayer); // Add newly defined vectorLayer
-  // }
-  // }, [vectorLayer, map]);
+  useEffect(() => {
+    // Handles removing old layers and adding new ones
+    if (map && vectorLayer) {
+      map
+        .getLayers()
+        .getArray()
+        .forEach((value) => {
+          // Loop vectorLayers and remove old
+          if (value.get("name") === "Vector") {
+            map.removeLayer(value);
+          }
+        });
+      map.addLayer(vectorLayer); // Add newly defined vectorLayer
+    }
+  }, [vectorLayer, map]);
+
+
 
   useEffect(() => {
     if (!config || config.df_map_username === "" || config.df_map_password === "") {
@@ -212,7 +195,7 @@ function MapWrapper({ resources, config }) {
         overlay.setPosition(targetFeature.values_.geometry.flatCoordinates);
 
         // eslint-disable-next-line no-underscore-dangle
-        tooltip.innerHTML = `<div class='tooltip-closer'>✖️</div><div class='tooltip-text'><span><b>${targetFeature.values_.name}</b></span><br><a class='tooltip-btn'>Vis i kalender</a></div>`;
+        tooltip.innerHTML = `<div class='tooltip-closer'>✖️</div><div class='tooltip-text'><span><b>${targetFeature.values_.name}</b></span><span>${targetFeature.values_.children} ressourcer</span><a data-location="${targetFeature.values_.name}" class='tooltip-btn'">Vis i kalender</a></div>`;
       }
     });
 
@@ -230,6 +213,14 @@ function MapWrapper({ resources, config }) {
 
       if (target === "tooltip-closer") {
         tooltip.innerHTML = "";
+      }
+      if (target === "tooltip-btn") {
+        
+        setLocationFilter([{
+          value: event.target.getAttribute('data-location'),
+          label: event.target.getAttribute('data-location')
+        }]);
+        setBookingView('calendar');
       }
     });
 

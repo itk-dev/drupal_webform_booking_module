@@ -18,23 +18,24 @@ export function latlngToUTM(lat, long) {
  */
 export function getFeatures(resources) {
   // Loop resources and build coordinates and tooltip content
-  // TODO: Add actual coordinates from API
-  const featureObj = [];
+  let locations = [];
+  
+  Object.values(resources).forEach((value) => {
+    if (value.location in locations) {
+      locations[value.location].resource_count++;
+    } else {
+      if (value.location === "") {
+        return;
+      }
+      const utmCoordinates = latlngToUTM(value.geoCoordinates[0], value.geoCoordinates[1]);
+      locations[value.location] = {
+        'location': value.location,
+        'northing': utmCoordinates[0],
+        'easting': utmCoordinates[1],
+        'resource_count': 1
+      }
+    }
+  })
 
-  if (resources) {
-    Object.values(resources).forEach((resource) => {
-      const utmCoordinates = latlngToUTM(56.153574168437295, 10.214342775668902);
-
-      featureObj.push({
-        id: resource.id,
-        coordinates: {
-          easting: utmCoordinates[0],
-          northing: utmCoordinates[1],
-        },
-        name: resource.resourceName,
-      });
-    });
-  }
-
-  return featureObj;
+  return locations
 }

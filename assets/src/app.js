@@ -19,7 +19,7 @@ import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
-import hasOwnProperty from "./util/helpers";
+import { hasOwnProperty } from "./util/helpers";
 import { displayError } from "./util/display-toast";
 
 dayjs.locale("da");
@@ -142,6 +142,7 @@ function App() {
 
   // Set resources from filterParams.
   useEffect(() => {
+    console.log(filterParams);
     if (config) {
       const urlSearchParams = new URLSearchParams();
 
@@ -408,7 +409,7 @@ function App() {
 
                     {bookingView === "map" && (
                       <div className="row no-gutter main-container map">
-                        <MapWrapper resources={resources} config={config} />
+                        <MapWrapper resources={resources} config={config} setLocationFilter={setLocationFilter} setBookingView={setBookingView} />
                       </div>
                     )}
                     {bookingView === "list" && (
