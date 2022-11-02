@@ -16,28 +16,27 @@ import Projection from "ol/proj/Projection";
 import Proj4 from "proj4";
 import { register } from "ol/proj/proj4";
 import { getFeatures } from "../util/map-utils";
-import testData from "../util/testData.json";
 import "./map-wrapper.scss";
 
 /**
  * MapWrapper component
  *
  * @param {object} props Props.
- * @param {object} props.resources Resources array
+ * @param {object} props.allResources All resources array
  * @param {object} props.config Config
  * @param {object} props.setLocationFilter Setter for location filter
  * @param {string} props.setBookingView Setter for booking view
  * @returns {JSX.Element} MapWrapper component
  */
-function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
+function MapWrapper({ allResources, config, setLocationFilter, setBookingView }) {
   const [map, setMap] = useState();
   const [vectorLayer, setVectorLayer] = useState(null);
   const [mapData, setMapData] = useState(null);
   const mapElement = useRef();
 
   useEffect(() => {
-    setMapData(getFeatures(testData));
-  }, [resources]);
+    setMapData(getFeatures(allResources));
+  }, [allResources]);
 
   useEffect(() => {
     if (!mapData) {
@@ -239,17 +238,17 @@ function MapWrapper({ resources, config, setLocationFilter, setBookingView }) {
 }
 
 MapWrapper.propTypes = {
-  resources: PropTypes.arrayOf(PropTypes.shape({})),
+  allResources: PropTypes.arrayOf(PropTypes.shape({})),
   config: PropTypes.shape({
     df_map_username: PropTypes.string.isRequired,
     df_map_password: PropTypes.string.isRequired,
   }).isRequired,
-  setLocationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  setBookingView: PropTypes.string.isRequired,
+  setLocationFilter: PropTypes.func.isRequired,
+  setBookingView: PropTypes.func.isRequired,
 };
 
 MapWrapper.defaultProps = {
-  resources: {},
+  allResources: {},
 };
 
 export default MapWrapper;

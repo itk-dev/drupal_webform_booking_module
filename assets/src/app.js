@@ -419,7 +419,7 @@ function App() {
                     {bookingView === "map" && (
                       <div className="row no-gutter main-container map">
                         <MapWrapper
-                          resources={resources}
+                          allResources={allResources}
                           config={config}
                           setLocationFilter={setLocationFilter}
                           setBookingView={setBookingView}
