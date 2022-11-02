@@ -18,7 +18,7 @@ function CalendarHeader({ date, setDate }) {
         setDate(new Date());
 
         break;
-      case "calendar-back":
+      case "calendar-back": 
         if (new Date() < date) {
           setDate(new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD")));
         }
