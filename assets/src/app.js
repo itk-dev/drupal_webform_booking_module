@@ -12,6 +12,7 @@ import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
+import MapWrapper from "./components/map-wrapper";
 import MainNavigation from "./components/main-navigation";
 import UserPanel from "./components/user-panel";
 import Api from "./util/api";
@@ -407,7 +408,7 @@ function App() {
 
                     {bookingView === "map" && (
                       <div className="row no-gutter main-container map">
-                        <h2>Map view!</h2>
+                        <MapWrapper resources={resources} config={config} />
                       </div>
                     )}
                     {bookingView === "list" && (
