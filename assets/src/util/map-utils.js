@@ -6,10 +6,12 @@ import Proj4 from "proj4";
  * @returns {object} Proj object containing converted coordinates
  */
 export function latlngToUTM(lat, long) {
+  const parsedLat = parseFloat(lat);
+  const parsedLong = parseFloat(long);
   const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
   const utm = "+proj=utm +zone=32";
 
-  return Proj4(wgs84, utm, [long, lat]);
+  return Proj4(wgs84, utm, [parsedLong, parsedLat]);
 }
 
 /**
