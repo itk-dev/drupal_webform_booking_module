@@ -24,7 +24,7 @@ export function getFeatures(resources) {
     if (value.location in locations) {
       locations[value.location].resource_count += 1;
     } else {
-      if (value.location === "") {
+      if (value.location === "" || value.geoCoordinates === null) {
         return;
       }
       const utmCoordinates = latlngToUTM(value.geoCoordinates[0], value.geoCoordinates[1]);
