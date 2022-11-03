@@ -145,7 +145,7 @@ function App() {
         start: new Date(validUrlParams.get("from")),
         end: new Date(validUrlParams.get("to")),
         allDay: false,
-        resource: validUrlParams.get("resource"),
+        resource: urlResource,
       });
     }
   }, [urlResource]);
@@ -289,7 +289,7 @@ function App() {
       document.getElementById(config.output_field_id).value = JSON.stringify({
         start: calendarSelection.start,
         end: calendarSelection.end,
-        resourceId: calendarSelection.resourceId,
+        resourceId: calendarSelection?.resource?.resourceMail ?? calendarSelection.resourceId,
         ...authorFields,
       });
     }
@@ -470,12 +470,12 @@ function App() {
                   </div>
                 )}
 
-                {config && validUrlParams && urlResource && displayState === "minimized" && (
+                {config && urlResource && displayState === "minimized" && calendarSelection && (
                   <div className="row">
                     <MinimizedDisplay
-                      validUrlParams={validUrlParams}
                       setDisplayState={setDisplayState}
                       urlResource={urlResource}
+                      calendarSelection={calendarSelection}
                     />
                   </div>
                 )}
