@@ -26,7 +26,7 @@ export function getFeatures(resources) {
     if (value.location in locations) {
       locations[value.location].resource_count += 1;
     } else {
-      if (value.location === "" || value.geoCoordinates === null) {
+      if (value.location === "" || value.geoCoordinates === "" || value.geoCoordinates === null) {
         return;
       }
       const geoCoordinates = value.geoCoordinates.split(",");
