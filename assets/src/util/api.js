@@ -87,6 +87,10 @@ export default class Api {
   static async patchBooking(apiEndpoint, bookingId, newData) {
     return fetch(`${apiEndpoint}itkdev_booking/user-booking/${bookingId}`, {
       method: "PATCH",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(newData),
     }).then((response) => {
       if (!response.ok) {

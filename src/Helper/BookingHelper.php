@@ -306,10 +306,10 @@ class BookingHelper {
 
     $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
 
-    $headers['content-type'] = "application/merge-patch+json";
+    $headers['content-type'] = 'application/merge-patch+json';
 
     $response = $client->patch("{$endpoint}v1/user-bookings/$bookingId", [
-      'json' => $request->getContent(),
+      'json' => json_decode($request->getContent()),
       'headers' => $headers,
     ]);
 

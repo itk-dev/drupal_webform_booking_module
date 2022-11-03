@@ -39,14 +39,9 @@ function UserPanel({config}) {
     console.log(booking);
 
     const newData = {
-      /*
-            "@context": booking["@context"],
-            "@id": booking["@id"],
-            "@type": booking["@type"],
-      */
       id: booking.id,
-      start: "2022-10-25T08:00:00.000Z",
-      end: "2022-10-25T08:30:00.000Z",
+      start: "2022-11-05T08:00:00.000Z",
+      end: "2022-11-05T08:30:00.000Z",
     };
 
     if (booking?.id) {
