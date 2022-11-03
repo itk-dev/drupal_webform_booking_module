@@ -11,12 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import {
-  adjustAsyncResourcesBusinessHours,
-  handleBusyIntervals,
-  handleResources,
-  getScrollTime,
-} from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
@@ -52,7 +47,6 @@ function Calendar({
   urlResource,
   setDisplayState,
   userHasInteracted,
-  allResources
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -196,7 +190,7 @@ function Calendar({
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
     return <CalendarCellInfoButton resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
-  
+
   return (
     <div className="Calendar no-gutter col-md-12">
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
@@ -236,7 +230,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
-            resourcesInitiallyExpanded={true}
+            resourcesInitiallyExpanded
             nowIndicator
             navLinks
             slotDuration="00:15:00"

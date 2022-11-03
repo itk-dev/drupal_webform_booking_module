@@ -1,7 +1,5 @@
 import dayjs from "dayjs";
 
-const internalOpeningHours = [];
-
 // Disabling no-underscore-dangle due to having to accessing the fullcalendar api through (calendarref.current._calendarApi)
 /* eslint no-underscore-dangle: 0 */
 
@@ -130,31 +128,6 @@ export function handleResources(value, currentCalendarDate) {
       endTime: "24:00",
     },
   };
-}
-
-/**
- * Pads the given number, until the length is 2. ex. 8 becomes 08
- *
- * @param {number} number Number to pad
- * @returns {string} Padded number
- */
-function padTo2Digits(number) {
-  return number.toString().padStart(2, "0");
-}
-
-/**
- * Converts milliseconds to formatted time (hh:mm)
- *
- * @param {number} milliseconds OpeningHours ms timestamp
- * @returns {string} Formatted time
- */
-function convertMsToTime(milliseconds) {
-  const seconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const minutesLeft = minutes % 60;
-
-  return `${padTo2Digits(hours)}:${padTo2Digits(minutesLeft)}`;
 }
 
 /**
