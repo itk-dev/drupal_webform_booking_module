@@ -58,8 +58,15 @@ export default class Api {
       .then((data) => data["hydra:member"]);
   }
 
-  static async fetchResource(apiEndpoint, resourceId) {
-    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceId}`).then((response) => response.json());
+  static async fetchResource(apiEndpoint, resourceEmail) {
+    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceEmail}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`This is an HTTP error: The status is ${response.status}`);
+        }
+
+        return response.json();
+      });
   }
 
   static async fetchUserBookings(apiEndpoint) {

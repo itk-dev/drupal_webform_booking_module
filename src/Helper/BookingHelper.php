@@ -156,11 +156,11 @@ class BookingHelper {
    * Get resource by id.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   * @param string $resourceId
+   * @param string $resourceEmail
    *
    * @return array
    */
-  public function getResourceById(Request $request, string $resourceId): array {
+  public function getResourceByEmail(Request $request, string $resourceEmail): array {
     try {
       $endpoint = $this->bookingApiEndpoint;
       $client = new Client();
@@ -170,7 +170,7 @@ class BookingHelper {
       // Attach user query parameters if user is logged in.
       $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
 
-      $response = $client->get("{$endpoint}v1/resources/$resourceId", [
+      $response = $client->get("{$endpoint}v1/resource-by-email/$resourceEmail", [
         'query' => $query,
         'headers' => $this->headers,
       ]);

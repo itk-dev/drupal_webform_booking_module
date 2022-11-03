@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
 import {displayError} from "../util/display-toast";
 import "./user-panel.scss";
+import UserBookingEdit from "./user-booking-edit";
+import UserBookingDelete from "./user-booking-delete";
 
 /**
  * @param {object} props Props.
@@ -14,49 +16,47 @@ import "./user-panel.scss";
 function UserPanel({config}) {
   const [loading, setLoading] = useState(true);
   const [userBookings, setUserBookings] = useState();
+  const [editBooking, setEditBooking] = useState(null);
+  const [deleteBooking, setDeleteBooking] = useState(null);
+  const [changedBookingId, setChangedBookingId] = useState(null);
 
-  /** @param {string} bookingId Booking id to request deletion of. */
-  const requestDeletion = (bookingId) => {
-    if (bookingId) {
-      Api.deleteBooking(config.api_endpoint, bookingId)
-        .then((resp) => {
-          console.log("success deleting", resp);
-          // TODO: Report delete success.
-          // TODO: Update list of bookings.
-        })
-        .catch((err) => {
-          console.log("error deleting", err);
-          // TODO: Display error and retry option for user.
-        });
-    }
-  };
+  const onBookingChanged = (changedBooking) => {
+    setEditBooking(null);
+    setLoading(true);
+    setChangedBookingId(changedBooking.id);
 
-  /**
-   * @param booking
-   * @param {object} data Data to patch.
-   */
-  const requestDateChange = (booking, data) => {
-    console.log(booking);
+    Api.fetchUserBookings(config.api_endpoint)
+      .then((loadedUserBookings) => {
+        setUserBookings(loadedUserBookings);
+      })
+      .catch((fetchUserBookingsError) => {
+        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
-    const newData = {
-      id: booking.id,
-      start: "2022-11-05T08:00:00.000Z",
-      end: "2022-11-05T08:30:00.000Z",
-    };
+  const onBookingDeleted = () => {
+    setDeleteBooking(null);
+    setLoading(true);
 
-    if (booking?.id) {
-      Api.patchBooking(config.api_endpoint, booking.id, newData)
-        .then((resp) => {
-          console.log("success patching", resp);
-          // TODO: Report delete success.
-          // TODO: Update list of bookings.
-        })
-        .catch((err) => {
-          console.log("error patching", err);
-          // TODO: Display error and retry option for user.
-        });
-    }
-  };
+    Api.fetchUserBookings(config.api_endpoint)
+      .then((loadedUserBookings) => {
+        setUserBookings(loadedUserBookings);
+      })
+      .catch((fetchUserBookingsError) => {
+        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  const close = () => {
+    setDeleteBooking(null);
+    setEditBooking(null);
+  }
 
   /**
    * @param {Date} dateObj Date for format.
@@ -83,37 +83,46 @@ function UserPanel({config}) {
   }, [config]);
 
   return (
-    <div className="userpanel row">
-      <div className="col no-gutter">
-        <div className="userbookings-container">
-          {loading && <LoadingSpinner/>}
-          {!loading &&
-            userBookings &&
-            Object.values(userBookings).map((obj) => (
-              <div className="user-booking" key={obj.id}>
-                <div>
-                  <span className="location">{obj.displayName}</span>
-                  <span className="subject">{obj.subject}</span>
-                </div>
-                <div>
-                  <span>{getFormattedDateTime(obj.start)}</span>
-                  <span>→</span>
-                  <span>{getFormattedDateTime(obj.end)}</span>
-                </div>
-                <div>
-                  <button type="button"
-                          onClick={() => requestDeletion(obj.hitId)}>
-                    Anmod om sletning
-                  </button>
-                  <button type="button" onClick={() => requestDateChange(obj)}>
-                    Anmod om ændring af tidspunkt
-                  </button>
-                </div>
-              </div>
-          ))}
+    <>
+      {deleteBooking && <UserBookingDelete config={config} booking={deleteBooking} onBookingDeleted={onBookingDeleted} close={close}/>}
+      {editBooking && <UserBookingEdit config={config} booking={editBooking} onBookingChanged={onBookingChanged} close={close}/>}
+      {!editBooking && !deleteBooking && <>
+        <div className="userpanel row">
+          <div className="col no-gutter">
+            <div className="userbookings-container">
+              {loading && <LoadingSpinner/>}
+              {!loading &&
+                !editBooking &&
+                userBookings &&
+                Object.values(userBookings).map((obj) => (
+                  <div className="user-booking" key={obj.id}>
+                    {obj.id === changedBookingId && <>Ændring gennemført.</>}
+                    <div>
+                      <span className="location">{obj.displayName}</span>
+                      <span className="subject">{obj.subject}</span>
+                    </div>
+                    <div>
+                      <span>{getFormattedDateTime(obj.start)}</span>
+                      <span>→</span>
+                      <span>{getFormattedDateTime(obj.end)}</span>
+                    </div>
+                    <div>
+                      <button type="button"
+                              onClick={() => setDeleteBooking(obj)}>
+                        Anmod om sletning
+                      </button>
+                      <button type="button" onClick={() => setEditBooking(obj)}>
+                        Anmod om ændring af tidspunkt
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </>}
+    </>
+
   );
 }
 

@@ -9,9 +9,11 @@ import dayjs from "dayjs";
  * @param {object} props.calendarSelection Object containing selection info returned by fullcalendar
  * @param {string} props.calendarSelectionResourceTitle Title of selected resource.
  * @param {number} props.calendarSelectionResourceId Id of selected resource
+ * @param {string} props.actionText Text for action button.
+ *
  * @returns {object} Calendar selection box
  */
-function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitle, calendarSelectionResourceId }) {
+function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitle, calendarSelectionResourceId, actionText }) {
   /**
    * @param {string} startStr String containing the start-dateTime of the selection.
    * @returns {string} Date formatted as string.
@@ -50,12 +52,16 @@ function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitl
             <b>{getFormattedTime(calendarSelection.start, calendarSelection.end)}</b>
           </span>
           <button id="calendar-selection-choice-confirm" data-resource-id={calendarSelectionResourceId} type="button">
-            Fortsæt med dette valg
+            {actionText}
           </button>
         </div>
       </div>
     </div>
   );
+}
+
+CalendarSelectionBox.defaultProps = {
+  actionText: "Fortsæt med dette valg",
 }
 
 CalendarSelectionBox.propTypes = {
@@ -70,6 +76,7 @@ CalendarSelectionBox.propTypes = {
   }).isRequired,
   calendarSelectionResourceTitle: PropTypes.string.isRequired,
   calendarSelectionResourceId: PropTypes.number.isRequired,
+  actionText: PropTypes.string,
 };
 
 export default CalendarSelectionBox;
