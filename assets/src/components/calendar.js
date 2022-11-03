@@ -188,10 +188,6 @@ function Calendar({
     }
   }, [calendarSelection, events]);
 
-  // useEffect(() => {
-  //   let res = allResources.map((value) => handleResources(value, date));
-  // }, [allResources])
-
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
     setShowResourceDetails(resource);
@@ -257,12 +253,9 @@ function Calendar({
             locale={daLocale}
             select={onCalendarSelection}
             /* eslint-disable react/jsx-props-no-spreading */
-            {...(allResources && {
-              resources: allResources.map((value) => {handleResources(value, date)}),
+            {...(resources && {
+              resources: resources.map((value) => handleResources(value, date)),
             })}
-            // {...(resources && {
-            //   resources: resources.map((value) => handleResources(value, date)),
-            // })}
             validRange={{
               start: dateNow,
             }}
@@ -285,7 +278,7 @@ function Calendar({
                 },
               },
             ]}
-            // events={events && events.map((value) => handleBusyIntervals(value))}
+            events={events && events.map((value) => handleBusyIntervals(value))}
           />
         </div>
       </div>
