@@ -199,12 +199,12 @@ function Calendar({
   
   return (
     <div className="Calendar no-gutter col-md-12">
-      {/* {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
+      {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
         <NoResultOverlay state="initial" />
       )}
       {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
         <NoResultOverlay state="noresult" />
-      )} */}
+      )}
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
         <div className="col small-padding">
@@ -236,7 +236,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
-            resourcesInitiallyExpanded={false}
+            resourcesInitiallyExpanded={true}
             nowIndicator
             navLinks
             slotDuration="00:15:00"
