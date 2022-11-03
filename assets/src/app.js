@@ -1,6 +1,6 @@
 import "./app.scss";
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
@@ -9,7 +9,6 @@ import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
 import ResourceView from "./components/resource-view";
-import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
 import MapWrapper from "./components/map-wrapper";
@@ -21,6 +20,7 @@ import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
+import { object } from "prop-types";
 
 dayjs.locale("da");
 
@@ -59,6 +59,7 @@ function App() {
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
   const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Get configuration.
   useEffect(() => {
@@ -73,6 +74,39 @@ function App() {
     }
   }, []);
 
+  //Loop allresources and set filter options
+  useEffect(() => {
+    if (resourcesOptions.length === allResources.length) {
+      return;
+    }
+    let locations = [];
+    Object.values(allResources).forEach((value) => {
+      if (value.location !== "" && locations.indexOf(value.location) === -1) {
+        locations.push(value.location)
+      }
+    })
+
+    setLocationOptions(
+      locations
+        .map((value) => {
+          return {
+            value: value,
+            label: value,
+          };
+        })
+        .sort()
+    );
+
+    setResourcesOptions(
+      allResources.map((value) => {
+        return {
+          value: value.resourceMail,
+          label: value.resourceName,
+        };
+      })
+    );
+  }, [allResources])
+
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
@@ -82,25 +116,6 @@ function App() {
         })
         .catch((fetchAllResourcesError) => {
           displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
-        });
-
-      Api.fetchLocations(config.api_endpoint)
-        .then((loadedLocations) => {
-          setLocationOptions(
-            loadedLocations
-              .map((value) => {
-                return {
-                  value: value.name,
-                  label: value.name,
-                };
-              })
-              .sort()
-          );
-
-          setResourceFilter([]);
-        })
-        .catch((fetchLocationsError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchLocationsError);
         });
     }
 
@@ -164,17 +179,19 @@ function App() {
       });
 
       if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
-        Api.fetchResources(config.api_endpoint, urlSearchParams)
-          .then((loadedResources) => {
-            setTimeout(() => {
-              setResources(loadedResources);
+      setIsLoading(true);
 
-              setUserHasInteracted(true);
-            }, 1);
-          })
-          .catch((fetchResourcesError) => {
-            displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
-          });
+        let matchingResources = [];
+        setUserHasInteracted(true);
+        allResources.filter((resource) => {
+          if (filterParams['location[]'] && filterParams['location[]'].includes(resource.location)) {
+            matchingResources.push(resource);
+          }
+          if (filterParams['resourceMail[]'] && filterParams['resourceMail[]'].includes(resource.resourceMail)) {
+            matchingResources.push(resource);
+          } 
+        })
+        setResources(matchingResources);
       } else {
         setResources([]);
       }
@@ -191,28 +208,12 @@ function App() {
     if (config) {
       const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
       const urlSearchParams = new URLSearchParams(dropdownParams);
-
-      Api.fetchResources(config.api_endpoint, urlSearchParams)
-        .then((loadedResources) => {
-          setResourcesOptions(
-            loadedResources.map((value) => {
-              return {
-                value: value.resourceMail,
-                label: value.resourceName,
-              };
-            })
-          );
-        })
-        .catch((fetchResourcesError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
-        });
     }
   }, [locationFilter]);
 
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
-
     setFilterParams({
       ...filterParams,
       ...{ "resourceMail[]": resourceValues },
@@ -272,10 +273,15 @@ function App() {
 
   // Get events for the given resources.
   useEffect(() => {
+    
+    
     if (config && resources?.length > 0 && date !== null) {
       Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
         .then((loadedEvents) => {
           setEvents(loadedEvents);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 200);
         })
         .catch((fetchEventsError) => {
           displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
@@ -318,7 +324,6 @@ function App() {
           <div className="app-wrapper">
             {config && config.create_booking_mode && (
               <div>
-                {!config && <LoadingSpinner />}
                 {config && config && displayState === "maximized" && (
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
@@ -333,6 +338,7 @@ function App() {
                           onChange={(selectedLocations) => {
                             setLocationFilter(selectedLocations);
                           }}
+                          filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
                           isMulti
                         />
                       </div>
@@ -347,6 +353,7 @@ function App() {
                           onChange={(selectedResources) => {
                             setResourceFilter(selectedResources);
                           }}
+                          filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
                           isMulti
                         />
                       </div>
@@ -432,7 +439,7 @@ function App() {
                           showResourceDetails !== null ? "resourceview-visible" : ""
                         }`}
                       >
-                        <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
+                        <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} isLoading={isLoading} />
                         <ResourceView
                           showResourceDetails={showResourceDetails}
                           setShowResourceDetails={setShowResourceDetails}
@@ -460,6 +467,8 @@ function App() {
                           showResourceDetails={showResourceDetails}
                           userHasInteracted={userHasInteracted}
                           allResources={allResources}
+                          isLoading={isLoading}
+                          setIsLoading={setIsLoading}
                         />
                         {/* TODO: Only show if resource view is requested */}
                         <ResourceView

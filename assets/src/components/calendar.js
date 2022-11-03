@@ -11,6 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
+import LoadingSpinner from "./loading-spinner";
 import {
   adjustAsyncResourcesBusinessHours,
   handleBusyIntervals,
@@ -52,22 +53,15 @@ function Calendar({
   urlResource,
   setDisplayState,
   userHasInteracted,
-  allResources
+  allResources,
+  isLoading,
+  setIsLoading
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
   const dateNow = new Date();
-
-  /**
-   * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
-   * via initialResources to generate resource placeholders based on locations. setPlaceholderClickEvent is called on
-   * every resource via the hook resourceGroupLabelDidMount, which handles creating click events, to expand them, for
-   * every placeholder. On placeholder click, fetchResourcesOnLocation is called, and all available resources for the
-   * given location is loaded. In the end of fetchResourcesOnLocation, asyncEvents is set, triggering the useEffect
-   * asyncEvents is subscribed to, loading the resource events.
-   */
 
   /**
    * OnCalenderSelection.
@@ -188,10 +182,6 @@ function Calendar({
     }
   }, [calendarSelection, events]);
 
-  // useEffect(() => {
-  //   let res = allResources.map((value) => handleResources(value, date));
-  // }, [allResources])
-
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
     setShowResourceDetails(resource);
@@ -203,13 +193,14 @@ function Calendar({
   
   return (
     <div className="Calendar no-gutter col-md-12">
-      {/* {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
+      {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
         <NoResultOverlay state="initial" />
       )}
       {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
         <NoResultOverlay state="noresult" />
-      )} */}
-      <CalendarHeader config={config} date={date} setDate={setDate} />
+      )}
+      {isLoading && <LoadingSpinner />}
+      <CalendarHeader config={config} date={date} setDate={setDate} setIsLoading={setIsLoading} />
       <div className="row">
         <div className="col small-padding">
           <FullCalendar
@@ -240,7 +231,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
-            resourcesInitiallyExpanded={false}
+            resourcesInitiallyExpanded={true}
             nowIndicator
             navLinks
             slotDuration="00:15:00"
@@ -257,12 +248,12 @@ function Calendar({
             locale={daLocale}
             select={onCalendarSelection}
             /* eslint-disable react/jsx-props-no-spreading */
-            {...(allResources && {
-              resources: allResources.map((value) => {handleResources(value, date)}),
-            })}
-            // {...(resources && {
-            //   resources: resources.map((value) => handleResources(value, date)),
+            // {...(allResources && {
+            //   resources: allResources.map((value) => {handleResources(value, date)}),
             // })}
+            {...(resources && {
+              resources: resources.map((value) => handleResources(value, date)),
+            })}
             validRange={{
               start: dateNow,
             }}
@@ -285,7 +276,7 @@ function Calendar({
                 },
               },
             ]}
-            // events={events && events.map((value) => handleBusyIntervals(value))}
+            events={events && events.map((value) => handleBusyIntervals(value))}
           />
         </div>
       </div>

@@ -11,7 +11,7 @@ import "./calendar-header.scss";
  * @param {Function} props.setDate Set date function.
  * @returns {JSX.Element} Calendar header component.
  */
-function CalendarHeader({ date, setDate }) {
+function CalendarHeader({ config, date, setDate, setIsLoading }) {
   const onChangeDate = (event) => {
     switch (event.target.id) {
       case "calendar-today":
@@ -21,12 +21,13 @@ function CalendarHeader({ date, setDate }) {
       case "calendar-back":
         if (new Date() < date) {
           setDate(new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD")));
+          setIsLoading(true);
         }
 
         break;
       case "calendar-forward":
         setDate(new Date(dayjs(date).add(1, "day").format("YYYY-MM-DD")));
-
+        setIsLoading(true);
         break;
       case "calendar-datepicker":
         setDate(new Date(event.target.value));
