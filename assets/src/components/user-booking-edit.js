@@ -144,7 +144,7 @@ function UserBookingEdit({config, booking, onBookingChanged, close}) {
 
           calendarRef.current.getApi().unselect();
 
-          setCalendarSelection({});
+          setCalendarSelection(null);
         });
       }, 1);
     }
@@ -159,21 +159,19 @@ function UserBookingEdit({config, booking, onBookingChanged, close}) {
             {loading && <LoadingSpinner/>}
             {!loading && <>
               <div style={{margin: "1em 0"}}>
+                <div><strong>Resource: </strong>{booking.displayName}</div>
+                <div><strong>Titel på booking: </strong>{booking.subject}</div>
                 <div>
                   <strong>Nuværende valg: </strong>{getFormattedDateTime(booking.start)} - {getFormattedDateTime(booking.end)}
                 </div>
-
                 <div>
-                  <strong>Nyt valg: </strong>
                   {calendarSelection &&
                     <>
+                      <strong>Nyt valg: </strong>
                       {getFormattedDateTime(calendarSelection.start)} - {getFormattedDateTime(calendarSelection.end)}
                     </>
                   }
                 </div>
-
-                <div><strong>Resource: </strong>{booking.displayName}</div>
-                <div><strong>Titel på booking: </strong>{booking.subject}</div>
               </div>
 
               <CalendarHeader config={config} date={date} setDate={setDate}/>
