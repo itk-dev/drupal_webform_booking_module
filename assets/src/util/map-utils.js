@@ -6,10 +6,12 @@ import Proj4 from "proj4";
  * @returns {object} Proj object containing converted coordinates
  */
 export function latlngToUTM(lat, long) {
+  const parsedLat = parseFloat(lat);
+  const parsedLong = parseFloat(long);
   const wgs84 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
   const utm = "+proj=utm +zone=32";
 
-  return Proj4(wgs84, utm, [long, lat]);
+  return Proj4(wgs84, utm, [parsedLong, parsedLat]);
 }
 
 /**
@@ -18,23 +20,26 @@ export function latlngToUTM(lat, long) {
  */
 export function getFeatures(resources) {
   // Loop resources and build coordinates and tooltip content
-  // TODO: Add actual coordinates from API
-  const featureObj = [];
+  const locations = [];
 
-  if (resources) {
-    Object.values(resources).forEach((resource) => {
-      const utmCoordinates = latlngToUTM(56.153574168437295, 10.214342775668902);
+  Object.values(resources).forEach((value) => {
+    if (value.location in locations) {
+      locations[value.location].resource_count += 1;
+    } else {
+      if (value.location === "" || value.geoCoordinates === "" || value.geoCoordinates === null) {
+        return;
+      }
+      const geoCoordinates = value.geoCoordinates.split(",");
+      const utmCoordinates = latlngToUTM(geoCoordinates[0], geoCoordinates[1]);
 
-      featureObj.push({
-        id: resource.id,
-        coordinates: {
-          easting: utmCoordinates[0],
-          northing: utmCoordinates[1],
-        },
-        name: resource.resourceName,
-      });
-    });
-  }
+      locations[value.location] = {
+        location: value.location,
+        northing: utmCoordinates[0],
+        easting: utmCoordinates[1],
+        resource_count: 1,
+      };
+    }
+  });
 
-  return featureObj;
+  return locations;
 }
