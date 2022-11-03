@@ -289,7 +289,7 @@ Calendar.propTypes = {
     resource: PropTypes.shape({
       _resource: PropTypes.shape({
         title: PropTypes.string.isRequired,
-      }).isRequired,
+      }),
     }),
     start: PropTypes.shape({
       toISOString: PropTypes.func.isRequired,

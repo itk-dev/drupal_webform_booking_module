@@ -263,7 +263,9 @@ class BookingElement extends Hidden
                 $form_state->setError($form, t('Error in "Your email"'));
                 break;
               case 'resourceId':
+                $form_state->setError($form, t('Error in booking selection resource id'));
               case 'start':
+                $form_state->setError($form, t('Error in booking selection resource id'));
               case 'end':
                 $form_state->setError($form, t('Error in booking selection'));
                 break;
