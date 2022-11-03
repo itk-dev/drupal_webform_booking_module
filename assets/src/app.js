@@ -459,6 +459,7 @@ function App() {
                           setDisplayState={setDisplayState}
                           showResourceDetails={showResourceDetails}
                           userHasInteracted={userHasInteracted}
+                          allResources={allResources}
                         />
                         {/* TODO: Only show if resource view is requested */}
                         <ResourceView

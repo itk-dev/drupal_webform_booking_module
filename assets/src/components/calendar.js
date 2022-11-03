@@ -52,6 +52,7 @@ function Calendar({
   urlResource,
   setDisplayState,
   userHasInteracted,
+  allResources
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -118,11 +119,6 @@ function Calendar({
       calendarRef?.current?.getApi().gotoDate(date);
 
       calendarRef?.current?.getApi().select(calendarSelection);
-    }
-    if (calendarRef) {
-      const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
-
-      adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
     }
   }, [date]);
 
@@ -192,6 +188,10 @@ function Calendar({
     }
   }, [calendarSelection, events]);
 
+  // useEffect(() => {
+  //   let res = allResources.map((value) => handleResources(value, date));
+  // }, [allResources])
+
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
     setShowResourceDetails(resource);
@@ -200,15 +200,15 @@ function Calendar({
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
     return <CalendarCellInfoButton resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
-
+  
   return (
     <div className="Calendar no-gutter col-md-12">
-      {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
+      {/* {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
         <NoResultOverlay state="initial" />
       )}
       {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
         <NoResultOverlay state="noresult" />
-      )}
+      )} */}
       <CalendarHeader config={config} date={date} setDate={setDate} />
       <div className="row">
         <div className="col small-padding">
@@ -240,6 +240,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
+            resourcesInitiallyExpanded={false}
             nowIndicator
             navLinks
             slotDuration="00:15:00"
@@ -256,9 +257,12 @@ function Calendar({
             locale={daLocale}
             select={onCalendarSelection}
             /* eslint-disable react/jsx-props-no-spreading */
-            {...(resources && {
-              resources: resources.map((value) => handleResources(value, date)),
+            {...(allResources && {
+              resources: allResources.map((value) => {handleResources(value, date)}),
             })}
+            // {...(resources && {
+            //   resources: resources.map((value) => handleResources(value, date)),
+            // })}
             validRange={{
               start: dateNow,
             }}
@@ -281,7 +285,7 @@ function Calendar({
                 },
               },
             ]}
-            events={events && events.map((value) => handleBusyIntervals(value))}
+            // events={events && events.map((value) => handleBusyIntervals(value))}
           />
         </div>
       </div>
