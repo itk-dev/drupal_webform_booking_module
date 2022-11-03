@@ -186,7 +186,9 @@ class BookingElement extends Hidden
       'redirect_url' => $element['#redirect_url'] ?? null,
       'info_box_color' => $element['info_box_color'] ?? null,
       'info_box_header' => $element['info_box_header'] ?? null,
-      'info_box_content' => $element['info_box_content'] ?? null
+      'info_box_content' => $element['info_box_content'] ?? null,
+      'df_map_username' => Settings::get('itkdev_booking_df_map_username'),
+      'df_map_password' => Settings::get('itkdev_booking_df_map_password'),
     ];
 
     $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [
