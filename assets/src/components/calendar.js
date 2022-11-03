@@ -11,12 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import {
-  adjustAsyncResourcesBusinessHours,
-  handleBusyIntervals,
-  handleResources,
-  getScrollTime,
-} from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
@@ -118,11 +113,6 @@ function Calendar({
       calendarRef?.current?.getApi().gotoDate(date);
 
       calendarRef?.current?.getApi().select(calendarSelection);
-    }
-    if (calendarRef) {
-      const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
-
-      adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
     }
   }, [date]);
 
@@ -240,6 +230,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
+            resourcesInitiallyExpanded
             nowIndicator
             navLinks
             slotDuration="00:15:00"
