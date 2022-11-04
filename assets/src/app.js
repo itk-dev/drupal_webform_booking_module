@@ -21,6 +21,7 @@ import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
 import { object } from "prop-types";
+import testdata from "./util/test.json"
 
 dayjs.locale("da");
 
@@ -112,7 +113,7 @@ function App() {
     if (config) {
       Api.fetchAllResources(config.api_endpoint)
         .then((loadedResources) => {
-          setAllResources(loadedResources);
+          setAllResources(testdata);
         })
         .catch((fetchAllResourcesError) => {
           displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
@@ -190,6 +191,17 @@ function App() {
           if (filterParams['resourceMail[]'] && filterParams['resourceMail[]'].includes(resource.resourceMail)) {
             matchingResources.push(resource);
           } 
+
+          if (filterParams['videoConferenceEquipment'] && resource.videoConferenceEquipment === true) {
+            console.log("hallo");
+          }
+          if (filterParams['monitorEquipment'] && resource.monitorEquipment === true) {
+            console.log("hallo");
+          }
+          if (filterParams['wheelchairAccessible'] && resource.wheelchairAccessible === true) {
+            console.log("hallo");
+          }
+          // TODO: Add catering
         })
         setResources(matchingResources);
       } else {
@@ -334,6 +346,7 @@ function App() {
                           defaultValue={locationFilter}
                           placeholder="lokationer..."
                           closeMenuOnSelect={false}
+                          value={locationFilter}
                           options={locationOptions}
                           onChange={(selectedLocations) => {
                             setLocationFilter(selectedLocations);
