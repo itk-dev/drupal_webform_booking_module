@@ -41,11 +41,19 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
 
       Api.fetchResource(config.api_endpoint, booking.resourceMail).then((resource) => {
         setResources([resource]);
-
-        Api.fetchEvents(config.api_endpoint, [resource], date).then((newEvents) => setEvents(newEvents));
       });
     }
   }, [booking]);
+
+  useEffect(() => {
+    if (resources.length > 0) {
+      Api.fetchEvents(config.api_endpoint, resources, date)
+        .then((newEvents) => setEvents(newEvents))
+        .catch((err) => {
+          displayError("Kunne ikke hente optagede intervaller.", err);
+        });
+    }
+  }, [resources]);
 
   useEffect(() => {
     if (calendarSelection) {
@@ -90,11 +98,13 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
   };
 
   /**
-   * @param {Date} dateObj Date for format.
+   * Format date string.
+   *
+   * @param {string} dateString Date string to format.
    * @returns {string} Date formatted as string.
    */
-  function getFormattedDateTime(dateObj) {
-    return dayjs(dateObj).format("D/M [kl.] HH:mm");
+  function getFormattedDateTime(dateString) {
+    return dayjs(dateString).format("D/M [kl.] HH:mm");
   }
 
   /**
