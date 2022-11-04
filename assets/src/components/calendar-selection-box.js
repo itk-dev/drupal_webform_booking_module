@@ -10,10 +10,14 @@ import dayjs from "dayjs";
  * @param {string} props.calendarSelectionResourceTitle Title of selected resource.
  * @param {number} props.calendarSelectionResourceId Id of selected resource
  * @param {string} props.actionText Text for action button.
- *
  * @returns {object} Calendar selection box
  */
-function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitle, calendarSelectionResourceId, actionText }) {
+function CalendarSelectionBox({
+  calendarSelection,
+  calendarSelectionResourceTitle,
+  calendarSelectionResourceId,
+  actionText,
+}) {
   /**
    * @param {string} startStr String containing the start-dateTime of the selection.
    * @returns {string} Date formatted as string.
@@ -62,7 +66,7 @@ function CalendarSelectionBox({ calendarSelection, calendarSelectionResourceTitl
 
 CalendarSelectionBox.defaultProps = {
   actionText: "Fortsæt med dette valg",
-}
+};
 
 CalendarSelectionBox.propTypes = {
   calendarSelection: PropTypes.shape({

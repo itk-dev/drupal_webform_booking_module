@@ -59,14 +59,13 @@ export default class Api {
   }
 
   static async fetchResource(apiEndpoint, resourceEmail) {
-    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceEmail}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`This is an HTTP error: The status is ${response.status}`);
-        }
+    return fetch(`${apiEndpoint}itkdev_booking/resources/${resourceEmail}`).then((response) => {
+      if (!response.ok) {
+        throw new Error(`This is an HTTP error: The status is ${response.status}`);
+      }
 
-        return response.json();
-      });
+      return response.json();
+    });
   }
 
   static async fetchUserBookings(apiEndpoint) {
@@ -95,8 +94,8 @@ export default class Api {
     return fetch(`${apiEndpoint}itkdev_booking/user-booking/${bookingId}`, {
       method: "PATCH",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(newData),
     }).then((response) => {

@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
 import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
-import {displayError} from "../util/display-toast";
+import { displayError } from "../util/display-toast";
 import "./user-panel.scss";
 import UserBookingEdit from "./user-booking-edit";
 import UserBookingDelete from "./user-booking-delete";
@@ -13,7 +13,7 @@ import UserBookingDelete from "./user-booking-delete";
  * @param {object} props.config App config.
  * @returns {JSX.Element} Component.
  */
-function UserPanel({config}) {
+function UserPanel({ config }) {
   const [loading, setLoading] = useState(true);
   const [userBookings, setUserBookings] = useState();
   const [editBooking, setEditBooking] = useState(null);
@@ -22,7 +22,9 @@ function UserPanel({config}) {
 
   const onBookingChanged = (changedBooking) => {
     setEditBooking(null);
+
     setLoading(true);
+
     setChangedBookingId(changedBooking.id);
 
     Api.fetchUserBookings(config.api_endpoint)
@@ -35,10 +37,11 @@ function UserPanel({config}) {
       .finally(() => {
         setLoading(false);
       });
-  }
+  };
 
   const onBookingDeleted = () => {
     setDeleteBooking(null);
+
     setLoading(true);
 
     Api.fetchUserBookings(config.api_endpoint)
@@ -51,12 +54,13 @@ function UserPanel({config}) {
       .finally(() => {
         setLoading(false);
       });
-  }
+  };
 
   const close = () => {
     setDeleteBooking(null);
+
     setEditBooking(null);
-  }
+  };
 
   /**
    * @param {Date} dateObj Date for format.
@@ -84,13 +88,17 @@ function UserPanel({config}) {
 
   return (
     <>
-      {deleteBooking && <UserBookingDelete config={config} booking={deleteBooking} onBookingDeleted={onBookingDeleted} close={close}/>}
-      {editBooking && <UserBookingEdit config={config} booking={editBooking} onBookingChanged={onBookingChanged} close={close}/>}
-      {!editBooking && !deleteBooking && <>
+      {deleteBooking && (
+        <UserBookingDelete config={config} booking={deleteBooking} onBookingDeleted={onBookingDeleted} close={close} />
+      )}
+      {editBooking && (
+        <UserBookingEdit config={config} booking={editBooking} onBookingChanged={onBookingChanged} close={close} />
+      )}
+      {!editBooking && !deleteBooking && (
         <div className="userpanel row">
           <div className="col no-gutter">
             <div className="userbookings-container">
-              {loading && <LoadingSpinner/>}
+              {loading && <LoadingSpinner />}
               {!loading &&
                 !editBooking &&
                 userBookings &&
@@ -107,8 +115,7 @@ function UserPanel({config}) {
                       <span>{getFormattedDateTime(obj.end)}</span>
                     </div>
                     <div>
-                      <button type="button"
-                              onClick={() => setDeleteBooking(obj)}>
+                      <button type="button" onClick={() => setDeleteBooking(obj)}>
                         Anmod om sletning
                       </button>
                       <button type="button" onClick={() => setEditBooking(obj)}>
@@ -120,9 +127,8 @@ function UserPanel({config}) {
             </div>
           </div>
         </div>
-      </>}
+      )}
     </>
-
   );
 }
 

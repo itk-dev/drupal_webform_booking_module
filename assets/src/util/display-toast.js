@@ -3,7 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 /** @param {string} text The toast display text */
 export function displaySuccess(text) {
-   toast.success(text);
+  toast.success(text);
 }
 
 /**
@@ -19,5 +19,3 @@ export function displayError(errorString, error) {
     autoClose: false,
   });
 }
-
-export default displayError;
