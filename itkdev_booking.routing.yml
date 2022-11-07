@@ -14,8 +14,8 @@ itkdev_booking.resources_all:
   requirements:
     _access: 'TRUE'
 
-itkdev_booking.resources_by_id:
-  path: '/itkdev_booking/resources/{resourceId}'
+itkdev_booking.resources_by_email:
+  path: '/itkdev_booking/resources/{resourceEmail}'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\BookingController::getResource'
   methods: [GET]
@@ -51,6 +51,14 @@ itkdev_booking.user_bookings_delete:
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\BookingController::deleteUserBooking'
   methods: [DELETE]
+  requirements:
+    _access: 'TRUE'
+
+itkdev_booking.user_bookings_patch:
+  path: '/itkdev_booking/user-booking/{bookingId}'
+  defaults:
+    _controller: '\Drupal\itkdev_booking\Controller\BookingController::patchUserBooking'
+  methods: [PATCH]
   requirements:
     _access: 'TRUE'
 

@@ -65,7 +65,6 @@ function businessHoursOrNearestFifteenMinutes(businessStartHour, currentCalendar
 export function handleBusyIntervals(value) {
   return {
     resourceId: value.resource,
-    title: "Busy",
     start: value.startTime,
     end: value.endTime,
   };
