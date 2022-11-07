@@ -337,6 +337,8 @@ function App() {
                             onChange={(selectedLocations) => {
                               setLocationFilter(selectedLocations);
                             }}
+                            isLoading={Object.values(locationOptions).length === 0}
+                            loadingMessage={() => "Henter lokationer.."}
                             filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
                             isMulti
                           />
@@ -358,6 +360,8 @@ function App() {
                             onChange={(selectedResources) => {
                               setResourceFilter(selectedResources);
                             }}
+                            isLoading={Object.values(resourcesOptions).length === 0}
+                            loadingMessage={() => "Henter ressourcer.."}
                             filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
                             isMulti
                           />
