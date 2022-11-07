@@ -23,9 +23,8 @@ export function filterAllResources(allResources, filterParams) {
     */
     let matchingState = 1;
 
+    // Filtrering på location
     if (filterParams["location[]"] && filterParams["location[]"].length !== 0) {
-      // Filtrering på location
-
       if (filterParams["location[]"].includes(resource.location)) {
         matchingState = 2;
       } else {
@@ -33,32 +32,32 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
+    // Filtrering på resource
     if (filterParams["resourceMail[]"] && filterParams["resourceMail[]"].length !== 0) {
-      // Filtrering på resource
-
       if (filterParams["resourceMail[]"].includes(resource.resourceMail)) {
         matchingState = 2;
       } else if (matchingState === 2) {
+        // Hvis vi allerede har matchet, skal state forblive 2 da location og resource ikke afgrænser hinanden.
         matchingState = 2;
       } else {
         matchingState = 0;
       }
     }
 
+    // Filtrering på videokonference
     if (filterParams.videoConferenceEquipment) {
-      // Filtrering på videokonference
-
       if (!resource.videoConferenceEquipment && matchingState === 2) {
+        // Hvis vi kommer ind med et match, er det afgørende at dette matcher.
         matchingState = 0;
       }
       if (resource.videoConferenceEquipment && matchingState === 1) {
+        // Hvis vi kommer ind uden tidligere match, er der nu et match.
         matchingState = 2;
       }
     }
 
+    // Filtrering på projektor/skærm
     if (filterParams.monitorEquipment) {
-      // Filtrering på projektor/skærm
-
       if (!resource.monitorEquipment && matchingState === 2) {
         matchingState = 0;
       }
@@ -67,9 +66,8 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
+    // Filtrering på handikapvenligt
     if (filterParams.wheelchairAccessible) {
-      // Filtrering på handikapvenligt
-
       if (!resource.wheelchairAccessible && matchingState === 2) {
         matchingState = 0;
       }
@@ -77,28 +75,39 @@ export function filterAllResources(allResources, filterParams) {
         matchingState = 2;
       }
     }
+    
+    // Filtrering på catering
+    if (filterParams.catering) {
+      if (!resource.catering && matchingState === 2) {
+        matchingState = 0;
+      }
+      if (resource.catering && matchingState === 1) {
+        matchingState = 2;
+      }
+    }
 
+    // Filtrering på kapacitet (imellem to værdier)
     if (filterParams["capacity[between]"] && matchingState !== 0) {
       const rangeArray = filterParams["capacity[between]"].split(",");
 
       if (resource.capacity >= rangeArray[0] && resource.capacity <= rangeArray[1]) {
-        // Vi er indenfor range
+        // Så snart vi filtrerer på dette, er det afgørende uanset tidligere matches.
         matchingState = 2;
       } else {
         matchingState = 0;
       }
     }
 
+    // Filtrering på kapacitet (større end)
     if (filterParams["capacity[gt]"] && matchingState !== 0) {
+      // Så snart vi filtrerer på dette, er det afgørende uanset tidligere matches.
       if (resource.capacity >= filterParams["capacity[gt]"]) {
-        // Vi er indenfor range
         matchingState = 2;
       } else {
         matchingState = 0;
       }
     }
 
-    // TODO: Add catering
     if (matchingState > 1) {
       return resource;
     }
