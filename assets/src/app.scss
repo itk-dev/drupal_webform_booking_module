@@ -123,7 +123,8 @@
     }
 
     .resourceview-visible {
-      min-height: 782px;
+      height: 782px;
+      overflow: hidden;
     }
   }
 
