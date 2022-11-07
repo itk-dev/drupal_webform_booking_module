@@ -162,8 +162,8 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView })
       view: new View({
         minZoom: 2,
         maxZoom: 13,
-        center: [574969.6851, 6221850.2116],
-        zoom: 5.4,
+        center: [574969.6851, 6223950.2116],
+        zoom: 5.2,
         resolutions: [1638.4, 819.2, 409.6, 204.8, 102.4, 51.2, 25.6, 12.8, 6.4, 3.2, 1.6, 0.8, 0.4, 0.2, 0.1],
         projection: dkprojection,
       }),
