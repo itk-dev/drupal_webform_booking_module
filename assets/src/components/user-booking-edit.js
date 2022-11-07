@@ -160,12 +160,24 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
   }, [calendarSelection, events]);
 
   const getBusyIntervals = (busyIntervals) => {
-    const mappedBusyIntervals = busyIntervals.map((value) => handleBusyIntervals(value));
+    return busyIntervals.map((value) => {
+      const interval = handleBusyIntervals(value);
 
-    // Filter out existing bookings from busy intervals, to avoid blocking booking editing.
-    return mappedBusyIntervals.filter((obj) => {
-      return !(obj.start === booking.start && obj.end === booking.end);
+      if (interval.start === booking.start && interval.end === booking.end) {
+        interval.display = "background";
+
+        interval.title = "Din booking";
+
+        interval.backgroundColor = "#33bd33";
+      }
+
+      return interval;
     });
+  };
+
+  const getSelectOverlap = (event) => {
+    // eslint-disable-next-line no-underscore-dangle
+    return event?._def?.ui?.display === "background";
   };
 
   return (
@@ -237,7 +249,7 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
                   schedulerLicenseKey={config.license_key}
                   slotMinTime="06:00:00"
                   slotMaxTime="24:00:00"
-                  selectOverlap={false}
+                  selectOverlap={getSelectOverlap}
                   nextDayThreshold="21:00:00"
                   editable={false}
                   dayMaxEvents
