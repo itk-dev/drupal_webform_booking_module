@@ -392,14 +392,6 @@ function App() {
                         <button
                           type="button"
                           onClick={viewSwapHandler}
-                          data-view="map"
-                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
-                        >
-                          Kort
-                        </button>
-                        <button
-                          type="button"
-                          onClick={viewSwapHandler}
                           data-view="calendar"
                           className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
                         >
@@ -412,6 +404,14 @@ function App() {
                           className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
                         >
                           Liste
+                        </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="map"
+                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kort
                         </button>
                       </div>
                     </div>
