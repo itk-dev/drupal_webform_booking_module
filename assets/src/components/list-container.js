@@ -25,7 +25,6 @@ function ListContainer({ resources, setShowResourceDetails, userHasInteracted, i
       )}
       <div className="row">
         <div className="col-md-12">
-          {!resources && <span>Vælg filtre for at vise liste over resourcer..</span>}
           {resources && <List resources={resources} setShowResourceDetails={setShowResourceDetails} />}
         </div>
       </div>
