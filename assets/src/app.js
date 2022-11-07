@@ -17,11 +17,9 @@ import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
-import { capacityOptions, facilityOptions } from "./util/filter-utils";
-import hasOwnProperty from "./util/helpers";
+import { capacityOptions } from "./util/filter-utils";
+import { hasOwnProperty, filterAllResources, getFacilityOptions } from "./util/helpers";
 import { displayError } from "./util/display-toast";
-import { object } from "prop-types";
-import testdata from "./util/test.json"
 
 dayjs.locale("da");
 
@@ -75,23 +73,24 @@ function App() {
     }
   }, []);
 
-  //Loop allresources and set filter options
+  // Loop allresources and set filter options
   useEffect(() => {
     if (resourcesOptions.length === allResources.length) {
       return;
     }
-    let locations = [];
+    const locations = [];
+
     Object.values(allResources).forEach((value) => {
       if (value.location !== "" && locations.indexOf(value.location) === -1) {
-        locations.push(value.location)
+        locations.push(value.location);
       }
-    })
+    });
 
     setLocationOptions(
       locations
         .map((value) => {
           return {
-            value: value,
+            value,
             label: value,
           };
         })
@@ -106,14 +105,14 @@ function App() {
         };
       })
     );
-  }, [allResources])
+  }, [allResources]);
 
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
       Api.fetchAllResources(config.api_endpoint)
         .then((loadedResources) => {
-          setAllResources(testdata);
+          setAllResources(loadedResources);
         })
         .catch((fetchAllResourcesError) => {
           displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
@@ -180,30 +179,21 @@ function App() {
       });
 
       if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
-      setIsLoading(true);
+        setIsLoading(true);
 
-        let matchingResources = [];
-        setUserHasInteracted(true);
-        allResources.filter((resource) => {
-          if (filterParams['location[]'] && filterParams['location[]'].includes(resource.location)) {
-            matchingResources.push(resource);
-          }
-          if (filterParams['resourceMail[]'] && filterParams['resourceMail[]'].includes(resource.resourceMail)) {
-            matchingResources.push(resource);
-          } 
+        setTimeout(() => {
+          const matchingResources = filterAllResources(allResources, filterParams);
 
-          if (filterParams['videoConferenceEquipment'] && resource.videoConferenceEquipment === true) {
-            console.log("hallo");
+          setUserHasInteracted(true);
+
+          if (matchingResources.length !== 0) {
+            setResources(matchingResources);
+          } else {
+            setResources([]);
+
+            setIsLoading(false);
           }
-          if (filterParams['monitorEquipment'] && resource.monitorEquipment === true) {
-            console.log("hallo");
-          }
-          if (filterParams['wheelchairAccessible'] && resource.wheelchairAccessible === true) {
-            console.log("hallo");
-          }
-          // TODO: Add catering
-        })
-        setResources(matchingResources);
+        }, 100);
       } else {
         setResources([]);
       }
@@ -215,17 +205,12 @@ function App() {
     const locationValues = locationFilter.map(({ value }) => value);
 
     setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
-
-    // Set resource dropdown options.
-    if (config) {
-      const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
-      const urlSearchParams = new URLSearchParams(dropdownParams);
-    }
   }, [locationFilter]);
 
   // Set resource filter.
   useEffect(() => {
     const resourceValues = resourceFilter.map(({ value }) => value);
+
     setFilterParams({
       ...filterParams,
       ...{ "resourceMail[]": resourceValues },
@@ -285,17 +270,18 @@ function App() {
 
   // Get events for the given resources.
   useEffect(() => {
-    
-    
     if (config && resources?.length > 0 && date !== null) {
       Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
         .then((loadedEvents) => {
           setEvents(loadedEvents);
+
           setTimeout(() => {
             setIsLoading(false);
           }, 200);
         })
         .catch((fetchEventsError) => {
+          setIsLoading(false);
+
           displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
@@ -377,7 +363,7 @@ function App() {
                           defaultValue={facilityFilter}
                           placeholder="Facilitieter..."
                           closeMenuOnSelect={false}
-                          options={facilityOptions}
+                          options={getFacilityOptions()}
                           onChange={(selectedFacilities) => {
                             setFacilityFilter(selectedFacilities);
                           }}
@@ -452,7 +438,11 @@ function App() {
                           showResourceDetails !== null ? "resourceview-visible" : ""
                         }`}
                       >
-                        <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} isLoading={isLoading} />
+                        <ListContainer
+                          resources={resources}
+                          setShowResourceDetails={setShowResourceDetails}
+                          isLoading={isLoading}
+                        />
                         <ResourceView
                           showResourceDetails={showResourceDetails}
                           setShowResourceDetails={setShowResourceDetails}
@@ -479,7 +469,6 @@ function App() {
                           setDisplayState={setDisplayState}
                           showResourceDetails={showResourceDetails}
                           userHasInteracted={userHasInteracted}
-                          allResources={allResources}
                           isLoading={isLoading}
                           setIsLoading={setIsLoading}
                         />

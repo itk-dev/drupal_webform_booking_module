@@ -10,11 +10,11 @@ import "./list-container.scss";
  * @param {object} props.resources Resources object
  * @param {object} props.setShowResourceDetails Resource object to show details for
  * @param {boolean} props.userHasInteracted Has the user interacted with filters
+ * @param {boolean} props.isLoading Loading state.
  * @returns {JSX.Element} List element containing resources
  */
 function ListContainer({ resources, setShowResourceDetails, userHasInteracted, isLoading }) {
   return (
-    
     <div className="List no-gutter col-md-12">
       {isLoading && <LoadingSpinner />}
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
@@ -37,6 +37,7 @@ ListContainer.propTypes = {
   resources: PropTypes.arrayOf(PropTypes.shape({})),
   setShowResourceDetails: PropTypes.func.isRequired,
   userHasInteracted: PropTypes.bool,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 ListContainer.defaultProps = {

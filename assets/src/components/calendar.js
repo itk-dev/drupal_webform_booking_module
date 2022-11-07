@@ -12,12 +12,7 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
 import LoadingSpinner from "./loading-spinner";
-import {
-  adjustAsyncResourcesBusinessHours,
-  handleBusyIntervals,
-  handleResources,
-  getScrollTime,
-} from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
@@ -39,6 +34,8 @@ import "./calendar.scss";
  * @param {object} props.urlResource The resource object loaded from URL id.
  * @param {Function} props.setDisplayState State of the calendar - "minimized" or "maximized"
  * @param {boolean} props.userHasInteracted Has the user interacted with filters
+ * @param {boolean} props.isLoading Loading state
+ * @param {Function} props.setIsLoading Loading state setter
  * @returns {JSX.Element} Calendar component.
  */
 function Calendar({
@@ -53,9 +50,8 @@ function Calendar({
   urlResource,
   setDisplayState,
   userHasInteracted,
-  allResources,
   isLoading,
-  setIsLoading
+  setIsLoading,
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -190,7 +186,7 @@ function Calendar({
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
     return <CalendarCellInfoButton resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
-  
+
   return (
     <div className="Calendar no-gutter col-md-12">
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
@@ -200,7 +196,7 @@ function Calendar({
         <NoResultOverlay state="noresult" />
       )}
       {isLoading && <LoadingSpinner />}
-      <CalendarHeader config={config} date={date} setDate={setDate} setIsLoading={setIsLoading} />
+      <CalendarHeader date={date} setDate={setDate} setIsLoading={setIsLoading} />
       <div className="row">
         <div className="col small-padding">
           <FullCalendar
@@ -231,7 +227,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
-            resourcesInitiallyExpanded={true}
+            resourcesInitiallyExpanded
             nowIndicator
             navLinks
             slotDuration="00:15:00"
@@ -248,9 +244,6 @@ function Calendar({
             locale={daLocale}
             select={onCalendarSelection}
             /* eslint-disable react/jsx-props-no-spreading */
-            // {...(allResources && {
-            //   resources: allResources.map((value) => {handleResources(value, date)}),
-            // })}
             {...(resources && {
               resources: resources.map((value) => handleResources(value, date)),
             })}
@@ -318,6 +311,8 @@ Calendar.propTypes = {
   setDisplayState: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}),
   userHasInteracted: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
 };
 
 Calendar.defaultProps = {

@@ -23,7 +23,6 @@ import "./map-wrapper.scss";
  *
  * @param {object} props Props.
  * @param {object} props.allResources All resources array
- * @param {object} props.resources Resources array
  * @param {object} props.config Config
  * @param {object} props.setLocationFilter Setter for location filter
  * @param {string} props.setBookingView Setter for booking view
