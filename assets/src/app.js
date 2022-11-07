@@ -4,7 +4,7 @@ import Select, { createFilter } from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
@@ -19,8 +19,8 @@ import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
 import { capacityOptions } from "./util/filter-utils";
 import { hasOwnProperty, filterAllResources, getFacilityOptions } from "./util/helpers";
-import { displayError } from "./util/display-toast";
 import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
+import "react-toastify/dist/ReactToastify.css";
 
 dayjs.locale("da");
 
@@ -118,7 +118,7 @@ function App() {
           setAllResources(loadedResources);
         })
         .catch((fetchAllResourcesError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
         });
     }
 
@@ -128,7 +128,7 @@ function App() {
           setUrlResource(loadedResource);
         })
         .catch((fetchResourceError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
         });
     }
   }, [config]);
@@ -285,7 +285,7 @@ function App() {
         .catch((fetchEventsError) => {
           setIsLoading(false);
 
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
   }, [resources, date]);
@@ -311,15 +311,7 @@ function App() {
   return (
     <div>
       <div className="App">
-        <ToastContainer
-          autoClose="10000"
-          position="bottom-right"
-          hideProgressBar={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          progress={undefined}
-        />
+        <ToastContainer position="bottom-right" autoClose={5000} />
         <div className="container-fluid">
           {config && <MainNavigation config={config} />}
           <div className="app-wrapper">
