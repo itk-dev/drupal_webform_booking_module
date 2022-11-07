@@ -159,6 +159,15 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
     }
   }, [calendarSelection, events]);
 
+  const getEvents = (events) => {
+    const mappedEvents = events.map((value) => handleBusyIntervals(value));
+
+    // Filter out existing booking from busy intervals, to avoid blocking booking editing.
+    return mappedEvents.filter((obj) => {
+      return !(obj.start === booking.start && obj.end === booking.end);
+    })
+  }
+
   return (
     <div className="main-container">
       <div className="Calendar no-gutter col-md-12">
@@ -239,7 +248,7 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
                   }}
                   resourceOrder="resourceId"
                   resources={resources.map((value) => handleResources(value, date))}
-                  events={events.map((value) => handleBusyIntervals(value))}
+                  events={getEvents(events)}
                 />
 
                 <button type="button" onClick={close} style={{ margin: "1em 0" }}>
