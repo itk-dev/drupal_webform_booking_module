@@ -159,14 +159,14 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
     }
   }, [calendarSelection, events]);
 
-  const getEvents = (events) => {
-    const mappedEvents = events.map((value) => handleBusyIntervals(value));
+  const getBusyIntervals = (busyIntervals) => {
+    const mappedBusyIntervals = busyIntervals.map((value) => handleBusyIntervals(value));
 
-    // Filter out existing booking from busy intervals, to avoid blocking booking editing.
-    return mappedEvents.filter((obj) => {
+    // Filter out existing bookings from busy intervals, to avoid blocking booking editing.
+    return mappedBusyIntervals.filter((obj) => {
       return !(obj.start === booking.start && obj.end === booking.end);
-    })
-  }
+    });
+  };
 
   return (
     <div className="main-container">
@@ -248,7 +248,7 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
                   }}
                   resourceOrder="resourceId"
                   resources={resources.map((value) => handleResources(value, date))}
-                  events={getEvents(events)}
+                  events={getBusyIntervals(events)}
                 />
 
                 <button type="button" onClick={close} style={{ margin: "1em 0" }}>
