@@ -11,12 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
-import {
-  adjustAsyncResourcesBusinessHours,
-  handleBusyIntervals,
-  handleResources,
-  getScrollTime,
-} from "../util/calendar-utils";
+import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { removeEmptyAriaLabelled, tabindexCalendar } from "../util/dom-manipulation-utils";
@@ -122,11 +117,6 @@ function Calendar({
       calendarRef?.current?.getApi().gotoDate(date);
 
       calendarRef?.current?.getApi().select(calendarSelection);
-    }
-    if (calendarRef) {
-      const currentlyLoadedResources = calendarRef?.current?.getApi().getResources();
-
-      adjustAsyncResourcesBusinessHours(currentlyLoadedResources, calendarRef, date);
     }
   }, [date]);
 
@@ -247,6 +237,7 @@ function Calendar({
               hour: "numeric",
               omitZeroMinute: false,
             }}
+            resourcesInitiallyExpanded
             nowIndicator
             navLinks
             slotDuration="00:15:00"
@@ -305,7 +296,7 @@ Calendar.propTypes = {
     resource: PropTypes.shape({
       _resource: PropTypes.shape({
         title: PropTypes.string.isRequired,
-      }).isRequired,
+      }),
     }),
     start: PropTypes.shape({
       toISOString: PropTypes.func.isRequired,

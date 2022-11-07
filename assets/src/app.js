@@ -12,6 +12,7 @@ import ResourceView from "./components/resource-view";
 import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
+import MapWrapper from "./components/map-wrapper";
 import MainNavigation from "./components/main-navigation";
 import UserPanel from "./components/user-panel";
 import Api from "./util/api";
@@ -53,6 +54,8 @@ function App() {
   // TODO: Handle this in another way so the propType does not throw a warning.
   const [resources, setResources] = useState(null); // The result after filtering resources
   const [showResourceDetails, setShowResourceDetails] = useState(null); // ID of the displayed resource.
+  // eslint-disable-next-line no-unused-vars
+  const [allResources, setAllResources] = useState([]);
   // App output. - Data to be pushed to API or used as parameters for redirect.
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
@@ -76,6 +79,14 @@ function App() {
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
+      Api.fetchAllResources(config.api_endpoint)
+        .then((loadedResources) => {
+          setAllResources(loadedResources);
+        })
+        .catch((fetchAllResourcesError) => {
+          displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+        });
+
       Api.fetchLocations(config.api_endpoint)
         .then((loadedLocations) => {
           setLocationOptions(
@@ -137,7 +148,7 @@ function App() {
         start: new Date(validUrlParams.get("from")),
         end: new Date(validUrlParams.get("to")),
         allDay: false,
-        resource: validUrlParams.get("resource"),
+        resource: urlResource,
       });
     }
   }, [urlResource]);
@@ -281,7 +292,7 @@ function App() {
       document.getElementById(config.output_field_id).value = JSON.stringify({
         start: calendarSelection.start,
         end: calendarSelection.end,
-        resourceId: calendarSelection.resourceId,
+        resourceId: calendarSelection?.resource?.resourceMail ?? calendarSelection.resourceId,
         ...authorFields,
       });
     }
@@ -408,14 +419,6 @@ function App() {
                         <button
                           type="button"
                           onClick={viewSwapHandler}
-                          data-view="map"
-                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
-                        >
-                          Kort
-                        </button>
-                        <button
-                          type="button"
-                          onClick={viewSwapHandler}
                           data-view="calendar"
                           className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
                         >
@@ -429,12 +432,25 @@ function App() {
                         >
                           Liste
                         </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="map"
+                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kort
+                        </button>
                       </div>
                     </div>
 
                     {bookingView === "map" && (
                       <div className="row no-gutter main-container map">
-                        <h2>Map view!</h2>
+                        <MapWrapper
+                          allResources={allResources}
+                          config={config}
+                          setLocationFilter={setLocationFilter}
+                          setBookingView={setBookingView}
+                        />
                       </div>
                     )}
                     {bookingView === "list" && (
@@ -481,12 +497,12 @@ function App() {
                   </div>
                 )}
 
-                {config && validUrlParams && urlResource && displayState === "minimized" && (
+                {config && urlResource && displayState === "minimized" && calendarSelection && (
                   <div className="row">
                     <MinimizedDisplay
-                      validUrlParams={validUrlParams}
                       setDisplayState={setDisplayState}
                       urlResource={urlResource}
+                      calendarSelection={calendarSelection}
                     />
                   </div>
                 )}

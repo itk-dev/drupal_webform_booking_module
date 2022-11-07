@@ -5,6 +5,8 @@ import Api from "../util/api";
 import LoadingSpinner from "./loading-spinner";
 import { displayError } from "../util/display-toast";
 import "./user-panel.scss";
+import UserBookingEdit from "./user-booking-edit";
+import UserBookingDelete from "./user-booking-delete";
 
 /**
  * @param {object} props Props.
@@ -14,21 +16,50 @@ import "./user-panel.scss";
 function UserPanel({ config }) {
   const [loading, setLoading] = useState(true);
   const [userBookings, setUserBookings] = useState();
+  const [editBooking, setEditBooking] = useState(null);
+  const [deleteBooking, setDeleteBooking] = useState(null);
+  const [changedBookingId, setChangedBookingId] = useState(null);
 
-  /** @param {string} bookingId Booking id to request deletion of. */
-  const requestDeletion = (bookingId) => {
-    if (bookingId) {
-      const requestBookingId = btoa(bookingId);
+  const onBookingChanged = (changedBooking) => {
+    setEditBooking(null);
 
-      Api.deleteBooking(config.api_endpoint, requestBookingId)
-        .then(() => {
-          // TODO: Report delete success.
-          // TODO: Update list of bookings.
-        })
-        .catch((deleteBookingError) => {
-          displayError("Der opstod en fejl. Prøv igen senere...", deleteBookingError);
-        });
-    }
+    setLoading(true);
+
+    setChangedBookingId(changedBooking.id);
+
+    Api.fetchUserBookings(config.api_endpoint)
+      .then((loadedUserBookings) => {
+        setUserBookings(loadedUserBookings);
+      })
+      .catch((fetchUserBookingsError) => {
+        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const onBookingDeleted = () => {
+    setDeleteBooking(null);
+
+    setLoading(true);
+
+    Api.fetchUserBookings(config.api_endpoint)
+      .then((loadedUserBookings) => {
+        setUserBookings(loadedUserBookings);
+      })
+      .catch((fetchUserBookingsError) => {
+        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const close = () => {
+    setDeleteBooking(null);
+
+    setEditBooking(null);
   };
 
   /**
@@ -56,33 +87,48 @@ function UserPanel({ config }) {
   }, [config]);
 
   return (
-    <div className="userpanel row">
-      <div className="col no-gutter">
-        <div className="userbookings-container">
-          {loading && <LoadingSpinner />}
-          {!loading &&
-            userBookings &&
-            Object.values(userBookings).map((obj) => (
-              <div className="user-booking" key={obj.id}>
-                <div>
-                  <span className="location">{obj.displayName}</span>
-                  <span className="subject">{obj.subject}</span>
-                </div>
-                <div>
-                  <span>{getFormattedDateTime(obj.start)}</span>
-                  <span>→</span>
-                  <span>{getFormattedDateTime(obj.end)}</span>
-                </div>
-                <div>
-                  <button type="button" onClick={() => requestDeletion(obj.hitId)}>
-                    Anmod om sletning
-                  </button>
-                </div>
-              </div>
-            ))}
+    <>
+      {deleteBooking && (
+        <UserBookingDelete config={config} booking={deleteBooking} onBookingDeleted={onBookingDeleted} close={close} />
+      )}
+      {editBooking && (
+        <UserBookingEdit config={config} booking={editBooking} onBookingChanged={onBookingChanged} close={close} />
+      )}
+      {!editBooking && !deleteBooking && (
+        <div className="userpanel row">
+          <div className="col no-gutter">
+            <div className="userbookings-container">
+              {loading && <LoadingSpinner />}
+              {!loading &&
+                !editBooking &&
+                userBookings &&
+                Object.values(userBookings).map((obj) => (
+                  <div className="user-booking" key={obj.id}>
+                    {obj.id === changedBookingId && <>Ændring gennemført.</>}
+                    <div>
+                      <span className="location">{obj.displayName}</span>
+                      <span className="subject">{obj.subject}</span>
+                    </div>
+                    <div>
+                      <span>{getFormattedDateTime(obj.start)}</span>
+                      <span>→</span>
+                      <span>{getFormattedDateTime(obj.end)}</span>
+                    </div>
+                    <div>
+                      <button type="button" onClick={() => setDeleteBooking(obj)}>
+                        Anmod om sletning
+                      </button>
+                      <button type="button" onClick={() => setEditBooking(obj)}>
+                        Anmod om ændring af tidspunkt
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

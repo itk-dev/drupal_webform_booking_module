@@ -7,12 +7,12 @@ import "./minimized-display.scss";
  * Minimized display component.
  *
  * @param {object} props Props.
- * @param {object} props.validUrlParams Validated parameters.
  * @param {Function} props.setDisplayState Set display state function.
  * @param {object} props.urlResource Resource fetched from URL.
+ * @param {object} props.calendarSelection A selection in calendar.
  * @returns {JSX.Element} Calendar header component.
  */
-function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
+function MinimizedDisplay({ setDisplayState, urlResource, calendarSelection }) {
   const onChangeBooking = () => {
     setDisplayState("maximized");
   };
@@ -29,9 +29,9 @@ function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
               <span className="subject">{urlResource.resourceName}</span>
             </div>
             <div>
-              <span>{formatUrlDate(validUrlParams.get("from"))}</span>
+              <span>{formatUrlDate(calendarSelection.start)}</span>
               <span>→</span>
-              <span>{formatUrlDate(validUrlParams.get("to"))}</span>
+              <span>{formatUrlDate(calendarSelection.end)}</span>
             </div>
             <div>
               <button id="change-booking" type="button" onClick={onChangeBooking}>
@@ -46,18 +46,15 @@ function MinimizedDisplay({ validUrlParams, setDisplayState, urlResource }) {
 }
 
 MinimizedDisplay.propTypes = {
-  validUrlParams: PropTypes.shape({
-    get: PropTypes.func.isRequired,
-  }),
   setDisplayState: PropTypes.func.isRequired,
   urlResource: PropTypes.shape({
     location: PropTypes.string.isRequired,
     resourceName: PropTypes.string.isRequired,
   }).isRequired,
-};
-
-MinimizedDisplay.defaultProps = {
-  validUrlParams: null,
+  calendarSelection: PropTypes.shape({
+    start: PropTypes.shape({}),
+    end: PropTypes.shape({}),
+  }).isRequired,
 };
 
 export default MinimizedDisplay;
