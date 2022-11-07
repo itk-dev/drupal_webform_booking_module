@@ -75,7 +75,7 @@ export function filterAllResources(allResources, filterParams) {
         matchingState = 2;
       }
     }
-    
+
     // Filtrering på catering
     if (filterParams.catering) {
       if (!resource.catering && matchingState === 2) {
