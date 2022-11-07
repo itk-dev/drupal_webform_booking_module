@@ -21,6 +21,7 @@ import UrlValidator from "./util/url-validator";
 import { capacityOptions, facilityOptions } from "./util/filter-utils";
 import hasOwnProperty from "./util/helpers";
 import { displayError } from "./util/display-toast";
+import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
 
 dayjs.locale("da");
 
@@ -59,6 +60,8 @@ function App() {
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
   const [userHasInteracted, setUserHasInteracted] = useState(false);
+
+  setAriaLabelFilters();
 
   // Get configuration.
   useEffect(() => {
@@ -323,59 +326,83 @@ function App() {
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        {/* Dropdown with locations */}
-                        <Select
-                          styles={{}}
-                          defaultValue={locationFilter}
-                          placeholder="lokationer..."
-                          closeMenuOnSelect={false}
-                          options={locationOptions}
-                          onChange={(selectedLocations) => {
-                            setLocationFilter(selectedLocations);
-                          }}
-                          isMulti
-                        />
+                        <label htmlFor="location-filter">
+                          Filtrér på lokationer
+                          {/* Dropdown with locations */}
+                          <Select
+                            styles={{}}
+                            id="location-filter"
+                            className="filter"
+                            defaultValue={locationFilter}
+                            placeholder="lokationer..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={locationOptions}
+                            onChange={(selectedLocations) => {
+                              setLocationFilter(selectedLocations);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        {/* Dropdown with resources */}
-                        <Select
-                          styles={{}}
-                          defaultValue={resourceFilter}
-                          placeholder="ressourcer..."
-                          closeMenuOnSelect={false}
-                          options={resourcesOptions}
-                          onChange={(selectedResources) => {
-                            setResourceFilter(selectedResources);
-                          }}
-                          isMulti
-                        />
+                        <label htmlFor="resource-filter">
+                          Filtrér på lokaler/resource
+                          {/* Dropdown with resources */}
+                          <Select
+                            styles={{}}
+                            id="resource-filter"
+                            className="filter"
+                            defaultValue={resourceFilter}
+                            placeholder="ressourcer..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={resourcesOptions}
+                            onChange={(selectedResources) => {
+                              setResourceFilter(selectedResources);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
-                      {/* Dropdown with facilities */}
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <Select
-                          styles={{}}
-                          defaultValue={facilityFilter}
-                          placeholder="Facilitieter..."
-                          closeMenuOnSelect={false}
-                          options={facilityOptions}
-                          onChange={(selectedFacilities) => {
-                            setFacilityFilter(selectedFacilities);
-                          }}
-                          isMulti
-                        />
+                        <label htmlFor="facility-filter">
+                          Filtrér på faciliteter
+                          {/* Dropdown with facilities */}
+                          <Select
+                            styles={{}}
+                            id="facility-filter"
+                            className="filter"
+                            defaultValue={facilityFilter}
+                            placeholder="Facilitieter..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={facilityOptions}
+                            onChange={(selectedFacilities) => {
+                              setFacilityFilter(selectedFacilities);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
-                      {/* Dropdown with capacity */}
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <Select
-                          styles={{}}
-                          defaultValue={{ value: "0", label: "Alle", type: "gt" }}
-                          placeholder="Siddepladser..."
-                          closeMenuOnSelect
-                          options={capacityOptions}
-                          onChange={(selectedCapacity) => {
-                            setCapacityFilter(selectedCapacity);
-                          }}
-                        />
+                        <label htmlFor="capacity-filter">
+                          Filtrér på kapacitet
+                          {/* Dropdown with capacity */}
+                          <Select
+                            styles={{}}
+                            id="capacity-filter"
+                            className="filter"
+                            defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                            placeholder="Siddepladser..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect
+                            options={capacityOptions}
+                            onChange={(selectedCapacity) => {
+                              setCapacityFilter(selectedCapacity);
+                            }}
+                          />
+                        </label>
                       </div>
                     </div>
 

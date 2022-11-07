@@ -14,7 +14,7 @@ import CalendarHeader from "./calendar-header";
 import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
-import { ReactComponent as IconChair } from "../assets/chair.svg";
+import { removeEmptyAriaLabelled, tabindexCalendar } from "../util/dom-manipulation-utils";
 import NoResultOverlay from "./no-result-overlay";
 import "./calendar.scss";
 
@@ -53,6 +53,10 @@ function Calendar({
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
   const dateNow = new Date();
+
+  removeEmptyAriaLabelled();
+
+  tabindexCalendar();
 
   /**
    * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
@@ -192,7 +196,7 @@ function Calendar({
   };
 
   return (
-    <div className="Calendar no-gutter col-md-12">
+    <div className="Calendar no-gutter col" role="application">
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
         <NoResultOverlay state="initial" />
       )}
@@ -200,8 +204,11 @@ function Calendar({
         <NoResultOverlay state="noresult" />
       )}
       <CalendarHeader config={config} date={date} setDate={setDate} />
-      <div className="row">
+      <div className="row" aria-hidden="true">
         <div className="col small-padding">
+          <div hidden id="calendar-caption">
+            Kalender booking element
+          </div>
           <FullCalendar
             ref={calendarRef}
             plugins={[
@@ -263,9 +270,9 @@ function Calendar({
                 },
               },
               {
-                headerContent: <IconChair />,
+                headerContent: ["Kapacitet"],
                 headerClassNames: "resource-calendar-capacity-header",
-                width: "60px",
+                width: "85px",
                 cellClassNames: "resource-calendar-capacity-value",
                 cellContent(arg) {
                   return arg.resource.extendedProps.capacity;
