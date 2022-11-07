@@ -12,32 +12,38 @@ import { ReactComponent as IconCandles } from "../assets/candles.svg";
  * @returns {object} Object of facility objects.
  */
 export default function getResourceFacilities(resource) {
+  let resourceObj = resource;
+
+  if (resource.extendedProps) {
+    resourceObj = resource.extendedProps;
+  }
+
   return {
-    ...(resource.monitorEquipment && {
+    ...(resourceObj.monitorEquipment && {
       monitorequipment: {
         title: "Projektor / Skærm",
         icon: <IconProjector />,
       },
     }),
-    ...(resource.wheelchairAccessible && {
+    ...(resourceObj.wheelchairAccessible && {
       wheelchairaccessible: {
         title: "Handicapvenligt",
         icon: <IconWheelchair />,
       },
     }),
-    ...(resource.videoConferenceEquipment && {
+    ...(resourceObj.videoConferenceEquipment && {
       videoconferenceequipment: {
         title: "Videoconference",
         icon: <IconVideoCamera />,
       },
     }),
-    ...(resource.catering && {
+    ...(resourceObj.catering && {
       catering: {
         title: "Forplejning",
         icon: <IconFood />,
       },
     }),
-    ...(resource.holidayOpeningHours && {
+    ...(resourceObj.holidayOpeningHours && {
       holidayOpeningHours: {
         title: "Tilgængelig på helligdag",
         icon: <IconCandles />,

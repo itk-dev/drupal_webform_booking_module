@@ -105,7 +105,10 @@ export function handleResources(value, currentCalendarDate) {
       building: value.location,
       description: value.resourcedescription,
       image: "http://placekitten.com/1920/1080",
-      facilities: value.facilities,
+      monitorEquipment: value.monitorEquipment,
+      videoConferenceEquipment: value.videoConferenceEquipment,
+      wheelchairAccessible: value.wheelchairAccessible,
+      catering: value.catering,
       businessHours: businessHoursArray,
     };
   }
@@ -118,7 +121,10 @@ export function handleResources(value, currentCalendarDate) {
     building: value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
-    facilities: value.facilities,
+    monitorEquipment: value.monitorEquipment,
+    videoConferenceEquipment: value.videoConferenceEquipment,
+    wheelchairAccessible: value.wheelchairAccessible,
+    catering: value.catering,
     businessHours: {
       startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
