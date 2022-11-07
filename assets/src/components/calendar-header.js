@@ -53,6 +53,7 @@ function CalendarHeader({ date, setDate, setIsLoading }) {
           <div className="col-sm-4 small-padding datepicker-container">
             <div className="datepicker">
               <label htmlFor="calendar-datepicker" className="datepicker-label">
+                <span hidden>Dato</span>
                 <input
                   type="date"
                   id="calendar-datepicker"

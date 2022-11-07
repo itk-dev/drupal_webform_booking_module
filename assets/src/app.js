@@ -20,6 +20,7 @@ import UrlValidator from "./util/url-validator";
 import { capacityOptions } from "./util/filter-utils";
 import { hasOwnProperty, filterAllResources, getFacilityOptions } from "./util/helpers";
 import { displayError } from "./util/display-toast";
+import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
 
 dayjs.locale("da");
 
@@ -59,6 +60,8 @@ function App() {
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  setAriaLabelFilters();
 
   // Get configuration.
   useEffect(() => {
@@ -160,7 +163,7 @@ function App() {
         start: new Date(validUrlParams.get("from")),
         end: new Date(validUrlParams.get("to")),
         allDay: false,
-        resource: validUrlParams.get("resource"),
+        resource: urlResource,
       });
     }
   }, [urlResource]);
@@ -293,7 +296,7 @@ function App() {
       document.getElementById(config.output_field_id).value = JSON.stringify({
         start: calendarSelection.start,
         end: calendarSelection.end,
-        resourceId: calendarSelection.resourceId,
+        resourceId: calendarSelection?.resource?.resourceMail ?? calendarSelection.resourceId,
         ...authorFields,
       });
     }
@@ -326,62 +329,86 @@ function App() {
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        {/* Dropdown with locations */}
-                        <Select
-                          styles={{}}
-                          defaultValue={locationFilter}
-                          placeholder="lokationer..."
-                          closeMenuOnSelect={false}
-                          value={locationFilter}
-                          options={locationOptions}
-                          onChange={(selectedLocations) => {
-                            setLocationFilter(selectedLocations);
-                          }}
-                          filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
-                          isMulti
-                        />
+                        <label htmlFor="location-filter">
+                          Filtrér på lokationer
+                          {/* Dropdown with locations */}
+                          <Select
+                            styles={{}}
+                            id="location-filter"
+                            className="filter"
+                            defaultValue={locationFilter}
+                            value={locationFilter}
+                            placeholder="lokationer..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={locationOptions}
+                            onChange={(selectedLocations) => {
+                              setLocationFilter(selectedLocations);
+                            }}
+                            filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
+                            isMulti
+                          />
+                        </label>
                       </div>
                       <div className="col-md-3 col-xs-12 small-padding">
-                        {/* Dropdown with resources */}
-                        <Select
-                          styles={{}}
-                          defaultValue={resourceFilter}
-                          placeholder="ressourcer..."
-                          closeMenuOnSelect={false}
-                          options={resourcesOptions}
-                          onChange={(selectedResources) => {
-                            setResourceFilter(selectedResources);
-                          }}
-                          filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
-                          isMulti
-                        />
+                        <label htmlFor="resource-filter">
+                          Filtrér på lokaler/resource
+                          {/* Dropdown with resources */}
+                          <Select
+                            styles={{}}
+                            id="resource-filter"
+                            className="filter"
+                            defaultValue={resourceFilter}
+                            placeholder="ressourcer..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={resourcesOptions}
+                            onChange={(selectedResources) => {
+                              setResourceFilter(selectedResources);
+                            }}
+                            filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
+                            isMulti
+                          />
+                        </label>
                       </div>
-                      {/* Dropdown with facilities */}
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <Select
-                          styles={{}}
-                          defaultValue={facilityFilter}
-                          placeholder="Facilitieter..."
-                          closeMenuOnSelect={false}
-                          options={getFacilityOptions()}
-                          onChange={(selectedFacilities) => {
-                            setFacilityFilter(selectedFacilities);
-                          }}
-                          isMulti
-                        />
+                        <label htmlFor="facility-filter">
+                          Filtrér på faciliteter
+                          {/* Dropdown with facilities */}
+                          <Select
+                            styles={{}}
+                            id="facility-filter"
+                            className="filter"
+                            defaultValue={facilityFilter}
+                            placeholder="Facilitieter..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect={false}
+                            options={getFacilityOptions()}
+                            onChange={(selectedFacilities) => {
+                              setFacilityFilter(selectedFacilities);
+                            }}
+                            isMulti
+                          />
+                        </label>
                       </div>
-                      {/* Dropdown with capacity */}
                       <div className="col-md-3 col-xs-12 small-padding">
-                        <Select
-                          styles={{}}
-                          defaultValue={{ value: "0", label: "Alle", type: "gt" }}
-                          placeholder="Siddepladser..."
-                          closeMenuOnSelect
-                          options={capacityOptions}
-                          onChange={(selectedCapacity) => {
-                            setCapacityFilter(selectedCapacity);
-                          }}
-                        />
+                        <label htmlFor="capacity-filter">
+                          Filtrér på kapacitet
+                          {/* Dropdown with capacity */}
+                          <Select
+                            styles={{}}
+                            id="capacity-filter"
+                            className="filter"
+                            defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+                            placeholder="Siddepladser..."
+                            placeholderClassName="dropdown-placeholder"
+                            closeMenuOnSelect
+                            options={capacityOptions}
+                            onChange={(selectedCapacity) => {
+                              setCapacityFilter(selectedCapacity);
+                            }}
+                          />
+                        </label>
                       </div>
                     </div>
 
@@ -398,14 +425,6 @@ function App() {
                         <button
                           type="button"
                           onClick={viewSwapHandler}
-                          data-view="map"
-                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
-                        >
-                          Kort
-                        </button>
-                        <button
-                          type="button"
-                          onClick={viewSwapHandler}
                           data-view="calendar"
                           className={bookingView === "calendar" ? "active booking-btn" : "booking-btn"}
                         >
@@ -418,6 +437,14 @@ function App() {
                           className={bookingView === "list" ? "active booking-btn" : "booking-btn"}
                         >
                           Liste
+                        </button>
+                        <button
+                          type="button"
+                          onClick={viewSwapHandler}
+                          data-view="map"
+                          className={bookingView === "map" ? "active booking-btn" : "booking-btn"}
+                        >
+                          Kort
                         </button>
                       </div>
                     </div>
@@ -482,12 +509,12 @@ function App() {
                   </div>
                 )}
 
-                {config && validUrlParams && urlResource && displayState === "minimized" && (
+                {config && urlResource && displayState === "minimized" && calendarSelection && (
                   <div className="row">
                     <MinimizedDisplay
-                      validUrlParams={validUrlParams}
                       setDisplayState={setDisplayState}
                       urlResource={urlResource}
+                      calendarSelection={calendarSelection}
                     />
                   </div>
                 )}
