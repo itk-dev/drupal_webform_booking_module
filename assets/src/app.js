@@ -180,7 +180,7 @@ function App() {
 
       if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
         setIsLoading(true);
-
+       
         const matchingResources = filterAllResources(allResources, filterParams);
 
         setUserHasInteracted(true);
@@ -299,7 +299,6 @@ function App() {
 
   const viewSwapHandler = (event) => {
     const view = event.target.getAttribute("data-view");
-
     setBookingView(view);
   };
 

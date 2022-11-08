@@ -89,7 +89,7 @@ export function filterAllResources(allResources, filterParams) {
       const rangeArray = filterParams["capacity[between]"].split(",");
 
       if (resource.capacity >= rangeArray[0] && resource.capacity <= rangeArray[1]) {
-        // Så snart vi filtrerer på dette, er det afgørende uanset tidligere matches.
+        // If capacity is filtered, it should always overrule earlier matches.
         matchingState = 2;
       } else {
         matchingState = 0;
@@ -98,7 +98,7 @@ export function filterAllResources(allResources, filterParams) {
 
     // Capacity filter (greater than value)
     if (filterParams["capacity[gt]"] && matchingState !== 0) {
-      // Så snart vi filtrerer på dette, er det afgørende uanset tidligere matches.
+      // If capacity is filtered, it should always overrule earlier matches.
       if (resource.capacity >= filterParams["capacity[gt]"]) {
         matchingState = 2;
       } else {
