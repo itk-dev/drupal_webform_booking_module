@@ -81,13 +81,10 @@ function App() {
     if (resourcesOptions.length === allResources.length) {
       return;
     }
-    const locations = [];
 
-    Object.values(allResources).forEach((value) => {
-      if (value.location !== "" && locations.indexOf(value.location) === -1) {
-        locations.push(value.location);
-      }
-    });
+    const locations = [
+      ...new Set(allResources.filter((resource) => resource.location !== "").map((resource) => resource.location)),
+    ];
 
     setLocationOptions(
       locations
@@ -184,19 +181,17 @@ function App() {
       if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
         setIsLoading(true);
 
-        setTimeout(() => {
-          const matchingResources = filterAllResources(allResources, filterParams);
+        const matchingResources = filterAllResources(allResources, filterParams);
 
-          setUserHasInteracted(true);
+        setUserHasInteracted(true);
 
-          if (matchingResources.length !== 0) {
-            setResources(matchingResources);
-          } else {
-            setResources([]);
+        if (matchingResources.length !== 0) {
+          setResources(matchingResources);
+        } else {
+          setResources([]);
 
-            setIsLoading(false);
-          }
-        }, 100);
+          setIsLoading(false);
+        }
       } else {
         setResources([]);
       }

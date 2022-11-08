@@ -13,8 +13,6 @@ export function hasOwnProperty(obj, propertyName) {
  * @returns {Array} Containing resources matching given filters.
  */
 export function filterAllResources(allResources, filterParams) {
-  // const matchingResources = [];
-
   const matchingResources = allResources.filter((resource) => {
     /*
       0: no match
@@ -23,7 +21,7 @@ export function filterAllResources(allResources, filterParams) {
     */
     let matchingState = 1;
 
-    // Filtrering på location
+    // Location filter
     if (filterParams["location[]"] && filterParams["location[]"].length !== 0) {
       if (filterParams["location[]"].includes(resource.location)) {
         matchingState = 2;
@@ -32,31 +30,31 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // Filtrering på resource
+    // Resource filter
     if (filterParams["resourceMail[]"] && filterParams["resourceMail[]"].length !== 0) {
       if (filterParams["resourceMail[]"].includes(resource.resourceMail)) {
         matchingState = 2;
       } else if (matchingState === 2) {
-        // Hvis vi allerede har matchet, skal state forblive 2 da location og resource ikke afgrænser hinanden.
+        // If already matched, state persists, since location and resource does not intertwine.
         matchingState = 2;
       } else {
         matchingState = 0;
       }
     }
 
-    // Filtrering på videokonference
+    // VideoConference filter
     if (filterParams.videoConferenceEquipment) {
       if (!resource.videoConferenceEquipment && matchingState === 2) {
-        // Hvis vi kommer ind med et match, er det afgørende at dette matcher.
+        // If resource matched before now, this also has to match.
         matchingState = 0;
       }
       if (resource.videoConferenceEquipment && matchingState === 1) {
-        // Hvis vi kommer ind uden tidligere match, er der nu et match.
+        // If resource didn't match before now, it's now a match.
         matchingState = 2;
       }
     }
 
-    // Filtrering på projektor/skærm
+    // MonitorEquipment filter
     if (filterParams.monitorEquipment) {
       if (!resource.monitorEquipment && matchingState === 2) {
         matchingState = 0;
@@ -66,7 +64,7 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // Filtrering på handikapvenligt
+    // WheelchairAcessible filter
     if (filterParams.wheelchairAccessible) {
       if (!resource.wheelchairAccessible && matchingState === 2) {
         matchingState = 0;
@@ -76,7 +74,7 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // Filtrering på catering
+    // Catering filter
     if (filterParams.catering) {
       if (!resource.catering && matchingState === 2) {
         matchingState = 0;
@@ -86,7 +84,7 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // Filtrering på kapacitet (imellem to værdier)
+    // Capacity filter (between two values)
     if (filterParams["capacity[between]"] && matchingState !== 0) {
       const rangeArray = filterParams["capacity[between]"].split(",");
 
@@ -98,7 +96,7 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // Filtrering på kapacitet (større end)
+    // Capacity filter (greater than value)
     if (filterParams["capacity[gt]"] && matchingState !== 0) {
       // Så snart vi filtrerer på dette, er det afgørende uanset tidligere matches.
       if (resource.capacity >= filterParams["capacity[gt]"]) {
