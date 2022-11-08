@@ -194,21 +194,21 @@ class BookingController extends ControllerBase {
   }
 
   /**
-   * Get booking details for a given hitId.
+   * Get booking details for a given booking id.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   * @param string $hitId
+   * @param string $bookingId
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    * @throws \JsonException
    */
-  public function getUserBookingDetails(Request $request, string $hitId): JsonResponse {
+  public function getUserBookingDetails(Request $request, string $bookingId): JsonResponse {
     if ($this->bookingApiSampleData) {
       $data = SampleDataHelper::getSampleData("booking-details");
       return new JsonResponse($data, 200);
     }
 
-    $response = $this->bookingHelper->getUserBookingDetails($request, $hitId);
+    $response = $this->bookingHelper->getUserBookingDetails($request, $bookingId);
 
     return new JsonResponse($response['data'], $response['statusCode']);
   }
