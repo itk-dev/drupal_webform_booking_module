@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
-import Api from "../util/api";
-import LoadingSpinner from "./loading-spinner";
-import { displayError } from "../util/display-toast";
-import "./user-panel.scss";
-import UserBookingEdit from "./user-booking-edit";
-import UserBookingDelete from "./user-booking-delete";
+import Api from "./util/api";
+import LoadingSpinner from "./components/loading-spinner";
+import { displayError } from "./util/display-toast";
+import UserBookingEdit from "./components/user-booking-edit";
+import UserBookingDelete from "./components/user-booking-delete";
 
 /**
  * @param {object} props Props.
@@ -72,7 +71,7 @@ function UserPanel({ config }) {
 
   // Load user bookings.
   useEffect(() => {
-    if (config) {
+    if (config && !userBookings) {
       Api.fetchUserBookings(config.api_endpoint)
         .then((loadedUserBookings) => {
           setUserBookings(loadedUserBookings);
@@ -84,7 +83,7 @@ function UserPanel({ config }) {
           setLoading(false);
         });
     }
-  }, [config]);
+  }, []);
 
   const currentBookings = userBookings
     ? Object.values(userBookings).filter((obj) => !obj.expired && obj.status !== "DECLINED")
