@@ -63,7 +63,7 @@ itkdev_booking.user_bookings_patch:
     _access: 'TRUE'
 
 itkdev_booking.booking_details:
-  path: '/itkdev_booking/booking-details/{hitId}'
+  path: '/itkdev_booking/booking-details/{bookingId}'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\BookingController::getUserBookingDetails'
   methods: [GET]
