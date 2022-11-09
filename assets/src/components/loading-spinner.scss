@@ -1,14 +1,14 @@
 div.loader {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
+  top: 20px;
+  bottom: 20px;
+  right: 20px;
+  left: 20px;
+  height: calc(100% - 40px);
+  width: calc(100% - 40px);
+  background-color: #dee2e6;
   display: flex;
   z-index: 999;
-  background-color: #e9ecef;
   pointer-events: none;
 }
 

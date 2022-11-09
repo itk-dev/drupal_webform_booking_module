@@ -62,17 +62,16 @@ function ResourceDetails({ hideResourceView, showResourceDetails }) {
               <div>
                 <span>{showResourceDetails.location ?? showResourceDetails.extendedProps.building}</span>
               </div>
+            </div>
+          </div>
+          {showResourceDetails.resourceDescription && (
+            <div className="resource-description">
+              <span>Beskrivelse</span>
               <div>
-                <span>...</span>
+                <span>{showResourceDetails.resourceDescription ?? showResourceDetails.extendedProps.description}</span>
               </div>
             </div>
-          </div>
-          <div className="resource-description">
-            <span>Beskrivelse</span>
-            <div>
-              <span>{showResourceDetails.resourceDescription ?? showResourceDetails.extendedProps.description}</span>
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>

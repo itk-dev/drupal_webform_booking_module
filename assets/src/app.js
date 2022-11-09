@@ -1,15 +1,14 @@
 import "./app.scss";
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import dayjs from "dayjs";
 import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
 import ResourceView from "./components/resource-view";
-import LoadingSpinner from "./components/loading-spinner";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
 import MapWrapper from "./components/map-wrapper";
@@ -18,10 +17,10 @@ import UserPanel from "./components/user-panel";
 import Api from "./util/api";
 import ConfigLoader from "./util/config-loader";
 import UrlValidator from "./util/url-validator";
-import { capacityOptions, facilityOptions } from "./util/filter-utils";
-import hasOwnProperty from "./util/helpers";
-import { displayError } from "./util/display-toast";
+import { capacityOptions } from "./util/filter-utils";
+import { hasOwnProperty, filterAllResources, getFacilityOptions } from "./util/helpers";
 import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
+import "react-toastify/dist/ReactToastify.css";
 
 dayjs.locale("da");
 
@@ -60,6 +59,7 @@ function App() {
   const [authorFields, setAuthorFields] = useState({ subject: "", email: "" }); // Additional fields for author information.
   const [calendarSelection, setCalendarSelection] = useState({}); // The selection of a time span in calendar.
   const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   setAriaLabelFilters();
 
@@ -76,6 +76,37 @@ function App() {
     }
   }, []);
 
+  // Loop allresources and set filter options
+  useEffect(() => {
+    if (resourcesOptions.length === allResources.length) {
+      return;
+    }
+
+    const locations = [
+      ...new Set(allResources.filter((resource) => resource.location !== "").map((resource) => resource.location)),
+    ];
+
+    setLocationOptions(
+      locations
+        .map((value) => {
+          return {
+            value,
+            label: value,
+          };
+        })
+        .sort()
+    );
+
+    setResourcesOptions(
+      allResources.map((value) => {
+        return {
+          value: value.resourceMail,
+          label: value.resourceName,
+        };
+      })
+    );
+  }, [allResources]);
+
   // Effects to run when config is loaded. This should only happen once at app initialisation.
   useEffect(() => {
     if (config) {
@@ -84,26 +115,7 @@ function App() {
           setAllResources(loadedResources);
         })
         .catch((fetchAllResourcesError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
-        });
-
-      Api.fetchLocations(config.api_endpoint)
-        .then((loadedLocations) => {
-          setLocationOptions(
-            loadedLocations
-              .map((value) => {
-                return {
-                  value: value.name,
-                  label: value.name,
-                };
-              })
-              .sort()
-          );
-
-          setResourceFilter([]);
-        })
-        .catch((fetchLocationsError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchLocationsError);
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
         });
     }
 
@@ -113,7 +125,7 @@ function App() {
           setUrlResource(loadedResource);
         })
         .catch((fetchResourceError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
         });
     }
   }, [config]);
@@ -167,17 +179,19 @@ function App() {
       });
 
       if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
-        Api.fetchResources(config.api_endpoint, urlSearchParams)
-          .then((loadedResources) => {
-            setTimeout(() => {
-              setResources(loadedResources);
+        setIsLoading(true);
 
-              setUserHasInteracted(true);
-            }, 1);
-          })
-          .catch((fetchResourcesError) => {
-            displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
-          });
+        const matchingResources = filterAllResources(allResources, filterParams);
+
+        setUserHasInteracted(true);
+
+        if (matchingResources.length !== 0) {
+          setResources(matchingResources);
+        } else {
+          setResources([]);
+
+          setIsLoading(false);
+        }
       } else {
         setResources([]);
       }
@@ -189,27 +203,6 @@ function App() {
     const locationValues = locationFilter.map(({ value }) => value);
 
     setFilterParams({ ...filterParams, ...{ "location[]": locationValues } });
-
-    // Set resource dropdown options.
-    if (config) {
-      const dropdownParams = locationFilter.map(({ value }) => ["location[]", value]);
-      const urlSearchParams = new URLSearchParams(dropdownParams);
-
-      Api.fetchResources(config.api_endpoint, urlSearchParams)
-        .then((loadedResources) => {
-          setResourcesOptions(
-            loadedResources.map((value) => {
-              return {
-                value: value.resourceMail,
-                label: value.resourceName,
-              };
-            })
-          );
-        })
-        .catch((fetchResourcesError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchResourcesError);
-        });
-    }
   }, [locationFilter]);
 
   // Set resource filter.
@@ -279,9 +272,15 @@ function App() {
       Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
         .then((loadedEvents) => {
           setEvents(loadedEvents);
+
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 200);
         })
         .catch((fetchEventsError) => {
-          displayError("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
+          setIsLoading(false);
+
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
   }, [resources, date]);
@@ -307,21 +306,12 @@ function App() {
   return (
     <div>
       <div className="App">
-        <ToastContainer
-          autoClose="10000"
-          position="bottom-right"
-          hideProgressBar={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          progress={undefined}
-        />
+        <ToastContainer position="bottom-right" autoClose={5000} />
         <div className="container-fluid">
           {config && <MainNavigation config={config} />}
           <div className="app-wrapper">
             {config && config.create_booking_mode && (
               <div>
-                {!config && <LoadingSpinner />}
                 {config && config && displayState === "maximized" && (
                   <div className="app-content">
                     <div className={`row filters-wrapper ${showResourceDetails !== null ? "disable-filters" : ""}`}>
@@ -334,6 +324,7 @@ function App() {
                             id="location-filter"
                             className="filter"
                             defaultValue={locationFilter}
+                            value={locationFilter}
                             placeholder="lokationer..."
                             placeholderClassName="dropdown-placeholder"
                             closeMenuOnSelect={false}
@@ -341,6 +332,9 @@ function App() {
                             onChange={(selectedLocations) => {
                               setLocationFilter(selectedLocations);
                             }}
+                            isLoading={Object.values(locationOptions).length === 0}
+                            loadingMessage={() => "Henter lokationer.."}
+                            filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
                             isMulti
                           />
                         </label>
@@ -361,6 +355,9 @@ function App() {
                             onChange={(selectedResources) => {
                               setResourceFilter(selectedResources);
                             }}
+                            isLoading={Object.values(resourcesOptions).length === 0}
+                            loadingMessage={() => "Henter ressourcer.."}
+                            filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
                             isMulti
                           />
                         </label>
@@ -377,7 +374,7 @@ function App() {
                             placeholder="Facilitieter..."
                             placeholderClassName="dropdown-placeholder"
                             closeMenuOnSelect={false}
-                            options={facilityOptions}
+                            options={getFacilityOptions()}
                             onChange={(selectedFacilities) => {
                               setFacilityFilter(selectedFacilities);
                             }}
@@ -459,7 +456,11 @@ function App() {
                           showResourceDetails !== null ? "resourceview-visible" : ""
                         }`}
                       >
-                        <ListContainer resources={resources} setShowResourceDetails={setShowResourceDetails} />
+                        <ListContainer
+                          resources={resources}
+                          setShowResourceDetails={setShowResourceDetails}
+                          isLoading={isLoading}
+                        />
                         <ResourceView
                           showResourceDetails={showResourceDetails}
                           setShowResourceDetails={setShowResourceDetails}
@@ -486,6 +487,8 @@ function App() {
                           setDisplayState={setDisplayState}
                           showResourceDetails={showResourceDetails}
                           userHasInteracted={userHasInteracted}
+                          isLoading={isLoading}
+                          setIsLoading={setIsLoading}
                         />
                         {/* TODO: Only show if resource view is requested */}
                         <ResourceView

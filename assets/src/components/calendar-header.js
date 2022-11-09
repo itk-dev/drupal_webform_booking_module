@@ -9,9 +9,10 @@ import "./calendar-header.scss";
  * @param {object} props Props.
  * @param {object} props.date Date.
  * @param {Function} props.setDate Set date function.
+ * @param {Function} props.setIsLoading Loading state setter.
  * @returns {JSX.Element} Calendar header component.
  */
-function CalendarHeader({ date, setDate }) {
+function CalendarHeader({ date, setDate, setIsLoading }) {
   const onChangeDate = (event) => {
     switch (event.target.id) {
       case "calendar-today":
@@ -21,11 +22,15 @@ function CalendarHeader({ date, setDate }) {
       case "calendar-back":
         if (new Date() < date) {
           setDate(new Date(dayjs(date).subtract(1, "day").format("YYYY-MM-DD")));
+
+          setIsLoading(true);
         }
 
         break;
       case "calendar-forward":
         setDate(new Date(dayjs(date).add(1, "day").format("YYYY-MM-DD")));
+
+        setIsLoading(true);
 
         break;
       case "calendar-datepicker":
@@ -87,6 +92,7 @@ function CalendarHeader({ date, setDate }) {
 CalendarHeader.propTypes = {
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
 };
 
 export default CalendarHeader;

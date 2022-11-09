@@ -11,6 +11,7 @@ import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
 import CalendarHeader from "./calendar-header";
+import LoadingSpinner from "./loading-spinner";
 import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
@@ -33,6 +34,8 @@ import "./calendar.scss";
  * @param {object} props.urlResource The resource object loaded from URL id.
  * @param {Function} props.setDisplayState State of the calendar - "minimized" or "maximized"
  * @param {boolean} props.userHasInteracted Has the user interacted with filters
+ * @param {boolean} props.isLoading Loading state
+ * @param {Function} props.setIsLoading Loading state setter
  * @returns {JSX.Element} Calendar component.
  */
 function Calendar({
@@ -47,6 +50,8 @@ function Calendar({
   urlResource,
   setDisplayState,
   userHasInteracted,
+  isLoading,
+  setIsLoading,
 }) {
   const calendarRef = useRef();
   const [internalSelection, setInternalSelection] = useState();
@@ -57,15 +62,6 @@ function Calendar({
   removeEmptyAriaLabelled();
 
   tabindexCalendar();
-
-  /**
-   * Fullcalendar flow - Only if (resources = null): If no resources are present, generateResourcePlaceholders is called
-   * via initialResources to generate resource placeholders based on locations. setPlaceholderClickEvent is called on
-   * every resource via the hook resourceGroupLabelDidMount, which handles creating click events, to expand them, for
-   * every placeholder. On placeholder click, fetchResourcesOnLocation is called, and all available resources for the
-   * given location is loaded. In the end of fetchResourcesOnLocation, asyncEvents is set, triggering the useEffect
-   * asyncEvents is subscribed to, loading the resource events.
-   */
 
   /**
    * OnCalenderSelection.
@@ -188,7 +184,8 @@ function Calendar({
 
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
-    setShowResourceDetails(resource);
+    // eslint-disable-next-line no-underscore-dangle
+    setShowResourceDetails(resource._resource);
   };
 
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
@@ -203,7 +200,8 @@ function Calendar({
       {(!resources || (resources && resources.length === 0)) && userHasInteracted && (
         <NoResultOverlay state="noresult" />
       )}
-      <CalendarHeader config={config} date={date} setDate={setDate} />
+      {isLoading && <LoadingSpinner />}
+      <CalendarHeader date={date} setDate={setDate} setIsLoading={setIsLoading} />
       <div className="row" aria-hidden="true">
         <div className="col small-padding">
           <div hidden id="calendar-caption">
@@ -321,6 +319,8 @@ Calendar.propTypes = {
   setDisplayState: PropTypes.func.isRequired,
   validUrlParams: PropTypes.shape({}),
   userHasInteracted: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
 };
 
 Calendar.defaultProps = {
