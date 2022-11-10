@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
+import { toast } from "react-toastify";
 // FullCalendar must be imported before FullCalendar plugins
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -10,13 +11,15 @@ import daLocale from "@fullcalendar/core/locales/da";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import * as PropTypes from "prop-types";
-import CalendarHeader from "./calendar-header";
-import LoadingSpinner from "./loading-spinner";
+import dayjs from "dayjs";
 import { handleBusyIntervals, handleResources, getScrollTime } from "../util/calendar-utils";
 import CalendarCellInfoButton from "./calendar-cell-info-button";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { removeEmptyAriaLabelled, tabindexCalendar } from "../util/dom-manipulation-utils";
 import NoResultOverlay from "./no-result-overlay";
+import Api from "../util/api";
+import CalendarHeader from "./calendar-header";
+import LoadingSpinner from "./loading-spinner";
 import "./calendar.scss";
 
 /**
@@ -24,7 +27,6 @@ import "./calendar.scss";
  *
  * @param {object} props Props.
  * @param {Array} props.resources Resources to show calendar for.
- * @param {Array} props.events Events to show in calendar.
  * @param {Date} props.date Date to show calendar for.
  * @param {Function} props.setDate Set date function.
  * @param {object} props.calendarSelection The current calendar selection.
@@ -40,7 +42,6 @@ import "./calendar.scss";
  */
 function Calendar({
   resources,
-  events,
   date,
   setDate,
   calendarSelection,
@@ -54,10 +55,11 @@ function Calendar({
   setIsLoading,
 }) {
   const calendarRef = useRef();
+  const dateNow = new Date();
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
-  const dateNow = new Date();
+  const [events, setEvents] = useState([]);
 
   removeEmptyAriaLabelled();
 
@@ -115,6 +117,25 @@ function Calendar({
       calendarRef?.current?.getApi().select(calendarSelection);
     }
   }, [date]);
+
+  // Get events for the given resources.
+  useEffect(() => {
+    if (config && resources?.length > 0 && date !== null) {
+      Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
+        .then((loadedEvents) => {
+          setEvents(loadedEvents);
+
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 200);
+        })
+        .catch((fetchEventsError) => {
+          setIsLoading(false);
+
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
+        });
+    }
+  }, [resources, date]);
 
   useEffect(() => {
     const highlightElement = document.querySelector("div.fc-highlight");
@@ -287,7 +308,6 @@ function Calendar({
 
 Calendar.propTypes = {
   resources: PropTypes.arrayOf(PropTypes.shape({})),
-  events: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
   calendarSelection: PropTypes.shape({
