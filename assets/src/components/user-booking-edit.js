@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
-import "./user-panel.scss";
 import FullCalendar from "@fullcalendar/react";
 import resourceTimegrid from "@fullcalendar/resource-timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -12,12 +11,12 @@ import listPlugin from "@fullcalendar/list";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import daLocale from "@fullcalendar/core/locales/da";
 import { handleBusyIntervals, handleResources } from "../util/calendar-utils";
-import "./calendar.scss";
 import CalendarHeader from "./calendar-header";
 import Api from "../util/api";
 import CalendarSelectionBox from "./calendar-selection-box";
 import { displayError, displaySuccess } from "../util/display-toast";
 import LoadingSpinner from "./loading-spinner";
+import "./calendar.scss";
 
 /**
  * @param {object} props Props.
@@ -212,7 +211,7 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
                   </div>
                 </div>
 
-                <CalendarHeader config={config} date={date} setDate={setDate} />
+                <CalendarHeader config={config} date={date} setDate={setDate} setIsLoading={() => {}} />
                 <FullCalendar
                   ref={calendarRef}
                   plugins={[

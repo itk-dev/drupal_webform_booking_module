@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import * as PropTypes from "prop-types";
-import "./user-panel.scss";
-import "./calendar.scss";
 import Api from "../util/api";
 import { displayError, displaySuccess } from "../util/display-toast";
 import LoadingSpinner from "./loading-spinner";
