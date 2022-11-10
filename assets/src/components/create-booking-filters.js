@@ -2,12 +2,8 @@ import React, { useEffect, useState } from "react";
 import Select, { createFilter } from "react-select";
 import * as PropTypes from "prop-types";
 import "react-toastify/dist/ReactToastify.css";
-import dayjs from "dayjs";
-import "dayjs/locale/da";
-import { capacityOptions, facilityOptions } from "./util/filter-utils";
-import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
-
-dayjs.locale("da");
+import { capacityOptions, facilityOptions } from "../util/filter-utils";
+import { setAriaLabelFilters } from "../util/dom-manipulation-utils";
 
 /**
  * CreateBooking component.

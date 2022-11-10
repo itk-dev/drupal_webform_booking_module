@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import "dayjs/locale/da";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as PropTypes from "prop-types";
@@ -16,10 +14,8 @@ import Api from "./util/api";
 import UrlValidator from "./util/url-validator";
 import { hasOwnProperty, filterAllResources } from "./util/helpers";
 import "react-toastify/dist/ReactToastify.css";
-import CreateBookingFilters from "./create-booking-filters";
+import CreateBookingFilters from "./components/create-booking-filters";
 import CreateBookingTabs from "./components/create-booking-tabs";
-
-dayjs.locale("da");
 
 /**
  * CreateBooking component.

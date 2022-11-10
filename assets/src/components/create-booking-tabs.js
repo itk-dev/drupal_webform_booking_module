@@ -1,10 +1,6 @@
 import React from "react";
-import dayjs from "dayjs";
-import "dayjs/locale/da";
 import "react-toastify/dist/ReactToastify.css";
 import * as PropTypes from "prop-types";
-
-dayjs.locale("da");
 
 /**
  * CreateBookingTabs component.
