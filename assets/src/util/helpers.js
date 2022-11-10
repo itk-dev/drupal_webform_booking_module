@@ -118,14 +118,12 @@ export function filterAllResources(allResources, filterParams) {
 
 /** @returns {Array} Containing options to show */
 export function getFacilityOptions() {
-  const facilityOptions = [
+  return [
     { value: "monitorEquipment", label: "Projektor/Skærm" },
     { value: "wheelchairAccessible", label: "Handikapvenligt" },
     { value: "videoConferenceEquipment", label: "Videokonference" },
     { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
   ];
-
-  return facilityOptions;
 
   // TODO: Modify options array based on available resources.
 }

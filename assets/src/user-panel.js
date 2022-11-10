@@ -6,6 +6,7 @@ import LoadingSpinner from "./components/loading-spinner";
 import { displayError } from "./util/display-toast";
 import UserBookingEdit from "./components/user-booking-edit";
 import UserBookingDelete from "./components/user-booking-delete";
+import "./user-panel.scss";
 
 /**
  * @param {object} props Props.
