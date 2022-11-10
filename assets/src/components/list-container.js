@@ -15,7 +15,7 @@ import "./list-container.scss";
  */
 function ListContainer({ resources, setShowResourceDetails, userHasInteracted, isLoading }) {
   return (
-    <div className="List no-gutter col-md-12">
+    <div className={`List no-gutter col-md-12 ${(isLoading === true ? "list-loading":"")}`}>
       {isLoading && <LoadingSpinner />}
       {(!resources || (resources && resources.length === 0)) && !userHasInteracted && (
         <NoResultOverlay state="initial" />

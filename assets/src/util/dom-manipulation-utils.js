@@ -15,7 +15,7 @@ export function tabindexCalendar() {
   const scrollers = document.querySelectorAll(".fc-scroller");
 
   scrollers.forEach((selection) => {
-    selection.setAttribute("style", "tabindex:-1");
+    selection.setAttribute("tabindex", "-1");
   });
 }
 
