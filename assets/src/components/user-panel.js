@@ -86,6 +86,27 @@ function UserPanel({ config }) {
     }
   }, [config]);
 
+  const currentBookings = userBookings
+    ? Object.values(userBookings).filter((obj) => !obj.expired && obj.status !== "DECLINED")
+    : null;
+
+  const expiredBookings = userBookings
+    ? Object.values(userBookings).filter((obj) => obj.expired || obj.status === "DECLINED")
+    : null;
+
+  const getStatus = (status) => {
+    switch (status) {
+      case "ACCEPTED":
+        return "Godkendt";
+      case "DECLINED":
+        return "Afvist";
+      case "AWAITING_APPROVAL":
+        return "Afventer godkendelse";
+      default:
+        return "Ukendt status";
+    }
+  };
+
   return (
     <>
       {deleteBooking && (
@@ -97,17 +118,18 @@ function UserPanel({ config }) {
       {!editBooking && !deleteBooking && (
         <div className="userpanel row">
           <div className="col no-gutter">
-            <div className="userbookings-container">
-              {loading && <LoadingSpinner />}
-              {!loading &&
-                !editBooking &&
-                userBookings &&
-                Object.values(userBookings).map((obj) => (
+            {loading && <LoadingSpinner />}
+            {!loading && !editBooking && userBookings && (
+              <div className="userbookings-container">
+                <h3>Aktive bookinger</h3>
+
+                {currentBookings.map((obj) => (
                   <div className="user-booking" key={obj.id}>
-                    {obj.id === changedBookingId && <>Ændring gennemført.</>}
                     <div>
+                      {obj.id === changedBookingId && <>Ændring gennemført.</>}
                       <span className="location">{obj.displayName}</span>
                       <span className="subject">{obj.subject}</span>
+                      <span className="status">{getStatus(obj.status)}</span>
                     </div>
                     <div>
                       <span>{getFormattedDateTime(obj.start)}</span>
@@ -124,7 +146,29 @@ function UserPanel({ config }) {
                     </div>
                   </div>
                 ))}
-            </div>
+              </div>
+            )}
+
+            {!loading && !editBooking && expiredBookings && (
+              <div className="userbookings-container">
+                <h3>Afsluttede bookinger</h3>
+                {expiredBookings.map((obj) => (
+                  <div className="user-booking expired" key={obj.id}>
+                    <div>
+                      {obj.id === changedBookingId && <>Ændring gennemført.</>}
+                      <span className="location">{obj.displayName}</span>
+                      <span className="subject">{obj.subject}</span>
+                      <span className="status">{getStatus(obj.status)}</span>
+                    </div>
+                    <div>
+                      <span>{getFormattedDateTime(obj.start)}</span>
+                      <span>→</span>
+                      <span>{getFormattedDateTime(obj.end)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
