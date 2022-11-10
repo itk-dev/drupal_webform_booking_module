@@ -15,7 +15,6 @@ import MainNavigation from "./components/main-navigation";
 import Api from "./util/api";
 import UrlValidator from "./util/url-validator";
 import { hasOwnProperty, filterAllResources } from "./util/helpers";
-import { setAriaLabelFilters } from "./util/dom-manipulation-utils";
 import "react-toastify/dist/ReactToastify.css";
 import CreateBookingFilters from "./create-booking-filters";
 import CreateBookingTabs from "./components/create-booking-tabs";
@@ -49,12 +48,8 @@ function CreateBooking({ config }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showResourceDetails, setShowResourceDetails] = useState(null);
   // Loaded data.
-  const [events, setEvents] = useState([]);
   const [resources, setResources] = useState(null);
   const [allResources, setAllResources] = useState([]);
-
-  // TODO: Describe.
-  setAriaLabelFilters();
 
   // Get configuration.
   useEffect(() => {
@@ -158,25 +153,6 @@ function CreateBooking({ config }) {
     }
   }, [filterParams]);
 
-  // Get events for the given resources.
-  useEffect(() => {
-    if (config && resources?.length > 0 && date !== null) {
-      Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
-        .then((loadedEvents) => {
-          setEvents(loadedEvents);
-
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 200);
-        })
-        .catch((fetchEventsError) => {
-          setIsLoading(false);
-
-          toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
-        });
-    }
-  }, [resources, date]);
-
   // Set selection as json.
   useEffect(() => {
     if (config?.output_field_id) {
@@ -259,7 +235,6 @@ function CreateBooking({ config }) {
                     >
                       <Calendar
                         resources={resources}
-                        events={events}
                         date={date}
                         setDate={setDate}
                         calendarSelection={calendarSelection}
