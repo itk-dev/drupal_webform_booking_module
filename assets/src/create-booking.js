@@ -212,7 +212,9 @@ function CreateBooking({ config }) {
                       <ListContainer
                         resources={resources}
                         setShowResourceDetails={setShowResourceDetails}
+                        userHasInteracted={userHasInteracted}
                         isLoading={isLoading}
+                        setIsLoading={setIsLoading}
                       />
                       <ResourceView
                         showResourceDetails={showResourceDetails}
