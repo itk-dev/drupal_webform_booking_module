@@ -85,7 +85,7 @@
       {
         var WS = window.WebSocket;
         function DevWebSocket(s) {
-          if (s === "ws://bookingapp.local.itkdev.dk:3000/ws") {
+          if (s === "wss://bookingapp.local.itkdev.dk:3000/ws" || s === "ws://bookingapp.local.itkdev.dk:3000/ws") {
             console.info("[DEV NOTICE] Live reload has been disabled (see index.html)");
             return {};
           } else {

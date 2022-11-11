@@ -49,36 +49,29 @@ function CreateBooking({ config }) {
 
   // Get configuration.
   useEffect(() => {
+    Api.fetchAllResources(config.api_endpoint)
+      .then((loadedResources) => {
+        setAllResources(loadedResources);
+      })
+      .catch((fetchAllResourcesError) => {
+        toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+      });
+
+    // If existing booking data is set in url, start in minimized state.
     if (UrlValidator.valid(urlParams) !== null) {
       setValidUrlParams(urlParams);
 
-      setDisplayState("minimized");
-    }
-  }, []);
-
-  // Effects to run when config is loaded. This should only happen once at app
-  // initialisation.
-  useEffect(() => {
-    if (config) {
-      Api.fetchAllResources(config.api_endpoint)
-        .then((loadedResources) => {
-          setAllResources(loadedResources);
-        })
-        .catch((fetchAllResourcesError) => {
-          toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
-        });
-    }
-
-    if (config && validUrlParams !== null) {
-      Api.fetchResource(config.api_endpoint, validUrlParams.get("resource"))
+      Api.fetchResource(config.api_endpoint, urlParams.get("resource"))
         .then((loadedResource) => {
           setUrlResource(loadedResource);
         })
         .catch((fetchResourceError) => {
           toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
         });
+
+      setDisplayState("minimized");
     }
-  }, [config]);
+  }, []);
 
   // Effects to run when urlResource is set. This should only happen once in
   // extension of app initialisation.
@@ -118,33 +111,19 @@ function CreateBooking({ config }) {
 
   // Find resources that match filterParams.
   useEffect(() => {
-    if (config) {
-      const urlSearchParams = new URLSearchParams();
+    if (Object.values(filterParams).length > 0) {
+      setIsLoading(true);
 
-      Object.entries(filterParams).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((arrayValue) => urlSearchParams.append(key, arrayValue.toString()));
-        } else {
-          urlSearchParams.append(key, value.toString());
-        }
-      });
+      const matchingResources = filterAllResources(allResources, filterParams);
 
-      if (Object.values(filterParams).length > 0 && urlSearchParams.toString() !== "") {
-        setIsLoading(true);
+      setUserHasInteracted(true);
 
-        const matchingResources = filterAllResources(allResources, filterParams);
-
-        setUserHasInteracted(true);
-
-        if (matchingResources.length !== 0) {
-          setResources(matchingResources);
-        } else {
-          setResources([]);
-
-          setIsLoading(false);
-        }
+      if (matchingResources.length !== 0) {
+        setResources(matchingResources);
       } else {
         setResources([]);
+
+        setIsLoading(false);
       }
     }
   }, [filterParams]);
@@ -176,7 +155,7 @@ function CreateBooking({ config }) {
                     filterParams={filterParams}
                     setFilterParams={setFilterParams}
                     allResources={allResources}
-                    disabled={showResourceDetails ?? false}
+                    disabled={showResourceDetails !== null ?? false}
                     locationFilter={locationFilter}
                     setLocationFilter={setLocationFilter}
                     resourceFilter={resourceFilter}
