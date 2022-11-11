@@ -161,6 +161,8 @@ function CreateBooking({ config }) {
     }
   }, [calendarSelection, authorFields]);
 
+  const displayInfoBox = config?.info_box_color && config?.info_box_header && config?.info_box_content;
+
   return (
     config && (
       <div className="App">
@@ -181,12 +183,7 @@ function CreateBooking({ config }) {
                     setResourceFilter={setResourceFilter}
                   />
 
-                  {/* Add info box */}
-                  <div className="row info-box-wrapper">
-                    {config.info_box_color && config.info_box_header && config.info_box_content && (
-                      <InfoBox config={config} />
-                    )}
-                  </div>
+                  {displayInfoBox && <InfoBox config={config} />}
 
                   <CreateBookingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 

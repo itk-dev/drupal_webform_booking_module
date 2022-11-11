@@ -10,31 +10,23 @@ import "./info-box.scss";
  * @returns {JSX.Element} Info box component
  */
 function InfoBox({ config }) {
-  const [infoBoxColor, setInfoBoxColor] = useState("");
-  const [infoBoxHeader, setInfoBoxHeader] = useState("");
-  const [infoBoxContent, setInfoBoxContent] = useState("");
-  const [showInfoBox, setShowInfoBox] = useState("flex");
-  const hideInfoBox = () => setShowInfoBox("none");
+  const [display, setDisplay] = useState(true);
+  const infoBoxColor = config.info_box_color;
+  const infoBoxHeader = config.info_box_header;
+  const infoBoxContent = config.info_box_content;
 
-  useEffect(() => {
-    setInfoBoxColor(config.info_box_color);
-
-    setInfoBoxHeader(config.info_box_header);
-
-    setInfoBoxContent(config.info_box_content);
-  }, [config]);
-
-  // TODO: Handle "onKeyPress" deprecation.
-  return (
-    <div className="row info-box" style={{ backgroundColor: `${infoBoxColor}em`, display: showInfoBox }}>
-      <div className="col-md-11 info-box-content">
-        <span className="info-box-content-header">
-          <b>{infoBoxHeader}</b>
-        </span>
-        <span className="info-box-content-text">{infoBoxContent}</span>
-      </div>
-      <div className="col-md-1 info-box-close" onClick={hideInfoBox} onKeyPress={hideInfoBox} role="presentation">
-        <span>x</span>
+  return display && (
+    <div className="info-box-wrapper">
+      <div className="row info-box" style={{ backgroundColor: `${infoBoxColor}em` }}>
+        <div className="col-md-11 info-box-content">
+      <span className="info-box-content-header">
+        <b>{infoBoxHeader}</b>
+      </span>
+          <span className="info-box-content-text">{infoBoxContent}</span>
+        </div>
+        <div className="col-md-1 info-box-close" onClick={() => setDisplay(false)} role="presentation">
+          <span>x</span>
+        </div>
       </div>
     </div>
   );
@@ -42,18 +34,10 @@ function InfoBox({ config }) {
 
 InfoBox.propTypes = {
   config: PropTypes.shape({
-    info_box_color: PropTypes.string,
-    info_box_header: PropTypes.string,
-    info_box_content: PropTypes.string,
-  }),
-};
-
-InfoBox.defaultProps = {
-  config: {
-    info_box_color: "",
-    info_box_header: "",
-    info_box_content: "",
-  },
+    info_box_color: PropTypes.string.isRequired,
+    info_box_header: PropTypes.string.isRequired,
+    info_box_content: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default InfoBox;
