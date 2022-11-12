@@ -76,24 +76,27 @@ function CreateBooking({ config }) {
   // Effects to run when urlResource is set. This should only happen once in
   // extension of app initialisation.
   useEffect(() => {
-    // Set location filter.
-    if (urlResource && hasOwnProperty(urlResource, "location")) {
-      setLocationFilter([
-        {
-          value: urlResource.location,
-          label: urlResource.location,
-        },
-      ]);
-    }
+    // If resource is set in url parameters, select the relevant filters.
+    if (urlResource) {
+      // Set location filter.
+      if (hasOwnProperty(urlResource, "location")) {
+        setLocationFilter([
+          {
+            value: urlResource.location,
+            label: urlResource.location,
+          },
+        ]);
+      }
 
-    // Set resource filter.
-    if (urlResource && hasOwnProperty(urlResource, "resourceMail") && hasOwnProperty(urlResource, "resourceName")) {
-      setResourceFilter([
-        {
-          value: urlResource.resourceMail,
-          label: urlResource.resourceName,
-        },
-      ]);
+      // Set resource filter.
+      if (hasOwnProperty(urlResource, "resourceMail") && hasOwnProperty(urlResource, "resourceName")) {
+        setResourceFilter([
+          {
+            value: urlResource.resourceMail,
+            label: urlResource.resourceName,
+          },
+        ]);
+      }
     }
 
     // Use data from url parameters.
@@ -111,21 +114,15 @@ function CreateBooking({ config }) {
 
   // Find resources that match filterParams.
   useEffect(() => {
+    setIsLoading(true);
+
+    setResources(filterAllResources(allResources, filterParams));
+
     if (Object.values(filterParams).length > 0) {
-      setIsLoading(true);
-
-      const matchingResources = filterAllResources(allResources, filterParams);
-
       setUserHasInteracted(true);
-
-      if (matchingResources.length !== 0) {
-        setResources(matchingResources);
-      } else {
-        setResources([]);
-
-        setIsLoading(false);
-      }
     }
+
+    setIsLoading(false);
   }, [filterParams]);
 
   // Set selection as json.

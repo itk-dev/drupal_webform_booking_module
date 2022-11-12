@@ -13,7 +13,7 @@ export function hasOwnProperty(obj, propertyName) {
  * @returns {Array} Containing resources matching given filters.
  */
 export function filterAllResources(allResources, filterParams) {
-  const matchingResources = allResources.filter((resource) => {
+  return allResources.filter((resource) => {
     /*
       0: no match
       1: neutral // no match
@@ -112,8 +112,6 @@ export function filterAllResources(allResources, filterParams) {
 
     return false;
   });
-
-  return matchingResources;
 }
 
 /** @returns {Array} Containing options to show */
