@@ -13,10 +13,7 @@ import "./minimized-display.scss";
  * @returns {JSX.Element} Calendar header component.
  */
 function MinimizedDisplay({ setDisplayState, urlResource, calendarSelection }) {
-  const onChangeBooking = () => {
-    setDisplayState("maximized");
-  };
-
+  const onChangeBooking = () => setDisplayState("maximized");
   const formatUrlDate = (dateString) => dayjs(dateString).format("DD/MM/YYYY - HH:mm");
 
   return (
