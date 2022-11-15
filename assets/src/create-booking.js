@@ -56,22 +56,6 @@ function CreateBooking({ config }) {
       .catch((fetchAllResourcesError) => {
         toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
       });
-
-    // if (UrlValidator.valid(urlParams) !== null) {
-    //   setValidUrlParams(urlParams);
-    //   console.log(allResources);
-    //   console.log(loadedResources);
-    //   console.log(urlParams.get("resource"));
-    //   Api.fetchResource(config.api_endpoint, urlParams.get("resource"))
-    //     .then((loadedResource) => {
-    //       setUrlResource(loadedResource);
-    //     })
-    //     .catch((fetchResourceError) => {
-    //       toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
-    //     });
-
-    //   setDisplayState("minimized");
-    // }
   }, []);
 
   useEffect(() => {
