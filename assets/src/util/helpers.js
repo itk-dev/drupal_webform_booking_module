@@ -23,7 +23,7 @@ export function filterAllResources(allResources, filterParams) {
 
     // Location filter
     if (filterParams["location[]"] && filterParams["location[]"].length !== 0) {
-      if (filterParams["location[]"].includes(resource.location)) {
+      if (filterParams["location[]"].includes(resource.location) && resource.location !== "") {
         matchingState = 2;
       } else {
         matchingState = 0;

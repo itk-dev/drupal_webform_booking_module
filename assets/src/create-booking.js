@@ -57,27 +57,40 @@ function CreateBooking({ config }) {
         toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
       });
 
+    // if (UrlValidator.valid(urlParams) !== null) {
+    //   setValidUrlParams(urlParams);
+    //   console.log(allResources);
+    //   console.log(loadedResources);
+    //   console.log(urlParams.get("resource"));
+    //   Api.fetchResource(config.api_endpoint, urlParams.get("resource"))
+    //     .then((loadedResource) => {
+    //       setUrlResource(loadedResource);
+    //     })
+    //     .catch((fetchResourceError) => {
+    //       toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
+    //     });
+
+    //   setDisplayState("minimized");
+    // }
+  }, []);
+
+  useEffect(() => {
     // If existing booking data is set in url, start in minimized state.
-    if (UrlValidator.valid(urlParams) !== null) {
+    if (UrlValidator.valid(urlParams) !== null && allResources !== []) {
       setValidUrlParams(urlParams);
-
-      Api.fetchResource(config.api_endpoint, urlParams.get("resource"))
-        .then((loadedResource) => {
-          setUrlResource(loadedResource);
-        })
-        .catch((fetchResourceError) => {
-          toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
-        });
-
+      let matchingResource = Object.values(allResources).filter((value) => {
+        return value.id === parseInt(urlParams.get("resource"));
+      })[0];
+      setUrlResource(matchingResource);
       setDisplayState("minimized");
     }
-  }, []);
+  }, [allResources]);
 
   // Effects to run when urlResource is set. This should only happen once in
   // extension of app initialisation.
   useEffect(() => {
     // If resource is set in url parameters, select the relevant filters.
-    if (urlResource) {
+    if (urlResource && urlResource !== []) {
       // Set location filter.
       if (hasOwnProperty(urlResource, "location")) {
         setLocationFilter([
@@ -98,9 +111,13 @@ function CreateBooking({ config }) {
         ]);
       }
     }
+    // Set filter params to trigger filtering of resources
+    if (urlResource && urlResource.location && urlResource.resourceMail) {
+      setFilterParams({ "location[]": urlResource.location, "resourceMail[]": urlResource.resourceMail });
+    }
 
     // Use data from url parameters.
-    if (validUrlParams) {
+    if (validUrlParams && Object.values(calendarSelection).length === 0 && urlResource) {
       setDate(new Date(validUrlParams.get("from")));
 
       setCalendarSelection({
@@ -110,12 +127,12 @@ function CreateBooking({ config }) {
         resource: urlResource,
       });
     }
+
   }, [urlResource]);
 
   // Find resources that match filterParams.
   useEffect(() => {
     setIsLoading(true);
-
     setResources(filterAllResources(allResources, filterParams));
 
     if (Object.values(filterParams).length > 0) {
@@ -244,6 +261,7 @@ function CreateBooking({ config }) {
 
         {/* Display author fields if user is logged in */}
         {!config?.step_one && (
+          console.log(authorFields),
           <div className="row no-gutter">
             {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
           </div>
