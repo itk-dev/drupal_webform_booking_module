@@ -64,6 +64,7 @@ function Calendar({
   removeEmptyAriaLabelled();
 
   tabindexCalendar();
+
   /**
    * OnCalenderSelection.
    *

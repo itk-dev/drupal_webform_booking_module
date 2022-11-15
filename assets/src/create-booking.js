@@ -78,10 +78,13 @@ function CreateBooking({ config }) {
     // If existing booking data is set in url, start in minimized state.
     if (UrlValidator.valid(urlParams) !== null && allResources !== []) {
       setValidUrlParams(urlParams);
-      let matchingResource = Object.values(allResources).filter((value) => {
-        return value.id === parseInt(urlParams.get("resource"));
+
+      const matchingResource = Object.values(allResources).filter((value) => {
+        return value.id === parseInt(urlParams.get("resource"), 10);
       })[0];
+
       setUrlResource(matchingResource);
+
       setDisplayState("minimized");
     }
   }, [allResources]);
@@ -127,12 +130,12 @@ function CreateBooking({ config }) {
         resource: urlResource,
       });
     }
-
   }, [urlResource]);
 
   // Find resources that match filterParams.
   useEffect(() => {
     setIsLoading(true);
+
     setResources(filterAllResources(allResources, filterParams));
 
     if (Object.values(filterParams).length > 0) {
@@ -261,7 +264,6 @@ function CreateBooking({ config }) {
 
         {/* Display author fields if user is logged in */}
         {!config?.step_one && (
-          console.log(authorFields),
           <div className="row no-gutter">
             {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
           </div>
