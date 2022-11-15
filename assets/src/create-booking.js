@@ -56,28 +56,28 @@ function CreateBooking({ config }) {
       .catch((fetchAllResourcesError) => {
         toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
       });
+  }, []);
 
+  useEffect(() => {
     // If existing booking data is set in url, start in minimized state.
-    if (UrlValidator.valid(urlParams) !== null) {
+    if (UrlValidator.valid(urlParams) !== null && allResources !== []) {
       setValidUrlParams(urlParams);
 
-      Api.fetchResource(config.api_endpoint, urlParams.get("resource"))
-        .then((loadedResource) => {
-          setUrlResource(loadedResource);
-        })
-        .catch((fetchResourceError) => {
-          toast.error("Der opstod en fejl. Prøv igen senere.", fetchResourceError);
-        });
+      const matchingResource = Object.values(allResources).filter((value) => {
+        return value.id === parseInt(urlParams.get("resource"), 10);
+      })[0];
+
+      setUrlResource(matchingResource);
 
       setDisplayState("minimized");
     }
-  }, []);
+  }, [allResources]);
 
   // Effects to run when urlResource is set. This should only happen once in
   // extension of app initialisation.
   useEffect(() => {
     // If resource is set in url parameters, select the relevant filters.
-    if (urlResource) {
+    if (urlResource && urlResource !== []) {
       // Set location filter.
       if (hasOwnProperty(urlResource, "location")) {
         setLocationFilter([
@@ -98,9 +98,13 @@ function CreateBooking({ config }) {
         ]);
       }
     }
+    // Set filter params to trigger filtering of resources
+    if (urlResource && urlResource.location && urlResource.resourceMail) {
+      setFilterParams({ "location[]": urlResource.location, "resourceMail[]": urlResource.resourceMail });
+    }
 
     // Use data from url parameters.
-    if (validUrlParams) {
+    if (validUrlParams && Object.values(calendarSelection).length === 0 && urlResource) {
       setDate(new Date(validUrlParams.get("from")));
 
       setCalendarSelection({
