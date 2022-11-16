@@ -16,9 +16,7 @@ import "./list-container.scss";
  */
 function ListContainer({ resources, setShowResourceDetails, userHasInteracted, isLoading, setIsLoading }) {
   useEffect(() => {
-    if (resources.length > 0) {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   }, [resources]);
 
   return (

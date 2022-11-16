@@ -125,8 +125,6 @@ function CreateBooking({ config }) {
     if (Object.values(filterParams).length > 0) {
       setUserHasInteracted(true);
     }
-
-    setIsLoading(false);
   }, [filterParams]);
 
   // Set selection as json.
@@ -142,6 +140,12 @@ function CreateBooking({ config }) {
   }, [calendarSelection, authorFields]);
 
   const displayInfoBox = config?.info_box_color && config?.info_box_header && config?.info_box_content;
+
+  const onTabChange = (tab) => {
+    setActiveTab(tab);
+
+    setIsLoading(true);
+  };
 
   return (
     config && (
@@ -165,7 +169,7 @@ function CreateBooking({ config }) {
 
                   {displayInfoBox && <InfoBox config={config} />}
 
-                  <CreateBookingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                  <CreateBookingTabs activeTab={activeTab} onTabChange={onTabChange} />
 
                   {/* Map view */}
                   {activeTab === "map" && (
@@ -174,7 +178,7 @@ function CreateBooking({ config }) {
                         allResources={allResources}
                         config={config}
                         setLocationFilter={setLocationFilter}
-                        setBookingView={setActiveTab}
+                        setBookingView={onTabChange}
                       />
                     </div>
                   )}
