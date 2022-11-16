@@ -14,6 +14,10 @@ export function hasOwnProperty(obj, propertyName) {
  */
 export function filterAllResources(allResources, filterParams) {
   return allResources.filter((resource) => {
+    if (resource.location === "") {
+      return false;
+    }
+
     /*
       0: no match
       1: neutral // no match
@@ -23,7 +27,7 @@ export function filterAllResources(allResources, filterParams) {
 
     // Location filter
     if (filterParams["location[]"] && filterParams["location[]"].length !== 0) {
-      if (filterParams["location[]"].includes(resource.location) && resource.location !== "") {
+      if (filterParams["location[]"].includes(resource.location)) {
         matchingState = 2;
       } else {
         matchingState = 0;
