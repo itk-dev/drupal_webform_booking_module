@@ -8,11 +8,14 @@ import * as PropTypes from "prop-types";
  * @param {object} props The props
  * @param {string} props.activeTab Name of the active tab.
  * @param {Function} props.setActiveTab Set the active tab.
+ * @param {Function} props.setIsLoading Loading setter.
  * @returns {JSX.Element} Component.
  */
-function CreateBookingTabs({ activeTab, setActiveTab }) {
+function CreateBookingTabs({ activeTab, setActiveTab, setIsLoading }) {
   const onTabClick = (event) => {
     const tab = event.target.getAttribute("data-view");
+
+    setIsLoading(true);
 
     setActiveTab(tab);
   };
@@ -52,6 +55,7 @@ function CreateBookingTabs({ activeTab, setActiveTab }) {
 CreateBookingTabs.propTypes = {
   activeTab: PropTypes.string.isRequired,
   setActiveTab: PropTypes.func.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
 };
 
 export default CreateBookingTabs;

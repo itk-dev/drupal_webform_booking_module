@@ -135,6 +135,9 @@ function Calendar({
           toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
+    if (resources && resources?.length === 0) {
+      setIsLoading(false);
+    }
   }, [resources, date]);
 
   useEffect(() => {

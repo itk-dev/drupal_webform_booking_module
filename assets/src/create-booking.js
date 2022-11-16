@@ -125,8 +125,6 @@ function CreateBooking({ config }) {
     if (Object.values(filterParams).length > 0) {
       setUserHasInteracted(true);
     }
-
-    setIsLoading(false);
   }, [filterParams]);
 
   // Set selection as json.
@@ -165,7 +163,7 @@ function CreateBooking({ config }) {
 
                   {displayInfoBox && <InfoBox config={config} />}
 
-                  <CreateBookingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                  <CreateBookingTabs activeTab={activeTab} setActiveTab={setActiveTab} setIsLoading={setIsLoading} />
 
                   {/* Map view */}
                   {activeTab === "map" && (
