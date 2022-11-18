@@ -46,6 +46,13 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
+    // HasWhitelist filter
+    if (filterParams.hasWhitelist) {
+      if (!resource.hasWhitelist) {
+        matchingState = 0;
+      }
+    }
+
     // VideoConference filter
     if (filterParams.videoConferenceEquipment) {
       if (!resource.videoConferenceEquipment && matchingState === 2) {
@@ -68,7 +75,7 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // WheelchairAcessible filter
+    // WheelchairAccessible filter
     if (filterParams.wheelchairAccessible) {
       if (!resource.wheelchairAccessible && matchingState === 2) {
         matchingState = 0;

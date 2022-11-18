@@ -104,4 +104,14 @@ export default class Api {
       }
     });
   }
+
+  static async fetchUserInformation(apiEndpoint) {
+    return fetch(`${apiEndpoint}itkdev_booking/user-information`).then((response) => {
+      if (!response.ok) {
+        throw new Error(`This is an HTTP error: The status is ${response.status}`);
+      }
+
+      return response.json();
+    });
+  }
 }

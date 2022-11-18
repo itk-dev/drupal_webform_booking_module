@@ -17,6 +17,7 @@ import { setAriaLabelFilters } from "../util/dom-manipulation-utils";
  * @param {Function} props.setLocationFilter Set Location filters.
  * @param {Array} props.resourceFilter Resource filters.
  * @param {Function} props.setResourceFilter Set resource filters.
+ * @param {string} props.userType User type: citizen or businessPartner.
  * @returns {JSX.Element} Component.
  */
 function CreateBookingFilters({
@@ -28,9 +29,11 @@ function CreateBookingFilters({
   setLocationFilter,
   resourceFilter,
   setResourceFilter,
+  userType,
 }) {
   const [capacityFilter, setCapacityFilter] = useState([]);
   const [facilityFilter, setFacilityFilter] = useState([]);
+  const [hasWhitelist, setHasWhitelist] = useState(false);
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
 
@@ -84,6 +87,14 @@ function CreateBookingFilters({
       ...{ "resourceMail[]": resourceValues },
     });
   }, [resourceFilter]);
+
+  // Set only whitelisted filter.
+  useEffect(() => {
+    setFilterParams({
+      ...filterParams,
+      ...{ hasWhitelist },
+    });
+  }, [hasWhitelist]);
 
   // Set capacity filter.
   useEffect(() => {
@@ -224,9 +235,27 @@ function CreateBookingFilters({
           />
         </label>
       </div>
+      {userType === "businessPartner" && (
+        <div className="col-md-3 col-xs-12 small-padding">
+          <label htmlFor="capacity-filter">
+            Hent kun whitelisted resurser
+            <input
+              type="checkbox"
+              value={hasWhitelist}
+              onChange={({ target }) => {
+                setHasWhitelist(!!target.checked);
+              }}
+            />
+          </label>
+        </div>
+      )}
     </div>
   );
 }
+
+CreateBookingFilters.defaultProps = {
+  userType: "",
+};
 
 CreateBookingFilters.propTypes = {
   filterParams: PropTypes.shape({}).isRequired,
@@ -237,6 +266,7 @@ CreateBookingFilters.propTypes = {
   setLocationFilter: PropTypes.func.isRequired,
   resourceFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setResourceFilter: PropTypes.func.isRequired,
+  userType: PropTypes.string,
 };
 
 export default CreateBookingFilters;

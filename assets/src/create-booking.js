@@ -46,6 +46,7 @@ function CreateBooking({ config }) {
   // Loaded data.
   const [resources, setResources] = useState(null);
   const [allResources, setAllResources] = useState([]);
+  const [userInformation, setUserInformation] = useState(null);
 
   // Get configuration.
   useEffect(() => {
@@ -56,6 +57,10 @@ function CreateBooking({ config }) {
       .catch((fetchAllResourcesError) => {
         toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
       });
+
+    Api.fetchUserInformation(config.api_endpoint).then((retrievedUserInformation) => {
+      setUserInformation(retrievedUserInformation);
+    });
   }, []);
 
   useEffect(() => {
@@ -165,6 +170,7 @@ function CreateBooking({ config }) {
                     setLocationFilter={setLocationFilter}
                     resourceFilter={resourceFilter}
                     setResourceFilter={setResourceFilter}
+                    userType={userInformation?.userType}
                   />
 
                   {displayInfoBox && <InfoBox config={config} />}

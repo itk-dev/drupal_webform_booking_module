@@ -55,7 +55,7 @@ class UserHelper {
    */
   public function getUserValues(Request $request): ?array {
     if ($this->bookingApiSampleUser) {
-      return SampleDataHelper::getSampleData('user');
+      return SampleDataHelper::getSampleData('user-business');
     }
 
     $session = $request->getSession();
@@ -65,8 +65,10 @@ class UserHelper {
       $permission = 'businessPartner';
       $whitelistKey = $userToken['cvr'];
       $userId = $this->generateUserId($userToken['cvr']);
+      $userType = 'businessPartner';
     } else if (isset($userToken['cpr']) && isset($userToken['pid'])) {
       $permission = 'citizen';
+      $userType = 'citizen';
       $userId = $this->generateUserId($userToken['pid']);
     } else {
       return null;
@@ -78,6 +80,7 @@ class UserHelper {
       'permission' => $permission,
       'userId' => $userId,
       'whitelistKey' => $whitelistKey ?? null,
+      'userType' => $userType,
     ];
   }
 

@@ -71,7 +71,7 @@ itkdev_booking.booking_details:
     _access: 'TRUE'
 
 itkdev_booking.user_information:
-  path: '/itkdev_booking/user_information'
+  path: '/itkdev_booking/user-information'
   defaults:
     _controller: '\Drupal\itkdev_booking\Controller\BookingController::getUserInformation'
   methods: [GET]
