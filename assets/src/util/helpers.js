@@ -46,13 +46,6 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
-    // HasWhitelist filter
-    if (filterParams.hasWhitelist) {
-      if (resource.hasWhitelist) {
-        matchingState = 2;
-      }
-    }
-
     // VideoConference filter
     if (filterParams.videoConferenceEquipment) {
       if (!resource.videoConferenceEquipment && matchingState === 2) {
@@ -111,6 +104,15 @@ export function filterAllResources(allResources, filterParams) {
     if (filterParams["capacity[gt]"] && matchingState !== 0) {
       // If capacity is filtered, it should always overrule earlier matches.
       if (resource.capacity >= filterParams["capacity[gt]"]) {
+        matchingState = 2;
+      } else {
+        matchingState = 0;
+      }
+    }
+
+    // HasWhitelist filter
+    if (filterParams.hasWhitelist) {
+      if (resource.hasWhitelist) {
         matchingState = 2;
       } else {
         matchingState = 0;
