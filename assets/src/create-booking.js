@@ -25,6 +25,7 @@ import CreateBookingTabs from "./components/create-booking-tabs";
  * @returns {JSX.Element} Component.
  */
 function CreateBooking({ config }) {
+  const resourceLimit = 50;
   const [urlParams] = useSearchParams();
   // Booking data.
   const [date, setDate] = useState(new Date());
@@ -44,11 +45,12 @@ function CreateBooking({ config }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showResourceDetails, setShowResourceDetails] = useState(null);
   // Loaded data.
+  const [filteredResources, setFilteredResources] = useState(null);
   const [resources, setResources] = useState(null);
   const [allResources, setAllResources] = useState([]);
   const [userInformation, setUserInformation] = useState(null);
 
-  // Get configuration.
+  // Load all resources and current user information.
   useEffect(() => {
     Api.fetchAllResources(config.api_endpoint)
       .then((loadedResources) => {
@@ -125,7 +127,16 @@ function CreateBooking({ config }) {
   useEffect(() => {
     setIsLoading(true);
 
-    setResources(filterAllResources(allResources, filterParams));
+    const newFilteredResources = filterAllResources(allResources, filterParams);
+
+    setFilteredResources(newFilteredResources);
+
+    // Limit the number of results to resourceLimit
+    const limitedResources = [...newFilteredResources];
+
+    limitedResources.length = Math.min(limitedResources.length, resourceLimit);
+
+    setResources(limitedResources);
 
     if (Object.values(filterParams).length > 0) {
       setUserHasInteracted(true);
@@ -207,6 +218,13 @@ function CreateBooking({ config }) {
                         showResourceDetails={showResourceDetails}
                         setShowResourceDetails={setShowResourceDetails}
                       />
+
+                      {filteredResources?.length > resourceLimit && (
+                        <div style={{ textAlign: "right", padding: "1em" }}>
+                          Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
+                          at begrænse resultater.
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -238,6 +256,13 @@ function CreateBooking({ config }) {
                         showResourceDetails={showResourceDetails}
                         setShowResourceDetails={setShowResourceDetails}
                       />
+
+                      {filteredResources?.length > resourceLimit && (
+                        <div style={{ textAlign: "right", padding: "1em" }}>
+                          Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
+                          at begrænse resultater.
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

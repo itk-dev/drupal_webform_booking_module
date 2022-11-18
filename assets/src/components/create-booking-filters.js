@@ -175,7 +175,7 @@ function CreateBookingFilters({
       </div>
       <div className="col-md-3 col-xs-12 small-padding">
         <label htmlFor="resource-filter">
-          Filtrér på lokaler/resource
+          Filtrér på lokaler/ressource
           {/* Dropdown with resources */}
           <Select
             styles={{}}
@@ -237,15 +237,16 @@ function CreateBookingFilters({
       </div>
       {userType === "businessPartner" && (
         <div className="col-md-3 col-xs-12 small-padding">
-          <label htmlFor="capacity-filter">
-            Hent kun whitelisted resurser
+          <label htmlFor="capacity-filter" style={{ display: "flex" }}>
             <input
               type="checkbox"
               value={hasWhitelist}
+              style={{ width: "20px", height: "20px" }}
               onChange={({ target }) => {
                 setHasWhitelist(!!target.checked);
               }}
             />
+            <span style={{ marginLeft: "5px" }}>Mine udvalgte ressourcer</span>
           </label>
         </div>
       )}

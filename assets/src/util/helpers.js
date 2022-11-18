@@ -48,8 +48,8 @@ export function filterAllResources(allResources, filterParams) {
 
     // HasWhitelist filter
     if (filterParams.hasWhitelist) {
-      if (!resource.hasWhitelist) {
-        matchingState = 0;
+      if (resource.hasWhitelist) {
+        matchingState = 2;
       }
     }
 
@@ -123,16 +123,4 @@ export function filterAllResources(allResources, filterParams) {
 
     return false;
   });
-}
-
-/** @returns {Array} Containing options to show */
-export function getFacilityOptions() {
-  return [
-    { value: "monitorEquipment", label: "Projektor/Skærm" },
-    { value: "wheelchairAccessible", label: "Handikapvenligt" },
-    { value: "videoConferenceEquipment", label: "Videokonference" },
-    { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
-  ];
-
-  // TODO: Modify options array based on available resources.
 }
