@@ -1,10 +1,6 @@
 {
   "api_endpoint": "https://selvbetjening.local.itkdev.dk/da/",
-  "element_id": "booking",
-  "front_page_url": "https://selvbetjening.local.itkdev.dk/",
   "license_key": "",
-  "enable_booking": true,
-  "enable_resource_tooltips": true,
   "step_one": true,
   "redirect_url": "http://bookingapp.local.itkdev.dk/",
   "output_field_id": "submit-values",
