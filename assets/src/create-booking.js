@@ -268,11 +268,11 @@ function CreateBooking({ config }) {
                 </div>
               )}
 
-              {urlResource && displayState === "minimized" && calendarSelection && (
+              {resources && displayState === "minimized" && calendarSelection && (
                 <div className="row">
                   <MinimizedDisplay
                     setDisplayState={setDisplayState}
-                    urlResource={urlResource}
+                    resource={resources.filter((el) => el.resourceMail === calendarSelection.resourceId)[0]}
                     calendarSelection={calendarSelection}
                   />
                 </div>

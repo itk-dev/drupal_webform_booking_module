@@ -168,7 +168,7 @@ function CreateBookingFilters({
             className="filter"
             defaultValue={locationFilter}
             value={locationFilter}
-            placeholder="lokationer..."
+            placeholder="Lokationer..."
             placeholderClassName="dropdown-placeholder"
             closeMenuOnSelect={false}
             options={locationOptions}
@@ -184,14 +184,14 @@ function CreateBookingFilters({
       </div>
       <div className="col-md-3 col-xs-12 small-padding">
         <label htmlFor="resource-filter">
-          Filtrér på lokaler/ressource
+          Filtrér på lokaler/ressourcer
           {/* Dropdown with resources */}
           <Select
             styles={{}}
             id="resource-filter"
             className="filter"
             defaultValue={resourceFilter}
-            placeholder="ressourcer..."
+            placeholder="Ressourcer..."
             placeholderClassName="dropdown-placeholder"
             closeMenuOnSelect={false}
             options={resourcesOptions}

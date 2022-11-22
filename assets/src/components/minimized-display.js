@@ -8,35 +8,33 @@ import "./minimized-display.scss";
  *
  * @param {object} props Props.
  * @param {Function} props.setDisplayState Set display state function.
- * @param {object} props.urlResource Resource fetched from URL.
+ * @param {object} props.resource Resource.
  * @param {object} props.calendarSelection A selection in calendar.
  * @returns {JSX.Element} Calendar header component.
  */
-function MinimizedDisplay({ setDisplayState, urlResource, calendarSelection }) {
+function MinimizedDisplay({ setDisplayState, resource, calendarSelection }) {
   const onChangeBooking = () => setDisplayState("maximized");
   const formatUrlDate = (dateString) => dayjs(dateString).format("DD/MM/YYYY - HH:mm");
 
   return (
     <div className="col-md-12">
       <div className="row">
-        {urlResource && (
-          <div className="minimized-display col-md-12">
-            <div>
-              <span className="location">{urlResource.location}</span>
-              <span className="subject">{urlResource.resourceName}</span>
-            </div>
-            <div>
-              <span>{formatUrlDate(calendarSelection.start)}</span>
-              <span>→</span>
-              <span>{formatUrlDate(calendarSelection.end)}</span>
-            </div>
-            <div>
-              <button id="change-booking" type="button" onClick={onChangeBooking}>
-                Change booking
-              </button>
-            </div>
+        <div className="minimized-display col-md-12">
+          <div>
+            <span className="location">{resource.location}</span>
+            <span className="subject">{resource.resourceName}</span>
           </div>
-        )}
+          <div>
+            <span>{formatUrlDate(calendarSelection.start)}</span>
+            <span>→</span>
+            <span>{formatUrlDate(calendarSelection.end)}</span>
+          </div>
+          <div>
+            <button id="change-booking" type="button" onClick={onChangeBooking}>
+              Ændrér valg
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -44,7 +42,7 @@ function MinimizedDisplay({ setDisplayState, urlResource, calendarSelection }) {
 
 MinimizedDisplay.propTypes = {
   setDisplayState: PropTypes.func.isRequired,
-  urlResource: PropTypes.shape({
+  resource: PropTypes.shape({
     location: PropTypes.string.isRequired,
     resourceName: PropTypes.string.isRequired,
   }).isRequired,
