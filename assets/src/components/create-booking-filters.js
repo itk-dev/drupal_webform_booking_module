@@ -4,6 +4,7 @@ import * as PropTypes from "prop-types";
 import "react-toastify/dist/ReactToastify.css";
 import { capacityOptions, facilityOptions } from "../util/filter-utils";
 import { setAriaLabelFilters } from "../util/dom-manipulation-utils";
+import { hasOwnProperty } from "../util/helpers";
 
 /**
  * CreateBooking component.
@@ -90,10 +91,18 @@ function CreateBookingFilters({
 
   // Set only whitelisted filter.
   useEffect(() => {
-    setFilterParams({
-      ...filterParams,
-      ...{ hasWhitelist },
-    });
+    if (hasWhitelist) {
+      setFilterParams({
+        ...filterParams,
+        ...{ hasWhitelist },
+      });
+    } else if (hasOwnProperty(filterParams, "hasWhitelist")) {
+      const newFilterParams = { ...filterParams };
+
+      delete newFilterParams.hasWhitelist;
+
+      setFilterParams(newFilterParams);
+    }
   }, [hasWhitelist]);
 
   // Set capacity filter.
