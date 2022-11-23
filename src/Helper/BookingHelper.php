@@ -287,13 +287,10 @@ class BookingHelper {
       ]);
 
       $statusCode = $response->getStatusCode();
-      $content = $response->getBody()->getContents();
-
-      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
 
       return [
         'statusCode' => $statusCode,
-        'data' => $data,
+        'data' => null,
       ];
     } catch (ClientException $e) {
       throw new HttpException($e->getCode(), "Delete booking failed.");

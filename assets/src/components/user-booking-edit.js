@@ -82,10 +82,10 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
       setLoading(true);
 
       Api.patchBooking(config.api_endpoint, bookingEdit.id, newData)
-        .then(() => {
+        .then((data) => {
           displaySuccess("Ændring af tidspunkt lykkedes");
 
-          onBookingChanged(bookingEdit);
+          onBookingChanged(bookingEdit.id, data.start, data.end);
         })
         .catch((err) => {
           displayError("Ændring af tidspunkt fejlede.", err);
@@ -181,95 +181,93 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
 
   return (
     <div className="main-container">
-      <div className="Calendar no-gutter col-md-12">
-        <h2>Vælg nyt tidspunkt for booking</h2>
-        <div className="row">
-          <div className="col small-padding" style={{ width: "100%" }}>
-            {loading && <LoadingSpinner />}
-            {!loading && (
-              <>
-                <div style={{ margin: "1em 0" }}>
-                  <div>
-                    <strong>Resource: </strong>
-                    {booking.displayName}
-                  </div>
-                  <div>
-                    <strong>Titel på booking: </strong>
-                    {booking.subject}
-                  </div>
-                  <div>
-                    <strong>Nuværende valg: </strong>
-                    {getFormattedDateTime(booking.start)} - {getFormattedDateTime(booking.end)}
-                  </div>
-                  <div>
-                    {calendarSelection && (
-                      <>
-                        <strong>Nyt valg: </strong>
-                        {getFormattedDateTime(calendarSelection.start)} - {getFormattedDateTime(calendarSelection.end)}
-                      </>
-                    )}
-                  </div>
+      {loading && <LoadingSpinner />}
+      {!loading && (
+        <div className="Calendar no-gutter col-md-12">
+          <h2>Vælg nyt tidspunkt for booking</h2>
+          <div className="row">
+            <div className="col small-padding" style={{ width: "100%" }}>
+              <div style={{ margin: "1em 0" }}>
+                <div>
+                  <strong>Resource: </strong>
+                  {booking.displayName}
                 </div>
+                <div>
+                  <strong>Titel på booking: </strong>
+                  {booking.subject}
+                </div>
+                <div>
+                  <strong>Nuværende valg: </strong>
+                  {getFormattedDateTime(booking.start)} - {getFormattedDateTime(booking.end)}
+                </div>
+                <div>
+                  {calendarSelection && (
+                    <>
+                      <strong>Nyt valg: </strong>
+                      {getFormattedDateTime(calendarSelection.start)} - {getFormattedDateTime(calendarSelection.end)}
+                    </>
+                  )}
+                </div>
+              </div>
 
-                <CalendarHeader config={config} date={date} setDate={setDate} setIsLoading={() => {}} />
-                <FullCalendar
-                  ref={calendarRef}
-                  plugins={[
-                    resourceTimegrid,
-                    interactionPlugin,
-                    dayGridPlugin,
-                    timeGridPlugin,
-                    listPlugin,
-                    resourceTimelinePlugin,
-                  ]}
-                  titleFormat={{
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }}
-                  headerToolbar=""
-                  initialView="resourceTimelineDay"
-                  duration="days: 3"
-                  selectConstraint="businessHours"
-                  selectMirror
-                  displayEventTime
-                  scrollTimeReset={false}
-                  slotLabelFormat={{
-                    hour: "numeric",
-                    omitZeroMinute: false,
-                  }}
-                  nowIndicator
-                  navLinks
-                  height="300px"
-                  slotDuration="00:15:00"
-                  allDaySlot={false}
-                  selectable
-                  unselectAuto={false}
-                  schedulerLicenseKey={config.license_key}
-                  slotMinTime="06:00:00"
-                  slotMaxTime="24:00:00"
-                  selectOverlap={getSelectOverlap}
-                  nextDayThreshold="21:00:00"
-                  editable={false}
-                  dayMaxEvents
-                  locale={daLocale}
-                  select={onCalendarSelection}
-                  validRange={{
-                    start: date,
-                  }}
-                  resourceOrder="resourceId"
-                  resources={resources.map((value) => handleResources(value, date))}
-                  events={getBusyIntervals(events)}
-                />
+              <CalendarHeader config={config} date={date} setDate={setDate} setIsLoading={() => {}} />
+              <FullCalendar
+                ref={calendarRef}
+                plugins={[
+                  resourceTimegrid,
+                  interactionPlugin,
+                  dayGridPlugin,
+                  timeGridPlugin,
+                  listPlugin,
+                  resourceTimelinePlugin,
+                ]}
+                titleFormat={{
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }}
+                headerToolbar=""
+                initialView="resourceTimelineDay"
+                duration="days: 3"
+                selectConstraint="businessHours"
+                selectMirror
+                displayEventTime
+                scrollTimeReset={false}
+                slotLabelFormat={{
+                  hour: "numeric",
+                  omitZeroMinute: false,
+                }}
+                nowIndicator
+                navLinks
+                height="300px"
+                slotDuration="00:15:00"
+                allDaySlot={false}
+                selectable
+                unselectAuto={false}
+                schedulerLicenseKey={config.license_key}
+                slotMinTime="06:00:00"
+                slotMaxTime="24:00:00"
+                selectOverlap={getSelectOverlap}
+                nextDayThreshold="21:00:00"
+                editable={false}
+                dayMaxEvents
+                locale={daLocale}
+                select={onCalendarSelection}
+                validRange={{
+                  start: date,
+                }}
+                resourceOrder="resourceId"
+                resources={resources.map((value) => handleResources(value, date))}
+                events={getBusyIntervals(events)}
+              />
 
-                <button type="button" onClick={close} style={{ margin: "1em 0" }}>
-                  Annullér
-                </button>
-              </>
-            )}
+              <button type="button" onClick={close} style={{ margin: "1em 0" }}>
+                Annullér
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

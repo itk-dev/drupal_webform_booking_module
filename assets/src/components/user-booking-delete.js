@@ -22,14 +22,16 @@ function UserBookingDelete({ config, booking, onBookingDeleted, close }) {
    * @param {object} bookingToDelete Booking to request deletion of.
    */
   const requestDeletion = (bookingToDelete) => {
-    if (bookingToDelete.id) {
+    const bookingId = bookingToDelete.id;
+
+    if (bookingId) {
       setLoading(true);
 
-      Api.deleteBooking(config.api_endpoint, bookingToDelete.id)
+      Api.deleteBooking(config.api_endpoint, bookingId)
         .then(() => {
           displaySuccess("Sletning af booking lykkedes");
 
-          onBookingDeleted();
+          onBookingDeleted(bookingId);
         })
         .catch((err) => {
           displayError("Sletning af booking fejlede", err);
@@ -52,12 +54,12 @@ function UserBookingDelete({ config, booking, onBookingDeleted, close }) {
 
   return (
     <div className="main-container">
-      <div className="no-gutter col-md-12" style={{ padding: "1em" }}>
-        <h2>Slet booking</h2>
-        <div className="row">
-          <div className="col small-padding" style={{ width: "100%" }}>
-            {loading && <LoadingSpinner />}
-            {!loading && (
+      {loading && <LoadingSpinner />}
+      {!loading && (
+        <div className="no-gutter col-md-12" style={{ padding: "1em" }}>
+          <h2>Slet booking</h2>
+          <div className="row">
+            <div className="col small-padding" style={{ width: "100%" }}>
               <div style={{ margin: "1em 0" }}>
                 <div>
                   <strong>Resource: </strong>
@@ -83,10 +85,10 @@ function UserBookingDelete({ config, booking, onBookingDeleted, close }) {
                   Annullér
                 </button>
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

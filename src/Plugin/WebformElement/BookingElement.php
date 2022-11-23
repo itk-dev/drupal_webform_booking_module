@@ -89,7 +89,7 @@ class BookingElement extends Hidden
         ->t('Form mode'),
       '#options' => array(
         'create_booking_mode' => $this
-          ->t('Crate booking mode'),
+          ->t('Create booking mode'),
         'change_booking_mode' => $this
           ->t('List bookings mode'),
       ),

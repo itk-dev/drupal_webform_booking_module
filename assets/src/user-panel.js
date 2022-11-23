@@ -15,45 +15,31 @@ import "./user-panel.scss";
  */
 function UserPanel({ config }) {
   const [loading, setLoading] = useState(true);
-  const [userBookings, setUserBookings] = useState();
+  const [userBookings, setUserBookings] = useState(null);
   const [editBooking, setEditBooking] = useState(null);
   const [deleteBooking, setDeleteBooking] = useState(null);
   const [changedBookingId, setChangedBookingId] = useState(null);
 
-  const onBookingChanged = (changedBooking) => {
+  const onBookingChanged = (bookingId, start, end) => {
     setEditBooking(null);
 
-    setLoading(true);
+    setChangedBookingId(bookingId);
 
-    setChangedBookingId(changedBooking.id);
+    const booking = userBookings.find((el) => el.id === bookingId);
 
-    Api.fetchUserBookings(config.api_endpoint)
-      .then((loadedUserBookings) => {
-        setUserBookings(loadedUserBookings);
-      })
-      .catch((fetchUserBookingsError) => {
-        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    if (booking) {
+      booking.start = start;
+
+      booking.end = end;
+    }
   };
 
-  const onBookingDeleted = () => {
+  const onBookingDeleted = (bookingId) => {
     setDeleteBooking(null);
 
-    setLoading(true);
+    const newUserBookings = userBookings.filter((el) => el.id !== bookingId);
 
-    Api.fetchUserBookings(config.api_endpoint)
-      .then((loadedUserBookings) => {
-        setUserBookings(loadedUserBookings);
-      })
-      .catch((fetchUserBookingsError) => {
-        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    setUserBookings(newUserBookings);
   };
 
   const close = () => {
