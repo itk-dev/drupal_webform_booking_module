@@ -19,11 +19,13 @@
     }
   }
 
-  a {
+  .main-navigation-link {
     font-weight: bold;
     text-decoration: none;
     color: #fff;
+
     &:hover,
+    &:visited,
     &:active {
       color: #fff;
     }
