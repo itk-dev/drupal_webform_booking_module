@@ -89,7 +89,7 @@ class BookingElement extends Hidden
         ->t('Form mode'),
       '#options' => array(
         'create_booking_mode' => $this
-          ->t('Crate booking mode'),
+          ->t('Create booking mode'),
         'change_booking_mode' => $this
           ->t('List bookings mode'),
       ),
@@ -103,11 +103,6 @@ class BookingElement extends Hidden
         ->t('Create booking url'),
       '#description' => $this
         ->t('This is needed for the app menu to work properly.'),
-      '#states' => [
-        'visible' => [
-          ':input[name="properties[booking_mode]"]' => ['value' => 'change_booking_mode'],
-        ],
-      ]
     );
 
     $form['element']['change_booking_url'] = array(
@@ -116,11 +111,6 @@ class BookingElement extends Hidden
         ->t('List bookings url'),
       '#description' => $this
         ->t('This is needed for the app menu to work properly.'),
-      '#states' => [
-        'visible' => [
-          ':input[name="properties[booking_mode]"]' => ['value' => 'create_booking_mode'],
-        ],
-      ]
     );
 
     $form['element']['step1'] = array(

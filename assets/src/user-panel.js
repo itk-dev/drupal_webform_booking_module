@@ -7,6 +7,7 @@ import { displayError } from "./util/display-toast";
 import UserBookingEdit from "./components/user-booking-edit";
 import UserBookingDelete from "./components/user-booking-delete";
 import "./user-panel.scss";
+import MainNavigation from "./components/main-navigation";
 
 /**
  * @param {object} props Props.
@@ -15,45 +16,31 @@ import "./user-panel.scss";
  */
 function UserPanel({ config }) {
   const [loading, setLoading] = useState(true);
-  const [userBookings, setUserBookings] = useState();
+  const [userBookings, setUserBookings] = useState(null);
   const [editBooking, setEditBooking] = useState(null);
   const [deleteBooking, setDeleteBooking] = useState(null);
   const [changedBookingId, setChangedBookingId] = useState(null);
 
-  const onBookingChanged = (changedBooking) => {
+  const onBookingChanged = (bookingId, start, end) => {
     setEditBooking(null);
 
-    setLoading(true);
+    setChangedBookingId(bookingId);
 
-    setChangedBookingId(changedBooking.id);
+    const booking = userBookings.find((el) => el.id === bookingId);
 
-    Api.fetchUserBookings(config.api_endpoint)
-      .then((loadedUserBookings) => {
-        setUserBookings(loadedUserBookings);
-      })
-      .catch((fetchUserBookingsError) => {
-        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    if (booking) {
+      booking.start = start;
+
+      booking.end = end;
+    }
   };
 
-  const onBookingDeleted = () => {
+  const onBookingDeleted = (bookingId) => {
     setDeleteBooking(null);
 
-    setLoading(true);
+    const newUserBookings = userBookings.filter((el) => el.id !== bookingId);
 
-    Api.fetchUserBookings(config.api_endpoint)
-      .then((loadedUserBookings) => {
-        setUserBookings(loadedUserBookings);
-      })
-      .catch((fetchUserBookingsError) => {
-        displayError("Der opstod en fejl. Prøv igen senere...", fetchUserBookingsError);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    setUserBookings(newUserBookings);
   };
 
   const close = () => {
@@ -108,71 +95,81 @@ function UserPanel({ config }) {
   };
 
   return (
-    <>
-      {deleteBooking && (
-        <UserBookingDelete config={config} booking={deleteBooking} onBookingDeleted={onBookingDeleted} close={close} />
-      )}
-      {editBooking && (
-        <UserBookingEdit config={config} booking={editBooking} onBookingChanged={onBookingChanged} close={close} />
-      )}
-      {!editBooking && !deleteBooking && (
-        <div className="userpanel row">
-          <div className="col no-gutter">
-            {loading && <LoadingSpinner />}
-            {!loading && !editBooking && userBookings && (
-              <div className="userbookings-container">
-                <h3>Aktive bookinger</h3>
+    <div className="App">
+      <div className="container-fluid">
+        <MainNavigation config={config} />
+        <div className="app-wrapper">
+          {deleteBooking && (
+            <UserBookingDelete
+              config={config}
+              booking={deleteBooking}
+              onBookingDeleted={onBookingDeleted}
+              close={close}
+            />
+          )}
+          {editBooking && (
+            <UserBookingEdit config={config} booking={editBooking} onBookingChanged={onBookingChanged} close={close} />
+          )}
+          {!editBooking && !deleteBooking && (
+            <div className="userpanel row">
+              <div className="col no-gutter">
+                {loading && <LoadingSpinner />}
+                {!loading && !editBooking && userBookings && (
+                  <div className="userbookings-container">
+                    <h3>Aktive bookinger</h3>
 
-                {currentBookings.map((obj) => (
-                  <div className="user-booking" key={obj.id}>
-                    <div>
-                      {obj.id === changedBookingId && <>Ændring gennemført.</>}
-                      <span className="location">{obj.displayName}</span>
-                      <span className="subject">{obj.subject}</span>
-                      <span className="status">{getStatus(obj.status)}</span>
-                    </div>
-                    <div>
-                      <span>{getFormattedDateTime(obj.start)}</span>
-                      <span>→</span>
-                      <span>{getFormattedDateTime(obj.end)}</span>
-                    </div>
-                    <div>
-                      <button type="button" onClick={() => setDeleteBooking(obj)}>
-                        Anmod om sletning
-                      </button>
-                      <button type="button" onClick={() => setEditBooking(obj)}>
-                        Anmod om ændring af tidspunkt
-                      </button>
-                    </div>
+                    {currentBookings.map((obj) => (
+                      <div className="user-booking" key={obj.id}>
+                        <div>
+                          {obj.id === changedBookingId && <>Ændring gennemført.</>}
+                          <span className="location">{obj.displayName}</span>
+                          <span className="subject">{obj.subject}</span>
+                          <span className="status">{getStatus(obj.status)}</span>
+                        </div>
+                        <div>
+                          <span>{getFormattedDateTime(obj.start)}</span>
+                          <span>→</span>
+                          <span>{getFormattedDateTime(obj.end)}</span>
+                        </div>
+                        <div>
+                          <button type="button" onClick={() => setDeleteBooking(obj)}>
+                            Anmod om sletning
+                          </button>
+                          <button type="button" onClick={() => setEditBooking(obj)}>
+                            Anmod om ændring af tidspunkt
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            {!loading && !editBooking && expiredBookings && (
-              <div className="userbookings-container">
-                <h3>Afsluttede bookinger</h3>
-                {expiredBookings.map((obj) => (
-                  <div className="user-booking expired" key={obj.id}>
-                    <div>
-                      {obj.id === changedBookingId && <>Ændring gennemført.</>}
-                      <span className="location">{obj.displayName}</span>
-                      <span className="subject">{obj.subject}</span>
-                      <span className="status">{getStatus(obj.status)}</span>
-                    </div>
-                    <div>
-                      <span>{getFormattedDateTime(obj.start)}</span>
-                      <span>→</span>
-                      <span>{getFormattedDateTime(obj.end)}</span>
-                    </div>
+                {!loading && !editBooking && expiredBookings && (
+                  <div className="userbookings-container">
+                    <h3>Afsluttede bookinger</h3>
+                    {expiredBookings.map((obj) => (
+                      <div className="user-booking expired" key={obj.id}>
+                        <div>
+                          {obj.id === changedBookingId && <>Ændring gennemført.</>}
+                          <span className="location">{obj.displayName}</span>
+                          <span className="subject">{obj.subject}</span>
+                          <span className="status">{getStatus(obj.status)}</span>
+                        </div>
+                        <div>
+                          <span>{getFormattedDateTime(obj.start)}</span>
+                          <span>→</span>
+                          <span>{getFormattedDateTime(obj.end)}</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
 

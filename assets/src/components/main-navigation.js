@@ -27,20 +27,32 @@ function MainNavigation({ config }) {
     }
   }, [config]);
 
+  const activeUrl = window.location.href;
+
   return (
     <div className="row">
       <div className="col main-navigation-content">
         <ul>
-          <li>
-            <a href={createBookingUrl} className={window.location.href === createBookingUrl ? "active" : "inactive"}>
-              Opret ny booking
-            </a>
-          </li>
-          <li>
-            <a href={changeBookingUrl} className={window.location.href === changeBookingUrl ? "active" : "inactive"}>
-              Mine bookinger
-            </a>
-          </li>
+          {createBookingUrl !== "" && (
+            <li>
+              <a
+                href={createBookingUrl}
+                className={`main-navigation-link ${activeUrl === createBookingUrl ? "active" : "inactive"}`}
+              >
+                Opret ny booking
+              </a>
+            </li>
+          )}
+          {changeBookingUrl !== "" && (
+            <li>
+              <a
+                href={changeBookingUrl}
+                className={`main-navigation-link ${activeUrl === changeBookingUrl ? "active" : "inactive"}`}
+              >
+                Mine bookinger
+              </a>
+            </li>
+          )}
         </ul>
       </div>
     </div>
@@ -49,8 +61,8 @@ function MainNavigation({ config }) {
 
 MainNavigation.propTypes = {
   config: PropTypes.shape({
-    create_booking_url: PropTypes.string.isRequired,
-    change_booking_url: PropTypes.string.isRequired,
+    create_booking_url: PropTypes.string,
+    change_booking_url: PropTypes.string,
   }).isRequired,
 };
 
