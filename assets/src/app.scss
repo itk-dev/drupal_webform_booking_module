@@ -4,6 +4,10 @@
   @import "node_modules/@drewbot/sass-flexbox-grid/public/sass-flexbox/scss/main";
   /* stylelint-enable */
 
+  .App {
+    margin-bottom: 1em;
+  }
+
   .no-gutter {
     padding-left: 0;
     padding-right: 0;

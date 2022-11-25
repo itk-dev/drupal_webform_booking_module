@@ -1,39 +1,22 @@
 import dayjs from "dayjs";
+import { hasOwnProperty } from "./helpers";
 
 /** Url validator. */
 export default class UrlValidator {
   static valid(urlParams) {
-    let invalid = false;
-
-    switch (true) {
-      // Check for existing values
-      case urlParams.get("from") === null:
-      case urlParams.get("to") === null:
-      case urlParams.get("resourceMail") === null:
-      case urlParams.get("resource") === null:
-        invalid = true;
-
-        break;
-      default:
+    if (
+      !urlParams ||
+      !hasOwnProperty(urlParams, "from") ||
+      !hasOwnProperty(urlParams, "to") ||
+      !hasOwnProperty(urlParams, "resourceMail") ||
+      !hasOwnProperty(urlParams, "resource")
+    ) {
+      return false;
     }
 
-    Object.entries(urlParams).forEach(([key, value]) => {
-      switch (key) {
-        case "from":
-        case "to":
-          if (!dayjs(value, "YYYY-MM-DDTHH:MN:SS", true).isValid()) {
-            invalid = true;
-          }
-
-          break;
-        default:
-      }
-    });
-
-    if (invalid) {
-      return null;
-    }
-
-    return urlParams;
+    return (
+      dayjs(urlParams.from, "YYYY-MM-DDTHH:MN:SS", true).isValid() &&
+      dayjs(urlParams.to, "YYYY-MM-DDTHH:MN:SS", true).isValid()
+    );
   }
 }

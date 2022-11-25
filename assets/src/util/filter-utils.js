@@ -13,3 +13,5 @@ export const facilityOptions = [
   { value: "videoConferenceEquipment", label: "Videokonference" },
   { value: "catering", label: "Mulighed for tilkøb af mad og drikke" },
 ];
+
+export const resourceLimit = 50;

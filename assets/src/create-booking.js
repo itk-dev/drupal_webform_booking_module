@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as PropTypes from "prop-types";
 import AuthorFields from "./components/author-fields";
@@ -16,6 +15,8 @@ import { hasOwnProperty, filterAllResources } from "./util/helpers";
 import "react-toastify/dist/ReactToastify.css";
 import CreateBookingFilters from "./components/create-booking-filters";
 import CreateBookingTabs from "./components/create-booking-tabs";
+import LoadingSpinner from "./components/loading-spinner";
+import { resourceLimit } from "./util/filter-utils";
 
 /**
  * CreateBooking component.
@@ -25,8 +26,6 @@ import CreateBookingTabs from "./components/create-booking-tabs";
  * @returns {JSX.Element} Component.
  */
 function CreateBooking({ config }) {
-  const resourceLimit = 50;
-  const [urlParams] = useSearchParams();
   // Booking data.
   const [date, setDate] = useState(new Date());
   const [calendarSelection, setCalendarSelection] = useState({});
@@ -42,13 +41,16 @@ function CreateBooking({ config }) {
   const [validUrlParams, setValidUrlParams] = useState(null);
   const [activeTab, setActiveTab] = useState("calendar");
   const [userHasInteracted, setUserHasInteracted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showResourceDetails, setShowResourceDetails] = useState(null);
   // Loaded data.
   const [filteredResources, setFilteredResources] = useState(null);
   const [resources, setResources] = useState(null);
   const [allResources, setAllResources] = useState([]);
   const [userInformation, setUserInformation] = useState(null);
+  // Loading
+  const [loadingResources, setLoadingResources] = useState(true);
+  const [loadingUserInformation, setLoadingUserInformation] = useState(true);
+  const [loadingFiltering, setLoadingFiltering] = useState(false);
 
   // Load all resources and current user information.
   useEffect(() => {
@@ -58,25 +60,48 @@ function CreateBooking({ config }) {
       })
       .catch((fetchAllResourcesError) => {
         toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+      })
+      .finally(() => {
+        setLoadingResources(false);
       });
 
-    Api.fetchUserInformation(config.api_endpoint).then((retrievedUserInformation) => {
-      setUserInformation(retrievedUserInformation);
-    });
+    if (!config.step_one) {
+      Api.fetchUserInformation(config.api_endpoint)
+        .then((retrievedUserInformation) => {
+          setUserInformation(retrievedUserInformation);
+        })
+        .catch((fetchUserInformationError) => {
+          toast.error("Der opstod en fejl. Prøv igen senere.", fetchUserInformationError);
+        })
+        .finally(() => {
+          setLoadingUserInformation(false);
+        });
+    } else {
+      setLoadingUserInformation(false);
+    }
   }, []);
 
+  // When all resources have been loaded, check if parameters contain
+  // selections.
   useEffect(() => {
     // If existing booking data is set in url, start in minimized state.
-    if (UrlValidator.valid(urlParams) !== null && allResources !== []) {
-      setValidUrlParams(urlParams);
+    if (allResources !== []) {
+      const currentUrl = new URL(window.location.href);
+      const params = Object.fromEntries(currentUrl.searchParams);
 
-      const matchingResource = Object.values(allResources).filter((value) => {
-        return value.id === parseInt(urlParams.get("resource"), 10);
-      })[0];
+      if (UrlValidator.valid(params)) {
+        setValidUrlParams(params);
 
-      setUrlResource(matchingResource);
+        const matchingResource = Object.values(allResources).filter((value) => {
+          return value.id === parseInt(params.resource, 10);
+        })[0];
 
-      setDisplayState("minimized");
+        if (matchingResource) {
+          setUrlResource(matchingResource);
+
+          setDisplayState("minimized");
+        }
+      }
     }
   }, [allResources]);
 
@@ -107,16 +132,19 @@ function CreateBooking({ config }) {
     }
     // Set filter params to trigger filtering of resources
     if (urlResource && urlResource.location && urlResource.resourceMail) {
-      setFilterParams({ "location[]": urlResource.location, "resourceMail[]": urlResource.resourceMail });
+      setFilterParams({
+        "location[]": urlResource.location,
+        "resourceMail[]": urlResource.resourceMail,
+      });
     }
 
     // Use data from url parameters.
     if (validUrlParams && Object.values(calendarSelection).length === 0 && urlResource) {
-      setDate(new Date(validUrlParams.get("from")));
+      setDate(new Date(validUrlParams.from));
 
       setCalendarSelection({
-        start: new Date(validUrlParams.get("from")),
-        end: new Date(validUrlParams.get("to")),
+        start: new Date(validUrlParams.from),
+        end: new Date(validUrlParams.to),
         allDay: false,
         resource: urlResource,
       });
@@ -125,7 +153,7 @@ function CreateBooking({ config }) {
 
   // Find resources that match filterParams.
   useEffect(() => {
-    setIsLoading(true);
+    setLoadingFiltering(true);
 
     const newFilteredResources = filterAllResources(allResources, filterParams);
 
@@ -147,9 +175,9 @@ function CreateBooking({ config }) {
   useEffect(() => {
     if (config?.output_field_id) {
       document.getElementById(config.output_field_id).value = JSON.stringify({
-        start: calendarSelection.start,
-        end: calendarSelection.end,
-        resourceId: calendarSelection?.resource?.resourceMail ?? calendarSelection.resourceId,
+        start: calendarSelection?.start,
+        end: calendarSelection?.end,
+        resourceId: calendarSelection?.resource?.resourceMail,
         ...authorFields,
       });
     }
@@ -160,16 +188,23 @@ function CreateBooking({ config }) {
   const onTabChange = (tab) => {
     setActiveTab(tab);
 
-    setIsLoading(true);
+    setLoadingFiltering(true);
   };
 
   return (
     config && (
       <div className="App">
-        <div className="container-fluid">
-          <MainNavigation config={config} />
-          <div className="app-wrapper">
-            <div>
+        {(loadingResources || loadingUserInformation) && (
+          <div className="container-fluid">
+            <div className="app-wrapper" style={{ minHeight: "100px" }}>
+              <LoadingSpinner />
+            </div>
+          </div>
+        )}
+        {!loadingResources && !loadingUserInformation && (
+          <div className="container-fluid">
+            <MainNavigation config={config} />
+            <div className="app-wrapper">
               {displayState === "maximized" && (
                 <div className="app-content">
                   <CreateBookingFilters
@@ -211,8 +246,8 @@ function CreateBooking({ config }) {
                         resources={resources}
                         setShowResourceDetails={setShowResourceDetails}
                         userHasInteracted={userHasInteracted}
-                        isLoading={isLoading}
-                        setIsLoading={setIsLoading}
+                        isLoading={loadingFiltering}
+                        setIsLoading={setLoadingFiltering}
                       />
                       <ResourceView
                         showResourceDetails={showResourceDetails}
@@ -248,8 +283,8 @@ function CreateBooking({ config }) {
                         setDisplayState={setDisplayState}
                         showResourceDetails={showResourceDetails}
                         userHasInteracted={userHasInteracted}
-                        isLoading={isLoading}
-                        setIsLoading={setIsLoading}
+                        isLoading={loadingFiltering}
+                        setIsLoading={setLoadingFiltering}
                       />
 
                       <ResourceView
@@ -268,23 +303,25 @@ function CreateBooking({ config }) {
                 </div>
               )}
 
-              {resources && displayState === "minimized" && calendarSelection && (
+              {allResources && displayState === "minimized" && calendarSelection !== {} && (
                 <div className="row">
                   <MinimizedDisplay
                     setDisplayState={setDisplayState}
-                    resource={resources.filter((el) => el.resourceMail === calendarSelection.resourceId)[0]}
+                    resource={
+                      urlResource ?? allResources.filter((el) => el.resourceMail === calendarSelection.resourceId)[0]
+                    }
                     calendarSelection={calendarSelection}
                   />
                 </div>
               )}
-            </div>
-          </div>
-        </div>
 
-        {/* Display author fields if user is logged in */}
-        {!config?.step_one && (
-          <div className="row no-gutter">
-            {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+              {/* Display author fields if user is logged in */}
+              {!config?.step_one && (
+                <div className="row no-gutter">
+                  {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
