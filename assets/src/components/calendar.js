@@ -165,27 +165,22 @@ function Calendar({
             resource: resourceId,
           };
 
-          switch (config.step_one) {
-            case true:
-              if (
-                paramsObj.from === undefined ||
-                paramsObj.to === undefined ||
-                paramsObj.resourceMail === undefined ||
-                paramsObj.resource === undefined
-              ) {
-                window.open(config.redirect_url, "_self");
-              } else {
-                const paramsStr = new URLSearchParams(paramsObj).toString();
+          if (config?.step_one) {
+            if (
+              paramsObj.from === undefined ||
+              paramsObj.to === undefined ||
+              paramsObj.resourceMail === undefined ||
+              paramsObj.resource === undefined
+            ) {
+              window.open(config.redirect_url, "_self");
+            } else {
+              const paramsStr = new URLSearchParams(paramsObj).toString();
+              const separator = config.redirect_url.indexOf("?") > -1 ? "&" : "?";
 
-                window.open(`${config.redirect_url}?${paramsStr}`, "_self");
-              }
-
-              break;
-            case false:
-            default:
-              setDisplayState("minimized");
-
-              break;
+              window.open(`${config.redirect_url + separator + paramsStr}`, "_self");
+            }
+          } else {
+            setDisplayState("minimized");
           }
 
           return false;
