@@ -167,8 +167,12 @@ function Calendar({
 
           if (config?.step_one) {
             let formId = null;
+
             if (resources && calendarSelection?.resourceId) {
-              const resourcesFound = resources.filter((res) => {return res.resourceMail === calendarSelection.resourceId});
+              const resourcesFound = resources.filter((res) => {
+                return res.resourceMail === calendarSelection.resourceId;
+              });
+
               if (resourcesFound.length === 1) {
                 formId = resourcesFound[0].formId;
               }
