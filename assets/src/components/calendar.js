@@ -166,18 +166,30 @@ function Calendar({
           };
 
           if (config?.step_one) {
+            let formId = null;
+
+            if (resources && Object.keys(calendarSelection).length !== 0) {
+              resources.forEach((resource) => {
+                if (resource.resourceMail === calendarSelection.resourceId) {
+                  formId = resource.formId;
+                }
+              });
+            }
+
+            const target = formId || config.redirect_url;
+
             if (
               paramsObj.from === undefined ||
               paramsObj.to === undefined ||
               paramsObj.resourceMail === undefined ||
               paramsObj.resource === undefined
             ) {
-              window.open(config.redirect_url, "_self");
+              window.open(target, "_self");
             } else {
               const paramsStr = new URLSearchParams(paramsObj).toString();
-              const separator = config.redirect_url.indexOf("?") > -1 ? "&" : "?";
+              const separator = target.indexOf("?") > -1 ? "&" : "?";
 
-              window.open(`${config.redirect_url + separator + paramsStr}`, "_self");
+              window.open(`${target + separator + paramsStr}`, "_self");
             }
           } else {
             setDisplayState("minimized");
