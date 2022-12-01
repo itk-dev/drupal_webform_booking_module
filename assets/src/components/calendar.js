@@ -167,13 +167,11 @@ function Calendar({
 
           if (config?.step_one) {
             let formId = null;
-
-            if (resources && Object.keys(calendarSelection).length !== 0) {
-              resources.forEach((resource) => {
-                if (resource.resourceMail === calendarSelection.resourceId) {
-                  formId = resource.formId;
-                }
-              });
+            if (resources && calendarSelection?.resourceId) {
+              const resourcesFound = resources.filter((res) => {return res.resourceMail === calendarSelection.resourceId});
+              if (resourcesFound.length === 1) {
+                formId = resourcesFound[0].formId;
+              }
             }
 
             const target = formId || config.redirect_url;
