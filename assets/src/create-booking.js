@@ -177,7 +177,7 @@ function CreateBooking({ config }) {
       document.getElementById(config.output_field_id).value = JSON.stringify({
         start: calendarSelection?.start,
         end: calendarSelection?.end,
-        resourceId: calendarSelection?.resource?.resourceMail,
+        resourceId: calendarSelection?.resourceId,
         ...authorFields,
       });
     }
