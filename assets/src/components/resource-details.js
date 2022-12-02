@@ -53,7 +53,7 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
             </button>
           </div>
           <div className="resource-title">
-            <h2>{resource.title}</h2>
+            <h2>{resource.displayName}</h2>
           </div>
           <div className="resource-details">
             <div className="image">
@@ -96,13 +96,13 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
 ResourceDetails.propTypes = {
   setShowResourceDetails: PropTypes.func.isRequired,
   resource: PropTypes.shape({
-    capacity: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+    capacity: PropTypes.number.isRequired,
+    displayName: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
     streetName: PropTypes.string.isRequired,
-    postalCode: PropTypes.string.isRequired,
+    postalCode: PropTypes.number.isRequired,
     city: PropTypes.string.isRequired,
-    resourceDescription: PropTypes.string.isRequired,
+    resourceDescription: PropTypes.string,
   }).isRequired,
 };
 
