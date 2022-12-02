@@ -29,6 +29,16 @@
       flex-direction: row;
       .location {
         margin-right: 25px;
+        height: 25px;
+
+        .location-icon {
+          flex-direction: row;
+          justify-content: center;
+          margin: auto;
+          svg {
+            margin-right: 5px;
+          }
+        }
       }
       .facilities {
         margin-right: 10px;

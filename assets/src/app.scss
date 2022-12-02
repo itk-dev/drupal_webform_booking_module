@@ -51,14 +51,6 @@
       }
     }
 
-    .filters-wrapper.disable-filters {
-      pointer-events: none;
-      opacity: 0.4;
-      user-select: none;
-      cursor: not-allowed;
-      transition: opacity 0.3s ease;
-    }
-
     .app-content {
       .viewswapper-wrapper {
         margin: 30px 0px 15px 0px;
@@ -140,15 +132,19 @@
     border: none !important;
   }
 
-  .main-container,
-  .resource-container {
-    position: relative;
-  }
-
   .main-container {
+    position: relative;
     display: block;
     background: #fff;
     border-radius: 5px;
+  }
+
+  .app-wrapper .disable-wrapper {
+    pointer-events: none;
+    opacity: 0.4;
+    user-select: none;
+    cursor: not-allowed;
+    transition: opacity 0.3s ease;
   }
 
   .fade-in-background {
