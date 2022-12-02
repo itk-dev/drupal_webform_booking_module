@@ -79,4 +79,30 @@
       margin: auto;
     }
   }
+
+  .image-wrapper {
+    position: relative;
+    width: 136px;
+    height: 150px;
+
+    .image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      width: 136px;
+      height: 150px;
+      box-sizing: border-box;
+
+      img {
+        width: auto;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+      }
+    }
+  }
 }

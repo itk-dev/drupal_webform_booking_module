@@ -56,8 +56,10 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
             <h2>{resource.displayName}</h2>
           </div>
           <div className="resource-details">
-            <div className="image">
-              <img alt="placeholder" src="https://via.placeholder.com/500x300" />
+            <div className="image-wrapper">
+              <div className="image">
+                <img alt={resource.displayName} src={resource.resourceImage} />
+              </div>
             </div>
             <div className="facilities">
               <span className="resource-details--title">Faciliteter</span>
@@ -102,6 +104,7 @@ ResourceDetails.propTypes = {
     streetName: PropTypes.string.isRequired,
     postalCode: PropTypes.number.isRequired,
     city: PropTypes.string.isRequired,
+    resourceImage: PropTypes.string,
     resourceDescription: PropTypes.string,
   }).isRequired,
 };

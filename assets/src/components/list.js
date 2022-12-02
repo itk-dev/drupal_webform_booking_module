@@ -52,8 +52,10 @@ function List({ resources, setShowResourceDetails }) {
       {Object.keys(resources).map((key) => {
         return (
           <div key={key} className="list-resource">
-            <div className="list-resource-image">
-              <img alt="placeholder" src="https://via.placeholder.com/136x150" />
+            <div className="image-wrapper">
+              <div className="image">
+                <img alt={resources[key].displayName} src={resources[key].resourceImage} />
+              </div>
             </div>
             <div className="list-resource-details col-md-10">
               <span className="headline">
@@ -90,10 +92,11 @@ List.propTypes = {
       resourceMail: PropTypes.string,
       location: PropTypes.string,
       streetName: PropTypes.string,
-      postalCode: PropTypes.string,
+      postalCode: PropTypes.number,
       city: PropTypes.string,
       displayName: PropTypes.string,
       resourceDescription: PropTypes.string,
+      resourceImage: PropTypes.string,
     })
   ).isRequired,
   setShowResourceDetails: PropTypes.func.isRequired,
