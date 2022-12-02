@@ -78,8 +78,8 @@ CalendarSelectionBox.propTypes = {
     }),
     resourceId: PropTypes.string,
   }).isRequired,
-  calendarSelectionResourceTitle: PropTypes.string,
-  calendarSelectionResourceId: PropTypes.number,
+  calendarSelectionResourceTitle: PropTypes.string.isRequired,
+  calendarSelectionResourceId: PropTypes.number.isRequired,
   actionText: PropTypes.string,
 };
 

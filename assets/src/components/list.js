@@ -61,8 +61,11 @@ function List({ resources, setShowResourceDetails }) {
               </span>
               <div className="details">
                 <span className="location">
-                  <span className="location-icon"><IconArrow /></span>
-                  {resources[key].location}, {resources[key].streetName} {resources[key].postalCode} {resources[key].city}
+                  <span className="location-icon">
+                    <IconArrow />
+                  </span>
+                  {resources[key].location}, {resources[key].streetName} {resources[key].postalCode}{" "}
+                  {resources[key].city}
                 </span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
@@ -84,7 +87,12 @@ List.propTypes = {
   resources: PropTypes.arrayOf(
     PropTypes.shape({
       resourceName: PropTypes.string,
+      resourceMail: PropTypes.string,
       location: PropTypes.string,
+      streetName: PropTypes.string,
+      postalCode: PropTypes.string,
+      city: PropTypes.string,
+      displayName: PropTypes.string,
       resourceDescription: PropTypes.string,
     })
   ).isRequired,

@@ -6,16 +6,19 @@ import "./resource-details.scss";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 
 /**
+ * REsourece details component.
+ *
  * @param {object} props Props.
+ * @param {object} props.setShowResourceDetails Set show resource details
  * @param {object} props.resource Object of the resource to show
  * @returns {JSX.Element} Component.
  */
-function ResourceDetails({setShowResourceDetails, resource}) {
+function ResourceDetails({ setShowResourceDetails, resource }) {
   const hideResourceView = () => {
     setShowResourceDetails(null);
   };
 
-  const getFacilitiesList = (resource) => {
+  const getFacilitiesList = () => {
     const facilities = getResourceFacilities(resource);
 
     return (
@@ -65,7 +68,7 @@ function ResourceDetails({setShowResourceDetails, resource}) {
               <div>
                 <span>{resource.location}</span>
               </div>
-              <div className="spacer"></div>
+              <div className="spacer" />
               <div>
                 <span>{resource.streetName}</span>
               </div>
@@ -90,5 +93,17 @@ function ResourceDetails({setShowResourceDetails, resource}) {
   );
 }
 
+ResourceDetails.propTypes = {
+  setShowResourceDetails: PropTypes.func.isRequired,
+  resource: PropTypes.shape({
+    capacity: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    streetName: PropTypes.string.isRequired,
+    postalCode: PropTypes.string.isRequired,
+    city: PropTypes.string.isRequired,
+    resourceDescription: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default ResourceDetails;

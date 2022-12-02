@@ -96,7 +96,7 @@ export function handleResources(value, currentCalendarDate) {
     businessHoursArray.push(businessHours);
   });
 
-  let resource = {
+  const resource = {
     resourceId: value.id,
     id: value.resourceMail,
     title: value.displayName ?? value.resourceName,
@@ -107,17 +107,16 @@ export function handleResources(value, currentCalendarDate) {
     monitorEquipment: value.monitorEquipment,
     videoConferenceEquipment: value.videoConferenceEquipment,
     wheelchairAccessible: value.wheelchairAccessible,
-    catering: value.catering
-  }
+    catering: value.catering,
+  };
 
   if (businessHoursArray.length > 0) {
     resource.businessHours = businessHoursArray;
-  }
-  else {
-    resource.businessHours =  {
+  } else {
+    resource.businessHours = {
       startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
-    }
+    };
   }
 
   return resource;

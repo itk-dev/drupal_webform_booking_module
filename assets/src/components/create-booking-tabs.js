@@ -53,6 +53,7 @@ function CreateBookingTabs({ activeTab, onTabChange, disabled }) {
 CreateBookingTabs.propTypes = {
   activeTab: PropTypes.string.isRequired,
   onTabChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };
 
 export default CreateBookingTabs;

@@ -242,11 +242,7 @@ function CreateBooking({ config }) {
 
                     {/* List view */}
                     {activeTab === "list" && (
-                      <div
-                        className={`list ${
-                          showResourceDetails !== null ? "resourceview-visible" : ""
-                        }`}
-                      >
+                      <div className={`list ${showResourceDetails !== null ? "resourceview-visible" : ""}`}>
                         <ListContainer
                           resources={resources}
                           setShowResourceDetails={setShowResourceDetails}
@@ -267,11 +263,7 @@ function CreateBooking({ config }) {
                     {/* Calendar view */}
                     {activeTab === "calendar" && (
                       // {/* Display calendar for selections */}
-                      <div
-                        className={`calendar ${
-                          showResourceDetails !== null ? "resourceview-visible" : ""
-                        }`}
-                      >
+                      <div className={`calendar ${showResourceDetails !== null ? "resourceview-visible" : ""}`}>
                         <Calendar
                           resources={resources}
                           date={date}
@@ -298,11 +290,11 @@ function CreateBooking({ config }) {
                     )}
                     {showResourceDetails && (
                       <ResourceDetails
-                          showResourceDetails={showResourceDetails}
-                          setShowResourceDetails={setShowResourceDetails}
-                          resource={
-                              urlResource ?? allResources.filter((el) => el.resourceMail === showResourceDetails)[0]
-                          }
+                        showResourceDetails={showResourceDetails}
+                        setShowResourceDetails={setShowResourceDetails}
+                        resource={
+                          urlResource ?? allResources.filter((el) => el.resourceMail === showResourceDetails)[0]
+                        }
                       />
                     )}
                   </div>
