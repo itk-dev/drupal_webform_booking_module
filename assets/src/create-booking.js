@@ -4,7 +4,6 @@ import * as PropTypes from "prop-types";
 import AuthorFields from "./components/author-fields";
 import Calendar from "./components/calendar";
 import MinimizedDisplay from "./components/minimized-display";
-import ResourceView from "./components/resource-view";
 import InfoBox from "./components/info-box";
 import ListContainer from "./components/list-container";
 import MapWrapper from "./components/map-wrapper";
@@ -17,6 +16,7 @@ import CreateBookingFilters from "./components/create-booking-filters";
 import CreateBookingTabs from "./components/create-booking-tabs";
 import LoadingSpinner from "./components/loading-spinner";
 import { resourceLimit } from "./util/filter-utils";
+import ResourceDetails from "./components/resource-details";
 
 /**
  * CreateBooking component.
@@ -221,85 +221,91 @@ function CreateBooking({ config }) {
 
                   {displayInfoBox && <InfoBox config={config} />}
 
-                  <CreateBookingTabs activeTab={activeTab} onTabChange={onTabChange} />
+                  <CreateBookingTabs
+                    activeTab={activeTab}
+                    onTabChange={onTabChange}
+                    disabled={showResourceDetails !== null ?? false}
+                  />
 
-                  {/* Map view */}
-                  {activeTab === "map" && (
-                    <div className="row no-gutter main-container map">
-                      <MapWrapper
-                        allResources={allResources}
-                        config={config}
-                        setLocationFilter={setLocationFilter}
-                        setBookingView={onTabChange}
+                  <div className="row no-gutter main-container">
+                    {/* Map view */}
+                    {activeTab === "map" && (
+                      <div className="map">
+                        <MapWrapper
+                          allResources={allResources}
+                          config={config}
+                          setLocationFilter={setLocationFilter}
+                          setBookingView={onTabChange}
+                        />
+                      </div>
+                    )}
+
+                    {/* List view */}
+                    {activeTab === "list" && (
+                      <div
+                        className={`list ${
+                          showResourceDetails !== null ? "resourceview-visible" : ""
+                        }`}
+                      >
+                        <ListContainer
+                          resources={resources}
+                          setShowResourceDetails={setShowResourceDetails}
+                          userHasInteracted={userHasInteracted}
+                          isLoading={loadingFiltering}
+                          setIsLoading={setLoadingFiltering}
+                        />
+
+                        {filteredResources?.length > resourceLimit && (
+                          <div style={{ textAlign: "right", padding: "1em" }}>
+                            Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
+                            at begrænse resultater.
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Calendar view */}
+                    {activeTab === "calendar" && (
+                      // {/* Display calendar for selections */}
+                      <div
+                        className={`calendar ${
+                          showResourceDetails !== null ? "resourceview-visible" : ""
+                        }`}
+                      >
+                        <Calendar
+                          resources={resources}
+                          date={date}
+                          setDate={setDate}
+                          calendarSelection={calendarSelection}
+                          setCalendarSelection={setCalendarSelection}
+                          config={config}
+                          setShowResourceDetails={setShowResourceDetails}
+                          urlResource={urlResource}
+                          setDisplayState={setDisplayState}
+                          showResourceDetails={showResourceDetails}
+                          userHasInteracted={userHasInteracted}
+                          isLoading={loadingFiltering}
+                          setIsLoading={setLoadingFiltering}
+                        />
+
+                        {filteredResources?.length > resourceLimit && (
+                          <div style={{ textAlign: "right", padding: "1em" }}>
+                            Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
+                            at begrænse resultater.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {showResourceDetails && (
+                      <ResourceDetails
+                          showResourceDetails={showResourceDetails}
+                          setShowResourceDetails={setShowResourceDetails}
+                          resource={
+                              urlResource ?? allResources.filter((el) => el.resourceMail === showResourceDetails)[0]
+                          }
                       />
-                    </div>
-                  )}
-
-                  {/* List view */}
-                  {activeTab === "list" && (
-                    <div
-                      className={`row no-gutter main-container list ${
-                        showResourceDetails !== null ? "resourceview-visible" : ""
-                      }`}
-                    >
-                      <ListContainer
-                        resources={resources}
-                        setShowResourceDetails={setShowResourceDetails}
-                        userHasInteracted={userHasInteracted}
-                        isLoading={loadingFiltering}
-                        setIsLoading={setLoadingFiltering}
-                      />
-                      <ResourceView
-                        showResourceDetails={showResourceDetails}
-                        setShowResourceDetails={setShowResourceDetails}
-                      />
-
-                      {filteredResources?.length > resourceLimit && (
-                        <div style={{ textAlign: "right", padding: "1em" }}>
-                          Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
-                          at begrænse resultater.
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Calendar view */}
-                  {activeTab === "calendar" && (
-                    // {/* Display calendar for selections */}
-                    <div
-                      className={`row no-gutter main-container calendar ${
-                        showResourceDetails !== null ? "resourceview-visible" : ""
-                      }`}
-                    >
-                      <Calendar
-                        resources={resources}
-                        date={date}
-                        setDate={setDate}
-                        calendarSelection={calendarSelection}
-                        setCalendarSelection={setCalendarSelection}
-                        config={config}
-                        setShowResourceDetails={setShowResourceDetails}
-                        urlResource={urlResource}
-                        setDisplayState={setDisplayState}
-                        showResourceDetails={showResourceDetails}
-                        userHasInteracted={userHasInteracted}
-                        isLoading={loadingFiltering}
-                        setIsLoading={setLoadingFiltering}
-                      />
-
-                      <ResourceView
-                        showResourceDetails={showResourceDetails}
-                        setShowResourceDetails={setShowResourceDetails}
-                      />
-
-                      {filteredResources?.length > resourceLimit && (
-                        <div style={{ textAlign: "right", padding: "1em" }}>
-                          Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
-                          at begrænse resultater.
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
 
