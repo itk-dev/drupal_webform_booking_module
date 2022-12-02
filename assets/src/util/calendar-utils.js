@@ -16,7 +16,7 @@ function roundToNearest15(date = new Date()) {
 /**
  * Round business hours to nearest half hour.
  *
- * @param {number} businessStartHour The hour the resource is available from
+ * @param {string} businessStartHour The hour the resource is available from
  * @param {object} currentCalendarDate Datetime object of the current Fullcalendar instance
  * @param {boolean} returnMilliseconds Return value in ms
  * @returns {string} : formatted date to represent the start of when the resource is available from, either direct
@@ -96,27 +96,10 @@ export function handleResources(value, currentCalendarDate) {
     businessHoursArray.push(businessHours);
   });
 
-  if (businessHoursArray.length > 0) {
-    return {
-      resourceId: value.id,
-      id: value.resourceMail,
-      title: value.resourceName,
-      capacity: value.capacity,
-      building: value.location,
-      description: value.resourcedescription,
-      image: "http://placekitten.com/1920/1080",
-      monitorEquipment: value.monitorEquipment,
-      videoConferenceEquipment: value.videoConferenceEquipment,
-      wheelchairAccessible: value.wheelchairAccessible,
-      catering: value.catering,
-      businessHours: businessHoursArray,
-    };
-  }
-
-  return {
+  let resource = {
     resourceId: value.id,
     id: value.resourceMail,
-    title: value.resourceName,
+    title: value.displayName ?? value.resourceName,
     capacity: value.capacity,
     building: value.location,
     description: value.resourcedescription,
@@ -124,12 +107,20 @@ export function handleResources(value, currentCalendarDate) {
     monitorEquipment: value.monitorEquipment,
     videoConferenceEquipment: value.videoConferenceEquipment,
     wheelchairAccessible: value.wheelchairAccessible,
-    catering: value.catering,
-    businessHours: {
+    catering: value.catering
+  }
+
+  if (businessHoursArray.length > 0) {
+    resource.businessHours = businessHoursArray;
+  }
+  else {
+    resource.businessHours =  {
       startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
       endTime: "24:00",
-    },
-  };
+    }
+  }
+
+  return resource;
 }
 
 /**
