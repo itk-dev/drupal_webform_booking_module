@@ -8,9 +8,10 @@ import * as PropTypes from "prop-types";
  * @param {object} props The props
  * @param {string} props.activeTab Name of the active tab.
  * @param {Function} props.onTabChange Handle change of tab.
+ * @param {boolean} props.disabled Disable filters.
  * @returns {JSX.Element} Component.
  */
-function CreateBookingTabs({ activeTab, onTabChange }) {
+function CreateBookingTabs({ activeTab, onTabChange, disabled }) {
   const onTabClick = (event) => {
     const tab = event.target.getAttribute("data-view");
 
@@ -18,7 +19,7 @@ function CreateBookingTabs({ activeTab, onTabChange }) {
   };
 
   return (
-    <div className="row viewswapper-wrapper">
+    <div className={`row viewswapper-wrapper ${disabled ? "disable-wrapper" : ""}`}>
       <div className="viewswapper-container">
         <button
           type="button"
