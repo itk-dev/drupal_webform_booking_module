@@ -3,6 +3,7 @@ import "./list.scss";
 import * as PropTypes from "prop-types";
 import getResourceFacilities from "../util/resource-utils";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
+import { ReactComponent as IconArrow } from "../assets/arrow.svg";
 
 /**
  * @param {object} props Props.
@@ -15,7 +16,7 @@ function List({ resources, setShowResourceDetails }) {
     const key = event.target.getAttribute("data-key");
 
     if (resources[key]) {
-      setShowResourceDetails(resources[key]);
+      setShowResourceDetails(resources[key].resourceMail);
     }
   };
 
@@ -56,10 +57,13 @@ function List({ resources, setShowResourceDetails }) {
             </div>
             <div className="list-resource-details col-md-10">
               <span className="headline">
-                <b>{resources[key].resourceName}</b>
+                <b>{resources[key].displayName ?? resources[key].resourceName}</b>
               </span>
               <div className="details">
-                <span className="location">{resources[key].location}</span>
+                <span className="location">
+                  <span className="location-icon"><IconArrow /></span>
+                  {resources[key].location}, {resources[key].streetName} {resources[key].postalCode} {resources[key].city}
+                </span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
               <span className="description">{resources[key].resourceDescription}</span>
