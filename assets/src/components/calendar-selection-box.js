@@ -76,10 +76,10 @@ CalendarSelectionBox.propTypes = {
     end: PropTypes.shape({
       toISOString: PropTypes.func.isRequired,
     }),
-    resourceId: PropTypes.string.isRequired,
+    resourceId: PropTypes.string,
   }).isRequired,
-  calendarSelectionResourceTitle: PropTypes.string.isRequired,
-  calendarSelectionResourceId: PropTypes.number.isRequired,
+  calendarSelectionResourceTitle: PropTypes.string,
+  calendarSelectionResourceId: PropTypes.number,
   actionText: PropTypes.string,
 };
 
