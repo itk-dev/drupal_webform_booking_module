@@ -14,3 +14,6 @@ $settings['itkdev_booking_df_map_username'] = '*** Get from 1password ***';
 $settings['itkdev_booking_df_map_password'] = '*** Get from 1password ***';
 $settings['itkdev_booking_fullcalendar_license'] = '*** Get from 1password ***';
 ```
+
+## Release
+New releases of this project follows semantic versioning principles and should be tagged as such.
