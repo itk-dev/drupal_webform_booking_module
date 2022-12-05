@@ -157,7 +157,7 @@ function CreateBookingFilters({
   }, [facilityFilter]);
 
   return (
-    <div className={`row filters-wrapper ${disabled ? "disable-filters" : ""}`}>
+    <div className={`row filters-wrapper ${disabled ? "disable-wrapper" : ""}`}>
       <div className="col-md-3 col-xs-12 small-padding">
         <label htmlFor="location-filter">
           Filtrér på lokationer

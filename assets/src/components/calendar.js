@@ -218,7 +218,7 @@ function Calendar({
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
     // eslint-disable-next-line no-underscore-dangle
-    setShowResourceDetails(resource._resource);
+    setShowResourceDetails(resource._resource.id);
   };
 
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
