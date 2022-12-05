@@ -3,6 +3,7 @@ import "./list.scss";
 import * as PropTypes from "prop-types";
 import getResourceFacilities from "../util/resource-utils";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
+import { ReactComponent as IconArrow } from "../assets/arrow.svg";
 
 /**
  * @param {object} props Props.
@@ -15,7 +16,7 @@ function List({ resources, setShowResourceDetails }) {
     const key = event.target.getAttribute("data-key");
 
     if (resources[key]) {
-      setShowResourceDetails(resources[key]);
+      setShowResourceDetails(resources[key].resourceMail);
     }
   };
 
@@ -51,15 +52,23 @@ function List({ resources, setShowResourceDetails }) {
       {Object.keys(resources).map((key) => {
         return (
           <div key={key} className="list-resource">
-            <div className="list-resource-image">
-              <img alt="placeholder" src="https://via.placeholder.com/136x150" />
+            <div className="image-wrapper">
+              <div className="image">
+                <img alt={resources[key].displayName} src={resources[key].resourceImage} />
+              </div>
             </div>
             <div className="list-resource-details col-md-10">
               <span className="headline">
-                <b>{resources[key].resourceName}</b>
+                <b>{resources[key].displayName ?? resources[key].resourceName}</b>
               </span>
               <div className="details">
-                <span className="location">{resources[key].location}</span>
+                <span className="location">
+                  <span className="location-icon">
+                    <IconArrow />
+                  </span>
+                  {resources[key].location}, {resources[key].streetName} {resources[key].postalCode}{" "}
+                  {resources[key].city}
+                </span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
               <span className="description">{resources[key].resourceDescription}</span>
@@ -80,8 +89,14 @@ List.propTypes = {
   resources: PropTypes.arrayOf(
     PropTypes.shape({
       resourceName: PropTypes.string,
+      resourceMail: PropTypes.string,
       location: PropTypes.string,
+      streetName: PropTypes.string,
+      postalCode: PropTypes.number,
+      city: PropTypes.string,
+      displayName: PropTypes.string,
       resourceDescription: PropTypes.string,
+      resourceImage: PropTypes.string,
     })
   ).isRequired,
   setShowResourceDetails: PropTypes.func.isRequired,

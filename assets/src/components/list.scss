@@ -29,6 +29,16 @@
       flex-direction: row;
       .location {
         margin-right: 25px;
+        height: 25px;
+
+        .location-icon {
+          flex-direction: row;
+          justify-content: center;
+          margin: auto;
+          svg {
+            margin-right: 5px;
+          }
+        }
       }
       .facilities {
         margin-right: 10px;
@@ -67,6 +77,32 @@
     flex-direction: column;
     button {
       margin: auto;
+    }
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 136px;
+    height: 150px;
+
+    .image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      width: 136px;
+      height: 150px;
+      box-sizing: border-box;
+
+      img {
+        width: auto;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+      }
     }
   }
 }

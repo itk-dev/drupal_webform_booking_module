@@ -6,13 +6,19 @@ import "./resource-details.scss";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 
 /**
+ * REsourece details component.
+ *
  * @param {object} props Props.
- * @param {Function} props.hideResourceView Hides and resets resource view
- * @param {object} props.showResourceDetails Object of the resource to show
+ * @param {object} props.setShowResourceDetails Set show resource details
+ * @param {object} props.resource Object of the resource to show
  * @returns {JSX.Element} Component.
  */
-function ResourceDetails({ hideResourceView, showResourceDetails }) {
-  const getFacilitiesList = (resource) => {
+function ResourceDetails({ setShowResourceDetails, resource }) {
+  const hideResourceView = () => {
+    setShowResourceDetails(null);
+  };
+
+  const getFacilitiesList = () => {
     const facilities = getResourceFacilities(resource);
 
     return (
@@ -21,7 +27,7 @@ function ResourceDetails({ hideResourceView, showResourceDetails }) {
           <div className="facility-icon">
             <IconChair />
           </div>
-          <span>{showResourceDetails.capacity ?? showResourceDetails.extendedProps.capacity} siddepladser</span>
+          <span>{resource.capacity} siddepladser</span>
         </div>
         {Object.values(facilities).map((value) => {
           return (
@@ -36,9 +42,9 @@ function ResourceDetails({ hideResourceView, showResourceDetails }) {
   };
 
   return (
-    <div className={showResourceDetails !== null ? "fade-in-content resource-container" : "  resource-container"}>
-      {!showResourceDetails && <LoadingSpinner />}
-      {showResourceDetails && (
+    <div className={resource !== null ? "fade-in-content resource-container" : "resource-container"}>
+      {!resource && <LoadingSpinner />}
+      {resource && (
         <div>
           <div className="resource-headline">
             <span>Ressource information</span>
@@ -47,28 +53,39 @@ function ResourceDetails({ hideResourceView, showResourceDetails }) {
             </button>
           </div>
           <div className="resource-title">
-            <h2>{showResourceDetails.title ?? showResourceDetails.resourceName}</h2>
+            <h2>{resource.displayName}</h2>
           </div>
           <div className="resource-details">
-            <div className="image">
-              <img alt="placeholder" src="https://via.placeholder.com/500x300" />
+            <div className="image-wrapper">
+              <div className="image">
+                <img alt={resource.displayName} src={resource.resourceImage} />
+              </div>
             </div>
             <div className="facilities">
-              <span>Faciliteter</span>
-              <div>{getFacilitiesList(showResourceDetails)}</div>
+              <span className="resource-details--title">Faciliteter</span>
+              <div>{getFacilitiesList(resource)}</div>
             </div>
             <div className="location">
-              <span>Lokation</span>
+              <span className="resource-details--title">Lokation</span>
               <div>
-                <span>{showResourceDetails.location ?? showResourceDetails.extendedProps.building}</span>
+                <span>{resource.location}</span>
+              </div>
+              <div className="spacer" />
+              <div>
+                <span>{resource.streetName}</span>
+              </div>
+              <div>
+                <span>{resource.postalCode}</span>
+                &nbsp;
+                <span>{resource.city}</span>
               </div>
             </div>
           </div>
-          {showResourceDetails.resourceDescription && (
+          {resource.resourceDescription && (
             <div className="resource-description">
               <span>Beskrivelse</span>
               <div>
-                <span>{showResourceDetails.resourceDescription ?? showResourceDetails.extendedProps.description}</span>
+                <span>{resource.resourceDescription}</span>
               </div>
             </div>
           )}
@@ -79,35 +96,17 @@ function ResourceDetails({ hideResourceView, showResourceDetails }) {
 }
 
 ResourceDetails.propTypes = {
-  hideResourceView: PropTypes.func.isRequired,
-  showResourceDetails: PropTypes.shape({
-    capacity: PropTypes.number,
-    extendedProps: PropTypes.shape({
-      capacity: PropTypes.number,
-      building: PropTypes.string,
-      description: PropTypes.string,
-    }),
-    title: PropTypes.string,
-    location: PropTypes.string,
-    building: PropTypes.string,
+  setShowResourceDetails: PropTypes.func.isRequired,
+  resource: PropTypes.shape({
+    capacity: PropTypes.number.isRequired,
+    displayName: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    streetName: PropTypes.string.isRequired,
+    postalCode: PropTypes.number.isRequired,
+    city: PropTypes.string.isRequired,
+    resourceImage: PropTypes.string,
     resourceDescription: PropTypes.string,
-    resourceName: PropTypes.string,
-  }),
-};
-
-ResourceDetails.defaultProps = {
-  showResourceDetails: {
-    capacity: 0,
-    extendedProps: {
-      capacity: 0,
-      building: "Lokation",
-      description: "Beskrivelse",
-    },
-    title: "Titel",
-    resourceName: "Titel",
-    location: "Lokation",
-    resourceDescription: "Beskrivelse",
-  },
+  }).isRequired,
 };
 
 export default ResourceDetails;
