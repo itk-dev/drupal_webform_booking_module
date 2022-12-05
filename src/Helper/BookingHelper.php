@@ -18,8 +18,6 @@ class BookingHelper {
 
   protected string $bookingApiKey;
 
-  protected string $bookingApiAllowInsecureConnection;
-
   protected array $headers;
 
   protected UserHelper $userHelper;
@@ -27,7 +25,6 @@ class BookingHelper {
   public function __construct() {
     $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint');
     $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
-    $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
     $this->userHelper = new UserHelper();
 
     $this->headers = [
