@@ -25,11 +25,11 @@ function AuthorFields({ authorFields, setAuthorFields }) {
       <div className="webform-section-wrapper">
         <div className="form-item">
           <label htmlFor="subject-input" className="form-item__label">
-            <span className="form-item-label">Booking subject</span>
+            <span className="form-item-label">Booking emne</span>
             <input
               id="subject-input"
               type="text"
-              placeholder="Booking title"
+              placeholder="Booking emne"
               required
               value={authorFields.subject}
               onChange={onChangeSubject}
@@ -39,12 +39,12 @@ function AuthorFields({ authorFields, setAuthorFields }) {
         </div>
         <div className="form-item">
           <label htmlFor="email-input" className="form-item__label">
-            <span className="form-item-label">Email</span>
+            <span className="form-item-label">E-mail</span>
             <input
               id="email-input"
               type="email"
               autoComplete="email"
-              placeholder="Email"
+              placeholder="E-mail"
               required
               value={authorFields.email}
               onChange={onChangeEmail}
