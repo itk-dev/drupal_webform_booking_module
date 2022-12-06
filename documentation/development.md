@@ -9,7 +9,8 @@ itkdev-docker-compose run node npm install
 itkdev-docker-compose up -d
 itkdev-docker-compose open
 ```
-This provides a completely detached react app, that is neither depending on drupal nor booking api.
+This provides a react app ready for development.
+To get proper output with working endpoints the app requires this drupal module enabled on a drupal site.
 
 ## Build
 To build the code for use in the drupal module.
