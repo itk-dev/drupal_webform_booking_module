@@ -211,7 +211,7 @@ function CreateBooking({ config }) {
                     filterParams={filterParams}
                     setFilterParams={setFilterParams}
                     allResources={allResources}
-                    disabled={showResourceDetails !== null ?? false}
+                    disabled={(showResourceDetails !== null || validUrlParams !== null) ?? false}
                     locationFilter={locationFilter}
                     setLocationFilter={setLocationFilter}
                     resourceFilter={resourceFilter}

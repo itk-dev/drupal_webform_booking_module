@@ -55,17 +55,17 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
           <div className="resource-title">
             <h2>{resource.displayName}</h2>
           </div>
-          <div className="resource-details">
-            <div className="image-wrapper">
+          <div className="resource-details row">
+            <div className="image-wrapper col-xs-12 col-md-4">
               <div className="image">
                 <img alt={resource.displayName} src={resource.resourceImage} />
               </div>
             </div>
-            <div className="facilities">
+            <div className="facilities col-xs-12 col-md-4">
               <span className="resource-details--title">Faciliteter</span>
               <div>{getFacilitiesList(resource)}</div>
             </div>
-            <div className="location">
+            <div className="location col-xs-12 col-md-4">
               <span className="resource-details--title">Lokation</span>
               <div>
                 <span>{resource.location}</span>
