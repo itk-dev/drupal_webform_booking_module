@@ -14,6 +14,7 @@ import { ReactComponent as IconChair } from "../assets/chair.svg";
  * @returns {JSX.Element} Component.
  */
 function ResourceDetails({ setShowResourceDetails, resource }) {
+
   const hideResourceView = () => {
     setShowResourceDetails(null);
   };
@@ -47,18 +48,15 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
       {resource && (
         <div>
           <div className="resource-headline">
-            <span>Ressource information</span>
+            <span>{resource.displayName ?? resource.resourceName}</span>
             <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
           </div>
-          <div className="resource-title">
-            <h2>{resource.displayName}</h2>
-          </div>
           <div className="resource-details row">
             <div className="image-wrapper col-xs-12 col-md-4">
               <div className="image">
-                <img alt={resource.displayName} src={resource.resourceImage} />
+                <img alt={resource.displayName ?? resource.resourceName} src={resource.resourceImage} />
               </div>
             </div>
             <div className="facilities col-xs-12 col-md-4">
@@ -100,6 +98,7 @@ ResourceDetails.propTypes = {
   resource: PropTypes.shape({
     capacity: PropTypes.number.isRequired,
     displayName: PropTypes.string.isRequired,
+    resourceName: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
     streetName: PropTypes.string.isRequired,
     postalCode: PropTypes.number.isRequired,
