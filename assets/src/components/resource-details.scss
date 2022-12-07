@@ -64,7 +64,6 @@
       position: relative;
       display: block;
       height: 370px;
-      border: 1px solid;
       text-align: center;
 
       img {
@@ -74,6 +73,9 @@
         position: absolute;
         margin: 0 auto;
         top: 50%;
+        min-height: 300px;
+        border: 1px solid;
+        box-sizing: border-box;
       }
     }
   }

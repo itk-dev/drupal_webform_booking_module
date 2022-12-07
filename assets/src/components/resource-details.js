@@ -14,7 +14,6 @@ import { ReactComponent as IconChair } from "../assets/chair.svg";
  * @returns {JSX.Element} Component.
  */
 function ResourceDetails({ setShowResourceDetails, resource }) {
-
   const hideResourceView = () => {
     setShowResourceDetails(null);
   };
