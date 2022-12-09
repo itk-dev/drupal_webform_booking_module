@@ -77,9 +77,11 @@ function CreateBookingFilters({
       })
     );
 
-    setResourceCategoryOptions(
-      [...new Set(allResources.filter((resource) => resource.resourceCategory !== "").map((resource) => resource.resourceCategory))]
-    );
+    setResourceCategoryOptions([
+      ...new Set(
+        allResources.filter((resource) => resource.resourceCategory !== "").map((resource) => resource.resourceCategory)
+      ),
+    ]);
   }, [allResources]);
 
   // Set location filter and resource dropdown options.
@@ -168,7 +170,7 @@ function CreateBookingFilters({
 
   // Set resource category filter.
   useEffect(() => {
-    setFilterParams({...filterParams, resourceCategory: resourceCategoryFilter})
+    setFilterParams({ ...filterParams, resourceCategory: resourceCategoryFilter });
   }, [resourceCategoryFilter]);
 
   return (
@@ -176,9 +178,15 @@ function CreateBookingFilters({
       {/* TODO: Fix styling */}
       <div className="category-tabs">
         {resourceCategoryOptions.map((category, index) => (
-          <div key={category}
-               className={`category-tab ${resourceCategoryFilter === category ? 'active' : ''} ${index === resourceCategoryOptions.length - 1 ? 'last' : ''} ${index === 0 ? 'first' : ''}`}>
-            <button className={`category-button`} onClick={() => setResourceCategoryFilter(category)}>{category}</button>
+          <div
+            key={category}
+            className={`category-tab ${resourceCategoryFilter === category ? "active" : ""} ${
+              index === resourceCategoryOptions.length - 1 ? "last" : ""
+            } ${index === 0 ? "first" : ""}`}
+          >
+            <button type="button" className="category-button" onClick={() => setResourceCategoryFilter(category)}>
+              {category}
+            </button>
           </div>
         ))}
       </div>
