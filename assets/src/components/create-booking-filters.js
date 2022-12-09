@@ -175,7 +175,6 @@ function CreateBookingFilters({
 
   return (
     <>
-      {/* TODO: Fix styling */}
       <div className="category-tabs">
         {resourceCategoryOptions.map((category, index) => (
           <div

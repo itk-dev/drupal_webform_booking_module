@@ -4,16 +4,26 @@
 }
 
 .category-tab {
-  padding: 10px 20px;
-  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 24px 2px;
+  gap: 10px;
+
+  border-width: 1px 1px 1px 1px;
+  border-style: solid;
+  border-color: #DEE2E6;
+
+  background: #E9ECEF;
 }
 
 .category-tab.first {
-  border-top-left-radius: 5px;
+  border-top-left-radius: 3px;
 }
 
 .category-tab.last {
-  border-top-right-radius: 5px;
+  border-top-right-radius: 3px;
 }
 
 .category-button {
@@ -24,9 +34,6 @@
 }
 
 .category-tab.active {
-  color: white;
-  background: #6c757d;
-}
-.category-tab.active .category-button {
-  color: white;
+  background: #FFFFFF;
+  border-color: #FFFFFF;
 }
