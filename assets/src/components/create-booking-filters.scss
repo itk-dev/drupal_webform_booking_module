@@ -1,0 +1,32 @@
+.category-tabs {
+  display: flex;
+  flex-direction: row;
+}
+
+.category-tab {
+  padding: 10px 20px;
+  background: white;
+}
+
+.category-tab.first {
+  border-top-left-radius: 5px;
+}
+
+.category-tab.last {
+  border-top-right-radius: 5px;
+}
+
+.category-button {
+  border: 0;
+  background: none;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.category-tab.active {
+  color: white;
+  background: #6c757d;
+}
+.category-tab.active .category-button {
+  color: white;
+}

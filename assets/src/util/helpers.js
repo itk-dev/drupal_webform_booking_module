@@ -110,6 +110,13 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
+    // Resource category filter
+    if (filterParams.resourceCategory && matchingState !== 0) {
+      if (resource.resourceCategory !== filterParams.resourceCategory) {
+        matchingState = 0;
+      }
+    }
+
     // HasWhitelist filter
     if (filterParams.hasWhitelist) {
       if (resource.hasWhitelist) {
