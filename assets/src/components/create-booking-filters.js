@@ -79,7 +79,9 @@ function CreateBookingFilters({
 
     setResourceCategoryOptions([
       ...new Set(
-        allResources.filter((resource) => resource.resourceCategory !== "").map((resource) => resource.resourceCategory)
+        allResources
+          .filter((resource) => resource?.resourceCategory !== null && resource?.resourceCategory !== "")
+          .map((resource) => resource.resourceCategory)
       ),
     ]);
   }, [allResources]);
