@@ -35,6 +35,7 @@ function CreateBooking({ config }) {
   const [filterParams, setFilterParams] = useState({});
   const [locationFilter, setLocationFilter] = useState([]);
   const [resourceFilter, setResourceFilter] = useState([]);
+  const [resourceCategoryFilter, setResourceCategoryFilter] = useState("Lokale");
   // App configuration and behavior.
   const [displayState, setDisplayState] = useState("maximized");
   const [urlResource, setUrlResource] = useState(null);
@@ -212,11 +213,13 @@ function CreateBooking({ config }) {
                     setFilterParams={setFilterParams}
                     allResources={allResources}
                     disabled={(showResourceDetails !== null || validUrlParams !== null) ?? false}
+                    userType={userInformation?.userType}
                     locationFilter={locationFilter}
                     setLocationFilter={setLocationFilter}
                     resourceFilter={resourceFilter}
                     setResourceFilter={setResourceFilter}
-                    userType={userInformation?.userType}
+                    resourceCategoryFilter={resourceCategoryFilter}
+                    setResourceCategoryFilter={setResourceCategoryFilter}
                   />
 
                   {displayInfoBox && <InfoBox config={config} />}

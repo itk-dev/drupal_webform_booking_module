@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { capacityOptions, facilityOptions } from "../util/filter-utils";
 import { setAriaLabelFilters } from "../util/dom-manipulation-utils";
 import { hasOwnProperty } from "../util/helpers";
+import "./create-booking-filters.scss";
 
 /**
  * CreateBooking component.
@@ -14,11 +15,13 @@ import { hasOwnProperty } from "../util/helpers";
  * @param {Function} props.setFilterParams Set filter parameters.
  * @param {Array} props.allResources All resources.
  * @param {boolean} props.disabled Disable filters.
+ * @param {string} props.userType User type: citizen or businessPartner.
  * @param {Array} props.locationFilter Location filters.
  * @param {Function} props.setLocationFilter Set Location filters.
  * @param {Array} props.resourceFilter Resource filters.
  * @param {Function} props.setResourceFilter Set resource filters.
- * @param {string} props.userType User type: citizen or businessPartner.
+ * @param {string} props.resourceCategoryFilter Resource category filters.
+ * @param {Function} props.setResourceCategoryFilter Set resource category filters.
  * @returns {JSX.Element} Component.
  */
 function CreateBookingFilters({
@@ -26,17 +29,20 @@ function CreateBookingFilters({
   setFilterParams,
   allResources,
   disabled,
+  userType,
   locationFilter,
   setLocationFilter,
   resourceFilter,
   setResourceFilter,
-  userType,
+  resourceCategoryFilter,
+  setResourceCategoryFilter,
 }) {
   const [capacityFilter, setCapacityFilter] = useState([]);
   const [facilityFilter, setFacilityFilter] = useState([]);
   const [hasWhitelist, setHasWhitelist] = useState(false);
   const [locationOptions, setLocationOptions] = useState([]);
   const [resourcesOptions, setResourcesOptions] = useState([]);
+  const [resourceCategoryOptions, setResourceCategoryOptions] = useState([]);
 
   // TODO: Describe.
   setAriaLabelFilters();
@@ -70,6 +76,14 @@ function CreateBookingFilters({
         };
       })
     );
+
+    setResourceCategoryOptions([
+      ...new Set(
+        allResources
+          .filter((resource) => resource?.resourceCategory !== null && resource?.resourceCategory !== "")
+          .map((resource) => resource.resourceCategory)
+      ),
+    ]);
   }, [allResources]);
 
   // Set location filter and resource dropdown options.
@@ -156,110 +170,131 @@ function CreateBookingFilters({
     setFilterParams({ ...filterParamsObj, ...facilitiesObj });
   }, [facilityFilter]);
 
+  // Set resource category filter.
+  useEffect(() => {
+    setFilterParams({ ...filterParams, resourceCategory: resourceCategoryFilter });
+  }, [resourceCategoryFilter]);
+
   return (
-    <div className={`row filters-wrapper ${disabled ? "disable-wrapper" : ""}`}>
-      <div className="col-md-3 col-xs-12 small-padding">
-        <label htmlFor="location-filter">
-          Filtrér på lokationer
-          {/* Dropdown with locations */}
-          <Select
-            styles={{}}
-            id="location-filter"
-            className="filter"
-            defaultValue={locationFilter}
-            value={locationFilter}
-            placeholder="Lokationer..."
-            placeholderClassName="dropdown-placeholder"
-            closeMenuOnSelect={false}
-            options={locationOptions}
-            onChange={(selectedLocations) => {
-              setLocationFilter(selectedLocations);
-            }}
-            isLoading={Object.values(locationOptions).length === 0}
-            loadingMessage={() => "Henter lokationer.."}
-            filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
-            isMulti
-          />
-        </label>
+    <>
+      <div className="category-tabs">
+        {resourceCategoryOptions.map((category, index) => (
+          <div
+            key={category}
+            className={`category-tab ${resourceCategoryFilter === category ? "active" : ""} ${
+              index === resourceCategoryOptions.length - 1 ? "last" : ""
+            } ${index === 0 ? "first" : ""}`}
+          >
+            <button type="button" className="category-button" onClick={() => setResourceCategoryFilter(category)}>
+              {category}
+            </button>
+          </div>
+        ))}
       </div>
-      <div className="col-md-3 col-xs-12 small-padding">
-        <label htmlFor="resource-filter">
-          Filtrér på lokaler/ressourcer
-          {/* Dropdown with resources */}
-          <Select
-            styles={{}}
-            id="resource-filter"
-            className="filter"
-            defaultValue={resourceFilter}
-            placeholder="Ressourcer..."
-            placeholderClassName="dropdown-placeholder"
-            closeMenuOnSelect={false}
-            options={resourcesOptions}
-            onChange={(selectedResources) => {
-              setResourceFilter(selectedResources);
-            }}
-            isLoading={Object.values(resourcesOptions).length === 0}
-            loadingMessage={() => "Henter ressourcer.."}
-            filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
-            isMulti
-          />
-        </label>
-      </div>
-      <div className="col-md-3 col-xs-12 small-padding">
-        <label htmlFor="facility-filter">
-          Filtrér på faciliteter
-          {/* Dropdown with facilities */}
-          <Select
-            styles={{}}
-            id="facility-filter"
-            className="filter"
-            defaultValue={facilityFilter}
-            placeholder="Facilitieter..."
-            placeholderClassName="dropdown-placeholder"
-            closeMenuOnSelect={false}
-            options={facilityOptions}
-            onChange={(selectedFacilities) => {
-              setFacilityFilter(selectedFacilities);
-            }}
-            isMulti
-          />
-        </label>
-      </div>
-      <div className="col-md-3 col-xs-12 small-padding">
-        <label htmlFor="capacity-filter">
-          Filtrér på kapacitet
-          {/* Dropdown with capacity */}
-          <Select
-            styles={{}}
-            id="capacity-filter"
-            className="filter"
-            defaultValue={{ value: "0", label: "Alle", type: "gt" }}
-            placeholder="Siddepladser..."
-            placeholderClassName="dropdown-placeholder"
-            closeMenuOnSelect
-            options={capacityOptions}
-            onChange={(selectedCapacity) => {
-              setCapacityFilter(selectedCapacity);
-            }}
-          />
-        </label>
-      </div>
-      {userType === "businessPartner" && (
+      <div className={`row filters-wrapper ${disabled ? "disable-wrapper" : ""}`}>
         <div className="col-md-3 col-xs-12 small-padding">
-          <label htmlFor="capacity-filter" style={{ display: "flex" }}>
-            <input
-              type="checkbox"
-              value={hasWhitelist}
-              style={{ width: "20px", height: "20px" }}
-              onChange={({ target }) => {
-                setHasWhitelist(!!target.checked);
+          <label htmlFor="location-filter">
+            Filtrér på lokationer
+            {/* Dropdown with locations */}
+            <Select
+              styles={{}}
+              id="location-filter"
+              className="filter"
+              defaultValue={locationFilter}
+              value={locationFilter}
+              placeholder="Lokationer..."
+              placeholderClassName="dropdown-placeholder"
+              closeMenuOnSelect={false}
+              options={locationOptions}
+              onChange={(selectedLocations) => {
+                setLocationFilter(selectedLocations);
               }}
+              isLoading={Object.values(locationOptions).length === 0}
+              loadingMessage={() => "Henter lokationer.."}
+              filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
+              isMulti
             />
-            <span style={{ marginLeft: "5px" }}>Mine udvalgte ressourcer</span>
           </label>
         </div>
-      )}
-    </div>
+        <div className="col-md-3 col-xs-12 small-padding">
+          <label htmlFor="resource-filter">
+            Filtrér på lokaler/ressourcer
+            {/* Dropdown with resources */}
+            <Select
+              styles={{}}
+              id="resource-filter"
+              className="filter"
+              defaultValue={resourceFilter}
+              placeholder="Ressourcer..."
+              placeholderClassName="dropdown-placeholder"
+              closeMenuOnSelect={false}
+              options={resourcesOptions}
+              onChange={(selectedResources) => {
+                setResourceFilter(selectedResources);
+              }}
+              isLoading={Object.values(resourcesOptions).length === 0}
+              loadingMessage={() => "Henter ressourcer.."}
+              filterOption={createFilter({ ignoreAccents: false })} // Improved performance with large datasets
+              isMulti
+            />
+          </label>
+        </div>
+        <div className="col-md-3 col-xs-12 small-padding">
+          <label htmlFor="facility-filter">
+            Filtrér på faciliteter
+            {/* Dropdown with facilities */}
+            <Select
+              styles={{}}
+              id="facility-filter"
+              className="filter"
+              defaultValue={facilityFilter}
+              placeholder="Facilitieter..."
+              placeholderClassName="dropdown-placeholder"
+              closeMenuOnSelect={false}
+              options={facilityOptions}
+              onChange={(selectedFacilities) => {
+                setFacilityFilter(selectedFacilities);
+              }}
+              isMulti
+            />
+          </label>
+        </div>
+        <div className="col-md-3 col-xs-12 small-padding">
+          <label htmlFor="capacity-filter">
+            Filtrér på kapacitet
+            {/* Dropdown with capacity */}
+            <Select
+              styles={{}}
+              id="capacity-filter"
+              className="filter"
+              defaultValue={{ value: "0", label: "Alle", type: "gt" }}
+              placeholder="Siddepladser..."
+              placeholderClassName="dropdown-placeholder"
+              closeMenuOnSelect
+              options={capacityOptions}
+              onChange={(selectedCapacity) => {
+                setCapacityFilter(selectedCapacity);
+              }}
+            />
+          </label>
+        </div>
+        {userType === "businessPartner" && (
+          <div className="col-md-3 col-xs-12 small-padding">
+            <label htmlFor="capacity-filter" style={{ display: "flex" }}>
+              <input
+                type="checkbox"
+                value={hasWhitelist}
+                style={{ width: "20px", height: "20px" }}
+                onChange={({ target }) => {
+                  setHasWhitelist(!!target.checked);
+                }}
+              />
+              <span style={{ marginLeft: "5px" }}>Mine udvalgte ressourcer</span>
+            </label>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -272,11 +307,13 @@ CreateBookingFilters.propTypes = {
   setFilterParams: PropTypes.func.isRequired,
   allResources: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   disabled: PropTypes.bool.isRequired,
+  userType: PropTypes.string,
   locationFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setLocationFilter: PropTypes.func.isRequired,
   resourceFilter: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setResourceFilter: PropTypes.func.isRequired,
-  userType: PropTypes.string,
+  resourceCategoryFilter: PropTypes.string.isRequired,
+  setResourceCategoryFilter: PropTypes.func.isRequired,
 };
 
 export default CreateBookingFilters;
