@@ -110,6 +110,17 @@ export function filterAllResources(allResources, filterParams) {
       }
     }
 
+    // Resource category filter
+    if (filterParams.resourceCategory && matchingState !== 0) {
+      // Treat all resources that do not have a resource category set, as "Lokale".
+      const resCat =
+        resource.resourceCategory === null || resource.resourceCategory === "" ? "Lokale" : resource.resourceCategory;
+
+      if (resCat !== filterParams.resourceCategory) {
+        matchingState = 0;
+      }
+    }
+
     // HasWhitelist filter
     if (filterParams.hasWhitelist) {
       if (resource.hasWhitelist) {
