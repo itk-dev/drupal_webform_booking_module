@@ -17,6 +17,7 @@ import CreateBookingTabs from "./components/create-booking-tabs";
 import LoadingSpinner from "./components/loading-spinner";
 import { resourceLimit } from "./util/filter-utils";
 import ResourceDetails from "./components/resource-details";
+import SystemFailureScreen from "./system-failure-screen";
 
 /**
  * CreateBooking component.
@@ -43,6 +44,7 @@ function CreateBooking({ config }) {
   const [activeTab, setActiveTab] = useState("calendar");
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [showResourceDetails, setShowResourceDetails] = useState(null);
+  const [showSystemFailure, setShowSystemFailure] = useState(false);
   // Loaded data.
   const [filteredResources, setFilteredResources] = useState(null);
   const [resources, setResources] = useState(null);
@@ -61,6 +63,8 @@ function CreateBooking({ config }) {
       })
       .catch((fetchAllResourcesError) => {
         toast.error("Der opstod en fejl. Prøv igen senere.", fetchAllResourcesError);
+
+        setShowSystemFailure(true);
       })
       .finally(() => {
         setLoadingResources(false);
@@ -73,6 +77,8 @@ function CreateBooking({ config }) {
         })
         .catch((fetchUserInformationError) => {
           toast.error("Der opstod en fejl. Prøv igen senere.", fetchUserInformationError);
+
+          setShowSystemFailure(true);
         })
         .finally(() => {
           setLoadingUserInformation(false);
@@ -193,140 +199,143 @@ function CreateBooking({ config }) {
   };
 
   return (
-    config && (
-      <div className="App">
-        {(loadingResources || loadingUserInformation) && (
-          <div className="container-fluid">
-            <div className="app-wrapper" style={{ minHeight: "100px" }}>
-              <LoadingSpinner />
+    <>
+      {config && !showSystemFailure && (
+        <div className="App">
+          {(loadingResources || loadingUserInformation) && (
+            <div className="container-fluid">
+              <div className="app-wrapper" style={{ minHeight: "100px" }}>
+                <LoadingSpinner />
+              </div>
             </div>
-          </div>
-        )}
-        {!loadingResources && !loadingUserInformation && (
-          <div className="container-fluid">
-            <MainNavigation config={config} />
-            <div className="app-wrapper">
-              {displayState === "maximized" && (
-                <div className="app-content">
-                  <CreateBookingFilters
-                    filterParams={filterParams}
-                    setFilterParams={setFilterParams}
-                    allResources={allResources}
-                    disabled={(showResourceDetails !== null || validUrlParams !== null) ?? false}
-                    userType={userInformation?.userType}
-                    locationFilter={locationFilter}
-                    setLocationFilter={setLocationFilter}
-                    resourceFilter={resourceFilter}
-                    setResourceFilter={setResourceFilter}
-                    resourceCategoryFilter={resourceCategoryFilter}
-                    setResourceCategoryFilter={setResourceCategoryFilter}
-                  />
+          )}
+          {!loadingResources && !loadingUserInformation && (
+            <div className="container-fluid">
+              <MainNavigation config={config} />
+              <div className="app-wrapper">
+                {displayState === "maximized" && (
+                  <div className="app-content">
+                    <CreateBookingFilters
+                      filterParams={filterParams}
+                      setFilterParams={setFilterParams}
+                      allResources={allResources}
+                      disabled={(showResourceDetails !== null || validUrlParams !== null) ?? false}
+                      userType={userInformation?.userType}
+                      locationFilter={locationFilter}
+                      setLocationFilter={setLocationFilter}
+                      resourceFilter={resourceFilter}
+                      setResourceFilter={setResourceFilter}
+                      resourceCategoryFilter={resourceCategoryFilter}
+                      setResourceCategoryFilter={setResourceCategoryFilter}
+                    />
 
-                  {displayInfoBox && <InfoBox config={config} />}
+                    {displayInfoBox && <InfoBox config={config} />}
 
-                  <CreateBookingTabs
-                    activeTab={activeTab}
-                    onTabChange={onTabChange}
-                    disabled={showResourceDetails !== null ?? false}
-                  />
+                    <CreateBookingTabs
+                      activeTab={activeTab}
+                      onTabChange={onTabChange}
+                      disabled={showResourceDetails !== null ?? false}
+                    />
 
-                  <div className="row no-gutter main-container">
-                    {/* Map view */}
-                    {activeTab === "map" && (
-                      <div className="map">
-                        <MapWrapper
-                          allResources={allResources}
-                          config={config}
-                          setLocationFilter={setLocationFilter}
-                          setBookingView={onTabChange}
-                        />
-                      </div>
-                    )}
+                    <div className="row no-gutter main-container">
+                      {/* Map view */}
+                      {activeTab === "map" && (
+                        <div className="map">
+                          <MapWrapper
+                            allResources={allResources}
+                            config={config}
+                            setLocationFilter={setLocationFilter}
+                            setBookingView={onTabChange}
+                          />
+                        </div>
+                      )}
 
-                    {/* List view */}
-                    {activeTab === "list" && (
-                      <div className={`list ${showResourceDetails !== null ? "resourceview-visible" : ""}`}>
-                        <ListContainer
-                          resources={resources}
-                          setShowResourceDetails={setShowResourceDetails}
-                          userHasInteracted={userHasInteracted}
-                          isLoading={loadingFiltering}
-                          setIsLoading={setLoadingFiltering}
-                        />
+                      {/* List view */}
+                      {activeTab === "list" && (
+                        <div className={`list ${showResourceDetails !== null ? "resourceview-visible" : ""}`}>
+                          <ListContainer
+                            resources={resources}
+                            setShowResourceDetails={setShowResourceDetails}
+                            userHasInteracted={userHasInteracted}
+                            isLoading={loadingFiltering}
+                            setIsLoading={setLoadingFiltering}
+                          />
 
-                        {filteredResources?.length > resourceLimit && (
-                          <div style={{ textAlign: "right", padding: "1em" }}>
-                            Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
-                            at begrænse resultater.
-                          </div>
-                        )}
-                      </div>
-                    )}
+                          {filteredResources?.length > resourceLimit && (
+                            <div style={{ textAlign: "right", padding: "1em" }}>
+                              Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere
+                              for at begrænse resultater.
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                    {/* Calendar view */}
-                    {activeTab === "calendar" && (
-                      // {/* Display calendar for selections */}
-                      <div className={`calendar ${showResourceDetails !== null ? "resourceview-visible" : ""}`}>
-                        <Calendar
-                          resources={resources}
-                          date={date}
-                          setDate={setDate}
-                          calendarSelection={calendarSelection}
-                          setCalendarSelection={setCalendarSelection}
-                          config={config}
-                          setShowResourceDetails={setShowResourceDetails}
-                          urlResource={urlResource}
-                          setDisplayState={setDisplayState}
+                      {/* Calendar view */}
+                      {activeTab === "calendar" && (
+                        // {/* Display calendar for selections */}
+                        <div className={`calendar ${showResourceDetails !== null ? "resourceview-visible" : ""}`}>
+                          <Calendar
+                            resources={resources}
+                            date={date}
+                            setDate={setDate}
+                            calendarSelection={calendarSelection}
+                            setCalendarSelection={setCalendarSelection}
+                            config={config}
+                            setShowResourceDetails={setShowResourceDetails}
+                            urlResource={urlResource}
+                            setDisplayState={setDisplayState}
+                            showResourceDetails={showResourceDetails}
+                            userHasInteracted={userHasInteracted}
+                            isLoading={loadingFiltering}
+                            setIsLoading={setLoadingFiltering}
+                          />
+
+                          {filteredResources?.length > resourceLimit && (
+                            <div style={{ textAlign: "right", padding: "1em" }}>
+                              Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere
+                              for at begrænse resultater.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {showResourceDetails && (
+                        <ResourceDetails
                           showResourceDetails={showResourceDetails}
-                          userHasInteracted={userHasInteracted}
-                          isLoading={loadingFiltering}
-                          setIsLoading={setLoadingFiltering}
+                          setShowResourceDetails={setShowResourceDetails}
+                          resource={
+                            urlResource ?? allResources.filter((el) => el.resourceMail === showResourceDetails)[0]
+                          }
                         />
-
-                        {filteredResources?.length > resourceLimit && (
-                          <div style={{ textAlign: "right", padding: "1em" }}>
-                            Viser {resources.length} ud af {filteredResources.length} resultater. Filtrér yderligere for
-                            at begrænse resultater.
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {showResourceDetails && (
-                      <ResourceDetails
-                        showResourceDetails={showResourceDetails}
-                        setShowResourceDetails={setShowResourceDetails}
-                        resource={
-                          urlResource ?? allResources.filter((el) => el.resourceMail === showResourceDetails)[0]
-                        }
-                      />
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {allResources && displayState === "minimized" && calendarSelection !== {} && (
-                <div className="row">
-                  <MinimizedDisplay
-                    setDisplayState={setDisplayState}
-                    resource={
-                      urlResource ?? allResources.filter((el) => el.resourceMail === calendarSelection.resourceId)[0]
-                    }
-                    calendarSelection={calendarSelection}
-                  />
-                </div>
-              )}
+                {allResources && displayState === "minimized" && calendarSelection !== {} && (
+                  <div className="row">
+                    <MinimizedDisplay
+                      setDisplayState={setDisplayState}
+                      resource={
+                        urlResource ?? allResources.filter((el) => el.resourceMail === calendarSelection.resourceId)[0]
+                      }
+                      calendarSelection={calendarSelection}
+                    />
+                  </div>
+                )}
 
-              {/* Display author fields if user is logged in */}
-              {!config?.step_one && (
-                <div className="row no-gutter">
-                  {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
-                </div>
-              )}
+                {/* Display author fields if user is logged in */}
+                {!config?.step_one && (
+                  <div className="row no-gutter">
+                    {authorFields && <AuthorFields authorFields={authorFields} setAuthorFields={setAuthorFields} />}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    )
+          )}
+        </div>
+      )}
+      {showSystemFailure && <SystemFailureScreen />}
+    </>
   );
 }
 
