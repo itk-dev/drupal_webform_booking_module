@@ -77,13 +77,20 @@ function CreateBookingFilters({
       })
     );
 
-    setResourceCategoryOptions([
+    const newResourceCategoryOptions = [
       ...new Set(
         allResources
           .filter((resource) => resource?.resourceCategory !== null && resource?.resourceCategory !== "")
           .map((resource) => resource.resourceCategory)
       ),
-    ]);
+    ];
+
+    // Make sure "Lokale" is in the array, since it is default for resources without resourceCategory.
+    if (newResourceCategoryOptions.indexOf("Lokale") === -1) {
+      newResourceCategoryOptions.push("Lokale");
+    }
+
+    setResourceCategoryOptions(newResourceCategoryOptions);
   }, [allResources]);
 
   // Set location filter and resource dropdown options.
