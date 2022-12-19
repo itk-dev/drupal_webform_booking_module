@@ -3,6 +3,8 @@
 namespace Drupal\itkdev_booking\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\webform\Annotation\WebformElement;
 use Drupal\webform\Plugin\WebformElement\Hidden;
 use Drupal\webform\WebformInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,7 +30,6 @@ class UserBookingsElement extends Hidden
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition)
   {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $instance->bookingHelper = $container->get('itkdev_booking.user_bookings_helper');
     $instance->extensionList = $container->get('extension.list.module');
     return $instance;
   }
@@ -77,21 +78,28 @@ class UserBookingsElement extends Hidden
   public function alterForm(array &$element, array &$form, FormStateInterface $form_state)
   {
     $params = [
-      'test_msg' => "Hello World!",
-      'element_id' => $element['#webform_key'],
+      'api_endpoint' => Settings::get('itkdev_booking_api_endpoint_frontend'),
       'front_page_url' => Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString(),
+      'license_key' => Settings::get('itkdev_booking_fullcalendar_license'),
+      'enable_booking' => (isset($element['#enable_booking'])),
+      'enable_resource_tooltips' => (isset($element['#enable_booking'])),
+      'output_field_id' => 'submit-values',
+      'app-type' => 'user-bookings',
     ];
 
-    $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/user_bookings.html.twig', [
+    $prefix = twig_render_template($this->extensionList->getPath('itkdev_booking') . '/templates/booking_app.html.twig', [
       'params' => $params,
       // Needed to prevent notices when Twig debugging is enabled.
       'theme_hook_original' => 'not-applicable',
     ]);
 
-    if ('user_bookings_element' == $element['#type']) {
-      $form['#attached']['library'][] = 'itkdev_booking/booking_calendar';
-      $form['#attached']['drupalSettings']['user_bookings'][$element['#webform_key']] = $params;
+    if ('booking_element' == $element['#type']) {
+      $form['#attached']['library'][] = 'itkdev_booking/booking_app';
+      $form['#attached']['drupalSettings']['booking_app'] = $params;
       $form['elements'][$element['#webform_key']]['#prefix'] = $prefix;
+      $form['elements'][$element['#webform_key']]['#attributes']['id'] = 'submit-values';
+      $form['elements'][$element['#webform_key']]['#default_value'] = json_encode([]);
+      $form['#validate'][] = [$this, 'validateBooking'];
     }
   }
 }

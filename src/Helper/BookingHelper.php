@@ -3,143 +3,372 @@
 namespace Drupal\itkdev_booking\Helper;
 
 use Drupal\Core\Site\Settings;
-use Drupal\Core\Url;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ClientException;
+use JsonException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Booking helper.
  */
-class BookingHelper
-{
-  /**
-   * Guzzle Http Client.
-   *
-   * @var GuzzleHttp\ClientInterface
-   */
-  protected $httpClient;
+class BookingHelper {
 
-  /**
-   * The booking api endpoint.
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiEndpoint;
 
-  /**
-   * The booking api key.
-   *
-   * @var string|mixed
-   */
   protected string $bookingApiKey;
 
-  /**
-   * Whether we use a secure connection
-   *
-   * @var string|mixed
-   */
-  protected string $bookingApiAllowInsecureConnection;
+  protected array $headers;
 
-  /**
-   * BookingHelper constructor.
-   *
-   * @param \GuzzleHttp\ClientInterface $guzzleClient
-   *   The http client.
-   */
-  public function __construct(ClientInterface $guzzleClient)
-  {
-    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint', NULL);
-    $this->bookingApiKey = Settings::get('itkdev_booking_api_key', NULL);
-    $this->bookingApiAllowInsecureConnection = Settings::get('itkdev_booking_api_allow_insecure_connection', FALSE);
-    $this->httpClient = $guzzleClient;
+  protected UserHelper $userHelper;
+
+  public function __construct() {
+    $this->bookingApiEndpoint = Settings::get('itkdev_booking_api_endpoint');
+    $this->bookingApiKey = Settings::get('itkdev_booking_api_key');
+    $this->userHelper = new UserHelper();
+
+    $this->headers = [
+      'accept' => 'application/ld+json',
+      'Authorization' => 'Apikey ' . $this->bookingApiKey,
+    ];
   }
 
   /**
-   * Get resources from local resources endpoint.
+   * Get locations.
    *
-   * @return mixed
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return array
    */
-  public function getResources()
-  {
-    $request = new Request(['page' => 1]);
-    return $this->getResult('v1/resources', $request);
-  }
-
-  /**
-   * Get a data result depending on request and desired api endpoint.
-   *
-   * Uses sample data if no api endpoint is set. See module README.md.
-   *
-   * @param string $apiEndpoint
-   *   The api endpoint specification.
-   * @param Request $request
-   *   The original request.
-   * @return mixed
-   *   Decoded json data as array.
-   */
-  public function getResult(string $apiEndpoint, Request $request)
-  {
-    if ($this->bookingApiEndpoint && $this->bookingApiKey) {
-      $queryString = http_build_query($request->query->all());
-      $response = $this->getData($apiEndpoint, $queryString);
-      return json_decode($response->getBody(), TRUE);
-    } else {
-      $response = $this->getSampleData($apiEndpoint);
-      return json_decode($response, TRUE);
-    }
-  }
-
-  /**
-   * Get real data.
-   *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @param $queryString
-   *   An additional querystring.
-   * @return array|\Psr\Http\Message\ResponseInterface
-   *   The api response.
-   */
-  private function getData($apiEndpoint, $queryString)
-  {
-    $response = [];
-    $clientConfig = [];
-    if ($this->bookingApiAllowInsecureConnection) {
-      $clientConfig['verify'] = false;
-    }
-    $client = new Client($clientConfig);
+  public function getLocations(Request $request): array {
     try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
 
-      $response = $client->get(
-        $this->bookingApiEndpoint . $apiEndpoint . '?' . $queryString,
-        ['headers' => [
-          'accept' => 'application/ld+json',
-          'Authorization' => 'Apikey ' . $this->bookingApiKey
-        ]]
-      );
-    } catch (RequestException $e) {
-      // Exception is logged.
-      \Drupal::logger('itkdev_booking')->error($e);
+      $query = [];
+
+      // Attach user query parameters if user is logged in.
+      $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
+
+      $response = $client->get("{$endpoint}v1/locations", [
+        'query' => $query,
+        'headers' => $this->headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get locations failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get locations failed. Could not decode response.");
     }
-    return $response;
   }
 
   /**
-   * Get sample data from local file.
+   * Get resources by query.
    *
-   * @param $apiEndpoint
-   *   The api endpoint specification.
-   * @return false|string
-   *   The sample data requested.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return array
    */
-  private function getSampleData($apiEndpoint)
-  {
-    switch ($apiEndpoint) {
-      case 'v1/busy-intervals':
-        return file_get_contents(__DIR__ . '/../../sampleData/busy-intervals.json');
-      case 'v1/resources':
-        return file_get_contents(__DIR__ . '/../../sampleData/resources.json');
+  public function getResources(Request $request): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $query = $request->query->all();
+
+      // Attach permission query parameters if user is logged in.
+      $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
+
+      $response = $client->get("{$endpoint}v1/resources", [
+        'query' => $query,
+        'headers' => $this->headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get resources failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get resources failed. Could not decode response.");
     }
   }
+
+  /**
+   * Get all resources.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return array
+   */
+  public function getAllResources(Request $request): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $query = [];
+
+      // Attach permission query parameters if user is logged in.
+      $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
+
+      $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+      $response = $client->get("{$endpoint}v1/resources-all", [
+        'query' => $query,
+        'headers' => $headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get all resources failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get all resources failed. Could not decode response.");
+    }
+  }
+
+  /**
+   * Get resource by id.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $resourceEmail
+   *
+   * @return array
+   */
+  public function getResourceByEmail(Request $request, string $resourceEmail): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $query = [];
+
+      // Attach user query parameters if user is logged in.
+      $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
+
+      $response = $client->get("{$endpoint}v1/resource-by-email/$resourceEmail", [
+        'query' => $query,
+        'headers' => $this->headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get resource by id failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get resource by id failed. Could not decode response.");
+    }
+  }
+
+  /**
+   * Get busy intervals.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return array
+   */
+  public function getBusyIntervals(Request $request): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $query = $request->query->all();
+
+      // Attach user query parameters if user is logged in.
+      $query = $this->userHelper->attachPermissionQueryParameters($request, $query);
+
+      $response = $client->get("{$endpoint}v1/busy-intervals", [
+        'query' => $query,
+        'headers' => $this->headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get busy intervals failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get busy intervals failed. Could not decode response.");
+    }
+  }
+
+  /**
+   * Get user bookings.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return array
+   */
+  public function getUserBookings(Request $request): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $query = [];
+
+      $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+      $response = $client->get("{$endpoint}v1/user-bookings", [
+        'query' => $query,
+        'headers' => $headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get user bookings failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get user bookings failed. Could not decode response.");
+    }
+  }
+
+  /**
+   * Delete user booking.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $bookingId
+   *
+   * @return array
+   */
+  public function deleteUserBooking(Request $request, string $bookingId): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+      $response = $client->delete("{$endpoint}v1/user-bookings/$bookingId", [
+        'headers' => $headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => null,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Delete booking failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Delete booking failed. Could not decode response.");
+    }
+  }
+
+  /**
+   * Delete user booking.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $bookingId
+   *
+   * @return array
+   */
+  public function patchUserBooking(Request $request, string $bookingId): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+      $headers['content-type'] = 'application/merge-patch+json';
+      $response = $client->patch("{$endpoint}v1/user-bookings/$bookingId", [
+        'json' => json_decode($request->getContent()),
+        'headers' => $headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Booking patch failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Booking patch failed. Could not decode response.");
+    }
+  }
+
+  /**
+   * Get booking details.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param string $bookingId
+   *
+   * @return array
+   */
+  public function getUserBookingDetails(Request $request, string $bookingId): array {
+    try {
+      $endpoint = $this->bookingApiEndpoint;
+      $client = new Client();
+
+      $query = [];
+
+      $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
+
+      $response = $client->get("{$endpoint}v1/user-bookings/$bookingId", [
+        'query' => $query,
+        'headers' => $headers,
+      ]);
+
+      $statusCode = $response->getStatusCode();
+      $content = $response->getBody()->getContents();
+
+      $data = json_decode($content, TRUE, 512, JSON_THROW_ON_ERROR);
+
+      return [
+        'statusCode' => $statusCode,
+        'data' => $data,
+      ];
+    } catch (ClientException $e) {
+      throw new HttpException($e->getCode(), "Get booking details failed.");
+    } catch (JsonException $e) {
+      throw new HttpException($e->getCode(), "Get booking details failed. Could not decode response.");
+    }
+  }
+
 }

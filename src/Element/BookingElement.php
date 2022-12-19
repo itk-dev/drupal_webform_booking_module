@@ -2,6 +2,7 @@
 
 namespace Drupal\itkdev_booking\Element;
 
+use Drupal\Core\Render\Annotation\FormElement;
 use Drupal\Core\Render\Element\Hidden;
 
 /**
