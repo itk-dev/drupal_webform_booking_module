@@ -8,7 +8,11 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ### Added
 
+- Added dayjs locale.
+
 ### Changed
+
+- Removed user bookings elements
 
 ## [1.0.0] - 2022-12-19
 
