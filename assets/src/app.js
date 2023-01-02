@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import "dayjs/locale/da";
+import dayjs from "dayjs";
 import ConfigLoader from "./util/config-loader";
 import CreateBooking from "./create-booking";
 import UserPanel from "./user-panel";
 import SystemFailureScreen from "./system-failure-screen";
 import "./app.scss";
+
+// Set day js locale globally.
+dayjs.locale("da");
 
 /**
  * App component.
