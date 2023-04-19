@@ -122,7 +122,7 @@ function CreateBooking({ config }) {
         setLocationFilter([
           {
             value: urlResource.location,
-            label: urlResource.location,
+            label: urlResource.locationDisplayName ?? urlResource.location,
           },
         ]);
       }
@@ -132,7 +132,7 @@ function CreateBooking({ config }) {
         setResourceFilter([
           {
             value: urlResource.resourceMail,
-            label: urlResource.resourceName,
+            label: urlResource.displayName ?? urlResource.resourceName,
           },
         ]);
       }

@@ -21,8 +21,8 @@ function MinimizedDisplay({ setDisplayState, resource, calendarSelection }) {
       <div className="row">
         <div className="minimized-display col-md-12">
           <div>
-            <span className="location">{resource.location}</span>
-            <span className="subject">{resource.resourceName}</span>
+            <span className="location">{resource.locationDisplayName ?? resource.location}</span>
+            <span className="subject">{resource.displayName ?? resource.resourceName}</span>
           </div>
           <div>
             <span>{formatUrlDate(calendarSelection.start)}</span>
@@ -44,7 +44,9 @@ MinimizedDisplay.propTypes = {
   setDisplayState: PropTypes.func.isRequired,
   resource: PropTypes.shape({
     location: PropTypes.string.isRequired,
+    locationDisplayName: PropTypes.string,
     resourceName: PropTypes.string.isRequired,
+    displayName: PropTypes.string,
   }).isRequired,
   calendarSelection: PropTypes.shape({
     start: PropTypes.shape({}),

@@ -4,7 +4,7 @@ import * as PropTypes from "prop-types";
 import "react-toastify/dist/ReactToastify.css";
 import { capacityOptions, facilityOptions } from "../util/filter-utils";
 import { setAriaLabelFilters } from "../util/dom-manipulation-utils";
-import { hasOwnProperty } from "../util/helpers";
+import { hasOwnProperty, sortOptionsBy } from "../util/helpers";
 import "./create-booking-filters.scss";
 
 /**
@@ -53,26 +53,30 @@ function CreateBookingFilters({
       return;
     }
 
-    const locations = [
-      ...new Set(allResources.filter((resource) => resource.location !== "").map((resource) => resource.location)),
-    ];
+    const uniqueLocations = {};
+    const locations = [];
+    const filteredResources = allResources.filter((resource) => resource.location !== "");
 
-    setLocationOptions(
-      locations
-        .map((value) => {
-          return {
-            value,
-            label: value,
-          };
-        })
-        .sort()
-    );
+    // Store location options from resources to ensure unique locations.
+    filteredResources.forEach((item) => {
+      uniqueLocations[item.location] = item.locationDisplayName;
+    });
+
+    // Prepare locations for react dropdown options.
+    Object.entries(uniqueLocations).forEach(([key, value]) => {
+      locations.push({
+        value: key,
+        label: value,
+      });
+    });
+
+    setLocationOptions(sortOptionsBy(locations, "label"));
 
     setResourcesOptions(
-      allResources.map((value) => {
+      sortOptionsBy(allResources, "resourceDisplayName").map((value) => {
         return {
           value: value.resourceMail,
-          label: value.resourceName,
+          label: value.resourceDisplayName ?? value.resourceName,
         };
       })
     );
