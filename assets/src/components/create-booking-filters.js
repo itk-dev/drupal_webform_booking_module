@@ -57,7 +57,7 @@ function CreateBookingFilters({
 
     allResources.forEach((item) => {
       if (item.location !== "") {
-        if (locations.findIndex(e => e.value === item.location) === -1) {
+        if (locations.findIndex((e) => e.value === item.location) === -1) {
           locations.push({
             value: item.location,
             label: item.locationDisplayName ?? item.location,
