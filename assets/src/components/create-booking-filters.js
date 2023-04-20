@@ -53,21 +53,17 @@ function CreateBookingFilters({
       return;
     }
 
-    const uniqueLocations = {};
     const locations = [];
-    const filteredResources = allResources.filter((resource) => resource.location !== "");
 
-    // Store location options from resources to ensure unique locations.
-    filteredResources.forEach((item) => {
-      uniqueLocations[item.location] = item.locationDisplayName;
-    });
-
-    // Prepare locations for react dropdown options.
-    Object.entries(uniqueLocations).forEach(([key, value]) => {
-      locations.push({
-        value: key,
-        label: value,
-      });
+    allResources.forEach((item) => {
+      if (item.location !== "") {
+        if (locations.findIndex(e => e.value === item.location) === -1) {
+          locations.push({
+            value: item.location,
+            label: item.locationDisplayName ?? item.location,
+          });
+        }
+      }
     });
 
     setLocationOptions(sortOptionsBy(locations, "label"));
