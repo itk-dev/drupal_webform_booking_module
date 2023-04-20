@@ -101,7 +101,7 @@ export function handleResources(value, currentCalendarDate) {
     id: value.resourceMail,
     title: value.displayName ?? value.resourceName,
     capacity: value.capacity,
-    building: value.location,
+    building: value.locationDisplayName ?? value.location,
     description: value.resourcedescription,
     image: "http://placekitten.com/1920/1080",
     monitorEquipment: value.monitorEquipment,
