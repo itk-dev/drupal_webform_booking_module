@@ -145,14 +145,16 @@ export function filterAllResources(allResources, filterParams) {
  */
 export function sortOptionsBy(array, propertyName) {
   return array.sort((a, b) => {
-    const labelA = a[propertyName].toUpperCase(); // ignore upper and lowercase
-    const labelB = b[propertyName].toUpperCase(); // ignore upper and lowercase
+    if (a[propertyName] && b[propertyName]) {
+      const labelA = a[propertyName].toUpperCase(); // ignore upper and lowercase
+      const labelB = b[propertyName].toUpperCase(); // ignore upper and lowercase
 
-    if (labelA < labelB) {
-      return -1;
-    }
-    if (labelA > labelB) {
-      return 1;
+      if (labelA < labelB) {
+        return -1;
+      }
+      if (labelA > labelB) {
+        return 1;
+      }
     }
 
     return 0;
