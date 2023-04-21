@@ -5,8 +5,8 @@ ease development of the app.
 ## Setup
 ```shell
 itkdev-docker-compose run node npm install
-
 itkdev-docker-compose up -d
+itkdev-docker-compose exec node npm run build
 itkdev-docker-compose open
 ```
 This provides a react app ready for development.
