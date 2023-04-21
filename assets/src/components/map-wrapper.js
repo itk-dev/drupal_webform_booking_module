@@ -61,7 +61,7 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView })
     Object.values(mapData).forEach((value) => {
       const feature = new Feature({
         geometry: new Point([value.northing, value.easting]),
-        name: value.location,
+        name: value.locationDisplayName ?? value.location,
         children: value.resource_count,
       });
 

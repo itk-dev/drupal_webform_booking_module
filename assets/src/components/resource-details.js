@@ -65,7 +65,7 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
             <div className="location col-xs-12 col-md-4">
               <span className="resource-details--title">Lokation</span>
               <div>
-                <span>{resource.location}</span>
+                <span>{resource.locationDisplayName ?? resource.location}</span>
               </div>
               <div className="spacer" />
               <div>
@@ -99,6 +99,7 @@ ResourceDetails.propTypes = {
     displayName: PropTypes.string.isRequired,
     resourceName: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
+    locationDisplayName: PropTypes.string,
     streetName: PropTypes.string.isRequired,
     postalCode: PropTypes.number.isRequired,
     city: PropTypes.string.isRequired,

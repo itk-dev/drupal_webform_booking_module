@@ -33,7 +33,7 @@ export function getFeatures(resources) {
       const utmCoordinates = latlngToUTM(geoCoordinates[0], geoCoordinates[1]);
 
       locations[value.location] = {
-        location: value.location,
+        location: value.locationDisplayName ?? value.location,
         northing: utmCoordinates[0],
         easting: utmCoordinates[1],
         resource_count: 1,

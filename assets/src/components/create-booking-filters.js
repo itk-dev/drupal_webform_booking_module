@@ -4,7 +4,7 @@ import * as PropTypes from "prop-types";
 import "react-toastify/dist/ReactToastify.css";
 import { capacityOptions, facilityOptions } from "../util/filter-utils";
 import { setAriaLabelFilters } from "../util/dom-manipulation-utils";
-import { hasOwnProperty } from "../util/helpers";
+import { hasOwnProperty, sortOptionsBy } from "../util/helpers";
 import "./create-booking-filters.scss";
 
 /**
@@ -53,26 +53,26 @@ function CreateBookingFilters({
       return;
     }
 
-    const locations = [
-      ...new Set(allResources.filter((resource) => resource.location !== "").map((resource) => resource.location)),
-    ];
+    const locations = [];
 
-    setLocationOptions(
-      locations
-        .map((value) => {
-          return {
-            value,
-            label: value,
-          };
-        })
-        .sort()
-    );
+    allResources.forEach((item) => {
+      if (item.location !== "") {
+        if (locations.findIndex((e) => e.value === item.location) === -1) {
+          locations.push({
+            value: item.location,
+            label: item.locationDisplayName ?? item.location,
+          });
+        }
+      }
+    });
+
+    setLocationOptions(sortOptionsBy(locations, "label"));
 
     setResourcesOptions(
-      allResources.map((value) => {
+      sortOptionsBy(allResources, "resourceDisplayName").map((value) => {
         return {
           value: value.resourceMail,
-          label: value.resourceName,
+          label: value.resourceDisplayName ?? value.resourceName,
         };
       })
     );

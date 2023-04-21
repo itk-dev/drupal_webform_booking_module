@@ -66,8 +66,8 @@ function List({ resources, setShowResourceDetails }) {
                   <span className="location-icon">
                     <IconArrow />
                   </span>
-                  {resources[key].location}, {resources[key].streetName} {resources[key].postalCode}{" "}
-                  {resources[key].city}
+                  {resources[key].locationDisplayName ?? resources[key].location}, {resources[key].streetName}{" "}
+                  {resources[key].postalCode} {resources[key].city}
                 </span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
@@ -91,6 +91,7 @@ List.propTypes = {
       resourceName: PropTypes.string,
       resourceMail: PropTypes.string,
       location: PropTypes.string,
+      locationDisplayName: PropTypes.string,
       streetName: PropTypes.string,
       postalCode: PropTypes.number,
       city: PropTypes.string,

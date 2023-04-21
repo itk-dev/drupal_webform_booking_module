@@ -137,3 +137,24 @@ export function filterAllResources(allResources, filterParams) {
     return false;
   });
 }
+
+/**
+ * @param {Array} array Array of objects to sort.
+ * @param {string} propertyName Property name on object to sort by.
+ * @returns {Array} The sorted array.
+ */
+export function sortOptionsBy(array, propertyName) {
+  return array.sort((a, b) => {
+    const labelA = a[propertyName].toUpperCase(); // ignore upper and lowercase
+    const labelB = b[propertyName].toUpperCase(); // ignore upper and lowercase
+
+    if (labelA < labelB) {
+      return -1;
+    }
+    if (labelA > labelB) {
+      return 1;
+    }
+
+    return 0;
+  });
+}
