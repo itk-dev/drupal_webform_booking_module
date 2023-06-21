@@ -71,7 +71,7 @@ function List({ resources, setShowResourceDetails }) {
                 </span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
-              <span className="description">{resources[key].resourceDescription}</span>
+              <span className="description" dangerouslySetInnerHTML={{ __html: resources[key].resourceDescription }} />
             </div>
             <div className="list-resource-actions col-md-2">
               <button type="button" className="booking-btn" data-key={key} onClick={showResourceView}>

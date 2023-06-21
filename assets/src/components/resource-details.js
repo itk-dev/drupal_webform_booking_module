@@ -82,7 +82,7 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
             <div className="resource-description">
               <span>Beskrivelse</span>
               <div>
-                <span>{resource.resourceDescription}</span>
+                <span dangerouslySetInnerHTML={{ __html: resource.resourceDescription }} />
               </div>
             </div>
           )}
