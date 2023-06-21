@@ -54,12 +54,12 @@ function List({ resources, setShowResourceDetails }) {
           <div key={key} className="list-resource">
             <div className="image-wrapper">
               <div className="image">
-                <img alt={resources[key].displayName} src={resources[key].resourceImage} />
+                <img alt={resources[key].resourceDisplayName} src={resources[key].resourceImage} />
               </div>
             </div>
             <div className="list-resource-details col-md-10">
               <span className="headline">
-                <b>{resources[key].displayName ?? resources[key].resourceName}</b>
+                <b>{resources[key].resourceDisplayName ?? resources[key].resourceName}</b>
               </span>
               <div className="details">
                 <span className="location">
@@ -95,7 +95,7 @@ List.propTypes = {
       streetName: PropTypes.string,
       postalCode: PropTypes.number,
       city: PropTypes.string,
-      displayName: PropTypes.string,
+      resourceDisplayName: PropTypes.string,
       resourceDescription: PropTypes.string,
       resourceImage: PropTypes.string,
     })

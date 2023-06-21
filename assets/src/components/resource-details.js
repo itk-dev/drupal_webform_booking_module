@@ -47,7 +47,7 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
       {resource && (
         <div>
           <div className="resource-headline">
-            <span>{resource.displayName ?? resource.resourceName}</span>
+            <span>{resource.resourceDisplayName ?? resource.resourceName}</span>
             <button type="button" className="booking-btn-inv" onClick={hideResourceView}>
               Tilbage til listen
             </button>
@@ -55,7 +55,7 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
           <div className="resource-details row">
             <div className="image-wrapper col-xs-12 col-md-4">
               <div className="image">
-                <img alt={resource.displayName ?? resource.resourceName} src={resource.resourceImage} />
+                <img alt={resource.resourceDisplayName ?? resource.resourceName} src={resource.resourceImage} />
               </div>
             </div>
             <div className="facilities col-xs-12 col-md-4">
@@ -96,7 +96,7 @@ ResourceDetails.propTypes = {
   setShowResourceDetails: PropTypes.func.isRequired,
   resource: PropTypes.shape({
     capacity: PropTypes.number.isRequired,
-    displayName: PropTypes.string.isRequired,
+    resourceDisplayName: PropTypes.string.isRequired,
     resourceName: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
     locationDisplayName: PropTypes.string,
