@@ -246,6 +246,7 @@ function CreateBooking({ config }) {
                             config={config}
                             setLocationFilter={setLocationFilter}
                             setBookingView={onTabChange}
+                            setDisplayState={setDisplayState}
                           />
                         </div>
                       )}

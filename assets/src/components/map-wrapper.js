@@ -26,9 +26,10 @@ import "./map-wrapper.scss";
  * @param {object} props.config Config
  * @param {object} props.setLocationFilter Setter for location filter
  * @param {string} props.setBookingView Setter for booking view
+ * @param {string} props.setDisplayState Setter for display state
  * @returns {JSX.Element} MapWrapper component
  */
-function MapWrapper({ allResources, config, setLocationFilter, setBookingView }) {
+function MapWrapper({ allResources, config, setLocationFilter, setBookingView, setDisplayState }) {
   const [map, setMap] = useState();
   const [vectorLayer, setVectorLayer] = useState(null);
   const [mapData, setMapData] = useState(null);
@@ -221,6 +222,7 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView })
         ]);
 
         setBookingView("calendar");
+        setDisplayState("maximized");
       }
     });
 
@@ -245,6 +247,7 @@ MapWrapper.propTypes = {
   }).isRequired,
   setLocationFilter: PropTypes.func.isRequired,
   setBookingView: PropTypes.func.isRequired,
+  setDisplayState: PropTypes.func.isRequired,
 };
 
 MapWrapper.defaultProps = {
