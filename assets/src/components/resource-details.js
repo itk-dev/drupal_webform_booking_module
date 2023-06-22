@@ -1,5 +1,7 @@
 import React from "react";
 import * as PropTypes from "prop-types";
+import DOMPurify from "dompurify";
+import parse from "html-react-parser";
 import LoadingSpinner from "./loading-spinner";
 import getResourceFacilities from "../util/resource-utils";
 import "./resource-details.scss";
@@ -17,6 +19,10 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
   const hideResourceView = () => {
     setShowResourceDetails(null);
   };
+
+  const sanitizedDescription = resource.resourceDescription
+    ? parse(DOMPurify.sanitize(resource.resourceDescription, {}))
+    : "";
 
   const getFacilitiesList = () => {
     const facilities = getResourceFacilities(resource);
@@ -82,7 +88,7 @@ function ResourceDetails({ setShowResourceDetails, resource }) {
             <div className="resource-description">
               <span>Beskrivelse</span>
               <div>
-                <span dangerouslySetInnerHTML={{ __html: resource.resourceDescription }} />
+                <span>{sanitizedDescription}</span>
               </div>
             </div>
           )}

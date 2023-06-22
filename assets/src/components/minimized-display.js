@@ -45,6 +45,7 @@ MinimizedDisplay.propTypes = {
   resource: PropTypes.shape({
     location: PropTypes.string.isRequired,
     locationDisplayName: PropTypes.string,
+    resourceName: PropTypes.string,
     resourceDisplayName: PropTypes.string.isRequired,
   }).isRequired,
   calendarSelection: PropTypes.shape({

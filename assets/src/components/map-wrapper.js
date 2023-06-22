@@ -26,10 +26,9 @@ import "./map-wrapper.scss";
  * @param {object} props.config Config
  * @param {object} props.setLocationFilter Setter for location filter
  * @param {string} props.setBookingView Setter for booking view
- * @param {string} props.setDisplayState Setter for display state
  * @returns {JSX.Element} MapWrapper component
  */
-function MapWrapper({ allResources, config, setLocationFilter, setBookingView, setDisplayState }) {
+function MapWrapper({ allResources, config, setLocationFilter, setBookingView }) {
   const [map, setMap] = useState();
   const [vectorLayer, setVectorLayer] = useState(null);
   const [mapData, setMapData] = useState(null);
@@ -63,6 +62,7 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView, s
       const feature = new Feature({
         geometry: new Point([value.northing, value.easting]),
         name: value.locationDisplayName ?? value.location,
+        locationId: value.locationId,
         children: value.resource_count,
       });
 
@@ -194,7 +194,15 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView, s
         overlay.setPosition(targetFeature.values_.geometry.flatCoordinates);
 
         // eslint-disable-next-line no-underscore-dangle
-        tooltip.innerHTML = `<div class='tooltip-closer'>✖️</div><div class='tooltip-text'><span><b>${targetFeature.values_.name}</b></span><span>${targetFeature.values_.children} ressourcer</span><a data-location="${targetFeature.values_.name}" class='tooltip-btn'">Vis i kalender</a></div>`;
+        tooltip.innerHTML = `<div class='tooltip-closer'>✖️</div>
+            <div class='tooltip-text'>
+                <span><b>${targetFeature.values_.name}</b></span><span>${targetFeature.values_.children} ressourcer</span>
+                <a data-location="${targetFeature.values_.locationId}" 
+                   data-location-name="${targetFeature.values_.name}" 
+                   class='tooltip-btn'">
+                   Vis i kalender
+                </a>
+            </div>`;
       }
     });
 
@@ -217,12 +225,11 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView, s
         setLocationFilter([
           {
             value: event.target.getAttribute("data-location"),
-            label: event.target.getAttribute("data-location"),
+            label: event.target.getAttribute("data-location-name"),
           },
         ]);
 
         setBookingView("calendar");
-        setDisplayState("maximized");
       }
     });
 
@@ -247,7 +254,6 @@ MapWrapper.propTypes = {
   }).isRequired,
   setLocationFilter: PropTypes.func.isRequired,
   setBookingView: PropTypes.func.isRequired,
-  setDisplayState: PropTypes.func.isRequired,
 };
 
 MapWrapper.defaultProps = {

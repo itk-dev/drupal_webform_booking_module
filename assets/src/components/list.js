@@ -1,6 +1,8 @@
 import React from "react";
 import "./list.scss";
 import * as PropTypes from "prop-types";
+import DOMPurify from "dompurify";
+import parse from "html-react-parser";
 import getResourceFacilities from "../util/resource-utils";
 import { ReactComponent as IconChair } from "../assets/chair.svg";
 import { ReactComponent as IconArrow } from "../assets/arrow.svg";
@@ -50,6 +52,10 @@ function List({ resources, setShowResourceDetails }) {
   return (
     <div>
       {Object.keys(resources).map((key) => {
+        const sanitizedDescription = resources[key].resourceDescription
+          ? parse(DOMPurify.sanitize(resources[key].resourceDescription, {}))
+          : "";
+
         return (
           <div key={key} className="list-resource">
             <div className="image-wrapper">
@@ -71,7 +77,7 @@ function List({ resources, setShowResourceDetails }) {
                 </span>
                 <div className="facilities">{getFacilitiesList(resources[key])}</div>
               </div>
-              <span className="description" dangerouslySetInnerHTML={{ __html: resources[key].resourceDescription }} />
+              <span className="description">{sanitizedDescription}</span>
             </div>
             <div className="list-resource-actions col-md-2">
               <button type="button" className="booking-btn" data-key={key} onClick={showResourceView}>
