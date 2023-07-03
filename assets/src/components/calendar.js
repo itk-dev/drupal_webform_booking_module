@@ -274,11 +274,35 @@ function Calendar({
             slotDuration="00:15:00"
             allDaySlot={false}
             selectable
+            selectAllow={(selectInfo) => {
+              // eslint-disable-next-line no-underscore-dangle
+              const selectResource = selectInfo?.resource?._resource;
+
+              if (selectResource?.extendedProps?.acceptConflict === true) {
+                return true;
+              }
+
+              const selectStart = new Date(selectInfo.startStr);
+              const selectEnd = new Date(selectInfo.endStr);
+
+              const conflictingEvents = events.filter((event) => {
+                if (event.resource !== selectResource.id) {
+                  return false;
+                }
+
+                const eventStart = new Date(event.startTime);
+                const eventEnd = new Date(event.endTime);
+
+                return selectStart < eventEnd && selectEnd > eventStart;
+              });
+
+              return conflictingEvents.length === 0;
+            }}
             unselectAuto={false}
             schedulerLicenseKey={config.license_key}
             slotMinTime="06:00:00"
             slotMaxTime="24:00:00"
-            selectOverlap={false}
+            selectOverlap
             nextDayThreshold="21:00:00"
             editable={false}
             dayMaxEvents
