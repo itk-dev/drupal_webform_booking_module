@@ -14,6 +14,10 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ### Changed
 
+- Added allowConflict option for allowing event overlap [#116](https://github.com/itk-dev/drupal_webform_booking_module/pull/116).
+- Removed NFS volume from docker setup [#116](https://github.com/itk-dev/drupal_webform_booking_module/pull/116).
+- Optimized calendar rendering [#116](https://github.com/itk-dev/drupal_webform_booking_module/pull/116).
+
 ## [1.0.1] - 2023-04-20
 
 ### Added
