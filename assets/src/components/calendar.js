@@ -59,7 +59,9 @@ function Calendar({
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
-  const [events, setEvents] = useState([]);
+  const [calendarResources, setCalendarResources] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
+  const [scrollTime, setScrollTime] = useState("06:00:00");
 
   removeEmptyAriaLabelled();
 
@@ -105,8 +107,8 @@ function Calendar({
   /**
    * Function that decides if a selection is allowed.
    *
-   * @param {object} selectInfo
-   * @returns {boolean}
+   * @param {object} selectInfo The current selection.
+   * @returns {boolean} Allowed selection?
    */
   const selectAllow = (selectInfo) => {
     // eslint-disable-next-line no-underscore-dangle
@@ -121,17 +123,22 @@ function Calendar({
     const selectEnd = new Date(selectInfo.endStr);
 
     // Disallow selections that overlap other events.
-    return !events.some((event) => {
-      if (event.resource !== selectResource.id) {
+    return !calendarEvents.some((event) => {
+      if (event.resourceId !== selectResource.id) {
         return false;
       }
 
-      const eventStart = new Date(event.startTime);
-      const eventEnd = new Date(event.endTime);
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
 
       return selectStart < eventEnd && selectEnd > eventStart;
     });
-  }
+  };
+
+  // Set scroll time from current time.
+  useEffect(() => {
+    setScrollTime(getScrollTime());
+  }, []);
 
   // Set calendar selection.
   useEffect(() => {
@@ -154,7 +161,7 @@ function Calendar({
     if (config && resources?.length > 0 && date !== null) {
       Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
         .then((loadedEvents) => {
-          setEvents(loadedEvents);
+          setCalendarEvents(loadedEvents.map((value) => handleBusyIntervals(value)));
 
           setTimeout(() => {
             setIsLoading(false);
@@ -166,6 +173,9 @@ function Calendar({
           toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
+
+    setCalendarResources(resources.map((value) => handleResources(value, date)));
+
     if (resources && resources?.length === 0) {
       setIsLoading(false);
     }
@@ -244,7 +254,7 @@ function Calendar({
         });
       }, 1);
     }
-  }, [calendarSelection, events]);
+  }, [calendarSelection, calendarEvents]);
 
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
@@ -306,7 +316,7 @@ function Calendar({
             }}
             headerToolbar=""
             height="650px"
-            scrollTime={getScrollTime()}
+            scrollTime={scrollTime}
             initialView="resourceTimelineDay"
             duration="days: 3"
             selectConstraint="businessHours"
@@ -334,17 +344,14 @@ function Calendar({
             dayMaxEvents
             locale={daLocale}
             select={onCalendarSelection}
-            /* eslint-disable react/jsx-props-no-spreading */
-            {...(resources && {
-              resources: resources.map((value) => handleResources(value, date)),
-            })}
+            resources={calendarResources}
             validRange={{
               start: dateNow,
             }}
             resourceOrder="resourceId"
             resourceGroupField="building"
             resourceAreaColumns={resourceAreaColumns}
-            events={events && events.map((value) => handleBusyIntervals(value))}
+            events={calendarEvents}
           />
         </div>
       </div>
