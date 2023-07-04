@@ -285,7 +285,7 @@ function Calendar({
               const selectStart = new Date(selectInfo.startStr);
               const selectEnd = new Date(selectInfo.endStr);
 
-              const conflictingEvents = events.filter((event) => {
+              return !events.some((event) => {
                 if (event.resource !== selectResource.id) {
                   return false;
                 }
@@ -295,8 +295,6 @@ function Calendar({
 
                 return selectStart < eventEnd && selectEnd > eventStart;
               });
-
-              return conflictingEvents.length === 0;
             }}
             unselectAuto={false}
             schedulerLicenseKey={config.license_key}
