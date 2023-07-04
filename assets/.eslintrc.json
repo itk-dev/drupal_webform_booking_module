@@ -1,4 +1,11 @@
 {
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
   "globals": {
     "JSX": "readonly"
   },
@@ -27,6 +34,7 @@
         "extensions": [".js", ".jsx"]
       }
     ],
+    "no-underscore-dangle":  ["error", { "allow": ["values_"] }],
     "padding-line-between-statements": [
       "error",
       { "blankLine": "always", "prev": "*", "next": "return" },

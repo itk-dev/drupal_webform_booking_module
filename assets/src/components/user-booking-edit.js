@@ -190,7 +190,7 @@ function UserBookingEdit({ config, booking, onBookingChanged, close }) {
               <div style={{ margin: "1em 0" }}>
                 <div>
                   <strong>Resource: </strong>
-                  {booking.displayName}
+                  {booking.resourceDisplayName}
                 </div>
                 <div>
                   <strong>Titel på booking: </strong>
@@ -279,7 +279,7 @@ UserBookingEdit.propTypes = {
   }).isRequired,
   booking: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    displayName: PropTypes.string.isRequired,
+    resourceDisplayName: PropTypes.string.isRequired,
     subject: PropTypes.string.isRequired,
     start: PropTypes.string.isRequired,
     end: PropTypes.string.isRequired,
