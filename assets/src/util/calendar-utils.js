@@ -99,7 +99,7 @@ export function handleResources(value, currentCalendarDate) {
   const resource = {
     resourceId: value.id,
     id: value.resourceMail,
-    title: value.displayName ?? value.resourceName,
+    title: value.resourceDisplayName ?? value.resourceName,
     capacity: value.capacity,
     building: value.locationDisplayName ?? value.location,
     description: value.resourcedescription,

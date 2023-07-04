@@ -62,6 +62,7 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView })
       const feature = new Feature({
         geometry: new Point([value.northing, value.easting]),
         name: value.locationDisplayName ?? value.location,
+        locationId: value.locationId,
         children: value.resource_count,
       });
 
@@ -193,7 +194,15 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView })
         overlay.setPosition(targetFeature.values_.geometry.flatCoordinates);
 
         // eslint-disable-next-line no-underscore-dangle
-        tooltip.innerHTML = `<div class='tooltip-closer'>✖️</div><div class='tooltip-text'><span><b>${targetFeature.values_.name}</b></span><span>${targetFeature.values_.children} ressourcer</span><a data-location="${targetFeature.values_.name}" class='tooltip-btn'">Vis i kalender</a></div>`;
+        tooltip.innerHTML = `<div class='tooltip-closer'>✖️</div>
+            <div class='tooltip-text'>
+                <span><b>${targetFeature.values_.name}</b></span><span>${targetFeature.values_.children} ressourcer</span>
+                <a data-location="${targetFeature.values_.locationId}" 
+                   data-location-name="${targetFeature.values_.name}" 
+                   class='tooltip-btn'">
+                   Vis i kalender
+                </a>
+            </div>`;
       }
     });
 
@@ -216,7 +225,7 @@ function MapWrapper({ allResources, config, setLocationFilter, setBookingView })
         setLocationFilter([
           {
             value: event.target.getAttribute("data-location"),
-            label: event.target.getAttribute("data-location"),
+            label: event.target.getAttribute("data-location-name"),
           },
         ]);
 

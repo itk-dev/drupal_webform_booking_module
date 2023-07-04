@@ -34,6 +34,7 @@ export function getFeatures(resources) {
 
       locations[value.location] = {
         location: value.locationDisplayName ?? value.location,
+        locationId: value.location,
         northing: utmCoordinates[0],
         easting: utmCoordinates[1],
         resource_count: 1,

@@ -132,7 +132,7 @@ function CreateBooking({ config }) {
         setResourceFilter([
           {
             value: urlResource.resourceMail,
-            label: urlResource.displayName ?? urlResource.resourceName,
+            label: urlResource.resourceDisplayName ?? urlResource.resourceName,
           },
         ]);
       }

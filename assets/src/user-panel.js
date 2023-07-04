@@ -122,7 +122,7 @@ function UserPanel({ config }) {
                       <div className="user-booking" key={obj.id}>
                         <div>
                           {obj.id === changedBookingId && <>Ændring gennemført.</>}
-                          <span className="location">{obj.displayName}</span>
+                          <span className="location">{obj.resourceDisplayName}</span>
                           <span className="subject">{obj.subject}</span>
                           <span className="status">{getStatus(obj.status)}</span>
                         </div>
@@ -151,7 +151,7 @@ function UserPanel({ config }) {
                       <div className="user-booking expired" key={obj.id}>
                         <div>
                           {obj.id === changedBookingId && <>Ændring gennemført.</>}
-                          <span className="location">{obj.displayName}</span>
+                          <span className="location">{obj.resourceDisplayName}</span>
                           <span className="subject">{obj.subject}</span>
                           <span className="status">{getStatus(obj.status)}</span>
                         </div>
