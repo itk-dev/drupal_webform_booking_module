@@ -22,6 +22,8 @@ import CalendarHeader from "./calendar-header";
 import LoadingSpinner from "./loading-spinner";
 import "./calendar.scss";
 
+const scrollTime = getScrollTime();
+
 /**
  * Calendar component.
  *
@@ -61,7 +63,6 @@ function Calendar({
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
   const [calendarResources, setCalendarResources] = useState([]);
   const [calendarEvents, setCalendarEvents] = useState([]);
-  const [scrollTime, setScrollTime] = useState("06:00:00");
 
   removeEmptyAriaLabelled();
 
@@ -134,11 +135,6 @@ function Calendar({
       return selectStart < eventEnd && selectEnd > eventStart;
     });
   };
-
-  // Set scroll time from current time.
-  useEffect(() => {
-    setScrollTime(getScrollTime());
-  }, []);
 
   // Set calendar selection.
   useEffect(() => {
