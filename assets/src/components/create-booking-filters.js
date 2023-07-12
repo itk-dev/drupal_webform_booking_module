@@ -47,6 +47,13 @@ function CreateBookingFilters({
   // TODO: Describe.
   setAriaLabelFilters();
 
+  useEffect(() => {
+    if (userType === "businessPartner") {
+      setHasWhitelist(true);
+    }
+  }, []);
+
+
   // Loop all resources and set filter options
   useEffect(() => {
     if (resourcesOptions.length === allResources.length) {
@@ -295,6 +302,7 @@ function CreateBookingFilters({
                 onChange={({ target }) => {
                   setHasWhitelist(!!target.checked);
                 }}
+                checked={hasWhitelist}
               />
               <span style={{ marginLeft: "5px" }}>Mine udvalgte ressourcer</span>
             </label>
