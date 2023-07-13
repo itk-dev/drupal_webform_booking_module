@@ -12,6 +12,7 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 - Remove html from resourceDescription
 - Change map to use locationDisplayName for filter label and locationName as filter value.
 - Sorting to user panel.
+- Added text filtering to user panel.
 
 ### Changed
 

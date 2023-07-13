@@ -22,6 +22,7 @@ function UserPanel({ config }) {
   const [changedBookingId, setChangedBookingId] = useState(null);
   const [sortField, setSortField] = useState("start");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [filter, setFilter] = useState("");
 
   const onBookingChanged = (bookingId, start, end) => {
     setEditBooking(null);
@@ -96,8 +97,15 @@ function UserPanel({ config }) {
     }
   };
 
-  const sortedBookings = (bookings, field, direction) => {
-    let result = bookings.sort((a, b) => {
+  const filterBookings = (bookings, field, direction) => {
+    const filteredBookings = bookings.filter((booking) => {
+      return (
+        (booking.subject ?? "").toLowerCase().indexOf((filter ?? "").toLowerCase()) > -1 ||
+        (booking.displayName ?? "").toLowerCase().indexOf((filter ?? "").toLowerCase()) > -1
+      );
+    });
+
+    let result = filteredBookings.sort((a, b) => {
       return a[field] - b[field];
     });
 
@@ -149,6 +157,10 @@ function UserPanel({ config }) {
     );
   };
 
+  const onFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+
   return (
     <div className="App">
       <div className="container-fluid">
@@ -169,18 +181,28 @@ function UserPanel({ config }) {
             <div className="userpanel row">
               <div className="col no-padding">
                 {loading && <LoadingSpinner />}
+
                 {!loading && !editBooking && (
                   <div className="userbookings-sorting-container">
                     {renderSortingButton("displayName", "Lokale/Resurse")}
                     {renderSortingButton("start", "Dato")}
                     {renderSortingButton("subject", "Titel")}
+                    <input
+                      value={filter}
+                      className="filter"
+                      placeholder="Filtrér med tekst"
+                      name="filterText"
+                      onChange={onFilterChange}
+                      type="text"
+                    />
                   </div>
                 )}
+
                 {!loading && !editBooking && userBookings && (
                   <div className="userbookings-container">
                     <h3>Aktive bookinger</h3>
 
-                    {sortedBookings(currentBookings, sortField, sortDirection).map((obj) => (
+                    {filterBookings(currentBookings, sortField, sortDirection).map((obj) => (
                       <div className="user-booking" key={obj.id}>
                         {renderBooking(obj)}
                         <div>
@@ -199,7 +221,7 @@ function UserPanel({ config }) {
                 {!loading && !editBooking && expiredBookings && (
                   <div className="userbookings-container">
                     <h3>Afsluttede bookinger</h3>
-                    {sortedBookings(expiredBookings, sortField, sortDirection).map((obj) => (
+                    {filterBookings(expiredBookings, sortField, sortDirection).map((obj) => (
                       <div className="user-booking expired" key={obj.id}>
                         {renderBooking(obj)}
                       </div>
