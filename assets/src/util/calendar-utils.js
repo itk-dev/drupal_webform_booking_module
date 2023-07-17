@@ -129,6 +129,7 @@ export function handleResources(value, currentCalendarDate) {
  * @returns {string} A formatted string, containing the time to scroll to, format "xx:00:00"
  */
 export function getScrollTime() {
+  console.log("hallo");
   // Calculates the time the calendar should scroll to horizontally when the calendar loads (now - 1 hour)
   const dateTimeNow = new Date();
 
