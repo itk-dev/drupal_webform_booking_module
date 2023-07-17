@@ -126,14 +126,22 @@ export function handleResources(value, currentCalendarDate) {
 /**
  * GetScrollTime gets the time to horizontally scroll the calendar to on load
  *
- * @returns {string} A formatted string, containing the time to scroll to, format "xx:00:00"
+ * @returns {string} A formatted string, containing the time to scroll to, format "xx:00"
  */
-export function getScrollTime() {
-  console.log("hallo");
-  // Calculates the time the calendar should scroll to horizontally when the calendar loads (now - 1 hour)
+export function getScrollTime(getUnmodifiedHour = false) {
+  // Checks if the user has manually chosen a preferred time previously. If so, return it.
+  if (localStorage.getItem('setTimeScroll')) {
+    let hour = localStorage.getItem('setTimeScroll');
+    if (getUnmodifiedHour) {
+      return `${hour}:00`;
+    }
+    hour = hour - 1;
+    return `${hour}:00`;
+  }
+  // Calculates the time the calendar should scroll to horizontally when the calendar loads (now - 2 hours)
   const dateTimeNow = new Date();
 
-  dateTimeNow.setHours(dateTimeNow.getHours() - 1);
+  dateTimeNow.setHours(dateTimeNow.getHours() - 2);
 
-  return `${dateTimeNow.getHours()}:00:00`;
+  return `${dateTimeNow.getHours()}:00`;
 }

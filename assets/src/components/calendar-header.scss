@@ -1,7 +1,7 @@
 /**
  * Calendar header app styles.
  */
-button {
+ button {
   padding: 5px 10px;
 }
 
@@ -82,6 +82,11 @@ label.datepicker-label {
 
 #calendar-datepicker::-webkit-clear-button {
   display: none;
+}
+
+#calendar-hours-filter {
+  width: 125px;
+  z-index: 1;
 }
 
 #calendar-datepicker + button {

@@ -1,6 +1,8 @@
 import React from "react";
 import * as dayjs from "dayjs";
 import * as PropTypes from "prop-types";
+import Select from "react-select";
+import { calendarTimeSelect } from "../util/filter-utils";
 import "./calendar-header.scss";
 
 /**
@@ -12,7 +14,10 @@ import "./calendar-header.scss";
  * @param {Function} props.setIsLoading Loading state setter.
  * @returns {JSX.Element} Calendar header component.
  */
-function CalendarHeader({ date, setDate, setIsLoading }) {
+function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime }) {
+
+
+
   const onChangeDate = (event) => {
     switch (event.target.id) {
       case "calendar-today":
@@ -41,6 +46,15 @@ function CalendarHeader({ date, setDate, setIsLoading }) {
     }
   };
 
+  const getScrollTimeObj = () => {
+
+    if (!scrollTime) {
+      return false;
+    } else {
+      return { value: scrollTime, label: scrollTime }
+    }
+  }
+
   return (
     <div className="row">
       <div className="col no-gutter">
@@ -66,6 +80,25 @@ function CalendarHeader({ date, setDate, setIsLoading }) {
                 </button>
               </label>
             </div>
+            <div>
+            <Select
+              styles={{}}
+              id="calendar-hours-filter"
+              className="filter"
+              defaultValue={getScrollTimeObj()}
+              placeholder="Tid..."
+              placeholderClassName="dropdown-placeholder"
+              closeMenuOnSelect={true}
+              options={calendarTimeSelect}
+              onChange={(selectedHour) => {
+                setTimeScroll(selectedHour);
+              }}
+              loadingMessage={() => "Henter tider.."}
+              isSearchable={false}
+              menuPlacement="top"
+              maxMenuHeight={175}
+            />
+          </div>
           </div>
           <div className="col-sm-4 small-padding">
             <div className="calendar-nav">

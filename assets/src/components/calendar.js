@@ -22,8 +22,6 @@ import CalendarHeader from "./calendar-header";
 import LoadingSpinner from "./loading-spinner";
 import "./calendar.scss";
 
-const scrollTime = getScrollTime();
-
 /**
  * Calendar component.
  *
@@ -105,6 +103,10 @@ function Calendar({
     return undefined;
   };
 
+  const setTimeScroll = (selectedTime) => {
+    localStorage.setItem('setTimeScroll', selectedTime.value);
+    calendarRef?.current?.getApi().scrollToTime(getScrollTime());
+  }
   /**
    * Function that decides if a selection is allowed.
    *
@@ -289,7 +291,7 @@ function Calendar({
         <NoResultOverlay state="noresult" />
       )}
       {isLoading && <LoadingSpinner />}
-      <CalendarHeader date={date} setDate={setDate} setIsLoading={setIsLoading} />
+      <CalendarHeader date={date} setDate={setDate} setIsLoading={setIsLoading} scrollTime={getScrollTime(true)} setTimeScroll={setTimeScroll} />
       <div className="row" aria-hidden="true">
         <div className="col small-padding">
           <div hidden id="calendar-caption">
@@ -312,7 +314,7 @@ function Calendar({
             }}
             headerToolbar=""
             height="650px"
-            scrollTime={scrollTime}
+            scrollTime={getScrollTime()}
             initialView="resourceTimelineDay"
             duration="days: 3"
             selectConstraint="businessHours"
