@@ -47,7 +47,6 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
   };
 
   const getScrollTimeObj = () => {
-
     if (!scrollTime) {
       return false;
     } else {
@@ -59,13 +58,30 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
     <div className="row">
       <div className="col no-gutter">
         <div className="row calendar-header-wrapper">
-          <div className="col-sm-4 small-padding">
+          <div className="col-md-2 col-sm-6 col-xs-6 small-padding">
             <button id="calendar-today" className="booking-btn" type="button" onClick={onChangeDate}>
               I dag
             </button>
           </div>
-          <div className="col-sm-4 small-padding datepicker-container">
+          <div className="calendar-hidden-lg col-sm-6 col-xs-6 small-padding">
+            <div className="calendar-nav">
+              <button
+                id="calendar-back"
+                className="booking-btn"
+                type="button"
+                disabled={new Date() > date}
+                onClick={onChangeDate}
+              >
+                ‹
+              </button>
+              <button id="calendar-forward" className="booking-btn" type="button" onClick={onChangeDate}>
+                ›
+              </button>
+            </div>
+          </div>
+          <div className="col-md-8 col-sm-12 col-xs-12 small-padding datepicker-container">
             <div className="datepicker">
+            <span>Vælg dato</span>
               <label htmlFor="calendar-datepicker" className="datepicker-label">
                 <span hidden>Dato</span>
                 <input
@@ -76,11 +92,12 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
                   onChange={onChangeDate}
                 />
                 <button type="button" id="calendar_text">
-                  {dayjs(date).format("D. MMMM YYYY")} <span>📅</span>
+                  <span>{dayjs(date).format("D. MMMM YYYY")}</span> <div><span>📅</span></div>
                 </button>
               </label>
             </div>
-            <div>
+            <div className="timepicker">
+            <span>Vælg start-tidspunkt</span>
             <Select
               styles={{}}
               id="calendar-hours-filter"
@@ -100,7 +117,7 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
             />
           </div>
           </div>
-          <div className="col-sm-4 small-padding">
+          <div className="col-md-2 calendar-hidden-sm small-padding">
             <div className="calendar-nav">
               <button
                 id="calendar-back"
