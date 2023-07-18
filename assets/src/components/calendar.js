@@ -104,9 +104,11 @@ function Calendar({
   };
 
   const setTimeScroll = (selectedTime) => {
-    localStorage.setItem('setTimeScroll', selectedTime.value);
+    localStorage.setItem("setTimeScroll", selectedTime.value);
+
     calendarRef?.current?.getApi().scrollToTime(getScrollTime());
-  }
+  };
+
   /**
    * Function that decides if a selection is allowed.
    *
@@ -291,7 +293,13 @@ function Calendar({
         <NoResultOverlay state="noresult" />
       )}
       {isLoading && <LoadingSpinner />}
-      <CalendarHeader date={date} setDate={setDate} setIsLoading={setIsLoading} scrollTime={getScrollTime(true, true)} setTimeScroll={setTimeScroll} />
+      <CalendarHeader
+        date={date}
+        setDate={setDate}
+        setIsLoading={setIsLoading}
+        scrollTime={getScrollTime(true, true)}
+        setTimeScroll={setTimeScroll}
+      />
       <div className="row" aria-hidden="true">
         <div className="col small-padding">
           <div hidden id="calendar-caption">

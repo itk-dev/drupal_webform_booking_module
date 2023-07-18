@@ -12,12 +12,11 @@ import "./calendar-header.scss";
  * @param {object} props.date Date.
  * @param {Function} props.setDate Set date function.
  * @param {Function} props.setIsLoading Loading state setter.
+ * @param {Function} props.setTimeScroll Timescroll state setter.
+ * @param {string} props.scrollTime Seleted scrollTime
  * @returns {JSX.Element} Calendar header component.
  */
 function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime }) {
-
-
-
   const onChangeDate = (event) => {
     switch (event.target.id) {
       case "calendar-today":
@@ -49,10 +48,10 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
   const getScrollTimeObj = () => {
     if (!scrollTime) {
       return false;
-    } else {
-      return { value: scrollTime, label: scrollTime }
     }
-  }
+
+    return { value: scrollTime, label: scrollTime };
+  };
 
   return (
     <div className="row">
@@ -81,7 +80,7 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
           </div>
           <div className="col-md-8 col-sm-12 col-xs-12 small-padding datepicker-container">
             <div className="datepicker">
-            <span>Vælg dato</span>
+              <span>Vælg dato</span>
               <label htmlFor="calendar-datepicker" className="datepicker-label">
                 <span hidden>Dato</span>
                 <input
@@ -92,30 +91,33 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
                   onChange={onChangeDate}
                 />
                 <button type="button" id="calendar_text">
-                  <span>{dayjs(date).format("D. MMMM YYYY")}</span> <div><span>📅</span></div>
+                  <span>{dayjs(date).format("D. MMMM YYYY")}</span>{" "}
+                  <div>
+                    <span>📅</span>
+                  </div>
                 </button>
               </label>
             </div>
             <div className="timepicker">
-            <span>Vælg start-tidspunkt</span>
-            <Select
-              styles={{}}
-              id="calendar-hours-filter"
-              className="filter"
-              defaultValue={getScrollTimeObj()}
-              placeholder="Tid..."
-              placeholderClassName="dropdown-placeholder"
-              closeMenuOnSelect={true}
-              options={calendarTimeSelect}
-              onChange={(selectedHour) => {
-                setTimeScroll(selectedHour);
-              }}
-              loadingMessage={() => "Henter tider.."}
-              isSearchable={false}
-              menuPlacement="top"
-              maxMenuHeight={175}
-            />
-          </div>
+              <span>Vælg start-tidspunkt</span>
+              <Select
+                styles={{}}
+                id="calendar-hours-filter"
+                className="filter"
+                defaultValue={getScrollTimeObj()}
+                placeholder="Tid..."
+                placeholderClassName="dropdown-placeholder"
+                closeMenuOnSelect
+                options={calendarTimeSelect}
+                onChange={(selectedHour) => {
+                  setTimeScroll(selectedHour);
+                }}
+                loadingMessage={() => "Henter tider.."}
+                isSearchable={false}
+                menuPlacement="top"
+                maxMenuHeight={175}
+              />
+            </div>
           </div>
           <div className="col-md-2 calendar-hidden-sm small-padding">
             <div className="calendar-nav">
@@ -143,6 +145,8 @@ CalendarHeader.propTypes = {
   date: PropTypes.shape({}).isRequired,
   setDate: PropTypes.func.isRequired,
   setIsLoading: PropTypes.func.isRequired,
+  setTimeScroll: PropTypes.func.isRequired,
+  scrollTime: PropTypes.string.isRequired,
 };
 
 export default CalendarHeader;

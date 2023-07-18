@@ -126,17 +126,21 @@ export function handleResources(value, currentCalendarDate) {
 /**
  * GetScrollTime gets the time to horizontally scroll the calendar to on load
  *
+ * @param {boolean} getUnmodifiedTimeScroll Whether to return the unmodified timescroll value.
+ * @param {boolean} returnDefault Whether to return the default value for timepicker, if no value is selected.
  * @returns {string} A formatted string, containing the time to scroll to, format "xx:00"
  */
-export function getScrollTime(getUnmodifiedHour = false, returnDefault = false) {
+export function getScrollTime(getUnmodifiedTimeScroll = false, returnDefault = false) {
   // Checks if the user has manually chosen a preferred time previously. If so, return it.
-  let localTimeScroll = localStorage.getItem('setTimeScroll');
-  if (localTimeScroll && localTimeScroll !== "auto") {
+  let localTimeScroll = localStorage.getItem("setTimeScroll");
 
-    if (getUnmodifiedHour) {
+  if (localTimeScroll && localTimeScroll !== "auto") {
+    if (getUnmodifiedTimeScroll) {
       return `${localTimeScroll}:00`;
     }
-    localTimeScroll = localTimeScroll - 1;
+
+    localTimeScroll -= 1;
+
     return `${localTimeScroll}:00`;
   }
   // If no manually chosen preferred time is chosen, return auto for time select.
