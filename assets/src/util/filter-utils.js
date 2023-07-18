@@ -15,6 +15,7 @@ export const facilityOptions = [
 ];
 
 export const calendarTimeSelect = [
+  { value: "auto", label: "auto" },
   { value: "06", label: "06:00" },
   { value: "07", label: "07:00" },
   { value: "08", label: "08:00" },
