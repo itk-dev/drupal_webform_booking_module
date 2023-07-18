@@ -25,7 +25,11 @@ function InfoBox({ config }) {
             </span>
             <span className="info-box-content-text">{infoBoxContent}</span>
           </div>
-          <div className="col-md-1 col-sm-1 col-xs-1 info-box-close" onClick={() => setDisplay(false)} role="presentation">
+          <div
+            className="col-md-1 col-sm-1 col-xs-1 info-box-close"
+            onClick={() => setDisplay(false)}
+            role="presentation"
+          >
             <span>x</span>
           </div>
         </div>
