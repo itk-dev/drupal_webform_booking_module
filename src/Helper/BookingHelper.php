@@ -13,7 +13,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * Booking helper.
  */
 class BookingHelper {
-
   protected string $bookingApiEndpoint;
 
   protected string $bookingApiKey;
@@ -68,6 +67,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get locations failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get locations failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -106,6 +107,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get resources failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get resources failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -146,6 +149,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get all resources failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get all resources failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -185,7 +190,10 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get resource by id failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get resource by id failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
+
   }
 
   /**
@@ -224,6 +232,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get busy intervals failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get busy intervals failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -261,6 +271,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get user bookings failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get user bookings failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -293,6 +305,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Delete booking failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Delete booking failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -330,6 +344,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Booking patch failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Booking patch failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
@@ -368,6 +384,8 @@ class BookingHelper {
       throw new HttpException($e->getCode(), "Get booking details failed.");
     } catch (JsonException $e) {
       throw new HttpException($e->getCode(), "Get booking details failed. Could not decode response.");
+    } catch (Exception $e) {
+      throw new HttpException((int)$e->getCode(), $e->getMessage());
     }
   }
 
