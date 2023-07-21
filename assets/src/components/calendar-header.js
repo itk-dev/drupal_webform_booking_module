@@ -115,7 +115,7 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
                 isSearchable={false}
                 menuPlacement="bottom"
                 menuPortalTarget={document.body}
-                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
               />
             </div>
           </div>
