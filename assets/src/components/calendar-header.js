@@ -101,7 +101,6 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
             <div className="timepicker">
               <span>Vælg start-tidspunkt</span>
               <Select
-                styles={{}}
                 id="calendar-hours-filter"
                 className="filter"
                 defaultValue={getScrollTimeObj()}
@@ -114,8 +113,9 @@ function CalendarHeader({ date, setDate, setIsLoading, setTimeScroll, scrollTime
                 }}
                 loadingMessage={() => "Henter tider.."}
                 isSearchable={false}
-                menuPlacement="top"
-                maxMenuHeight={175}
+                menuPlacement="bottom"
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
               />
             </div>
           </div>
