@@ -66,6 +66,26 @@ function CalendarHeader({ date, setDate, setIsLoading }) {
                 </button>
               </label>
             </div>
+            <div className="timepicker">
+              <span>Vælg start-tidspunkt</span>
+              <Select
+                id="calendar-hours-filter"
+                className="filter"
+                defaultValue={getScrollTimeObj()}
+                placeholder="Tid..."
+                placeholderClassName="dropdown-placeholder"
+                closeMenuOnSelect
+                options={calendarTimeSelect}
+                onChange={(selectedHour) => {
+                  setTimeScroll(selectedHour);
+                }}
+                loadingMessage={() => "Henter tider.."}
+                isSearchable={false}
+                menuPlacement="bottom"
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+              />
+            </div>
           </div>
           <div className="col-sm-4 small-padding">
             <div className="calendar-nav">
