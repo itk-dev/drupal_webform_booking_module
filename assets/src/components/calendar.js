@@ -342,7 +342,7 @@ function Calendar({
             selectAllow={selectAllow}
             unselectAuto={false}
             schedulerLicenseKey={config.license_key}
-            slotMinTime="06:00:00"
+            slotMinTime="00:00:00"
             slotMaxTime="24:00:00"
             selectOverlap
             nextDayThreshold="21:00:00"
