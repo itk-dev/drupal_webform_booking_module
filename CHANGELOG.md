@@ -6,6 +6,8 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+## [1.0.4] - 2023-08-21
+
 ### Added
 
 - Use resourceDisplayName when displaying resources to the user.
