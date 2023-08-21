@@ -115,7 +115,7 @@ export function handleResources(value, currentCalendarDate) {
     resource.businessHours = businessHoursArray;
   } else {
     resource.businessHours = {
-      startTime: businessHoursOrNearestFifteenMinutes("08:00", currentCalendarDate, false),
+      startTime: businessHoursOrNearestFifteenMinutes("00:00", currentCalendarDate, false),
       endTime: "24:00",
     };
   }
