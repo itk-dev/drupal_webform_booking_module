@@ -6,6 +6,10 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+## [1.0.5] - 2023-08-21
+
+- Added timepicker for selecting preferred vertical scroll of calendar + added properties for z-index to work as expected.
+
 ## [1.0.4] - 2023-08-21
 
 ### Added
@@ -15,7 +19,6 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 - Change map to use locationDisplayName for filter label and locationName as filter value.
 - Sorting to user panel.
 - Added text filtering to user panel.
-- Added timepicker for selecting preferred vertical scroll of calendar + added properties for z-index to work as expected.
 
 ### Changed
 
