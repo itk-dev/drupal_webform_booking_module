@@ -22,6 +22,8 @@ import CalendarHeader from "./calendar-header";
 import LoadingSpinner from "./loading-spinner";
 import "./calendar.scss";
 
+const scrollTime = getScrollTime();
+
 /**
  * Calendar component.
  *
@@ -59,7 +61,8 @@ function Calendar({
   const [internalSelection, setInternalSelection] = useState();
   const [calendarSelectionResourceTitle, setCalendarSelectionResourceTitle] = useState();
   const [calendarSelectionResourceId, setCalendarSelectionResourceId] = useState();
-  const [events, setEvents] = useState([]);
+  const [calendarResources, setCalendarResources] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
 
   removeEmptyAriaLabelled();
 
@@ -102,6 +105,37 @@ function Calendar({
     return undefined;
   };
 
+  /**
+   * Function that decides if a selection is allowed.
+   *
+   * @param {object} selectInfo The current selection.
+   * @returns {boolean} Allowed selection?
+   */
+  const selectAllow = (selectInfo) => {
+    // eslint-disable-next-line no-underscore-dangle
+    const selectResource = selectInfo?.resource?._resource;
+
+    // Allow all selections for resources where acceptConflict is true.
+    if (selectResource?.extendedProps?.acceptConflict === true) {
+      return true;
+    }
+
+    const selectStart = new Date(selectInfo.startStr);
+    const selectEnd = new Date(selectInfo.endStr);
+
+    // Disallow selections that overlap other events.
+    return !calendarEvents.some((event) => {
+      if (event.resourceId !== selectResource.id) {
+        return false;
+      }
+
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
+
+      return selectStart < eventEnd && selectEnd > eventStart;
+    });
+  };
+
   // Set calendar selection.
   useEffect(() => {
     if (calendarSelection) {
@@ -123,7 +157,7 @@ function Calendar({
     if (config && resources?.length > 0 && date !== null) {
       Api.fetchEvents(config.api_endpoint, resources, dayjs(date).startOf("day"))
         .then((loadedEvents) => {
-          setEvents(loadedEvents);
+          setCalendarEvents(loadedEvents.map((value) => handleBusyIntervals(value)));
 
           setTimeout(() => {
             setIsLoading(false);
@@ -135,6 +169,9 @@ function Calendar({
           toast.error("Der opstod en fejl. Prøv igen senere.", fetchEventsError);
         });
     }
+
+    setCalendarResources(resources.map((value) => handleResources(value, date)));
+
     if (resources && resources?.length === 0) {
       setIsLoading(false);
     }
@@ -213,7 +250,7 @@ function Calendar({
         });
       }, 1);
     }
-  }, [calendarSelection, events]);
+  }, [calendarSelection, calendarEvents]);
 
   /** @param {string} resource Object of the resource to load */
   const triggerResourceView = (resource) => {
@@ -224,6 +261,24 @@ function Calendar({
   const renderCalendarCellInfoButton = (resource, triggerResourceViewEv) => {
     return <CalendarCellInfoButton resource={resource} onClickEvent={triggerResourceViewEv} />;
   };
+
+  const resourceAreaColumns = [
+    {
+      headerContent: "Ressourcer",
+      cellContent(arg) {
+        return renderCalendarCellInfoButton(arg.resource, triggerResourceView);
+      },
+    },
+    {
+      headerContent: ["Kapacitet"],
+      headerClassNames: "resource-calendar-capacity-header",
+      width: "85px",
+      cellClassNames: "resource-calendar-capacity-value",
+      cellContent(arg) {
+        return arg.resource.extendedProps.capacity;
+      },
+    },
+  ];
 
   return (
     <div className="Calendar no-gutter col" role="application">
@@ -257,7 +312,7 @@ function Calendar({
             }}
             headerToolbar=""
             height="650px"
-            scrollTime={getScrollTime()}
+            scrollTime={scrollTime}
             initialView="resourceTimelineDay"
             duration="days: 3"
             selectConstraint="businessHours"
@@ -274,43 +329,25 @@ function Calendar({
             slotDuration="00:15:00"
             allDaySlot={false}
             selectable
+            selectAllow={selectAllow}
             unselectAuto={false}
             schedulerLicenseKey={config.license_key}
             slotMinTime="06:00:00"
             slotMaxTime="24:00:00"
-            selectOverlap={false}
+            selectOverlap
             nextDayThreshold="21:00:00"
             editable={false}
             dayMaxEvents
             locale={daLocale}
             select={onCalendarSelection}
-            /* eslint-disable react/jsx-props-no-spreading */
-            {...(resources && {
-              resources: resources.map((value) => handleResources(value, date)),
-            })}
+            resources={calendarResources}
             validRange={{
               start: dateNow,
             }}
             resourceOrder="resourceId"
             resourceGroupField="building"
-            resourceAreaColumns={[
-              {
-                headerContent: "Ressourcer",
-                cellContent(arg) {
-                  return renderCalendarCellInfoButton(arg.resource, triggerResourceView);
-                },
-              },
-              {
-                headerContent: ["Kapacitet"],
-                headerClassNames: "resource-calendar-capacity-header",
-                width: "85px",
-                cellClassNames: "resource-calendar-capacity-value",
-                cellContent(arg) {
-                  return arg.resource.extendedProps.capacity;
-                },
-              },
-            ]}
-            events={events && events.map((value) => handleBusyIntervals(value))}
+            resourceAreaColumns={resourceAreaColumns}
+            events={calendarEvents}
           />
         </div>
       </div>

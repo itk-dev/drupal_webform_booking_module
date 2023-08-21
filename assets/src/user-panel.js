@@ -20,6 +20,9 @@ function UserPanel({ config }) {
   const [editBooking, setEditBooking] = useState(null);
   const [deleteBooking, setDeleteBooking] = useState(null);
   const [changedBookingId, setChangedBookingId] = useState(null);
+  const [sortField, setSortField] = useState("start");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [filter, setFilter] = useState("");
 
   const onBookingChanged = (bookingId, start, end) => {
     setEditBooking(null);
@@ -94,6 +97,70 @@ function UserPanel({ config }) {
     }
   };
 
+  const filterBookings = (bookings, field, direction) => {
+    const filteredBookings = bookings.filter((booking) => {
+      return (
+        (booking.subject ?? "").toLowerCase().indexOf((filter ?? "").toLowerCase()) > -1 ||
+        (booking.displayName ?? "").toLowerCase().indexOf((filter ?? "").toLowerCase()) > -1
+      );
+    });
+
+    let result = filteredBookings.sort((a, b) => {
+      return a[field] - b[field];
+    });
+
+    if (direction === "desc") {
+      result = result.reverse();
+    }
+
+    return result;
+  };
+
+  const setSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortDirection("desc");
+
+      setSortField(field);
+    }
+  };
+
+  const renderSortingButton = (field, title) => {
+    return (
+      <button
+        type="button"
+        onClick={() => setSort(field)}
+        className={`userbookings-sorting${sortField === field ? " active" : ""}`}
+      >
+        {sortField === field && (sortDirection === "asc" ? "↑ " : "↓ ")}
+        {title}
+      </button>
+    );
+  };
+
+  const renderBooking = (booking) => {
+    return (
+      <>
+        <div>
+          {booking.id === changedBookingId && <>Ændring gennemført.</>}
+          <span className="location">{booking.displayName}</span>
+          <span className="subject">{booking.subject}</span>
+          <span className="status">{getStatus(booking.status)}</span>
+        </div>
+        <div>
+          <span>{getFormattedDateTime(booking.start)}</span>
+          <span>→</span>
+          <span>{getFormattedDateTime(booking.end)}</span>
+        </div>
+      </>
+    );
+  };
+
+  const onFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+
   return (
     <div className="App">
       <div className="container-fluid">
@@ -112,25 +179,32 @@ function UserPanel({ config }) {
           )}
           {!editBooking && !deleteBooking && (
             <div className="userpanel row">
-              <div className="col no-gutter">
+              <div className="col no-padding">
                 {loading && <LoadingSpinner />}
+
+                {!loading && !editBooking && (
+                  <div className="userbookings-sorting-container">
+                    {renderSortingButton("displayName", "Lokale/Resurse")}
+                    {renderSortingButton("start", "Dato")}
+                    {renderSortingButton("subject", "Titel")}
+                    <input
+                      value={filter}
+                      className="filter"
+                      placeholder="Filtrér med tekst"
+                      name="filterText"
+                      onChange={onFilterChange}
+                      type="text"
+                    />
+                  </div>
+                )}
+
                 {!loading && !editBooking && userBookings && (
                   <div className="userbookings-container">
                     <h3>Aktive bookinger</h3>
 
-                    {currentBookings.map((obj) => (
+                    {filterBookings(currentBookings, sortField, sortDirection).map((obj) => (
                       <div className="user-booking" key={obj.id}>
-                        <div>
-                          {obj.id === changedBookingId && <>Ændring gennemført.</>}
-                          <span className="location">{obj.displayName}</span>
-                          <span className="subject">{obj.subject}</span>
-                          <span className="status">{getStatus(obj.status)}</span>
-                        </div>
-                        <div>
-                          <span>{getFormattedDateTime(obj.start)}</span>
-                          <span>→</span>
-                          <span>{getFormattedDateTime(obj.end)}</span>
-                        </div>
+                        {renderBooking(obj)}
                         <div>
                           <button type="button" onClick={() => setDeleteBooking(obj)}>
                             Anmod om sletning
@@ -147,19 +221,9 @@ function UserPanel({ config }) {
                 {!loading && !editBooking && expiredBookings && (
                   <div className="userbookings-container">
                     <h3>Afsluttede bookinger</h3>
-                    {expiredBookings.map((obj) => (
+                    {filterBookings(expiredBookings, sortField, sortDirection).map((obj) => (
                       <div className="user-booking expired" key={obj.id}>
-                        <div>
-                          {obj.id === changedBookingId && <>Ændring gennemført.</>}
-                          <span className="location">{obj.displayName}</span>
-                          <span className="subject">{obj.subject}</span>
-                          <span className="status">{getStatus(obj.status)}</span>
-                        </div>
-                        <div>
-                          <span>{getFormattedDateTime(obj.start)}</span>
-                          <span>→</span>
-                          <span>{getFormattedDateTime(obj.end)}</span>
-                        </div>
+                        {renderBooking(obj)}
                       </div>
                     ))}
                   </div>

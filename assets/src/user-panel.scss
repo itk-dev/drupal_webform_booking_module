@@ -81,3 +81,17 @@ div.userbookings-container > div.user-booking.expired {
     flex: 0 0 100%;
   }
 }
+
+.userbookings-sorting-container {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.userbookings-sorting {
+  border: 0;
+  background: transparent;
+}
+
+.no-padding {
+  padding: 0;
+}
