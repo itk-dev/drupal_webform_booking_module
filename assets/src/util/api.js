@@ -69,18 +69,19 @@ export default class Api {
   }
 
   static async fetchUserBookings(apiEndpoint, search, page, pageSize) {
-    return fetch(`${apiEndpoint}itkdev_booking/user-bookings?` + new URLSearchParams({
-      search,
-      page,
-      pageSize,
-    }))
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`This is an HTTP error: The status is ${response.status}`);
-        }
+    return fetch(
+      `${apiEndpoint}itkdev_booking/user-bookings?${new URLSearchParams({
+        search,
+        page,
+        pageSize,
+      })}`
+    ).then((response) => {
+      if (!response.ok) {
+        throw new Error(`This is an HTTP error: The status is ${response.status}`);
+      }
 
-        return response.json();
-      });
+      return response.json();
+    });
   }
 
   static async deleteBooking(apiEndpoint, bookingId) {

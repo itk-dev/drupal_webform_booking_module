@@ -24,7 +24,6 @@ function UserPanel({ config }) {
   const [sortDirection, setSortDirection] = useState("desc");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
-
   const pageSize = 10;
 
   const onBookingChanged = (bookingId, start, end) => {
@@ -82,6 +81,7 @@ function UserPanel({ config }) {
 
   const submitSearch = (event) => {
     event.preventDefault();
+
     event.stopPropagation();
 
     if (page !== 0) {
@@ -90,7 +90,7 @@ function UserPanel({ config }) {
     } else {
       fetchSearch();
     }
-  }
+  };
 
   useEffect(() => {
     if (page !== null) {
@@ -98,7 +98,7 @@ function UserPanel({ config }) {
     }
   }, [page]);
 
-  const currentBookings = userBookings ? Object.values(userBookings['hydra:member']) ?? [] : [];
+  const currentBookings = userBookings ? Object.values(userBookings["hydra:member"]) ?? [] : [];
 
   const getStatus = (status) => {
     switch (status) {
@@ -155,7 +155,7 @@ function UserPanel({ config }) {
     const bookingEnd = new Date(booking.end);
 
     return (
-      <div className={"user-booking" + (bookingEnd < now ? ' expired' : '')} key={booking.id}>
+      <div className={`user-booking${bookingEnd < now ? " expired" : ""}`} key={booking.id}>
         <div>
           {booking.id === changedBookingId && <>Ændring gennemført.</>}
           <span className="location">{booking.displayName}</span>
@@ -168,9 +168,7 @@ function UserPanel({ config }) {
           <span>{getFormattedDateTime(booking.end)}</span>
         </div>
 
-        {bookingEnd < now && (
-          <div>Booking er udløbet</div>
-        )}
+        {bookingEnd < now && <div>Booking er udløbet</div>}
 
         {bookingEnd >= now && (
           <div>
@@ -186,10 +184,11 @@ function UserPanel({ config }) {
     );
   };
 
-  function cleanupText(text){
+  const cleanupText = (text) => {
     const regExp = /[^a-zA-Z\s\d]+/;
-    return text.replace(regExp, '');
-  }
+
+    return text.replace(regExp, "");
+  };
 
   const onFilterChange = (event) => {
     setSearch(cleanupText(event.target.value));
@@ -198,12 +197,12 @@ function UserPanel({ config }) {
   const addPage = (value) => {
     const newValue = page + value;
 
-    if (newValue < 0 || newValue > parseInt(userBookings['hydra:totalItems'] / pageSize)) {
+    if (newValue < 0 || newValue > parseInt(userBookings["hydra:totalItems"] / pageSize, 10)) {
       return;
     }
 
     setPage(page + value);
-  }
+  };
 
   return (
     <div className="App">
@@ -226,13 +225,13 @@ function UserPanel({ config }) {
               <div className="col no-padding">
                 {loading && <LoadingSpinner />}
 
-                {!loading && !editBooking && (<>
+                {!loading && !editBooking && (
                   <div>
                     <form onSubmit={submitSearch}>
                       <input
                         value={search}
                         className="filter"
-                        style={{marginRight: "1em"}}
+                        style={{ marginRight: "1em" }}
                         placeholder="Søgetekst"
                         name="filterText"
                         onChange={onFilterChange}
@@ -241,29 +240,36 @@ function UserPanel({ config }) {
                       <button type="submit">Søg</button>
                     </form>
                   </div>
-                </>)}
+                )}
 
-                {!loading && !editBooking && userBookings && (<>
-                  <div className="userbookings-sorting-container">
-                    {renderSortingButton("displayName", "Lokale/Resurse")}
-                    {renderSortingButton("start", "Dato")}
-                    {renderSortingButton("subject", "Titel")}
+                {!loading && !editBooking && userBookings && (
+                  <>
+                    <div className="userbookings-sorting-container">
+                      {renderSortingButton("displayName", "Lokale/Resurse")}
+                      {renderSortingButton("start", "Dato")}
+                      {renderSortingButton("subject", "Titel")}
+                    </div>
+                    <div className="userbookings-container">
+                      {sortBookings(currentBookings, sortField, sortDirection).map(renderBooking)}
+                    </div>
+                  </>
+                )}
+
+                {userBookings && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div>
+                      <button type="button" onClick={() => addPage(-1)} style={{ margin: "1em" }}>
+                        ←
+                      </button>
+                      Side {page + 1} / {parseInt(userBookings["hydra:totalItems"] / pageSize, 10) + 1}
+                      <button type="button" onClick={() => addPage(1)} style={{ margin: "1em" }}>
+                        →
+                      </button>
+                    </div>
+
+                    <div style={{ margin: "1em" }}>Antal bookinger: {userBookings["hydra:totalItems"]}</div>
                   </div>
-                  <div className="userbookings-container">
-                    {sortBookings(currentBookings, sortField, sortDirection).map(renderBooking)}
-                  </div>
-                </>)}
-
-                {userBookings && (<div style={{display: 'flex', justifyContent: 'space-between'}}>
-                  <div>
-                    <button onClick={() => addPage(-1)} style={{margin: '1em'}}>←</button>
-                    Side {page + 1} / {parseInt(userBookings['hydra:totalItems'] / pageSize) + 1}
-                    <button onClick={() => addPage(1)} style={{margin: '1em'}}>→</button>
-                  </div>
-
-                  <div style={{margin: '1em'}}>Antal bookinger: {userBookings['hydra:totalItems']}</div>
-                </div>)}
-
+                )}
               </div>
             </div>
           )}
