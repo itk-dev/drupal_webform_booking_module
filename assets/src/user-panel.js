@@ -204,6 +204,22 @@ function UserPanel({ config }) {
     setPage(page + value);
   };
 
+  const decrementPage = (event) => {
+    event.stopPropagation();
+
+    event.preventDefault();
+
+    addPage(-1);
+  };
+
+  const incrementPage = (event) => {
+    event.stopPropagation();
+
+    event.preventDefault();
+
+    addPage(1);
+  };
+
   return (
     <div className="App">
       <div className="container-fluid">
@@ -258,11 +274,11 @@ function UserPanel({ config }) {
                 {userBookings && (
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
-                      <button type="button" onClick={() => addPage(-1)} style={{ margin: "1em" }}>
+                      <button type="button" onClick={decrementPage} style={{ margin: "1em" }}>
                         ←
                       </button>
                       Side {page + 1} / {parseInt(userBookings["hydra:totalItems"] / pageSize, 10) + 1}
-                      <button type="button" onClick={() => addPage(1)} style={{ margin: "1em" }}>
+                      <button type="button" onClick={incrementPage} style={{ margin: "1em" }}>
                         →
                       </button>
                     </div>
