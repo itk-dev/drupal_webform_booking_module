@@ -6,6 +6,8 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+- Changed to paginated version of User Bookings [#124](https://github.com/itk-dev/drupal_webform_booking_module/pull/124).
+
 ## [1.0.6] - 2023-08-21
 
 - Removed default business hours [#122](https://github.com/itk-dev/drupal_webform_booking_module/pull/122).

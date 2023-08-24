@@ -57,10 +57,10 @@ See `assets/public/example_config.json` for structure of `config.json` file.
 ## Coding standards
 Apply (automatic fixes) js coding standards
 ```
-itkdev-docker-compose run node npm run apply-coding-standards
+itkdev-docker-compose run --rm node npm run apply-coding-standards
 ```
 
 Check js coding standards
 ```
-itkdev-docker-compose run node npm run check-coding-standards
+itkdev-docker-compose run --rm node npm run check-coding-standards
 ```
