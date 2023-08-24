@@ -249,7 +249,7 @@ class BookingHelper {
       $endpoint = $this->bookingApiEndpoint;
       $client = new Client();
 
-      $query = [];
+      $query = $request->query->all();
 
       $headers = $this->userHelper->attachUserToHeaders($request, $this->headers);
 

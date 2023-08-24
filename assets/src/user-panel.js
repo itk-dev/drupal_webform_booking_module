@@ -22,7 +22,9 @@ function UserPanel({ config }) {
   const [changedBookingId, setChangedBookingId] = useState(null);
   const [sortField, setSortField] = useState("start");
   const [sortDirection, setSortDirection] = useState("desc");
-  const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const pageSize = 10;
 
   const onBookingChanged = (bookingId, start, end) => {
     setEditBooking(null);
@@ -60,10 +62,11 @@ function UserPanel({ config }) {
     return dayjs(dateObj).format("dddd [d.] D/M [kl.] HH:mm");
   }
 
-  // Load user bookings.
-  useEffect(() => {
-    if (config && !userBookings) {
-      Api.fetchUserBookings(config.api_endpoint)
+  const fetchSearch = () => {
+    if (config) {
+      setLoading(true);
+
+      Api.fetchUserBookings(config.api_endpoint, search, page, pageSize)
         .then((loadedUserBookings) => {
           setUserBookings(loadedUserBookings);
         })
@@ -74,15 +77,28 @@ function UserPanel({ config }) {
           setLoading(false);
         });
     }
-  }, []);
+  };
 
-  const currentBookings = userBookings
-    ? Object.values(userBookings).filter((obj) => !obj.expired && obj.status !== "DECLINED")
-    : null;
+  const submitSearch = (event) => {
+    event.preventDefault();
 
-  const expiredBookings = userBookings
-    ? Object.values(userBookings).filter((obj) => obj.expired || obj.status === "DECLINED")
-    : null;
+    event.stopPropagation();
+
+    if (page !== 0) {
+      // This automatically triggers a search.
+      setPage(0);
+    } else {
+      fetchSearch();
+    }
+  };
+
+  useEffect(() => {
+    if (page !== null) {
+      fetchSearch();
+    }
+  }, [page]);
+
+  const currentBookings = userBookings ? Object.values(userBookings["hydra:member"]) ?? [] : [];
 
   const getStatus = (status) => {
     switch (status) {
@@ -97,15 +113,10 @@ function UserPanel({ config }) {
     }
   };
 
-  const filterBookings = (bookings, field, direction) => {
-    const filteredBookings = bookings.filter((booking) => {
-      return (
-        (booking.subject ?? "").toLowerCase().indexOf((filter ?? "").toLowerCase()) > -1 ||
-        (booking.displayName ?? "").toLowerCase().indexOf((filter ?? "").toLowerCase()) > -1
-      );
-    });
+  const sortBookings = (bookings, field, direction) => {
+    const clonedBookings = [...bookings];
 
-    let result = filteredBookings.sort((a, b) => {
+    let result = clonedBookings.sort((a, b) => {
       return a[field] - b[field];
     });
 
@@ -140,8 +151,11 @@ function UserPanel({ config }) {
   };
 
   const renderBooking = (booking) => {
+    const now = new Date();
+    const bookingEnd = new Date(booking.end);
+
     return (
-      <>
+      <div className={`user-booking${bookingEnd < now ? " expired" : ""}`} key={booking.id}>
         <div>
           {booking.id === changedBookingId && <>Ændring gennemført.</>}
           <span className="location">{booking.displayName}</span>
@@ -153,12 +167,41 @@ function UserPanel({ config }) {
           <span>→</span>
           <span>{getFormattedDateTime(booking.end)}</span>
         </div>
-      </>
+
+        {bookingEnd < now && <div>Booking er udløbet</div>}
+
+        {bookingEnd >= now && (
+          <div>
+            <button type="button" onClick={() => setDeleteBooking(booking)}>
+              Anmod om sletning
+            </button>
+            <button type="button" onClick={() => setEditBooking(booking)}>
+              Anmod om ændring af tidspunkt
+            </button>
+          </div>
+        )}
+      </div>
     );
   };
 
+  const cleanupText = (text) => {
+    const regExp = /[^a-zA-Z\s\d]+/;
+
+    return text.replace(regExp, "");
+  };
+
   const onFilterChange = (event) => {
-    setFilter(event.target.value);
+    setSearch(cleanupText(event.target.value));
+  };
+
+  const addPage = (value) => {
+    const newValue = page + value;
+
+    if (newValue < 0 || newValue > parseInt(userBookings["hydra:totalItems"] / pageSize, 10)) {
+      return;
+    }
+
+    setPage(page + value);
   };
 
   return (
@@ -183,49 +226,48 @@ function UserPanel({ config }) {
                 {loading && <LoadingSpinner />}
 
                 {!loading && !editBooking && (
-                  <div className="userbookings-sorting-container">
-                    {renderSortingButton("displayName", "Lokale/Resurse")}
-                    {renderSortingButton("start", "Dato")}
-                    {renderSortingButton("subject", "Titel")}
-                    <input
-                      value={filter}
-                      className="filter"
-                      placeholder="Filtrér med tekst"
-                      name="filterText"
-                      onChange={onFilterChange}
-                      type="text"
-                    />
+                  <div>
+                    <form onSubmit={submitSearch}>
+                      <input
+                        value={search}
+                        className="filter"
+                        style={{ marginRight: "1em" }}
+                        placeholder="Søgetekst"
+                        name="filterText"
+                        onChange={onFilterChange}
+                        type="text"
+                      />
+                      <button type="submit">Søg</button>
+                    </form>
                   </div>
                 )}
 
                 {!loading && !editBooking && userBookings && (
-                  <div className="userbookings-container">
-                    <h3>Aktive bookinger</h3>
-
-                    {filterBookings(currentBookings, sortField, sortDirection).map((obj) => (
-                      <div className="user-booking" key={obj.id}>
-                        {renderBooking(obj)}
-                        <div>
-                          <button type="button" onClick={() => setDeleteBooking(obj)}>
-                            Anmod om sletning
-                          </button>
-                          <button type="button" onClick={() => setEditBooking(obj)}>
-                            Anmod om ændring af tidspunkt
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="userbookings-sorting-container">
+                      {renderSortingButton("displayName", "Lokale/Resurse")}
+                      {renderSortingButton("start", "Dato")}
+                      {renderSortingButton("subject", "Titel")}
+                    </div>
+                    <div className="userbookings-container">
+                      {sortBookings(currentBookings, sortField, sortDirection).map(renderBooking)}
+                    </div>
+                  </>
                 )}
 
-                {!loading && !editBooking && expiredBookings && (
-                  <div className="userbookings-container">
-                    <h3>Afsluttede bookinger</h3>
-                    {filterBookings(expiredBookings, sortField, sortDirection).map((obj) => (
-                      <div className="user-booking expired" key={obj.id}>
-                        {renderBooking(obj)}
-                      </div>
-                    ))}
+                {userBookings && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div>
+                      <button type="button" onClick={() => addPage(-1)} style={{ margin: "1em" }}>
+                        ←
+                      </button>
+                      Side {page + 1} / {parseInt(userBookings["hydra:totalItems"] / pageSize, 10) + 1}
+                      <button type="button" onClick={() => addPage(1)} style={{ margin: "1em" }}>
+                        →
+                      </button>
+                    </div>
+
+                    <div style={{ margin: "1em" }}>Antal bookinger: {userBookings["hydra:totalItems"]}</div>
                   </div>
                 )}
               </div>
