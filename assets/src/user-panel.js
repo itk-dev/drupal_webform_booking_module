@@ -184,14 +184,8 @@ function UserPanel({ config }) {
     );
   };
 
-  const cleanupText = (text) => {
-    const regExp = /[^a-zA-Z\s\d]+/;
-
-    return text.replace(regExp, "");
-  };
-
   const onFilterChange = (event) => {
-    setSearch(cleanupText(event.target.value));
+    setSearch(event.target.value);
   };
 
   const addPage = (value) => {
@@ -242,7 +236,7 @@ function UserPanel({ config }) {
                 {loading && <LoadingSpinner />}
 
                 {!loading && !editBooking && (
-                  <div>
+                  <div style={{marginBottom: '1em'}}>
                     <form onSubmit={submitSearch}>
                       <input
                         value={search}
@@ -260,11 +254,13 @@ function UserPanel({ config }) {
 
                 {!loading && !editBooking && userBookings && (
                   <>
-                    <div className="userbookings-sorting-container">
-                      {renderSortingButton("displayName", "Lokale/Resurse")}
-                      {renderSortingButton("start", "Dato")}
-                      {renderSortingButton("subject", "Titel")}
-                    </div>
+                    {false && (
+                      <div className="userbookings-sorting-container">
+                        {renderSortingButton("displayName", "Lokale/Resurse")}
+                        {renderSortingButton("start", "Dato")}
+                        {renderSortingButton("subject", "Titel")}
+                      </div>
+                    )}
                     <div className="userbookings-container">
                       {sortBookings(currentBookings, sortField, sortDirection).map(renderBooking)}
                     </div>
