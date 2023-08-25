@@ -236,7 +236,7 @@ function UserPanel({ config }) {
                 {loading && <LoadingSpinner />}
 
                 {!loading && !editBooking && (
-                  <div style={{marginBottom: '1em'}}>
+                  <div style={{ marginBottom: "1em" }}>
                     <form onSubmit={submitSearch}>
                       <input
                         value={search}
