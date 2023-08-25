@@ -6,6 +6,8 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+- Stopped event propagation and default for pagination buttons [#125](https://github.com/itk-dev/drupal_webform_booking_module/pull/125).
+
 ## [1.0.7] - 2023-08-24
 
 - Changed to paginated version of User Bookings [#124](https://github.com/itk-dev/drupal_webform_booking_module/pull/124).
