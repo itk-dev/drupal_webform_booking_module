@@ -9,6 +9,7 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 - Removed search text filtering [#126](https://github.com/itk-dev/drupal_webform_booking_module/pull/126).
 - Disabled sorting options since they do not apply [#126](https://github.com/itk-dev/drupal_webform_booking_module/pull/126).
 - Stopped event propagation and default for pagination buttons [#125](https://github.com/itk-dev/drupal_webform_booking_module/pull/125).
+- Map improvements, rendering of resources, filtering on map view [#127] (https://github.com/itk-dev/drupal_webform_booking_module/pull/127).
 
 ## [1.0.7] - 2023-08-24
 
