@@ -119,7 +119,7 @@ export function handleResources(value, currentCalendarDate) {
       endTime: "24:00",
     };
   }
-  console.log(resource);
+
   return resource;
 }
 
